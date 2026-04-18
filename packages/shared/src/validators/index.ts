@@ -209,6 +209,14 @@ export {
 } from "./sprint.js";
 
 export {
+  CEREMONY_SLUGS,
+  ceremonySlugSchema,
+  seedCeremoniesSchema,
+  type CeremonySlugValidator,
+  type SeedCeremonies,
+} from "./ceremony.js";
+
+export {
   createApprovalSchema,
   resolveApprovalSchema,
   requestApprovalRevisionSchema,

@@ -18,6 +18,7 @@ import { issueRoutes } from "./routes/issues.js";
 import { issueAcceptanceCriteriaRoutes } from "./routes/issue-acceptance-criteria.js";
 import { sprintRoutes } from "./routes/sprints.js";
 import { issueReviewRoutes } from "./routes/issue-reviews.js";
+import { ceremonyRoutes } from "./routes/ceremonies.js";
 import { routineRoutes } from "./routes/routines.js";
 import { executionWorkspaceRoutes } from "./routes/execution-workspaces.js";
 import { goalRoutes } from "./routes/goals.js";
@@ -188,6 +189,7 @@ export async function createApp(
   api.use(issueAcceptanceCriteriaRoutes(db));
   api.use(sprintRoutes(db));
   api.use(issueReviewRoutes(db));
+  api.use(ceremonyRoutes(db));
   api.use(routineRoutes(db));
   api.use(executionWorkspaceRoutes(db));
   api.use(goalRoutes(db));

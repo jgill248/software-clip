@@ -13,6 +13,14 @@ export {
   type IssueAcceptanceCriteriaService,
 } from "./issue-acceptance-criteria.js";
 export { sprintService, type SprintService } from "./sprints.js";
+export {
+  ceremonyService,
+  CEREMONY_TEMPLATES,
+  type CeremonyService,
+  type CeremonyTemplate,
+  type CeremonySlug,
+  type SeedOutcome as CeremonySeedOutcome,
+} from "./ceremonies.js";
 export { goalService } from "./goals.js";
 export { activityService, type ActivityFilters } from "./activity.js";
 export { approvalService } from "./approvals.js";
