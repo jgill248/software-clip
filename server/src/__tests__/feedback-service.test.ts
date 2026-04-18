@@ -150,7 +150,6 @@ describe("feedbackService.saveIssueVote", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `F${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(agents).values({
@@ -210,7 +209,6 @@ describe("feedbackService.saveIssueVote", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `R${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(companySkills).values([
@@ -354,7 +352,6 @@ describe("feedbackService.saveIssueVote", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `D${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(agents).values({
@@ -423,7 +420,6 @@ describe("feedbackService.saveIssueVote", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(agents).values({
@@ -992,7 +988,6 @@ describe("feedbackService.saveIssueVote", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `H${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(issues).values({

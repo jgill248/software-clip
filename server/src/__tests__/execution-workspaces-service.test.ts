@@ -160,7 +160,6 @@ describeEmbeddedPostgres("executionWorkspaceService.getCloseReadiness", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: "PAP",
-      requireBoardApprovalForNewAgents: false,
     });
     await db.insert(projects).values({
       id: projectId,
@@ -245,7 +244,6 @@ describeEmbeddedPostgres("executionWorkspaceService.getCloseReadiness", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: "PAP",
-      requireBoardApprovalForNewAgents: false,
     });
     await db.insert(projects).values({
       id: projectId,

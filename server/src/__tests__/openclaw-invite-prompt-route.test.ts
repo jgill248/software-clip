@@ -79,7 +79,6 @@ function createDbStub() {
     !!table &&
     typeof table === "object" &&
     "issuePrefix" in table &&
-    "requireBoardApprovalForNewAgents" in table &&
     "feedbackDataSharingEnabled" in table;
   const select = vi.fn((selection?: unknown) => ({
     from(table: unknown) {

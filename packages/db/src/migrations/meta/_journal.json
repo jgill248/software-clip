@@ -428,6 +428,13 @@
       "when": 1776729600000,
       "tag": "0060_drop_budget_governance",
       "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1776816000000,
+      "tag": "0061_drop_board_hire_gate",
+      "breakpoints": true
     }
   ]
 }

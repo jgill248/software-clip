@@ -74,15 +74,7 @@ export function CompanySettings() {
     }
   });
 
-  const settingsMutation = useMutation({
-    mutationFn: (requireApproval: boolean) =>
-      companiesApi.update(selectedCompanyId!, {
-        requireBoardApprovalForNewAgents: requireApproval
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.companies.all });
-    }
-  });
+  // Softclip pivot §6: settingsMutation (board-approval hire toggle) removed.
 
   const feedbackSharingMutation = useMutation({
     mutationFn: (enabled: boolean) =>
@@ -402,20 +394,8 @@ export function CompanySettings() {
       )}
 
       {/* Hiring */}
-      <div className="space-y-4" data-testid="company-settings-team-section">
-        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          Hiring
-        </div>
-        <div className="rounded-md border border-border px-4 py-3">
-          <ToggleField
-            label="Require board approval for new hires"
-            hint="New agent hires stay pending until approved by board."
-            checked={!!selectedCompany.requireBoardApprovalForNewAgents}
-            onChange={(v) => settingsMutation.mutate(v)}
-            toggleTestId="company-settings-team-approval-toggle"
-          />
-        </div>
-      </div>
+      {/* Softclip pivot §6: board-approval-for-new-hires toggle removed.
+          Dev teams hire with a PO, not a board-approval gate. */}
 
       <div className="space-y-4">
         <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">

@@ -34,7 +34,7 @@ export interface CompanyPortabilityCompanyManifestEntry {
   description: string | null;
   brandColor: string | null;
   logoPath: string | null;
-  requireBoardApprovalForNewAgents: boolean;
+  // Softclip pivot §6: requireBoardApprovalForNewAgents removed.
   feedbackDataSharingEnabled: boolean;
   feedbackDataSharingConsentAt: string | null;
   feedbackDataSharingConsentByUserId: string | null;

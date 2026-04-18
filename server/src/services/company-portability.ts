@@ -2252,9 +2252,9 @@ function buildEnvInputMap(inputs: CompanyPortabilityEnvInput[]) {
   return env;
 }
 
-function readCompanyApprovalDefault(_frontmatter: Record<string, unknown>) {
-  return true;
-}
+// Softclip pivot §6: readCompanyApprovalDefault removed along with the
+// requireBoardApprovalForNewAgents field.
+
 
 function readIncludeEntries(frontmatter: Record<string, unknown>): CompanyPackageIncludeEntry[] {
   const includes = frontmatter.includes;
@@ -2417,10 +2417,7 @@ function buildManifestFromPackageFiles(
       description: asString(companyFrontmatter.description),
       brandColor: asString(paperclipCompany.brandColor),
       logoPath: asString(paperclipCompany.logoPath) ?? asString(paperclipCompany.logo),
-      requireBoardApprovalForNewAgents:
-        typeof paperclipCompany.requireBoardApprovalForNewAgents === "boolean"
-          ? paperclipCompany.requireBoardApprovalForNewAgents
-          : readCompanyApprovalDefault(companyFrontmatter),
+      // Softclip pivot §6: requireBoardApprovalForNewAgents dropped.
       feedbackDataSharingEnabled:
         typeof paperclipCompany.feedbackDataSharingEnabled === "boolean"
           ? paperclipCompany.feedbackDataSharingEnabled
@@ -3454,7 +3451,7 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
         company: stripEmptyValues({
           brandColor: company.brandColor ?? null,
           logoPath: companyLogoPath,
-          requireBoardApprovalForNewAgents: company.requireBoardApprovalForNewAgents ? undefined : false,
+          // Softclip pivot §6: requireBoardApprovalForNewAgents dropped.
           feedbackDataSharingEnabled: company.feedbackDataSharingEnabled ? true : undefined,
           feedbackDataSharingConsentAt: company.feedbackDataSharingConsentAt?.toISOString() ?? null,
           feedbackDataSharingConsentByUserId: company.feedbackDataSharingConsentByUserId ?? null,
@@ -3951,7 +3948,7 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
     let targetCompany: {
       id: string;
       name: string;
-      requireBoardApprovalForNewAgents?: boolean | null;
+      // Softclip pivot §6: requireBoardApprovalForNewAgents removed from the type.
     } | null = null;
     let companyAction: "created" | "updated" | "unchanged" = "unchanged";
 
@@ -3974,9 +3971,7 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
         name: companyName,
         description: include.company ? (sourceManifest.company?.description ?? null) : null,
         brandColor: include.company ? (sourceManifest.company?.brandColor ?? null) : null,
-        requireBoardApprovalForNewAgents: include.company
-          ? (sourceManifest.company?.requireBoardApprovalForNewAgents ?? true)
-          : true,
+        // Softclip pivot §6: requireBoardApprovalForNewAgents dropped.
         feedbackDataSharingEnabled: include.company
           ? (sourceManifest.company?.feedbackDataSharingEnabled ?? false)
           : false,
@@ -4005,7 +4000,7 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
           name: sourceManifest.company.name,
           description: sourceManifest.company.description,
           brandColor: sourceManifest.company.brandColor,
-          requireBoardApprovalForNewAgents: sourceManifest.company.requireBoardApprovalForNewAgents,
+          // Softclip pivot §6: requireBoardApprovalForNewAgents dropped.
           feedbackDataSharingEnabled: sourceManifest.company.feedbackDataSharingEnabled,
           feedbackDataSharingConsentAt: sourceManifest.company.feedbackDataSharingConsentAt
             ? new Date(sourceManifest.company.feedbackDataSharingConsentAt)
@@ -4209,13 +4204,9 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
           continue;
         }
 
-        const requiresApproval =
-          typeof targetCompany.requireBoardApprovalForNewAgents === "boolean"
-            ? targetCompany.requireBoardApprovalForNewAgents
-            : include.company
-              ? (sourceManifest.company?.requireBoardApprovalForNewAgents ?? true)
-              : true;
-        const createdStatus = requiresApproval ? "pending_approval" : "idle";
+        // Softclip pivot §6: import no longer gates new agents on a
+        // board-approval flag. Imported agents always land `idle`.
+        const createdStatus = "idle" as const;
         let created = await agents.create(targetCompany.id, {
           ...patch,
           status: createdStatus,

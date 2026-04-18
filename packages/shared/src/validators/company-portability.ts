@@ -37,7 +37,7 @@ export const portabilityCompanyManifestEntrySchema = z.object({
   description: z.string().nullable(),
   brandColor: z.string().nullable(),
   logoPath: z.string().nullable(),
-  requireBoardApprovalForNewAgents: z.boolean(),
+  // Softclip pivot §6: requireBoardApprovalForNewAgents removed.
   feedbackDataSharingEnabled: z.boolean().default(false),
   feedbackDataSharingConsentAt: z.string().datetime().nullable().default(null),
   feedbackDataSharingConsentByUserId: z.string().nullable().default(null),

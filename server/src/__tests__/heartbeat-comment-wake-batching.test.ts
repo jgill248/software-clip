@@ -249,7 +249,6 @@ describe("heartbeat comment wake batching", () => {
         id: companyId,
         name: "Paperclip",
         issuePrefix,
-        requireBoardApprovalForNewAgents: false,
       });
 
       await db.insert(agents).values({
@@ -442,7 +441,6 @@ describe("heartbeat comment wake batching", () => {
         id: companyId,
         name: "Paperclip",
         issuePrefix,
-        requireBoardApprovalForNewAgents: false,
       });
 
       await db.insert(agents).values({
@@ -628,7 +626,6 @@ describe("heartbeat comment wake batching", () => {
         id: companyId,
         name: "Paperclip",
         issuePrefix,
-        requireBoardApprovalForNewAgents: false,
       });
 
       await db.insert(agents).values({
@@ -780,7 +777,6 @@ describe("heartbeat comment wake batching", () => {
         id: companyId,
         name: "Paperclip",
         issuePrefix,
-        requireBoardApprovalForNewAgents: false,
       });
 
       await db.insert(agents).values([
@@ -942,7 +938,6 @@ describe("heartbeat comment wake batching", () => {
         id: companyId,
         name: "Paperclip",
         issuePrefix,
-        requireBoardApprovalForNewAgents: false,
       });
 
       await db.insert(agents).values({

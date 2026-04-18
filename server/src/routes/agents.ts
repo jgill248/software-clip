@@ -1415,76 +1415,26 @@ export function agentRoutes(db: Db) {
       return;
     }
 
-    const requiresApproval = company.requireBoardApprovalForNewAgents;
-    const status = requiresApproval ? "pending_approval" : "idle";
+    // Softclip pivot §6: board-approval hire gate removed. New agents
+    // always land `idle` (ready to run). Teams that need an approval
+    // step for hiring can build one on top of the generic approvals
+    // primitive; it's no longer forced by a company flag.
     const createdAgent = await svc.create(companyId, {
       ...normalizedHireInput,
-      status,
+      status: "idle",
       spentMonthlyCents: 0,
       lastHeartbeatAt: null,
     });
     const agent = await materializeDefaultInstructionsBundleForNewAgent(createdAgent);
 
-    let approval: Awaited<ReturnType<typeof approvalsSvc.getById>> | null = null;
     const actor = getActorInfo(req);
-
-    if (requiresApproval) {
-      const requestedAdapterType = normalizedHireInput.adapterType ?? agent.adapterType;
-      const requestedAdapterConfig =
-        redactEventPayload(
-          (agent.adapterConfig ?? normalizedHireInput.adapterConfig) as Record<string, unknown>,
-        ) ?? {};
-      const requestedRuntimeConfig =
-        redactEventPayload(
-          (normalizedHireInput.runtimeConfig ?? agent.runtimeConfig) as Record<string, unknown>,
-        ) ?? {};
-      const requestedMetadata =
-        redactEventPayload(
-          ((normalizedHireInput.metadata ?? agent.metadata ?? {}) as Record<string, unknown>),
-        ) ?? {};
-      approval = await approvalsSvc.create(companyId, {
-        type: "hire_agent",
-        requestedByAgentId: actor.actorType === "agent" ? actor.actorId : null,
-        requestedByUserId: actor.actorType === "user" ? actor.actorId : null,
-        status: "pending",
-        payload: {
-          name: normalizedHireInput.name,
-          role: normalizedHireInput.role,
-          title: normalizedHireInput.title ?? null,
-          icon: normalizedHireInput.icon ?? null,
-          reportsTo: normalizedHireInput.reportsTo ?? null,
-          capabilities: normalizedHireInput.capabilities ?? null,
-          adapterType: requestedAdapterType,
-          adapterConfig: requestedAdapterConfig,
-          runtimeConfig: requestedRuntimeConfig,
-          budgetMonthlyCents:
-            typeof normalizedHireInput.budgetMonthlyCents === "number"
-              ? normalizedHireInput.budgetMonthlyCents
-              : agent.budgetMonthlyCents,
-          desiredSkills: desiredSkillAssignment.desiredSkills,
-          metadata: requestedMetadata,
-          agentId: agent.id,
-          requestedByAgentId: actor.actorType === "agent" ? actor.actorId : null,
-          requestedConfigurationSnapshot: {
-            adapterType: requestedAdapterType,
-            adapterConfig: requestedAdapterConfig,
-            runtimeConfig: requestedRuntimeConfig,
-            desiredSkills: desiredSkillAssignment.desiredSkills,
-          },
-        },
-        decisionNote: null,
-        decidedByUserId: null,
-        decidedAt: null,
-        updatedAt: new Date(),
-      });
-
-      if (sourceIssueIds.length > 0) {
-        await issueApprovalsSvc.linkManyForApproval(approval.id, sourceIssueIds, {
-          agentId: actor.actorType === "agent" ? actor.actorId : null,
-          userId: actor.actorType === "user" ? actor.actorId : null,
-        });
-      }
-    }
+    // sourceIssueIds is still carried in the payload for audit, but no
+    // hire-approval is created any more, so no approval-to-issue linking
+    // happens here.
+    void sourceIssueIds;
+    // approvalsSvc is retained for other code paths; unused on this one.
+    void approvalsSvc;
+    void issueApprovalsSvc;
 
     await logActivity(db, {
       companyId,
@@ -1498,8 +1448,6 @@ export function agentRoutes(db: Db) {
       details: {
         name: agent.name,
         role: agent.role,
-        requiresApproval,
-        approvalId: approval?.id ?? null,
         issueIds: sourceIssueIds,
         desiredSkills: desiredSkillAssignment.desiredSkills,
       },
@@ -1515,21 +1463,9 @@ export function agentRoutes(db: Db) {
       actor.actorType === "user" ? actor.actorId : null,
     );
 
-    if (approval) {
-      await logActivity(db, {
-        companyId,
-        actorType: actor.actorType,
-        actorId: actor.actorId,
-        agentId: actor.agentId,
-        runId: actor.runId,
-        action: "approval.created",
-        entityType: "approval",
-        entityId: approval.id,
-        details: { type: approval.type, linkedAgentId: agent.id },
-      });
-    }
-
-    res.status(201).json({ agent, approval });
+    // Softclip pivot §6: response shape preserved with approval=null so
+    // existing UI/CLI clients don't choke on the missing key.
+    res.status(201).json({ agent, approval: null });
   });
 
   router.post("/companies/:companyId/agents", validate(createAgentSchema), async (req, res) => {

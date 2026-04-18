@@ -88,7 +88,6 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(agents).values([
@@ -205,7 +204,6 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(agents).values({
@@ -257,7 +255,6 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     const exactIdentifierId = randomUUID();
@@ -308,7 +305,6 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(issues).values([
@@ -352,7 +348,6 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: "PAP",
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(issues).values({
@@ -392,7 +387,6 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(projects).values({
@@ -468,7 +462,6 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     const visibleIssueId = randomUUID();
@@ -553,7 +546,6 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     const issueId = randomUUID();
@@ -621,7 +613,6 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(issues).values([
@@ -707,7 +698,6 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(issues).values({
@@ -773,7 +763,6 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
 
@@ -851,7 +840,6 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
 
@@ -948,7 +936,6 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
 
@@ -1045,7 +1032,6 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     const blockerId = randomUUID();
@@ -1084,7 +1070,6 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     const issueA = randomUUID();
@@ -1108,7 +1093,6 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
     await db.insert(agents).values({
       id: assigneeAgentId,
@@ -1160,7 +1144,6 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
     await db.insert(agents).values({
       id: assigneeAgentId,
@@ -1257,7 +1240,6 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
 
@@ -1335,7 +1317,6 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
 
@@ -1432,7 +1413,6 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
 
@@ -1533,7 +1513,6 @@ describeEmbeddedPostgres("issueService.findMentionedProjectIds", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(projects).values([

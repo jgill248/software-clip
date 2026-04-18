@@ -11,7 +11,7 @@ export interface Company {
   issueCounter: number;
   budgetMonthlyCents: number;
   spentMonthlyCents: number;
-  requireBoardApprovalForNewAgents: boolean;
+  // Softclip pivot §6: requireBoardApprovalForNewAgents removed.
   feedbackDataSharingEnabled: boolean;
   feedbackDataSharingConsentAt: Date | null;
   feedbackDataSharingConsentByUserId: string | null;

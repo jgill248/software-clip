@@ -65,7 +65,6 @@ describeEmbeddedPostgres("cleanup removal services", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix,
-      requireBoardApprovalForNewAgents: false,
     });
 
     await db.insert(agents).values({
