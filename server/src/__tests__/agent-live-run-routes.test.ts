@@ -25,7 +25,6 @@ function registerModuleMocks() {
     accessService: () => ({}),
     approvalService: () => ({}),
     companySkillService: () => ({ listRuntimeSkillEntries: vi.fn() }),
-    budgetService: () => ({}),
     heartbeatService: () => mockHeartbeatService,
     issueApprovalService: () => ({}),
     issueService: () => mockIssueService,

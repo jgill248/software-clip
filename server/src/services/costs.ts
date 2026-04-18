@@ -2,7 +2,6 @@ import { and, desc, eq, gte, isNotNull, lt, lte, sql } from "drizzle-orm";
 import type { Db } from "@paperclipai/db";
 import { activityLog, agents, companies, costEvents, issues, projects } from "@paperclipai/db";
 import { notFound, unprocessable } from "../errors.js";
-import { budgetService, type BudgetServiceHooks } from "./budgets.js";
 
 export interface CostDateRange {
   from?: Date;
@@ -47,8 +46,10 @@ async function getMonthlySpendTotal(
   return Number(row?.total ?? 0);
 }
 
-export function costService(db: Db, budgetHooks: BudgetServiceHooks = {}) {
-  const budgets = budgetService(db, budgetHooks);
+// Softclip pivot §6: the optional `budgetHooks` parameter used to thread
+// overrides into the now-deleted budgetService. costService still records
+// cost events for observability; the budget evaluation hook is gone.
+export function costService(db: Db) {
   return {
     createEvent: async (companyId: string, data: Omit<typeof costEvents.$inferInsert, "companyId">) => {
       const agent = await db
@@ -95,7 +96,9 @@ export function costService(db: Db, budgetHooks: BudgetServiceHooks = {}) {
         })
         .where(eq(companies.id, companyId));
 
-      await budgets.evaluateCostEvent(event);
+      // Softclip pivot §6: budget evaluation hook removed. cost_events
+      // are still recorded for observability but no longer trigger
+      // budget incidents or `budget_override_required` approvals.
 
       return event;
     },

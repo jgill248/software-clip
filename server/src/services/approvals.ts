@@ -4,13 +4,11 @@ import { approvalComments, approvals } from "@paperclipai/db";
 import { notFound, unprocessable } from "../errors.js";
 import { redactCurrentUserText } from "../log-redaction.js";
 import { agentService } from "./agents.js";
-import { budgetService } from "./budgets.js";
 import { notifyHireApproved } from "./hire-hook.js";
 import { instanceSettingsService } from "./instance-settings.js";
 
 export function approvalService(db: Db) {
   const agentsSvc = agentService(db);
-  const budgets = budgetService(db);
   const instanceSettings = instanceSettingsService(db);
   const canResolveStatuses = new Set(["pending", "revision_requested"]);
   const resolvableStatuses = Array.from(canResolveStatuses);
@@ -141,20 +139,10 @@ export function approvalService(db: Db) {
           hireApprovedAgentId = created?.id ?? null;
         }
         if (hireApprovedAgentId) {
-          const budgetMonthlyCents =
-            typeof payload.budgetMonthlyCents === "number" ? payload.budgetMonthlyCents : 0;
-          if (budgetMonthlyCents > 0) {
-            await budgets.upsertPolicy(
-              updated.companyId,
-              {
-                scopeType: "agent",
-                scopeId: hireApprovedAgentId,
-                amount: budgetMonthlyCents,
-                windowKind: "calendar_month_utc",
-              },
-              decidedByUserId,
-            );
-          }
+          // Softclip pivot §6: the hire-approval flow used to seed a
+          // per-agent budget policy from the payload's budgetMonthlyCents
+          // value. Budget governance is removed; the value is still
+          // accepted on the agent row but no policy is persisted.
           void notifyHireApproved(db, {
             companyId: updated.companyId,
             agentId: hireApprovedAgentId,

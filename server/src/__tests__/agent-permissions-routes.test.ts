@@ -53,9 +53,7 @@ const mockApprovalService = vi.hoisted(() => ({
   getById: vi.fn(),
 }));
 
-const mockBudgetService = vi.hoisted(() => ({
-  upsertPolicy: vi.fn(),
-}));
+// Softclip pivot §6: mockBudgetService removed (service deleted).
 
 const mockHeartbeatService = vi.hoisted(() => ({
   listTaskSessions: vi.fn(),
@@ -106,7 +104,6 @@ function registerModuleMocks() {
     accessService: () => mockAccessService,
     approvalService: () => mockApprovalService,
     companySkillService: () => mockCompanySkillService,
-    budgetService: () => mockBudgetService,
     heartbeatService: () => mockHeartbeatService,
     issueApprovalService: () => mockIssueApprovalService,
     issueService: () => mockIssueService,
@@ -182,7 +179,6 @@ describe("agent permission routes", () => {
     mockAccessService.setPrincipalPermission.mockResolvedValue(undefined);
     mockCompanySkillService.listRuntimeSkillEntries.mockResolvedValue([]);
     mockCompanySkillService.resolveRequestedSkillKeys.mockImplementation(async (_companyId, requested) => requested);
-    mockBudgetService.upsertPolicy.mockResolvedValue(undefined);
     mockAgentInstructionsService.materializeManagedBundle.mockImplementation(
       async (agent: Record<string, unknown>, files: Record<string, string>) => ({
         bundle: null,

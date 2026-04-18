@@ -68,9 +68,7 @@ const mockApprovalService = vi.hoisted(() => ({
   getById: vi.fn(),
 }));
 
-const mockBudgetService = vi.hoisted(() => ({
-  upsertPolicy: vi.fn(),
-}));
+// Softclip pivot §6: mockBudgetService removed (service deleted).
 
 const mockHeartbeatService = vi.hoisted(() => ({
   cancelActiveForAgent: vi.fn(),
@@ -117,7 +115,6 @@ vi.mock("../services/index.js", () => ({
   accessService: () => mockAccessService,
   approvalService: () => mockApprovalService,
   companySkillService: () => mockCompanySkillService,
-  budgetService: () => mockBudgetService,
   heartbeatService: () => mockHeartbeatService,
   issueApprovalService: () => mockIssueApprovalService,
   issueService: () => mockIssueService,

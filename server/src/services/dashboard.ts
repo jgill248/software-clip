@@ -2,10 +2,12 @@ import { and, eq, gte, sql } from "drizzle-orm";
 import type { Db } from "@paperclipai/db";
 import { agents, approvals, companies, costEvents, issues } from "@paperclipai/db";
 import { notFound } from "../errors.js";
-import { budgetService } from "./budgets.js";
 
+// Softclip pivot §6: budgetService dependency removed. The `budgets`
+// sub-object in the dashboard summary now returns zeros for shape
+// compatibility; the UI no longer reads it and a future cleanup will
+// drop the field entirely.
 export function dashboardService(db: Db) {
-  const budgets = budgetService(db);
   return {
     summary: async (companyId: string) => {
       const company = await db
@@ -80,8 +82,6 @@ export function dashboardService(db: Db) {
         company.budgetMonthlyCents > 0
           ? (monthSpendCents / company.budgetMonthlyCents) * 100
           : 0;
-      const budgetOverview = await budgets.overview(companyId);
-
       return {
         companyId,
         agents: {
@@ -98,10 +98,13 @@ export function dashboardService(db: Db) {
         },
         pendingApprovals,
         budgets: {
-          activeIncidents: budgetOverview.activeIncidents.length,
-          pendingApprovals: budgetOverview.pendingApprovalCount,
-          pausedAgents: budgetOverview.pausedAgentCount,
-          pausedProjects: budgetOverview.pausedProjectCount,
+          // Softclip pivot §6: these counts are always zero now that
+          // budget governance is disabled. The shape is preserved only
+          // for API back-compat.
+          activeIncidents: 0,
+          pendingApprovals: 0,
+          pausedAgents: 0,
+          pausedProjects: 0,
         },
       };
     },

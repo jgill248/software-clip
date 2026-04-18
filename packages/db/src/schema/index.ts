@@ -12,8 +12,8 @@ export { companyUserSidebarPreferences } from "./company_user_sidebar_preference
 export { principalPermissionGrants } from "./principal_permission_grants.js";
 export { invites } from "./invites.js";
 export { joinRequests } from "./join_requests.js";
-export { budgetPolicies } from "./budget_policies.js";
-export { budgetIncidents } from "./budget_incidents.js";
+// Softclip pivot §6: budgetPolicies + budgetIncidents exports removed
+// along with the dollar-budget governance tables.
 export { agentConfigRevisions } from "./agent_config_revisions.js";
 export { agentApiKeys } from "./agent_api_keys.js";
 export { agentRuntimeState } from "./agent_runtime_state.js";
@@ -53,7 +53,8 @@ export { issueDocuments } from "./issue_documents.js";
 export { heartbeatRuns } from "./heartbeat_runs.js";
 export { heartbeatRunEvents } from "./heartbeat_run_events.js";
 export { costEvents } from "./cost_events.js";
-export { financeEvents } from "./finance_events.js";
+// Softclip pivot §6: financeEvents export removed along with the
+// finance_events table. cost_events remains for telemetry.
 export { approvals } from "./approvals.js";
 export { approvalComments } from "./approval_comments.js";
 export { activityLog } from "./activity_log.js";

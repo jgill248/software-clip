@@ -12,7 +12,9 @@ export { routineRoutes } from "./routines.js";
 export { goalRoutes } from "./goals.js";
 export { approvalRoutes } from "./approvals.js";
 export { secretRoutes } from "./secrets.js";
-export { costRoutes } from "./costs.js";
+// Softclip pivot §6: costRoutes removed along with the dollar-budget
+// governance layer. cost_events are still recorded via
+// services/costs.ts but no longer exposed over HTTP.
 export { activityRoutes } from "./activity.js";
 export { dashboardRoutes } from "./dashboard.js";
 export { sidebarBadgeRoutes } from "./sidebar-badges.js";

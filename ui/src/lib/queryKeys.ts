@@ -128,14 +128,10 @@ export const queryKeys = {
     ["usage-by-provider", companyId, from, to] as const,
   usageByBiller: (companyId: string, from?: string, to?: string) =>
     ["usage-by-biller", companyId, from, to] as const,
-  financeSummary: (companyId: string, from?: string, to?: string) =>
-    ["finance-summary", companyId, from, to] as const,
-  financeByBiller: (companyId: string, from?: string, to?: string) =>
-    ["finance-by-biller", companyId, from, to] as const,
-  financeByKind: (companyId: string, from?: string, to?: string) =>
-    ["finance-by-kind", companyId, from, to] as const,
-  financeEvents: (companyId: string, from?: string, to?: string, limit: number = 100) =>
-    ["finance-events", companyId, from, to, limit] as const,
+  // Softclip pivot §6: finance-* query keys removed (finance_events
+  // table is gone). Cost-* keys stay because LiveUpdatesProvider still
+  // invalidates them on live events — the invalidation is a no-op now
+  // but the hook remains.
   usageWindowSpend: (companyId: string) =>
     ["usage-window-spend", companyId] as const,
   usageQuotaWindows: (companyId: string) =>

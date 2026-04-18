@@ -421,6 +421,13 @@
       "when": 1776643200000,
       "tag": "0059_sprints",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1776729600000,
+      "tag": "0060_drop_budget_governance",
+      "breakpoints": true
     }
   ]
 }
