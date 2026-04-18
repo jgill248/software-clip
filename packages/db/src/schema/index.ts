@@ -38,6 +38,7 @@ export {
   issueAcceptanceCriteria,
   type AcceptanceCriterionStatus,
 } from "./issue_acceptance_criteria.js";
+export { sprints, type SprintState } from "./sprints.js";
 export { issueExecutionDecisions } from "./issue_execution_decisions.js";
 export { issueInboxArchives } from "./issue_inbox_archives.js";
 export { inboxDismissals } from "./inbox_dismissals.js";

@@ -12,6 +12,7 @@ export {
   issueAcceptanceCriteriaService,
   type IssueAcceptanceCriteriaService,
 } from "./issue-acceptance-criteria.js";
+export { sprintService, type SprintService } from "./sprints.js";
 export { goalService } from "./goals.js";
 export { activityService, type ActivityFilters } from "./activity.js";
 export { approvalService } from "./approvals.js";

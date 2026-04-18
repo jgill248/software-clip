@@ -197,6 +197,18 @@ export {
 } from "./goal.js";
 
 export {
+  SPRINT_STATES,
+  sprintStateSchema,
+  createSprintSchema,
+  updateSprintSchema,
+  assignIssueToSprintSchema,
+  type SprintStateValidator,
+  type CreateSprint,
+  type UpdateSprint,
+  type AssignIssueToSprint,
+} from "./sprint.js";
+
+export {
   createApprovalSchema,
   resolveApprovalSchema,
   requestApprovalRevisionSchema,

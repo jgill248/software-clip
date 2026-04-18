@@ -414,6 +414,13 @@
       "when": 1776556800000,
       "tag": "0058_issue_acceptance_criteria",
       "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1776643200000,
+      "tag": "0059_sprints",
+      "breakpoints": true
     }
   ]
 }

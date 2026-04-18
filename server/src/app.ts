@@ -16,6 +16,7 @@ import { agentRoutes } from "./routes/agents.js";
 import { projectRoutes } from "./routes/projects.js";
 import { issueRoutes } from "./routes/issues.js";
 import { issueAcceptanceCriteriaRoutes } from "./routes/issue-acceptance-criteria.js";
+import { sprintRoutes } from "./routes/sprints.js";
 import { routineRoutes } from "./routes/routines.js";
 import { executionWorkspaceRoutes } from "./routes/execution-workspaces.js";
 import { goalRoutes } from "./routes/goals.js";
@@ -184,6 +185,7 @@ export async function createApp(
     feedbackExportService: opts.feedbackExportService,
   }));
   api.use(issueAcceptanceCriteriaRoutes(db));
+  api.use(sprintRoutes(db));
   api.use(routineRoutes(db));
   api.use(executionWorkspaceRoutes(db));
   api.use(goalRoutes(db));
