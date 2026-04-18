@@ -214,11 +214,20 @@ export {
   requestApprovalRevisionSchema,
   resubmitApprovalSchema,
   addApprovalCommentSchema,
+  approvePrPayloadSchema,
+  approveDesignPayloadSchema,
+  approveArchitecturePayloadSchema,
+  requestIssueReviewSchema,
+  reviewPayloadSchemaByType,
   type CreateApproval,
   type ResolveApproval,
   type RequestApprovalRevision,
   type ResubmitApproval,
   type AddApprovalComment,
+  type ApprovePrPayload,
+  type ApproveDesignPayload,
+  type ApproveArchitecturePayload,
+  type RequestIssueReview,
 } from "./approval.js";
 
 export {

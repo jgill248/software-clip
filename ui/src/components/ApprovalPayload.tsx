@@ -1,9 +1,23 @@
-import { UserPlus, Lightbulb, ShieldAlert, ShieldCheck } from "lucide-react";
+import {
+  UserPlus,
+  Lightbulb,
+  ShieldAlert,
+  ShieldCheck,
+  GitPullRequest,
+  PenTool,
+  Building2,
+} from "lucide-react";
 import { formatCents } from "../lib/utils";
 
 export const typeLabel: Record<string, string> = {
   hire_agent: "Hire Agent",
-  approve_ceo_strategy: "CEO Strategy",
+  // approve_ceo_strategy is the legacy name; approve_po_strategy is the
+  // Softclip-pivot replacement. Both render under the same rubric.
+  approve_ceo_strategy: "Roadmap Approval",
+  approve_po_strategy: "Roadmap Approval",
+  approve_pr: "Code Review",
+  approve_design: "Design Review",
+  approve_architecture: "Architecture Review",
   budget_override_required: "Budget Override",
   request_board_approval: "Board Approval",
 };
@@ -39,6 +53,10 @@ export function approvalLabel(type: string, payload?: Record<string, unknown> | 
 export const typeIcon: Record<string, typeof UserPlus> = {
   hire_agent: UserPlus,
   approve_ceo_strategy: Lightbulb,
+  approve_po_strategy: Lightbulb,
+  approve_pr: GitPullRequest,
+  approve_design: PenTool,
+  approve_architecture: Building2,
   budget_override_required: ShieldAlert,
   request_board_approval: ShieldCheck,
 };
@@ -229,6 +247,253 @@ function BoardApprovalPayloadContent({ payload }: { payload: Record<string, unkn
   );
 }
 
+export function CodeReviewPayload({ payload }: { payload: Record<string, unknown> }) {
+  const prUrl = firstNonEmptyString(payload.prUrl);
+  const summary = firstNonEmptyString(payload.summary);
+  const changes = firstNonEmptyString(payload.changesSummary);
+  const ciStatus = firstNonEmptyString(payload.ciStatus);
+  const recommendedAction = firstNonEmptyString(payload.recommendedAction);
+  const branch = firstNonEmptyString(payload.branch);
+  const repo = firstNonEmptyString(payload.repo);
+  const prNumber =
+    typeof payload.prNumber === "number" ? payload.prNumber : null;
+
+  return (
+    <div className="mt-3 space-y-2 text-sm">
+      {prUrl && (
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs">PR</span>
+          <a
+            href={prUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="font-mono text-xs underline underline-offset-2 hover:text-primary"
+          >
+            {repo && prNumber !== null ? `${repo}#${prNumber}` : prUrl}
+          </a>
+        </div>
+      )}
+      {!prUrl && (repo || prNumber !== null) && (
+        <PayloadField
+          label="PR"
+          value={repo && prNumber !== null ? `${repo}#${prNumber}` : repo ?? `#${prNumber}`}
+        />
+      )}
+      <PayloadField label="Branch" value={branch} />
+      {ciStatus && (
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs">CI</span>
+          <span
+            className={
+              ciStatus === "passing"
+                ? "rounded bg-emerald-500/15 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300"
+                : ciStatus === "failing"
+                  ? "rounded bg-rose-500/15 px-1.5 py-0.5 text-[11px] font-medium text-rose-700 dark:text-rose-300"
+                  : "rounded bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground"
+            }
+          >
+            {ciStatus}
+          </span>
+        </div>
+      )}
+      {summary && (
+        <div className="space-y-1 pt-1">
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            Summary
+          </p>
+          <p className="leading-6 text-foreground/90">{summary}</p>
+        </div>
+      )}
+      {changes && (
+        <div className="space-y-1">
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            Changes
+          </p>
+          <pre className="max-h-40 overflow-auto rounded-md bg-muted/40 px-3 py-2 font-mono text-xs leading-5 text-muted-foreground whitespace-pre-wrap">
+            {changes}
+          </pre>
+        </div>
+      )}
+      {recommendedAction && (
+        <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-sm leading-6">
+          {recommendedAction}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function DesignReviewPayload({ payload }: { payload: Record<string, unknown> }) {
+  const summary = firstNonEmptyString(payload.summary);
+  const wireframeUrl = firstNonEmptyString(payload.wireframeUrl);
+  const prototypeUrl = firstNonEmptyString(payload.prototypeUrl);
+  const notes = firstNonEmptyString(payload.notes);
+  const copyReady = payload.copyReady === true;
+  const a11yReviewed = payload.a11yReviewed === true;
+  const states = Array.isArray(payload.states)
+    ? payload.states.filter((s): s is string => typeof s === "string")
+    : [];
+
+  return (
+    <div className="mt-3 space-y-2 text-sm">
+      {wireframeUrl && (
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs">Wireframe</span>
+          <a
+            href={wireframeUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="underline underline-offset-2 hover:text-primary"
+          >
+            {wireframeUrl}
+          </a>
+        </div>
+      )}
+      {prototypeUrl && (
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs">Prototype</span>
+          <a
+            href={prototypeUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="underline underline-offset-2 hover:text-primary"
+          >
+            {prototypeUrl}
+          </a>
+        </div>
+      )}
+      {summary && (
+        <div className="space-y-1 pt-1">
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            Summary
+          </p>
+          <p className="leading-6 text-foreground/90">{summary}</p>
+        </div>
+      )}
+      {states.length > 0 && (
+        <div className="flex items-start gap-2 pt-1">
+          <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs pt-0.5">States</span>
+          <div className="flex flex-wrap gap-1.5">
+            {states.map((state) => (
+              <span
+                key={state}
+                className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground"
+              >
+                {state}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+      <div className="flex flex-wrap gap-2 pt-1">
+        <span
+          className={
+            copyReady
+              ? "rounded bg-emerald-500/15 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300"
+              : "rounded bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground"
+          }
+        >
+          {copyReady ? "copy ready" : "copy pending"}
+        </span>
+        <span
+          className={
+            a11yReviewed
+              ? "rounded bg-emerald-500/15 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300"
+              : "rounded bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground"
+          }
+        >
+          {a11yReviewed ? "a11y reviewed" : "a11y pending"}
+        </span>
+      </div>
+      {notes && (
+        <p className="rounded-md bg-muted/40 px-3 py-2 text-sm leading-6 text-muted-foreground">
+          {notes}
+        </p>
+      )}
+    </div>
+  );
+}
+
+export function ArchitectureReviewPayload({
+  payload,
+}: {
+  payload: Record<string, unknown>;
+}) {
+  const summary = firstNonEmptyString(payload.summary);
+  const adrUrl = firstNonEmptyString(payload.adrUrl);
+  const tradeOffs = firstNonEmptyString(payload.tradeOffs);
+  const rollbackPlan = firstNonEmptyString(payload.rollbackPlan);
+  const impact = firstNonEmptyString(payload.impact);
+  const affectedAreas = Array.isArray(payload.affectedAreas)
+    ? payload.affectedAreas.filter((s): s is string => typeof s === "string")
+    : [];
+
+  return (
+    <div className="mt-3 space-y-2 text-sm">
+      {adrUrl && (
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs">ADR</span>
+          <a
+            href={adrUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="underline underline-offset-2 hover:text-primary"
+          >
+            {adrUrl}
+          </a>
+        </div>
+      )}
+      {impact && (
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs">Impact</span>
+          <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+            {impact}
+          </span>
+        </div>
+      )}
+      {summary && (
+        <div className="space-y-1 pt-1">
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            Summary
+          </p>
+          <p className="leading-6 text-foreground/90">{summary}</p>
+        </div>
+      )}
+      {affectedAreas.length > 0 && (
+        <div className="flex items-start gap-2">
+          <span className="text-muted-foreground w-20 sm:w-24 shrink-0 text-xs pt-0.5">Areas</span>
+          <div className="flex flex-wrap gap-1.5">
+            {affectedAreas.map((area) => (
+              <span
+                key={area}
+                className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground"
+              >
+                {area}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+      {tradeOffs && (
+        <div className="space-y-1">
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            Trade-offs
+          </p>
+          <p className="leading-6 text-foreground/90 whitespace-pre-wrap">{tradeOffs}</p>
+        </div>
+      )}
+      {rollbackPlan && (
+        <div className="space-y-1">
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            Rollback plan
+          </p>
+          <p className="leading-6 text-foreground/90 whitespace-pre-wrap">{rollbackPlan}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ApprovalPayloadRenderer({
   type,
   payload,
@@ -243,5 +508,8 @@ export function ApprovalPayloadRenderer({
   if (type === "request_board_approval") {
     return <BoardApprovalPayload payload={payload} hideTitle={hidePrimaryTitle} />;
   }
+  if (type === "approve_pr") return <CodeReviewPayload payload={payload} />;
+  if (type === "approve_design") return <DesignReviewPayload payload={payload} />;
+  if (type === "approve_architecture") return <ArchitectureReviewPayload payload={payload} />;
   return <CeoStrategyPayload payload={payload} />;
 }
