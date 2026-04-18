@@ -19,7 +19,6 @@ const companyState = vi.hoisted(() => ({
       id: "company-1",
       name: "Paperclip",
       status: "active",
-      brandColor: "#123456",
       issuePrefix: "PAP",
     },
   ],
@@ -28,7 +27,6 @@ const companyState = vi.hoisted(() => ({
     id: "company-1",
     name: "Paperclip",
     status: "active",
-    brandColor: "#123456",
     issuePrefix: "PAP",
   },
 }));

@@ -2252,9 +2252,9 @@ function buildEnvInputMap(inputs: CompanyPortabilityEnvInput[]) {
   return env;
 }
 
-function readCompanyApprovalDefault(_frontmatter: Record<string, unknown>) {
-  return true;
-}
+// Softclip pivot §6: readCompanyApprovalDefault removed along with the
+// requireBoardApprovalForNewAgents field.
+
 
 function readIncludeEntries(frontmatter: Record<string, unknown>): CompanyPackageIncludeEntry[] {
   const includes = frontmatter.includes;
@@ -2417,10 +2417,7 @@ function buildManifestFromPackageFiles(
       description: asString(companyFrontmatter.description),
       brandColor: asString(paperclipCompany.brandColor),
       logoPath: asString(paperclipCompany.logoPath) ?? asString(paperclipCompany.logo),
-      requireBoardApprovalForNewAgents:
-        typeof paperclipCompany.requireBoardApprovalForNewAgents === "boolean"
-          ? paperclipCompany.requireBoardApprovalForNewAgents
-          : readCompanyApprovalDefault(companyFrontmatter),
+      // Softclip pivot §6: requireBoardApprovalForNewAgents dropped.
       feedbackDataSharingEnabled:
         typeof paperclipCompany.feedbackDataSharingEnabled === "boolean"
           ? paperclipCompany.feedbackDataSharingEnabled
@@ -2956,7 +2953,7 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
     const envInputs: CompanyPortabilityManifest["envInputs"] = [];
     const requestedSidebarOrder = normalizePortableSidebarOrder(input.sidebarOrder);
     const rootPath = normalizeAgentUrlKey(company.name) ?? "company-package";
-    let companyLogoPath: string | null = null;
+    // Softclip pivot §6: companyLogoPath variable removed (logo export flow gone).
 
     const allAgentRows = include.agents ? await agents.list(companyId, { includeTerminated: true }) : [];
     const liveAgentRows = allAgentRows.filter((agent) => agent.status !== "terminated");
@@ -3156,25 +3153,9 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
       "",
     );
 
-    if (include.company && company.logoAssetId) {
-      if (!storage) {
-        warnings.push("Skipped company logo from export because storage is unavailable.");
-      } else {
-        const logoAsset = await assetRecords.getById(company.logoAssetId);
-        if (!logoAsset) {
-          warnings.push(`Skipped company logo ${company.logoAssetId} because the asset record was not found.`);
-        } else {
-          try {
-            const object = await storage.getObject(company.id, logoAsset.objectKey);
-            const body = await streamToBuffer(object.stream);
-            companyLogoPath = `images/${COMPANY_LOGO_FILE_NAME}${resolveCompanyLogoExtension(logoAsset.contentType, logoAsset.originalFilename)}`;
-            files[companyLogoPath] = bufferToPortableBinaryFile(body, logoAsset.contentType);
-          } catch (err) {
-            warnings.push(`Failed to export company logo ${company.logoAssetId}: ${err instanceof Error ? err.message : String(err)}`);
-          }
-        }
-      }
-    }
+    // Softclip pivot §6: company-logo export flow removed. Company
+    // logos no longer exist as a first-class concept; `company` no
+    // longer carries `logoAssetId`.
 
     const paperclipAgentsOut: Record<string, Record<string, unknown>> = {};
     const paperclipProjectsOut: Record<string, Record<string, unknown>> = {};
@@ -3452,9 +3433,8 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
       {
         schema: "paperclip/v1",
         company: stripEmptyValues({
-          brandColor: company.brandColor ?? null,
-          logoPath: companyLogoPath,
-          requireBoardApprovalForNewAgents: company.requireBoardApprovalForNewAgents ? undefined : false,
+          // Softclip pivot §6: brandColor + logoPath no longer
+          // emitted; requireBoardApprovalForNewAgents dropped.
           feedbackDataSharingEnabled: company.feedbackDataSharingEnabled ? true : undefined,
           feedbackDataSharingConsentAt: company.feedbackDataSharingConsentAt?.toISOString() ?? null,
           feedbackDataSharingConsentByUserId: company.feedbackDataSharingConsentByUserId ?? null,
@@ -3951,7 +3931,7 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
     let targetCompany: {
       id: string;
       name: string;
-      requireBoardApprovalForNewAgents?: boolean | null;
+      // Softclip pivot §6: requireBoardApprovalForNewAgents removed from the type.
     } | null = null;
     let companyAction: "created" | "updated" | "unchanged" = "unchanged";
 
@@ -3973,10 +3953,7 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
       const created = await companies.create({
         name: companyName,
         description: include.company ? (sourceManifest.company?.description ?? null) : null,
-        brandColor: include.company ? (sourceManifest.company?.brandColor ?? null) : null,
-        requireBoardApprovalForNewAgents: include.company
-          ? (sourceManifest.company?.requireBoardApprovalForNewAgents ?? true)
-          : true,
+        // Softclip pivot §6: brandColor + requireBoardApprovalForNewAgents dropped.
         feedbackDataSharingEnabled: include.company
           ? (sourceManifest.company?.feedbackDataSharingEnabled ?? false)
           : false,
@@ -4004,8 +3981,8 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
         const updated = await companies.update(targetCompany.id, {
           name: sourceManifest.company.name,
           description: sourceManifest.company.description,
-          brandColor: sourceManifest.company.brandColor,
-          requireBoardApprovalForNewAgents: sourceManifest.company.requireBoardApprovalForNewAgents,
+          // Softclip pivot §6: brandColor, logoAssetId,
+          // requireBoardApprovalForNewAgents dropped.
           feedbackDataSharingEnabled: sourceManifest.company.feedbackDataSharingEnabled,
           feedbackDataSharingConsentAt: sourceManifest.company.feedbackDataSharingConsentAt
             ? new Date(sourceManifest.company.feedbackDataSharingConsentAt)
@@ -4020,53 +3997,12 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
 
     if (!targetCompany) throw notFound("Target company not found");
 
-    if (include.company) {
-      const logoPath = sourceManifest.company?.logoPath ?? null;
-      if (!logoPath) {
-        const cleared = await companies.update(targetCompany.id, { logoAssetId: null });
-        targetCompany = cleared ?? targetCompany;
-      } else {
-        const logoFile = plan.source.files[logoPath];
-        if (!logoFile) {
-          warnings.push(`Skipped company logo import because ${logoPath} is missing from the package.`);
-        } else if (!storage) {
-          warnings.push("Skipped company logo import because storage is unavailable.");
-        } else {
-          const contentType = isPortableBinaryFile(logoFile)
-            ? (logoFile.contentType ?? inferContentTypeFromPath(logoPath))
-            : inferContentTypeFromPath(logoPath);
-          if (!contentType || !COMPANY_LOGO_CONTENT_TYPE_EXTENSIONS[contentType]) {
-            warnings.push(`Skipped company logo import for ${logoPath} because the file type is unsupported.`);
-          } else {
-            try {
-              const body = portableFileToBuffer(logoFile, logoPath);
-              const stored = await storage.putFile({
-                companyId: targetCompany.id,
-                namespace: "assets/companies",
-                originalFilename: path.posix.basename(logoPath),
-                contentType,
-                body,
-              });
-              const createdAsset = await assetRecords.create(targetCompany.id, {
-                provider: stored.provider,
-                objectKey: stored.objectKey,
-                contentType: stored.contentType,
-                byteSize: stored.byteSize,
-                sha256: stored.sha256,
-                originalFilename: stored.originalFilename,
-                createdByAgentId: null,
-                createdByUserId: actorUserId ?? null,
-              });
-              const updated = await companies.update(targetCompany.id, {
-                logoAssetId: createdAsset.id,
-              });
-              targetCompany = updated ?? targetCompany;
-            } catch (err) {
-              warnings.push(`Failed to import company logo ${logoPath}: ${err instanceof Error ? err.message : String(err)}`);
-            }
-          }
-        }
-      }
+    // Softclip pivot §6: company-logo import flow removed. Old packages
+    // that include a logoPath are silently ignored on import.
+    if (include.company && sourceManifest.company?.logoPath) {
+      warnings.push(
+        "Ignored company logo from package: company branding (logos + brand colors) is no longer supported.",
+      );
     }
 
     const resultAgents: CompanyPortabilityImportResult["agents"] = [];
@@ -4209,13 +4145,9 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
           continue;
         }
 
-        const requiresApproval =
-          typeof targetCompany.requireBoardApprovalForNewAgents === "boolean"
-            ? targetCompany.requireBoardApprovalForNewAgents
-            : include.company
-              ? (sourceManifest.company?.requireBoardApprovalForNewAgents ?? true)
-              : true;
-        const createdStatus = requiresApproval ? "pending_approval" : "idle";
+        // Softclip pivot §6: import no longer gates new agents on a
+        // board-approval flag. Imported agents always land `idle`.
+        const createdStatus = "idle" as const;
         let created = await agents.create(targetCompany.id, {
           ...patch,
           status: createdStatus,

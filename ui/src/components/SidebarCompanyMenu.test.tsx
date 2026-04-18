@@ -31,7 +31,6 @@ vi.mock("@/context/CompanyContext", () => ({
     selectedCompany: {
       id: "company-1",
       name: "Acme Labs",
-      brandColor: "#3366ff",
     },
   }),
 }));

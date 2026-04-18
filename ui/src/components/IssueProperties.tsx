@@ -8,6 +8,7 @@ import { agentsApi } from "../api/agents";
 import { authApi } from "../api/auth";
 import { issuesApi } from "../api/issues";
 import { projectsApi } from "../api/projects";
+import { sprintsApi } from "../api/sprints";
 import { useCompany } from "../context/CompanyContext";
 import { queryKeys } from "../lib/queryKeys";
 import { buildCompanyUserInlineOptions, buildCompanyUserLabelMap } from "../lib/company-members";
@@ -22,7 +23,7 @@ import { formatDate, cn, projectUrl } from "../lib/utils";
 import { timeAgo } from "../lib/timeAgo";
 import { Separator } from "@/components/ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { User, Hexagon, ArrowUpRight, Tag, Plus, GitBranch, FolderOpen, Check, ExternalLink } from "lucide-react";
+import { User, Hexagon, ArrowUpRight, Tag, Plus, GitBranch, FolderOpen, Check, ExternalLink, CalendarRange } from "lucide-react";
 import { AgentIcon } from "./AgentIconPicker";
 
 function TruncatedCopyable({ value, icon: Icon }: { value: string; icon: React.ComponentType<{ className?: string }> }) {
@@ -165,6 +166,7 @@ export function IssueProperties({
   const [assigneeSearch, setAssigneeSearch] = useState("");
   const [projectOpen, setProjectOpen] = useState(false);
   const [projectSearch, setProjectSearch] = useState("");
+  const [sprintOpen, setSprintOpen] = useState(false);
   const [blockedByOpen, setBlockedByOpen] = useState(false);
   const [blockedBySearch, setBlockedBySearch] = useState("");
   const [parentOpen, setParentOpen] = useState(false);
@@ -214,6 +216,44 @@ export function IssueProperties({
     queryKey: queryKeys.issues.labels(companyId!),
     queryFn: () => issuesApi.listLabels(companyId!),
     enabled: !!companyId,
+  });
+
+  // Softclip pivot §5: sprints list for the Sprint picker. We fetch lazily
+  // (only when the popover opens) to avoid pulling sprint data on every
+  // issue view. Active + planned sprints are the interesting set; we
+  // include closed sprints too so reassigning away from a closed sprint
+  // is possible.
+  const { data: allSprints } = useQuery({
+    queryKey: queryKeys.sprints.list(companyId!),
+    queryFn: () => sprintsApi.list(companyId!),
+    enabled: !!companyId && sprintOpen,
+  });
+  const currentSprint = useMemo(
+    () => allSprints?.find((s) => s.id === issue.sprintId) ?? null,
+    [allSprints, issue.sprintId],
+  );
+  const assignSprintMutation = useMutation({
+    mutationFn: (sprintId: string | null) =>
+      sprintsApi.assignIssue(issue.id, sprintId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.issues.detail(issue.id) });
+      if (issue.identifier) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.issues.detail(issue.identifier),
+        });
+      }
+      if (companyId) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.sprints.list(companyId) });
+      }
+      if (issue.sprintId) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.sprints.issues(issue.sprintId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.sprints.summary(issue.sprintId),
+        });
+      }
+    },
   });
 
   const { data: allIssues } = useQuery({
@@ -991,6 +1031,107 @@ export function IssueProperties({
           ) : undefined}
         >
           {projectContent}
+        </PropertyPicker>
+
+        {/* Softclip pivot §5: sprint picker. `null` → backlog. The server
+            enforces that the sprint belongs to this product. */}
+        <PropertyPicker
+          inline={inline}
+          label="Sprint"
+          open={sprintOpen}
+          onOpenChange={setSprintOpen}
+          triggerContent={
+            <span className="flex items-center gap-1.5 min-w-0 text-xs">
+              <CalendarRange className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+              <span className="truncate">
+                {currentSprint
+                  ? currentSprint.name
+                  : assignSprintMutation.isPending
+                    ? "Saving…"
+                    : "Backlog"}
+              </span>
+              {currentSprint && (
+                <span
+                  className={
+                    currentSprint.state === "active"
+                      ? "ml-1 text-[10px] uppercase tracking-wide text-emerald-600 dark:text-emerald-400"
+                      : currentSprint.state === "planned"
+                        ? "ml-1 text-[10px] uppercase tracking-wide text-muted-foreground"
+                        : "ml-1 text-[10px] uppercase tracking-wide text-muted-foreground"
+                  }
+                >
+                  {currentSprint.state}
+                </span>
+              )}
+            </span>
+          }
+          triggerClassName="min-w-0 max-w-full"
+          popoverClassName="w-64"
+          extra={
+            issue.sprintId ? (
+              <Link
+                to={`/sprints/${issue.sprintId}`}
+                className="inline-flex items-center justify-center h-5 w-5 rounded hover:bg-accent/50 transition-colors text-muted-foreground hover:text-foreground"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ArrowUpRight className="h-3 w-3" />
+              </Link>
+            ) : undefined
+          }
+        >
+          <div className="max-h-64 overflow-auto">
+            <button
+              type="button"
+              className={
+                "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent " +
+                (issue.sprintId === null ? "bg-accent/60 font-medium" : "")
+              }
+              onClick={() => {
+                assignSprintMutation.mutate(null);
+                setSprintOpen(false);
+              }}
+            >
+              <span className="text-muted-foreground">Backlog (no sprint)</span>
+            </button>
+            {(allSprints ?? [])
+              .sort((a, b) => {
+                const order = { active: 0, planned: 1, closed: 2 } as const;
+                return (
+                  order[a.state] - order[b.state] ||
+                  a.name.localeCompare(b.name)
+                );
+              })
+              .map((sprint) => (
+                <button
+                  key={sprint.id}
+                  type="button"
+                  className={
+                    "flex w-full items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent " +
+                    (sprint.id === issue.sprintId ? "bg-accent/60 font-medium" : "")
+                  }
+                  onClick={() => {
+                    assignSprintMutation.mutate(sprint.id);
+                    setSprintOpen(false);
+                  }}
+                >
+                  <span className="truncate">{sprint.name}</span>
+                  <span
+                    className={
+                      sprint.state === "active"
+                        ? "text-[10px] uppercase tracking-wide text-emerald-600 dark:text-emerald-400"
+                        : "text-[10px] uppercase tracking-wide text-muted-foreground"
+                    }
+                  >
+                    {sprint.state}
+                  </span>
+                </button>
+              ))}
+            {allSprints && allSprints.length === 0 && (
+              <p className="px-2 py-2 text-xs text-muted-foreground">
+                No sprints yet. Plan one from the <Link to="/sprints" className="underline">Sprints page</Link>.
+              </p>
+            )}
+          </div>
         </PropertyPicker>
 
         <PropertyPicker

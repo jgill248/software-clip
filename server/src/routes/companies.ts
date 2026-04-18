@@ -9,7 +9,7 @@ import {
   feedbackTargetTypeSchema,
   feedbackTraceStatusSchema,
   feedbackVoteValueSchema,
-  updateCompanyBrandingSchema,
+  // Softclip pivot §6: updateCompanyBrandingSchema removed.
   updateCompanySchema,
 } from "@paperclipai/shared";
 import { badRequest, forbidden } from "../errors.js";
@@ -57,19 +57,9 @@ export function companyRoutes(db: Db, storage?: StorageService) {
     assertCompanyAccess(req, target.companyId);
   }
 
-  async function assertCanUpdateBranding(req: Request, companyId: string) {
-    assertCompanyAccess(req, companyId);
-    if (req.actor.type === "board") return;
-    if (!req.actor.agentId) throw forbidden("Agent authentication required");
+  // Softclip pivot §6: assertCanUpdateBranding removed along with the
+  // PATCH /branding endpoint.
 
-    const actorAgent = await agents.getById(req.actor.agentId);
-    if (!actorAgent || actorAgent.companyId !== companyId) {
-      throw forbidden("Agent key cannot access another company");
-    }
-    if (actorAgent.role !== "ceo") {
-      throw forbidden("Only CEO agents can update company branding");
-    }
-  }
 
   async function assertCanManagePortability(req: Request, companyId: string, capability: "imports" | "exports") {
     assertCompanyAccess(req, companyId);
@@ -298,16 +288,10 @@ export function companyRoutes(db: Db, storage?: StorageService) {
     let body: Record<string, unknown>;
 
     if (req.actor.type === "agent") {
-      // Only CEO agents may update company branding fields
-      const agentSvc = agentService(db);
-      const actorAgent = req.actor.agentId ? await agentSvc.getById(req.actor.agentId) : null;
-      if (!actorAgent || actorAgent.role !== "ceo") {
-        throw forbidden("Only CEO agents or board users may update company settings");
-      }
-      if (actorAgent.companyId !== companyId) {
-        throw forbidden("Agent key cannot access another company");
-      }
-      body = updateCompanyBrandingSchema.parse(req.body);
+      // Softclip pivot §6: branding (logos + brand color) removed. The
+      // agent-facing CEO-only branding update path is gone; agents no
+      // longer mutate company settings directly.
+      throw forbidden("Agent callers may not update company settings");
     } else {
       assertBoard(req);
       body = updateCompanySchema.parse(req.body);
@@ -344,28 +328,9 @@ export function companyRoutes(db: Db, storage?: StorageService) {
     res.json(company);
   });
 
-  router.patch("/:companyId/branding", validate(updateCompanyBrandingSchema), async (req, res) => {
-    const companyId = req.params.companyId as string;
-    await assertCanUpdateBranding(req, companyId);
-    const company = await svc.update(companyId, req.body);
-    if (!company) {
-      res.status(404).json({ error: "Company not found" });
-      return;
-    }
-    const actor = getActorInfo(req);
-    await logActivity(db, {
-      companyId,
-      actorType: actor.actorType,
-      actorId: actor.actorId,
-      agentId: actor.agentId,
-      runId: actor.runId,
-      action: "company.branding_updated",
-      entityType: "company",
-      entityId: companyId,
-      details: req.body,
-    });
-    res.json(company);
-  });
+  // Softclip pivot §6: PATCH /branding endpoint removed along with
+  // the logo/brand-color UI and the CEO-only assertCanUpdateBranding
+  // helper.
 
   router.post("/:companyId/archive", async (req, res) => {
     assertBoard(req);

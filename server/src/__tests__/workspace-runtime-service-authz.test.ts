@@ -55,7 +55,6 @@ describeEmbeddedPostgres("workspace runtime service authz helper", () => {
       id: companyId,
       name: "Paperclip",
       issuePrefix: `PAP-${companyId.slice(0, 8)}`,
-      requireBoardApprovalForNewAgents: false,
     });
     return companyId;
   }

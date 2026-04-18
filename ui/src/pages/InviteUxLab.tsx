@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CompanyPatternIcon } from "@/components/CompanyPatternIcon";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,
@@ -193,12 +192,12 @@ function InviteSummaryPanel({
   return (
     <>
       <div className="flex items-start gap-4">
-        <CompanyPatternIcon
-          companyName="Acme Robotics"
-          logoUrl="/api/invites/pcp_invite_test/logo"
-          brandColor="#114488"
-          className="h-16 w-16 rounded-none border border-zinc-800"
-        />
+        <div
+          className="flex h-16 w-16 items-center justify-center rounded-none border border-zinc-800 bg-muted text-sm font-semibold text-muted-foreground"
+          aria-label="Acme Robotics"
+        >
+          AC
+        </div>
         <div className="min-w-0">
           <p className="text-xs uppercase tracking-[0.24em] text-zinc-500">You&apos;ve been invited to join Paperclip</p>
           <h3 className="mt-2 text-2xl font-semibold text-zinc-100">{title}</h3>
@@ -405,12 +404,12 @@ function InviteResultPreview({
   return (
     <div className="mx-auto max-w-md border border-zinc-800 bg-zinc-950 p-6 text-zinc-100">
       <div className="flex items-center gap-3">
-        <CompanyPatternIcon
-          companyName="Acme Robotics"
-          logoUrl="/api/invites/pcp_invite_test/logo"
-          brandColor="#114488"
-          className="h-12 w-12 rounded-none border border-zinc-800"
-        />
+        <div
+          className="flex h-12 w-12 items-center justify-center rounded-none border border-zinc-800 bg-muted text-sm font-semibold text-muted-foreground"
+          aria-label="Acme Robotics"
+        >
+          AC
+        </div>
         <h3 className="text-lg font-semibold">{title}</h3>
       </div>
       <div className="mt-4 space-y-3">

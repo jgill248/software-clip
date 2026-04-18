@@ -19,10 +19,9 @@ export {
 export {
   createCompanySchema,
   updateCompanySchema,
-  updateCompanyBrandingSchema,
+  // Softclip pivot §6: updateCompanyBrandingSchema removed.
   type CreateCompany,
   type UpdateCompany,
-  type UpdateCompanyBranding,
 } from "./company.js";
 export {
   feedbackDataSharingPreferenceSchema,

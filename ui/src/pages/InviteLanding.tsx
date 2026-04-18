@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AGENT_ADAPTER_TYPES } from "@paperclipai/shared";
 import type { AgentAdapterType, JoinRequest } from "@paperclipai/shared";
 import { Button } from "@/components/ui/button";
-import { CompanyPatternIcon } from "@/components/CompanyPatternIcon";
 import { useCompany } from "@/context/CompanyContext";
 import { Link, useNavigate, useParams } from "@/lib/router";
 import { accessApi } from "../api/access";
@@ -121,8 +120,6 @@ function isApprovedHumanJoinPayload(payload: unknown, showsAgentForm: boolean) {
 
 type AwaitingJoinApprovalPanelProps = {
   companyDisplayName: string;
-  companyLogoUrl: string | null;
-  companyBrandColor: string | null;
   invitedByUserName: string | null;
   claimSecret?: string | null;
   claimApiKeyPath?: string | null;
@@ -131,30 +128,24 @@ type AwaitingJoinApprovalPanelProps = {
 
 function InviteCompanyLogo({
   companyDisplayName,
-  companyLogoUrl,
-  companyBrandColor,
   className,
 }: {
   companyDisplayName: string;
-  companyLogoUrl: string | null;
-  companyBrandColor: string | null;
   className?: string;
 }) {
+  const initials = (companyDisplayName ?? "?").trim().slice(0, 2).toUpperCase();
   return (
-    <CompanyPatternIcon
-      companyName={companyDisplayName}
-      logoUrl={companyLogoUrl}
-      brandColor={companyBrandColor}
-      logoFit="contain"
-      className={className}
-    />
+    <div
+      className={`flex items-center justify-center bg-muted text-sm font-semibold text-muted-foreground ${className ?? ""}`}
+      aria-label={companyDisplayName}
+    >
+      {initials}
+    </div>
   );
 }
 
 function AwaitingJoinApprovalPanel({
   companyDisplayName,
-  companyLogoUrl,
-  companyBrandColor,
   invitedByUserName,
   claimSecret = null,
   claimApiKeyPath = null,
@@ -169,8 +160,6 @@ function AwaitingJoinApprovalPanel({
         <div className="flex items-center gap-3">
           <InviteCompanyLogo
             companyDisplayName={companyDisplayName}
-            companyLogoUrl={companyLogoUrl}
-            companyBrandColor={companyBrandColor}
             className="h-12 w-12 border border-zinc-800 rounded-none"
           />
           <h1 className="text-lg font-semibold">Request to join {companyDisplayName}</h1>
@@ -285,8 +274,6 @@ export function InviteLandingPage() {
     );
   const companyName = invite?.companyName?.trim() || null;
   const companyDisplayName = companyName || "this Paperclip company";
-  const companyLogoUrl = invite?.companyLogoUrl?.trim() || null;
-  const companyBrandColor = invite?.companyBrandColor?.trim() || null;
   const invitedByUserName = invite?.invitedByUserName?.trim() || null;
   const inviteMessage = invite?.inviteMessage?.trim() || null;
   const requestedHumanRole = formatHumanRole(invite?.humanRole);
@@ -455,8 +442,6 @@ export function InviteLandingPage() {
     return (
       <AwaitingJoinApprovalPanel
         companyDisplayName={companyDisplayName}
-        companyLogoUrl={companyLogoUrl}
-        companyBrandColor={companyBrandColor}
         invitedByUserName={invitedByUserName}
       />
     );
@@ -510,8 +495,6 @@ export function InviteLandingPage() {
             <div className="flex items-center gap-3">
               <InviteCompanyLogo
                 companyDisplayName={companyDisplayName}
-                companyLogoUrl={companyLogoUrl}
-                companyBrandColor={companyBrandColor}
                 className="h-12 w-12 border border-zinc-800 rounded-none"
               />
               <h1 className="text-lg font-semibold">You joined the company</h1>
@@ -526,8 +509,6 @@ export function InviteLandingPage() {
       ) : (
         <AwaitingJoinApprovalPanel
           companyDisplayName={companyDisplayName}
-          companyLogoUrl={companyLogoUrl}
-          companyBrandColor={companyBrandColor}
           invitedByUserName={invitedByUserName}
           claimSecret={claimSecret}
           claimApiKeyPath={claimApiKeyPath}
@@ -545,8 +526,6 @@ export function InviteLandingPage() {
             <div className="flex items-start gap-4">
               <InviteCompanyLogo
                 companyDisplayName={companyDisplayName}
-                companyLogoUrl={companyLogoUrl}
-                companyBrandColor={companyBrandColor}
                 className="h-16 w-16 rounded-none border border-zinc-800"
               />
               <div className="min-w-0">

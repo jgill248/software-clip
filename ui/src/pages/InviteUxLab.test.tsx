@@ -5,12 +5,6 @@ import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { InviteUxLab } from "./InviteUxLab";
 
-vi.mock("@/components/CompanyPatternIcon", () => ({
-  CompanyPatternIcon: ({ companyName }: { companyName: string }) => (
-    <div aria-label={`${companyName} logo`}>{companyName}</div>
-  ),
-}));
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 

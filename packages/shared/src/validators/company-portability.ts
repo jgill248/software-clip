@@ -35,9 +35,11 @@ export const portabilityCompanyManifestEntrySchema = z.object({
   path: z.string().min(1),
   name: z.string().min(1),
   description: z.string().nullable(),
-  brandColor: z.string().nullable(),
-  logoPath: z.string().nullable(),
-  requireBoardApprovalForNewAgents: z.boolean(),
+  // Softclip pivot §6: brandColor + logoPath are deprecated and
+  // optional. New exports do not emit them; on import they're parsed
+  // but ignored. requireBoardApprovalForNewAgents removed entirely.
+  brandColor: z.string().nullable().optional(),
+  logoPath: z.string().nullable().optional(),
   feedbackDataSharingEnabled: z.boolean().default(false),
   feedbackDataSharingConsentAt: z.string().datetime().nullable().default(null),
   feedbackDataSharingConsentByUserId: z.string().nullable().default(null),

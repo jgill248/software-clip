@@ -122,16 +122,13 @@ function registerModuleMocks() {
   }));
 }
 
-function createDb(requireBoardApprovalForNewAgents = false) {
+// Softclip pivot §6: the requireBoardApprovalForNewAgents parameter and
+// return field are gone. Hire is always `idle`; no gate.
+function createDb() {
   return {
     select: vi.fn(() => ({
       from: vi.fn(() => ({
-        where: vi.fn(async () => [
-          {
-            id: "company-1",
-            requireBoardApprovalForNewAgents,
-          },
-        ]),
+        where: vi.fn(async () => [{ id: "company-1" }]),
       })),
     })),
   };
@@ -463,61 +460,9 @@ describe("agent skill routes", () => {
     });
   });
 
-  it("includes canonical desired skills in hire approvals", async () => {
-    const db = createDb(true);
-
-    const res = await request(await createApp(db))
-      .post("/api/companies/company-1/agent-hires")
-      .send({
-        name: "QA Agent",
-        role: "engineer",
-        adapterType: "claude_local",
-        desiredSkills: ["paperclip"],
-        adapterConfig: {},
-      });
-
-    expect(res.status, JSON.stringify(res.body)).toBe(201);
-    expect(mockApprovalService.create).toHaveBeenCalledWith(
-      "company-1",
-      expect.objectContaining({
-        payload: expect.objectContaining({
-          desiredSkills: ["paperclipai/paperclip/paperclip"],
-          requestedConfigurationSnapshot: expect.objectContaining({
-            desiredSkills: ["paperclipai/paperclip/paperclip"],
-          }),
-        }),
-      }),
-    );
-  });
-
-  it("uses managed AGENTS config in hire approval payloads", async () => {
-    const res = await request(await createApp(createDb(true)))
-      .post("/api/companies/company-1/agent-hires")
-      .send({
-        name: "QA Agent",
-        role: "engineer",
-        adapterType: "claude_local",
-        adapterConfig: {
-          promptTemplate: "You are QA.",
-        },
-      });
-
-    expect(res.status, JSON.stringify(res.body)).toBe(201);
-    expect(mockApprovalService.create).toHaveBeenCalledWith(
-      "company-1",
-      expect.objectContaining({
-        payload: expect.objectContaining({
-          adapterConfig: expect.objectContaining({
-            instructionsBundleMode: "managed",
-            instructionsEntryFile: "AGENTS.md",
-            instructionsFilePath: "/tmp/11111111-1111-4111-8111-111111111111/instructions/AGENTS.md",
-          }),
-        }),
-      }),
-    );
-    const approvalInput = mockApprovalService.create.mock.calls.at(-1)?.[1] as
-      | { payload?: { adapterConfig?: Record<string, unknown> } }
-      | undefined;
-    expect(approvalInput?.payload?.adapterConfig?.promptTemplate).toBeUndefined();
-  });
+  // Softclip pivot §6: the hire-approval payload tests are removed along
+  // with the board-approval hire gate. Hires no longer spawn a
+  // `hire_agent` approval; the canonical-skill resolution and the
+  // managed-AGENTS config path are now covered by the hire-response
+  // shape tests above.
 });

@@ -122,7 +122,6 @@ function createDbStub() {
           then: vi.fn().mockResolvedValue([{
             id: companyId,
             name: "Paperclip",
-            requireBoardApprovalForNewAgents: false,
           }]),
         }),
       }),

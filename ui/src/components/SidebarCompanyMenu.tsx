@@ -51,12 +51,6 @@ export function SidebarCompanyMenu() {
           disabled={!selectedCompany}
         >
           <span className="flex min-w-0 flex-1 items-center gap-2">
-            {selectedCompany?.brandColor ? (
-              <span
-                className="size-4 shrink-0 rounded-sm"
-                style={{ backgroundColor: selectedCompany.brandColor }}
-              />
-            ) : null}
             <span className="truncate text-sm font-bold text-foreground">
               {selectedCompany?.name ?? "Select company"}
             </span>

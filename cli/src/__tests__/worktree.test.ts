@@ -1065,7 +1065,6 @@ describeEmbeddedPostgres("pauseSeededScheduledRoutines", () => {
         id: companyId,
         name: "Paperclip",
         issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
-        requireBoardApprovalForNewAgents: false,
       });
       await db.insert(agents).values({
         id: agentId,

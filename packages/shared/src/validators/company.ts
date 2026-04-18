@@ -1,8 +1,6 @@
 import { z } from "zod";
 import { COMPANY_STATUSES } from "../constants.js";
 
-const logoAssetIdSchema = z.string().uuid().nullable().optional();
-const brandColorSchema = z.string().regex(/^#[0-9a-fA-F]{6}$/).nullable().optional();
 const feedbackDataSharingTermsVersionSchema = z.string().min(1).nullable().optional();
 
 export const createCompanySchema = z.object({
@@ -18,32 +16,18 @@ export const updateCompanySchema = createCompanySchema
   .extend({
     status: z.enum(COMPANY_STATUSES).optional(),
     spentMonthlyCents: z.number().int().nonnegative().optional(),
-    requireBoardApprovalForNewAgents: z.boolean().optional(),
+    // Softclip pivot §6: requireBoardApprovalForNewAgents,
+    // brandColor, logoAssetId removed.
     feedbackDataSharingEnabled: z.boolean().optional(),
     feedbackDataSharingConsentAt: z.coerce.date().nullable().optional(),
     feedbackDataSharingConsentByUserId: z.string().min(1).nullable().optional(),
     feedbackDataSharingTermsVersion: feedbackDataSharingTermsVersionSchema,
-    brandColor: brandColorSchema,
-    logoAssetId: logoAssetIdSchema,
   });
 
 export type UpdateCompany = z.infer<typeof updateCompanySchema>;
 
-export const updateCompanyBrandingSchema = z
-  .object({
-    name: z.string().min(1).optional(),
-    description: z.string().nullable().optional(),
-    brandColor: brandColorSchema,
-    logoAssetId: logoAssetIdSchema,
-  })
-  .strict()
-  .refine(
-    (value) =>
-      value.name !== undefined
-      || value.description !== undefined
-      || value.brandColor !== undefined
-      || value.logoAssetId !== undefined,
-    "At least one branding field must be provided",
-  );
-
-export type UpdateCompanyBranding = z.infer<typeof updateCompanyBrandingSchema>;
+// Softclip pivot §6: updateCompanyBrandingSchema + UpdateCompanyBranding
+// type removed along with the PATCH /companies/:id/branding endpoint.
+// A residual type export is kept so external consumers that imported
+// it see a recognisable error rather than a module-resolution failure.
+export type UpdateCompanyBranding = never;
