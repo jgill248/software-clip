@@ -16,7 +16,7 @@ import {
   agentApiKeys,
   authUsers,
   companies,
-  companyLogos,
+  // Softclip pivot §6: companyLogos removed.
   companyMemberships,
   invites,
   joinRequests,
@@ -882,18 +882,11 @@ function toInviteSummaryResponse(
   req: Request,
   token: string,
   invite: typeof invites.$inferSelect,
-  company:
-    | string
-    | {
-      name: string | null;
-      brandColor: string | null;
-      logoUrl: string | null;
-    }
-    | null = null
+  company: string | { name: string | null } | null = null
 ) {
-  const companyInfo = typeof company === "string"
-    ? { name: company, brandColor: null, logoUrl: null }
-    : company;
+  // Softclip pivot §6: brandColor + logoUrl dropped from the invite
+  // summary along with company branding.
+  const companyInfo = typeof company === "string" ? { name: company } : company;
   const baseUrl = requestBaseUrl(req);
   const invitePath = `/invite/${token}`;
   const onboardingPath = `/api/invites/${token}/onboarding`;
@@ -904,8 +897,7 @@ function toInviteSummaryResponse(
     id: invite.id,
     companyId: invite.companyId,
     companyName: companyInfo?.name ?? null,
-    companyLogoUrl: companyInfo?.logoUrl ?? null,
-    companyBrandColor: companyInfo?.brandColor ?? null,
+    // Softclip pivot §6: companyLogoUrl + companyBrandColor removed.
     inviteType: invite.inviteType,
     allowedJoinTypes: invite.allowedJoinTypes,
     humanRole: extractInviteHumanRole(invite),
@@ -2385,90 +2377,24 @@ export function accessRoutes(
     return { token, created, normalizedAgentMessage };
   }
 
+  // Softclip pivot §6: invite-company-branding helper reduced to just
+  // `{ name }`. Logos and brand colors are gone; the invite landing
+  // page renders the name plain.
   async function getInviteCompanyBranding(
     companyId: string | null,
-    inviteToken: string | null = null,
-  ): Promise<{
-    name: string | null;
-    brandColor: string | null;
-    logoAssetId: string | null;
-    logoUrl: string | null;
-  }> {
-    if (!companyId) {
-      return { name: null, brandColor: null, logoAssetId: null, logoUrl: null };
-    }
+    _inviteToken: string | null = null,
+  ): Promise<{ name: string | null }> {
+    if (!companyId) return { name: null };
     const company = await db
-      .select({
-        name: companies.name,
-        brandColor: companies.brandColor,
-        logoAssetId: companyLogos.assetId,
-      })
+      .select({ name: companies.name })
       .from(companies)
-      .leftJoin(companyLogos, eq(companyLogos.companyId, companies.id))
       .where(eq(companies.id, companyId))
       .then((rows) => rows[0] ?? null);
-    let logoUrl: string | null = null;
-    if (inviteToken && company?.logoAssetId) {
-      const logoAsset = await getInviteLogoAsset(companyId);
-      if (logoAsset?.companyId) {
-        try {
-          const storage = getStorageService();
-          const logoObject = await storage.headObject(logoAsset.companyId, logoAsset.objectKey);
-          if (logoObject.exists) {
-            logoUrl = `/api/invites/${inviteToken}/logo`;
-          }
-        } catch (err) {
-          logger.warn(
-            {
-              err,
-              companyId,
-              logoAssetId: company.logoAssetId,
-            },
-            "invite logo storage check failed",
-          );
-        }
-      }
-    }
-
-    return {
-      name: company?.name ?? null,
-      brandColor: company?.brandColor ?? null,
-      logoAssetId: company?.logoAssetId ?? null,
-      logoUrl,
-    };
+    return { name: company?.name ?? null };
   }
 
-  async function getInviteLogoAsset(companyId: string | null): Promise<{
-    companyId: string | null;
-    objectKey: string;
-    contentType: string | null;
-    byteSize: number | null;
-    originalFilename: string | null;
-  } | null> {
-    if (!companyId) return null;
-    const logoAsset = await db
-      .select({
-        companyId: companies.id,
-        objectKey: assets.objectKey,
-        contentType: assets.contentType,
-        byteSize: assets.byteSize,
-        originalFilename: assets.originalFilename,
-      })
-      .from(companies)
-      .leftJoin(companyLogos, eq(companyLogos.companyId, companies.id))
-      .leftJoin(assets, eq(assets.id, companyLogos.assetId))
-      .where(eq(companies.id, companyId))
-      .then((rows) => rows[0] ?? null);
-
-    if (!logoAsset?.objectKey) return null;
-    return {
-      companyId: logoAsset.companyId,
-      objectKey: logoAsset.objectKey,
-      contentType: logoAsset.contentType,
-      byteSize: logoAsset.byteSize,
-      originalFilename: logoAsset.originalFilename,
-    };
-  }
+  // Softclip pivot §6: getInviteLogoAsset + the GET /invites/:token/logo
+  // route are removed along with company branding.
 
   router.get("/skills/available", (req, res) => {
     assertAuthenticated(req);
@@ -2641,59 +2567,8 @@ export function accessRoutes(
     });
   });
 
-  router.get("/invites/:token/logo", async (req, res, next) => {
-    const token = (req.params.token as string).trim();
-    if (!token) throw notFound("Invite not found");
-    const invite = await db
-      .select()
-      .from(invites)
-      .where(eq(invites.tokenHash, hashToken(token)))
-      .then((rows) => rows[0] ?? null);
-    const inviteJoinRequest = await resolveAcceptedInviteJoinRequest(db, req, invite);
-    if (
-      !invite ||
-      invite.revokedAt ||
-      inviteExpired(invite) ||
-      (invite.acceptedAt && !inviteJoinRequest)
-    ) {
-      throw notFound("Invite not found");
-    }
-
-    const logoAsset = await getInviteLogoAsset(invite.companyId);
-    if (!logoAsset || !logoAsset.companyId) {
-      throw notFound("Invite logo not found");
-    }
-    const companyId = logoAsset.companyId;
-
-    const storage = getStorageService();
-    const logoHead = await storage.headObject(companyId, logoAsset.objectKey);
-    if (!logoHead.exists) {
-      throw notFound("Invite logo not found");
-    }
-    const object = await storage.getObject(companyId, logoAsset.objectKey);
-    const responseContentType =
-      logoAsset.contentType ||
-      logoHead.contentType ||
-      object.contentType ||
-      "application/octet-stream";
-    res.setHeader("Content-Type", responseContentType);
-    res.setHeader(
-      "Content-Length",
-      String(logoAsset.byteSize || logoHead.contentLength || object.contentLength || 0),
-    );
-    res.setHeader("Cache-Control", "private, max-age=60");
-    res.setHeader("X-Content-Type-Options", "nosniff");
-    if (responseContentType === "image/svg+xml") {
-      res.setHeader("Content-Security-Policy", "sandbox; default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'");
-    }
-    const filename = logoAsset.originalFilename ?? "company-logo";
-    res.setHeader("Content-Disposition", `inline; filename=\"${filename.replaceAll("\"", "")}\"`);
-
-    object.stream.on("error", (err) => {
-      next(err);
-    });
-    object.stream.pipe(res);
-  });
+  // Softclip pivot §6: GET /invites/:token/logo removed along with
+  // company branding (logos + brand colors).
 
   router.get("/invites/:token/onboarding", async (req, res) => {
     const token = (req.params.token as string).trim();

@@ -32,9 +32,14 @@ export interface CompanyPortabilityCompanyManifestEntry {
   path: string;
   name: string;
   description: string | null;
-  brandColor: string | null;
-  logoPath: string | null;
-  // Softclip pivot §6: requireBoardApprovalForNewAgents removed.
+  /**
+   * Softclip pivot §6: brandColor + logoPath are deprecated. Kept as
+   * optional here so importing older packages that carry these fields
+   * doesn't blow up. New exports do not emit them; on import they're
+   * ignored. A future cleanup will drop the fields entirely.
+   */
+  brandColor?: string | null;
+  logoPath?: string | null;
   feedbackDataSharingEnabled: boolean;
   feedbackDataSharingConsentAt: string | null;
   feedbackDataSharingConsentByUserId: string | null;

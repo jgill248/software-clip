@@ -16,9 +16,7 @@ export interface Company {
   feedbackDataSharingConsentAt: Date | null;
   feedbackDataSharingConsentByUserId: string | null;
   feedbackDataSharingTermsVersion: string | null;
-  brandColor: string | null;
-  logoAssetId: string | null;
-  logoUrl: string | null;
+  // Softclip pivot §6: brandColor, logoAssetId, logoUrl removed.
   createdAt: Date;
   updatedAt: Date;
 }

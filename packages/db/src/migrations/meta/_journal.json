@@ -435,6 +435,13 @@
       "when": 1776816000000,
       "tag": "0061_drop_board_hire_gate",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1776902400000,
+      "tag": "0062_drop_company_branding",
+      "breakpoints": true
     }
   ]
 }

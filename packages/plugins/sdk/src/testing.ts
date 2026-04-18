@@ -382,6 +382,9 @@ export function createTestHarness(options: TestHarnessOptions): TestHarness {
           completedAt: null,
           cancelledAt: null,
           hiddenAt: null,
+          sprintId: null,
+          issueType: "feature",
+          definitionOfDoneMet: false,
           createdAt: now,
           updatedAt: now,
         };

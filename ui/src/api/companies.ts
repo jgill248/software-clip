@@ -7,7 +7,6 @@ import type {
   CompanyPortabilityImportResult,
   CompanyPortabilityPreviewRequest,
   CompanyPortabilityPreviewResult,
-  UpdateCompanyBranding,
 } from "@paperclipai/shared";
 import { api } from "./client";
 
@@ -33,13 +32,11 @@ export const companiesApi = {
         | "status"
         | "budgetMonthlyCents"
         | "feedbackDataSharingEnabled"
-        | "brandColor"
-        | "logoAssetId"
       >
     >,
   ) => api.patch<Company>(`/companies/${companyId}`, data),
-  updateBranding: (companyId: string, data: UpdateCompanyBranding) =>
-    api.patch<Company>(`/companies/${companyId}/branding`, data),
+  // Softclip pivot §6: updateBranding removed along with the PATCH
+  // /companies/:id/branding endpoint.
   archive: (companyId: string) => api.post<Company>(`/companies/${companyId}/archive`, {}),
   remove: (companyId: string) => api.delete<{ ok: true }>(`/companies/${companyId}`),
   exportBundle: (

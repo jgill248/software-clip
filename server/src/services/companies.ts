@@ -2,7 +2,8 @@ import { and, count, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import type { Db } from "@paperclipai/db";
 import {
   companies,
-  companyLogos,
+  // Softclip pivot §6: companyLogos removed. `assets` is still needed
+  // for cleanup on company delete (non-logo uploads).
   assets,
   agents,
   agentApiKeys,
@@ -27,7 +28,7 @@ import {
   companyMemberships,
   companySkills,
 } from "@paperclipai/db";
-import { notFound, unprocessable } from "../errors.js";
+import { notFound } from "../errors.js";
 
 export function companyService(db: Db) {
   const ISSUE_PREFIX_FALLBACK = "CMP";
@@ -45,18 +46,12 @@ export function companyService(db: Db) {
     feedbackDataSharingConsentAt: companies.feedbackDataSharingConsentAt,
     feedbackDataSharingConsentByUserId: companies.feedbackDataSharingConsentByUserId,
     feedbackDataSharingTermsVersion: companies.feedbackDataSharingTermsVersion,
-    brandColor: companies.brandColor,
-    logoAssetId: companyLogos.assetId,
     createdAt: companies.createdAt,
     updatedAt: companies.updatedAt,
   };
 
-  function enrichCompany<T extends { logoAssetId: string | null }>(company: T) {
-    return {
-      ...company,
-      logoUrl: company.logoAssetId ? `/api/assets/${company.logoAssetId}/content` : null,
-    };
-  }
+  // Softclip pivot §6: enrichCompany (logoUrl synthesis) removed with
+  // the logoAssetId/logoUrl fields.
 
   function currentUtcMonthWindow(now = new Date()) {
     const year = now.getUTCFullYear();
@@ -104,8 +99,8 @@ export function companyService(db: Db) {
   function getCompanyQuery(database: Pick<Db, "select">) {
     return database
       .select(companySelection)
-      .from(companies)
-      .leftJoin(companyLogos, eq(companyLogos.companyId, companies.id));
+      .from(companies);
+    // Softclip pivot §6: leftJoin on companyLogos removed.
   }
 
   function deriveIssuePrefixBase(name: string) {
@@ -153,8 +148,7 @@ export function companyService(db: Db) {
   return {
     list: async () => {
       const rows = await getCompanyQuery(db);
-      const hydrated = await hydrateCompanySpend(rows);
-      return hydrated.map((row) => enrichCompany(row));
+      return hydrateCompanySpend(rows);
     },
 
     getById: async (id: string) => {
@@ -163,7 +157,7 @@ export function companyService(db: Db) {
         .then((rows) => rows[0] ?? null);
       if (!row) return null;
       const [hydrated] = await hydrateCompanySpend([row], db);
-      return enrichCompany(hydrated);
+      return hydrated;
     },
 
     create: async (data: typeof companies.$inferInsert) => {
@@ -173,69 +167,30 @@ export function companyService(db: Db) {
         .then((rows) => rows[0] ?? null);
       if (!row) throw notFound("Company not found after creation");
       const [hydrated] = await hydrateCompanySpend([row], db);
-      return enrichCompany(hydrated);
+      return hydrated;
     },
 
-    update: (
-      id: string,
-      data: Partial<typeof companies.$inferInsert> & { logoAssetId?: string | null },
-    ) =>
+    // Softclip pivot §6: update() used to accept a synthetic
+    // logoAssetId alongside the column patch so it could manage the
+    // company_logos join row. Branding is gone, so this is now a
+    // plain update.
+    update: (id: string, data: Partial<typeof companies.$inferInsert>) =>
       db.transaction(async (tx) => {
         const existing = await getCompanyQuery(tx)
           .where(eq(companies.id, id))
           .then((rows) => rows[0] ?? null);
         if (!existing) return null;
 
-        const { logoAssetId, ...companyPatch } = data;
-
-        if (logoAssetId !== undefined && logoAssetId !== null) {
-          const nextLogoAsset = await tx
-            .select({ id: assets.id, companyId: assets.companyId })
-            .from(assets)
-            .where(eq(assets.id, logoAssetId))
-            .then((rows) => rows[0] ?? null);
-          if (!nextLogoAsset) throw notFound("Logo asset not found");
-          if (nextLogoAsset.companyId !== existing.id) {
-            throw unprocessable("Logo asset must belong to the same company");
-          }
-        }
-
         const updated = await tx
           .update(companies)
-          .set({ ...companyPatch, updatedAt: new Date() })
+          .set({ ...data, updatedAt: new Date() })
           .where(eq(companies.id, id))
           .returning()
           .then((rows) => rows[0] ?? null);
         if (!updated) return null;
 
-        if (logoAssetId === null) {
-          await tx.delete(companyLogos).where(eq(companyLogos.companyId, id));
-        } else if (logoAssetId !== undefined) {
-          await tx
-            .insert(companyLogos)
-            .values({
-              companyId: id,
-              assetId: logoAssetId,
-            })
-            .onConflictDoUpdate({
-              target: companyLogos.companyId,
-              set: {
-                assetId: logoAssetId,
-                updatedAt: new Date(),
-              },
-            });
-        }
-
-        if (logoAssetId !== undefined && existing.logoAssetId && existing.logoAssetId !== logoAssetId) {
-          await tx.delete(assets).where(eq(assets.id, existing.logoAssetId));
-        }
-
-        const [hydrated] = await hydrateCompanySpend([{
-          ...updated,
-          logoAssetId: logoAssetId === undefined ? existing.logoAssetId : logoAssetId,
-        }], tx);
-
-        return enrichCompany(hydrated);
+        const [hydrated] = await hydrateCompanySpend([updated], tx);
+        return hydrated;
       }),
 
     archive: (id: string) =>
@@ -252,7 +207,7 @@ export function companyService(db: Db) {
           .then((rows) => rows[0] ?? null);
         if (!row) return null;
         const [hydrated] = await hydrateCompanySpend([row], tx);
-        return enrichCompany(hydrated);
+        return hydrated;
       }),
 
     remove: (id: string) =>
@@ -278,7 +233,8 @@ export function companyService(db: Db) {
         await tx.delete(companySkills).where(eq(companySkills.companyId, id));
         await tx.delete(issueReadStates).where(eq(issueReadStates.companyId, id));
         await tx.delete(issues).where(eq(issues.companyId, id));
-        await tx.delete(companyLogos).where(eq(companyLogos.companyId, id));
+        // Softclip pivot §6: company_logos table gone; just clean up
+        // any remaining assets on delete.
         await tx.delete(assets).where(eq(assets.companyId, id));
         await tx.delete(goals).where(eq(goals.companyId, id));
         await tx.delete(projects).where(eq(projects.companyId, id));

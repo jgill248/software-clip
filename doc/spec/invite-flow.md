@@ -294,6 +294,6 @@ sequenceDiagram
   - `pending_approval` re-renders the waiting-for-approval panel
   - `rejected` renders the "This join request was not approved." error panel
   - `approved` only becomes a success path for human invites after membership is visible to the current session; otherwise the page falls through to the generic consumed/unavailable state
-- `GET /api/invites/:token/logo` still rejects accepted invites, so accepted-invite reload states may fall back to the generated company icon even though the summary payload still carries `companyLogoUrl`.
+<!-- Softclip pivot §6: invite logo endpoint + companyLogoUrl/companyBrandColor fields removed. -->
 - The only accepted-invite replay path in the current implementation is `POST /api/invites/:token/accept` for `agent` requests with `adapterType=openclaw_gateway`, and only when the existing join request is still `pending_approval` or already `approved`.
 - `bootstrap_ceo` invites are one-time and do not create join requests.

@@ -31,7 +31,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { Company } from "@paperclipai/shared";
-import { CompanyPatternIcon } from "./CompanyPatternIcon";
+// Softclip pivot §6: CompanyPatternIcon removed.
 
 function SortableCompanyItem({
   company,
@@ -90,17 +90,20 @@ function SortableCompanyItem({
             <div
               className={cn("relative overflow-visible transition-transform duration-150", isDragging && "scale-105")}
             >
-              <CompanyPatternIcon
-                companyName={company.name}
-                logoUrl={company.logoUrl}
-                brandColor={company.brandColor}
+              {/* Softclip pivot §6: CompanyPatternIcon removed along with
+                  company branding. A simple initial tile replaces it. */}
+              <div
                 className={cn(
+                  "flex h-11 w-11 items-center justify-center bg-muted text-sm font-semibold text-muted-foreground transition-all",
                   isSelected
                     ? "rounded-[14px]"
                     : "rounded-[22px] group-hover:rounded-[14px]",
                   isDragging && "shadow-lg",
                 )}
-              />
+                aria-label={company.name}
+              >
+                {(company.name ?? "?").trim().slice(0, 2).toUpperCase()}
+              </div>
               {hasLiveAgents && (
                 <span className="pointer-events-none absolute -right-0.5 -top-0.5 z-10">
                   <span className="relative flex h-2.5 w-2.5">

@@ -445,14 +445,13 @@ export {
 export {
   createCompanySchema,
   updateCompanySchema,
-  updateCompanyBrandingSchema,
+  // Softclip pivot §6: updateCompanyBrandingSchema removed.
   feedbackTargetTypeSchema,
   feedbackTraceStatusSchema,
   feedbackVoteValueSchema,
   upsertIssueFeedbackVoteSchema,
   type CreateCompany,
   type UpdateCompany,
-  type UpdateCompanyBranding,
   type UpsertIssueFeedbackVote,
   agentSkillStateSchema,
   agentSkillSyncModeSchema,

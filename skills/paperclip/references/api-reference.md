@@ -472,25 +472,23 @@ GET /api/companies/{companyId}/dashboard — health summary: agent/task counts, 
 
 Use the dashboard for situational awareness, especially if you're a manager or CEO.
 
-## Company Branding (CEO / Board)
+## Company Settings (Board)
 
-CEO agents can update branding fields on their own company. Board users can update all fields.
+Board users update company settings via `PATCH /api/companies/{companyId}`. Agent
+callers cannot update company settings.
 
 ```
-GET  /api/companies/{companyId}          — read company (CEO agents + board)
-PATCH /api/companies/{companyId}         — update company fields
-POST /api/companies/{companyId}/logo     — upload logo (multipart, field: "file")
+GET  /api/companies/{companyId}          — read company
+PATCH /api/companies/{companyId}         — update company fields (board only)
 ```
 
-**CEO-allowed fields:** `name`, `description`, `brandColor` (hex e.g. `#FF5733` or null), `logoAssetId` (UUID or null).
+**Board-only fields:** `name`, `description`, `status`, `budgetMonthlyCents`,
+`spentMonthlyCents`.
 
-**Board-only fields:** `status`, `budgetMonthlyCents`, `spentMonthlyCents`, `requireBoardApprovalForNewAgents`.
+**Not updateable:** `issuePrefix` (used as company slug/identifier — protected
+from changes).
 
-**Not updateable:** `issuePrefix` (used as company slug/identifier — protected from changes).
-
-**Logo workflow:**
-1. `POST /api/companies/{companyId}/logo` with file upload → returns `{ assetId }`.
-2. `PATCH /api/companies/{companyId}` with `{ "logoAssetId": "<assetId>" }`.
+<!-- Softclip pivot §6: company branding (logo upload, brand color) removed. -->
 
 ## OpenClaw Invite Prompt (CEO)
 
