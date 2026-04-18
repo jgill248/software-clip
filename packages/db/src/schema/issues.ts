@@ -7,6 +7,7 @@ import {
   timestamp,
   integer,
   jsonb,
+  boolean,
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
@@ -45,6 +46,8 @@ export const issues = pgTable(
     originId: text("origin_id"),
     originRunId: text("origin_run_id"),
     requestDepth: integer("request_depth").notNull().default(0),
+    issueType: text("issue_type").notNull().default("feature"),
+    definitionOfDoneMet: boolean("definition_of_done_met").notNull().default(false),
     billingCode: text("billing_code"),
     assigneeAdapterOverrides: jsonb("assignee_adapter_overrides").$type<Record<string, unknown>>(),
     executionPolicy: jsonb("execution_policy").$type<Record<string, unknown>>(),

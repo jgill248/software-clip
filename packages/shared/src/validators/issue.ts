@@ -163,6 +163,37 @@ export const checkoutIssueSchema = z.object({
 
 export type CheckoutIssue = z.infer<typeof checkoutIssueSchema>;
 
+export const acceptanceCriterionStatusSchema = z.enum([
+  "pending",
+  "met",
+  "waived",
+]);
+
+export type AcceptanceCriterionStatus = z.infer<
+  typeof acceptanceCriterionStatusSchema
+>;
+
+export const createAcceptanceCriterionSchema = z.object({
+  text: z.string().min(1).max(2000),
+  orderIndex: z.number().int().optional(),
+  status: acceptanceCriterionStatusSchema.optional(),
+});
+
+export type CreateAcceptanceCriterion = z.infer<
+  typeof createAcceptanceCriterionSchema
+>;
+
+export const updateAcceptanceCriterionSchema = z.object({
+  text: z.string().min(1).max(2000).optional(),
+  orderIndex: z.number().int().optional(),
+  status: acceptanceCriterionStatusSchema.optional(),
+  waivedReason: z.string().max(2000).nullable().optional(),
+});
+
+export type UpdateAcceptanceCriterion = z.infer<
+  typeof updateAcceptanceCriterionSchema
+>;
+
 export const addIssueCommentSchema = z.object({
   body: z.string().min(1),
   reopen: z.boolean().optional(),
