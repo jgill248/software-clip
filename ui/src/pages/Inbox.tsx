@@ -1798,13 +1798,8 @@ export function Inbox() {
     dashboard.agents.error > 0 &&
     !hasRunFailures &&
     !dismissedAlerts.has("alert:agent-errors");
-  const showBudgetAlert =
-    showCompanyAlerts &&
-    !!dashboard &&
-    dashboard.costs.monthBudgetCents > 0 &&
-    dashboard.costs.monthUtilizationPercent >= 80 &&
-    !dismissedAlerts.has("alert:budget");
-  const hasAlerts = showAggregateAgentError || showBudgetAlert;
+  // Softclip pivot §6: budget utilization alert removed.
+  const hasAlerts = showAggregateAgentError;
   const showWorkItemsSection = totalVisibleWorkItems > 0;
   const showAlertsSection = shouldShowInboxSection({
     tab,
@@ -2489,29 +2484,9 @@ export function Inbox() {
                   </button>
                 </div>
               )}
-              {showBudgetAlert && (
-                <div className="group/alert relative flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/50">
-                  <Link
-                    to="/costs"
-                    className="flex flex-1 cursor-pointer items-center gap-3 no-underline text-inherit"
-                  >
-                    <AlertTriangle className="h-4 w-4 shrink-0 text-yellow-400" />
-                    <span className="text-sm">
-                      Budget at{" "}
-                      <span className="font-medium">{dashboard!.costs.monthUtilizationPercent}%</span>{" "}
-                      utilization this month
-                    </span>
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => dismissAlert("alert:budget")}
-                    className="rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground group-hover/alert:opacity-100"
-                    aria-label="Dismiss"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              )}
+              {/* Softclip pivot §6: budget utilization alert removed —
+                  dev teams don't run on monthly dollar budgets. The
+                  /costs destination is gone along with the alert. */}
             </div>
           </div>
         </>

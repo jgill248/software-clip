@@ -102,10 +102,9 @@ export function Sidebar() {
         <SidebarSection label="Company">
           <SidebarNavItem to="/org" label="Org" icon={Network} />
           <SidebarNavItem to="/skills" label="Skills" icon={Boxes} />
-          {/* Softclip pivot §6: Costs nav link removed — dev teams don't
-              run on dollar budgets. Cost telemetry is still recorded and
-              the /costs page stays reachable by URL for diagnostics until
-              a follow-up chunk fully removes it. */}
+          {/* Softclip pivot §6: Costs nav link + /costs page removed.
+              Cost telemetry is still recorded on the backend for
+              observability but is no longer surfaced in the UI. */}
           <SidebarNavItem to="/activity" label="Activity" icon={History} />
           <SidebarNavItem to="/company/settings" label="Settings" icon={Settings} />
         </SidebarSection>
