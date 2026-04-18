@@ -3,6 +3,7 @@ import { pickTextColorForPillBg } from "@/lib/color-contrast";
 import { Link, useLocation, useNavigate, useNavigationType, useParams } from "@/lib/router";
 import { useInfiniteQuery, useQuery, useMutation, useQueryClient, type InfiniteData, type QueryClient } from "@tanstack/react-query";
 import { issuesApi } from "../api/issues";
+import { ApiError } from "../api/client";
 import { approvalsApi } from "../api/approvals";
 import { activityApi, type RunForIssue } from "../api/activity";
 import { heartbeatsApi, type ActiveRunForIssue, type LiveRunForIssue } from "../api/heartbeats";
@@ -60,6 +61,7 @@ import { ApprovalCard } from "../components/ApprovalCard";
 import { InlineEditor } from "../components/InlineEditor";
 import { IssueChatThread, type IssueChatComposerHandle } from "../components/IssueChatThread";
 import { IssueDocumentsSection } from "../components/IssueDocumentsSection";
+import { AcceptanceCriteriaPanel } from "../components/AcceptanceCriteriaPanel";
 import { IssuesList } from "../components/IssuesList";
 import { IssueProperties } from "../components/IssueProperties";
 import { IssueWorkspaceCard } from "../components/IssueWorkspaceCard";
@@ -1244,6 +1246,25 @@ export function IssueDetail() {
       }
       if (context?.selectedCompanyId) {
         queryClient.setQueryData(queryKeys.issues.list(context.selectedCompanyId), context.previousList);
+      }
+      // Softclip pivot §5: the server's close-guard rejects `status=done`
+      // transitions while any acceptance criterion is still `pending`.
+      // Surface a clearer message so the user knows to scroll to the
+      // acceptance-criteria panel rather than seeing a generic error.
+      const isAcceptanceGuard =
+        err instanceof ApiError &&
+        err.status === 422 &&
+        typeof err.message === "string" &&
+        /acceptance criter/i.test(err.message);
+      if (isAcceptanceGuard) {
+        pushToast({
+          title: "Close blocked by acceptance criteria",
+          body:
+            err.message +
+            " The acceptance-criteria panel below shows which ones are still pending.",
+          tone: "warn",
+        });
+        return;
       }
       pushToast({
         title: "Issue update failed",
@@ -2454,6 +2475,12 @@ export function IssueDetail() {
         }}
         extraActions={!hasAttachments ? attachmentUploadButton : null}
       />
+
+      {/* Softclip pivot §5: acceptance criteria panel. Lists the
+          testable conditions this issue must satisfy. The server-side
+          close-guard refuses `status=done` transitions while any
+          criterion is still pending. */}
+      <AcceptanceCriteriaPanel issueId={issue.id} />
 
       {attachmentsInitialLoading ? (
         <IssueSectionSkeleton titleWidth="w-24" rows={2} />
