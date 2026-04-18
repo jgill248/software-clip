@@ -22,6 +22,7 @@ import {
   Bot,
   Hexagon,
   Target,
+  CalendarRange,
   LayoutDashboard,
   Inbox,
   History,
@@ -160,6 +161,10 @@ export function CommandPalette() {
           <CommandItem onSelect={() => go("/goals")}>
             <Target className="mr-2 h-4 w-4" />
             Goals
+          </CommandItem>
+          <CommandItem onSelect={() => go("/sprints")}>
+            <CalendarRange className="mr-2 h-4 w-4" />
+            Sprints
           </CommandItem>
           <CommandItem onSelect={() => go("/agents")}>
             <Bot className="mr-2 h-4 w-4" />

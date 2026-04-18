@@ -16,6 +16,14 @@ export type {
   AcceptanceCriteriaSummary,
   AcceptanceCriteriaList,
 } from "./acceptance-criteria";
+export { sprintsApi } from "./sprints";
+export type {
+  Sprint,
+  SprintState,
+  SprintIssueSummary,
+  CreateSprintInput,
+  UpdateSprintInput,
+} from "./sprints";
 // Softclip pivot §6: costsApi removed. cost_events are still recorded
 // server-side but no UI surfaces them any more.
 export { activityApi } from "./activity";
