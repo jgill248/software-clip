@@ -1,3 +1,27 @@
+/**
+ * @deprecated Softclip pivot §6.
+ *
+ * Dollar-budget governance is being removed for dev-team products. Software
+ * dev teams don't run on monthly dollar budgets; that's business vocabulary.
+ *
+ * Enforcement is already disabled: `getInvocationBlock` always returns null,
+ * so no heartbeat is ever blocked for budget reasons. The remaining methods
+ * (upsertPolicy, overview, listPolicies, listIncidents, evaluateCostEvent)
+ * still read and write to `budget_policies` / `budget_incidents` to keep
+ * historical data accessible — but nothing in the running product acts on
+ * them any more.
+ *
+ * A follow-up chunk will:
+ *   - delete this file and its barrel export
+ *   - drop the budget_policies / budget_incidents tables
+ *   - drop the budget* columns on companies
+ *   - remove the few remaining call sites that construct budget policies
+ *     at creation time (see routes/companies.ts and routes/agents.ts)
+ *
+ * Until then, if you're touching this file, don't add new functionality.
+ * Add it to a dev-team-flavoured service (sprints, reviews, acceptance
+ * criteria) instead.
+ */
 import { and, desc, eq, gte, inArray, lt, ne, sql } from "drizzle-orm";
 import type { Db } from "@paperclipai/db";
 import {
@@ -644,221 +668,29 @@ export function budgetService(db: Db, hooks: BudgetServiceHooks = {}) {
       };
     },
 
-    evaluateCostEvent: async (event: typeof costEvents.$inferSelect) => {
-      const candidatePolicies = await db
-        .select()
-        .from(budgetPolicies)
-        .where(
-          and(
-            eq(budgetPolicies.companyId, event.companyId),
-            eq(budgetPolicies.isActive, true),
-            inArray(budgetPolicies.scopeType, ["company", "agent", "project"]),
-          ),
-        );
-
-      const relevantPolicies = candidatePolicies.filter((policy) => {
-        if (policy.scopeType === "company") return policy.scopeId === event.companyId;
-        if (policy.scopeType === "agent") return policy.scopeId === event.agentId;
-        if (policy.scopeType === "project") return Boolean(event.projectId) && policy.scopeId === event.projectId;
-        return false;
-      });
-
-      for (const policy of relevantPolicies) {
-        if (policy.metric !== "billed_cents" || policy.amount <= 0) continue;
-        const observedAmount = await computeObservedAmount(db, policy);
-        const softThreshold = Math.ceil((policy.amount * policy.warnPercent) / 100);
-
-        if (policy.notifyEnabled && observedAmount >= softThreshold) {
-          const softIncident = await createIncidentIfNeeded(policy, "soft", observedAmount);
-          if (softIncident) {
-            await logActivity(db, {
-              companyId: policy.companyId,
-              actorType: "system",
-              actorId: "budget_service",
-              action: "budget.soft_threshold_crossed",
-              entityType: "budget_incident",
-              entityId: softIncident.id,
-              details: {
-                scopeType: policy.scopeType,
-                scopeId: policy.scopeId,
-                amountObserved: observedAmount,
-                amountLimit: policy.amount,
-              },
-            });
-          }
-        }
-
-        if (policy.hardStopEnabled && observedAmount >= policy.amount) {
-          await resolveOpenSoftIncidents(policy.id);
-          const hardIncident = await createIncidentIfNeeded(policy, "hard", observedAmount);
-          await pauseAndCancelScopeForBudget(policy);
-          if (hardIncident) {
-            await logActivity(db, {
-              companyId: policy.companyId,
-              actorType: "system",
-              actorId: "budget_service",
-              action: "budget.hard_threshold_crossed",
-              entityType: "budget_incident",
-              entityId: hardIncident.id,
-              details: {
-                scopeType: policy.scopeType,
-                scopeId: policy.scopeId,
-                amountObserved: observedAmount,
-                amountLimit: policy.amount,
-                approvalId: hardIncident.approvalId ?? null,
-              },
-            });
-          }
-        }
-      }
+    evaluateCostEvent: async (_event: typeof costEvents.$inferSelect) => {
+      // Softclip pivot §6: cost telemetry still records cost_events for
+      // observability, but we no longer evaluate them against budget
+      // policies. Nothing creates budget incidents or
+      // `budget_override_required` approvals any more; this preserves
+      // the method signature so existing call sites (costs.ts:98)
+      // compile while the service is on its way out.
+      return;
     },
 
     getInvocationBlock: async (
-      companyId: string,
-      agentId: string,
-      context?: { issueId?: string | null; projectId?: string | null },
+      _companyId: string,
+      _agentId: string,
+      _context?: { issueId?: string | null; projectId?: string | null },
     ) => {
-      const agent = await db
-        .select({
-          status: agents.status,
-          pauseReason: agents.pauseReason,
-          companyId: agents.companyId,
-          name: agents.name,
-        })
-        .from(agents)
-        .where(eq(agents.id, agentId))
-        .then((rows) => rows[0] ?? null);
-      if (!agent || agent.companyId !== companyId) throw notFound("Agent not found");
-
-      const company = await db
-        .select({
-          status: companies.status,
-          pauseReason: companies.pauseReason,
-          name: companies.name,
-        })
-        .from(companies)
-        .where(eq(companies.id, companyId))
-        .then((rows) => rows[0] ?? null);
-      if (!company) throw notFound("Company not found");
-      if (company.status === "paused") {
-        return {
-          scopeType: "company" as const,
-          scopeId: companyId,
-          scopeName: company.name,
-          reason:
-            company.pauseReason === "budget"
-              ? "Company is paused because its budget hard-stop was reached."
-              : "Company is paused and cannot start new work.",
-        };
-      }
-
-      const companyPolicy = await db
-        .select()
-        .from(budgetPolicies)
-        .where(
-          and(
-            eq(budgetPolicies.companyId, companyId),
-            eq(budgetPolicies.scopeType, "company"),
-            eq(budgetPolicies.scopeId, companyId),
-            eq(budgetPolicies.isActive, true),
-            eq(budgetPolicies.metric, "billed_cents"),
-          ),
-        )
-        .then((rows) => rows[0] ?? null);
-      if (companyPolicy && companyPolicy.hardStopEnabled && companyPolicy.amount > 0) {
-        const observed = await computeObservedAmount(db, companyPolicy);
-        if (observed >= companyPolicy.amount) {
-          return {
-            scopeType: "company" as const,
-            scopeId: companyId,
-            scopeName: company.name,
-            reason: "Company cannot start new work because its budget hard-stop is exceeded.",
-          };
-        }
-      }
-
-      if (agent.status === "paused" && agent.pauseReason === "budget") {
-        return {
-          scopeType: "agent" as const,
-          scopeId: agentId,
-          scopeName: agent.name,
-          reason: "Agent is paused because its budget hard-stop was reached.",
-        };
-      }
-
-      const agentPolicy = await db
-        .select()
-        .from(budgetPolicies)
-        .where(
-          and(
-            eq(budgetPolicies.companyId, companyId),
-            eq(budgetPolicies.scopeType, "agent"),
-            eq(budgetPolicies.scopeId, agentId),
-            eq(budgetPolicies.isActive, true),
-            eq(budgetPolicies.metric, "billed_cents"),
-          ),
-        )
-        .then((rows) => rows[0] ?? null);
-      if (agentPolicy && agentPolicy.hardStopEnabled && agentPolicy.amount > 0) {
-        const observed = await computeObservedAmount(db, agentPolicy);
-        if (observed >= agentPolicy.amount) {
-          return {
-            scopeType: "agent" as const,
-            scopeId: agentId,
-            scopeName: agent.name,
-            reason: "Agent cannot start because its budget hard-stop is still exceeded.",
-          };
-        }
-      }
-
-      const candidateProjectId = context?.projectId ?? null;
-      if (!candidateProjectId) return null;
-
-      const project = await db
-        .select({
-          id: projects.id,
-          name: projects.name,
-          companyId: projects.companyId,
-          pauseReason: projects.pauseReason,
-          pausedAt: projects.pausedAt,
-        })
-        .from(projects)
-        .where(eq(projects.id, candidateProjectId))
-        .then((rows) => rows[0] ?? null);
-
-      if (!project || project.companyId !== companyId) return null;
-      const projectPolicy = await db
-        .select()
-        .from(budgetPolicies)
-        .where(
-          and(
-            eq(budgetPolicies.companyId, companyId),
-            eq(budgetPolicies.scopeType, "project"),
-            eq(budgetPolicies.scopeId, project.id),
-            eq(budgetPolicies.isActive, true),
-            eq(budgetPolicies.metric, "billed_cents"),
-          ),
-        )
-        .then((rows) => rows[0] ?? null);
-      if (projectPolicy && projectPolicy.hardStopEnabled && projectPolicy.amount > 0) {
-        const observed = await computeObservedAmount(db, projectPolicy);
-        if (observed >= projectPolicy.amount) {
-          return {
-            scopeType: "project" as const,
-            scopeId: project.id,
-            scopeName: project.name,
-            reason: "Project cannot start work because its budget hard-stop is still exceeded.",
-          };
-        }
-      }
-
-      if (!project.pausedAt || project.pauseReason !== "budget") return null;
-      return {
-        scopeType: "project" as const,
-        scopeId: project.id,
-        scopeName: project.name,
-        reason: "Project is paused because its budget hard-stop was reached.",
-      };
+      // Softclip pivot §6: dollar-budget governance is removed. Enforcement
+      // in the heartbeat hot path is disabled — this method always returns
+      // null (no block). Callers (heartbeat.ts) treat null as "proceed."
+      //
+      // A follow-up chunk will delete the service file and drop the budget_*
+      // tables once we've confirmed nothing out-of-tree relies on the
+      // blocking behaviour.
+      return null;
     },
 
     resolveIncident: async (
