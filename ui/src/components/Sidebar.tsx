@@ -3,7 +3,6 @@ import {
   CircleDot,
   Target,
   LayoutDashboard,
-  DollarSign,
   History,
   Search,
   SquarePen,
@@ -103,7 +102,9 @@ export function Sidebar() {
         <SidebarSection label="Company">
           <SidebarNavItem to="/org" label="Org" icon={Network} />
           <SidebarNavItem to="/skills" label="Skills" icon={Boxes} />
-          <SidebarNavItem to="/costs" label="Costs" icon={DollarSign} />
+          {/* Softclip pivot §6: Costs nav link + /costs page removed.
+              Cost telemetry is still recorded on the backend for
+              observability but is no longer surfaced in the UI. */}
           <SidebarNavItem to="/activity" label="Activity" icon={History} />
           <SidebarNavItem to="/company/settings" label="Settings" icon={Settings} />
         </SidebarSection>

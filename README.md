@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="doc/assets/header.png" alt="Paperclip — runs your business" width="720" />
+  <img src="doc/assets/header.png" alt="Softclip — orchestrate an AI software dev team" width="720" />
 </p>
 
 <p align="center">
@@ -17,33 +17,43 @@
 
 <br/>
 
-<div align="center">
-  <video src="https://github.com/user-attachments/assets/773bdfb2-6d1e-4e30-8c5f-3487d5b70c8f" width="600" controls></video>
-</div>
+> **Softclip (formerly Paperclip).** This repo is being pivoted from a general-purpose
+> AI-company control plane into a software-development-team platform. The code-level
+> identifiers (`paperclipai` CLI, `@paperclipai/*` npm scope, URLs) still carry the
+> Paperclip name while the rename is in progress; the product you get is Softclip.
 
 <br/>
 
-## What is Paperclip?
+## What is Softclip?
 
-# Open-source orchestration for zero-human companies
+# Open-source orchestration for AI software development teams
 
-**If OpenClaw is an _employee_, Paperclip is the _company_**
+**If your AI agent is a _developer_, Softclip is the _dev team they work on_**
 
-Paperclip is a Node.js server and React UI that orchestrates a team of AI agents to run a business. Bring your own agents, assign goals, and track your agents' work and costs from one dashboard.
+Softclip is a Node.js server and React UI that orchestrates a team of AI agents to
+ship software. Bring your own agents, organise them as a Product Owner + architects
++ designer + engineer + QA, and watch real work move through sprints, PR reviews,
+and Definition of Done — not a pile of loose Claude Code tabs.
 
-It looks like a task manager — but under the hood it has org charts, budgets, governance, goal alignment, and agent coordination.
+It looks like a project tracker — but under the hood it has a Product Owner that
+prioritises the roadmap, sprint iterations with a state machine, acceptance
+criteria that gate every close, code / design / architecture reviews, ceremonies,
+and a dev-team org chart.
 
-**Manage business goals, not pull requests.**
+**Manage what gets built and why — not which tab you left Claude Code in.**
 
-|        | Step            | Example                                                            |
-| ------ | --------------- | ------------------------------------------------------------------ |
-| **01** | Define the goal | _"Build the #1 AI note-taking app to $1M MRR."_                    |
-| **02** | Hire the team   | CEO, CTO, engineers, designers, marketers — any bot, any provider. |
-| **03** | Approve and run | Review strategy. Set budgets. Hit go. Monitor from the dashboard.  |
+|        | Step                | Example                                                                         |
+| ------ | ------------------- | ------------------------------------------------------------------------------- |
+| **01** | Scaffold the team   | `npx paperclipai product-creator` — PO + architects + designer + engineer + QA  |
+| **02** | Point at your repo  | Wire in Claude Code, Codex, Cursor, or any agent that can receive a heartbeat   |
+| **03** | Plan the sprint     | PO drafts the roadmap, writes acceptance criteria, commits issues to a sprint   |
+| **04** | Ship                | Engineer implements, QA verifies DoD, PO approves the PR review — issue closes  |
 
 <br/>
 
-> **COMING SOON: Clipmart** — Download and run entire companies with one click. Browse pre-built company templates — full org structures, agent configs, and skills — and import them into your Paperclip instance in seconds.
+> **COMING SOON: Clipmart** — Download and run pre-built AI dev teams with one
+> click. Browse team templates — full rosters, role prompts, and skills — and
+> import them into your Softclip instance in seconds.
 
 <br/>
 
@@ -66,15 +76,14 @@ It looks like a task manager — but under the hood it has org charts, budgets, 
 
 <br/>
 
-## Paperclip is right for you if
+## Softclip is right for you if
 
-- ✅ You want to build **autonomous AI companies**
-- ✅ You **coordinate many different agents** (OpenClaw, Codex, Claude, Cursor) toward a common goal
-- ✅ You have **20 simultaneous Claude Code terminals** open and lose track of what everyone is doing
-- ✅ You want agents running **autonomously 24/7**, but still want to audit work and chime in when needed
-- ✅ You want to **monitor costs** and enforce budgets
-- ✅ You want a process for managing agents that **feels like using a task manager**
-- ✅ You want to manage your autonomous businesses **from your phone**
+- ✅ You want a **sprint-driven AI dev team** with a real Product Owner, not a single loose coding agent
+- ✅ You **run multiple coding agents** (Claude Code, Codex, Cursor, OpenClaw) and want them to share a backlog, a roadmap, and a review flow
+- ✅ You have **20 simultaneous Claude Code terminals** open and lose track of which one is shipping what
+- ✅ You want agents running **autonomously 24/7** but gated by **acceptance criteria** and **code reviews** — not a free-for-all
+- ✅ You share a **dev team across human collaborators** and want one Postgres-backed source of truth
+- ✅ You want work managed the way software teams actually work: sprints, acceptance criteria, DoD, ceremonies, code review
 
 <br/>
 
@@ -83,101 +92,103 @@ It looks like a task manager — but under the hood it has org charts, budgets, 
 <table>
 <tr>
 <td align="center" width="33%">
-<h3>🔌 Bring Your Own Agent</h3>
-Any agent, any runtime, one org chart. If it can receive a heartbeat, it's hired.
+<h3>🧩 Bring Your Own Agent</h3>
+Any agent, any runtime, one dev team. If it can receive a heartbeat, it's on the roster.
 </td>
 <td align="center" width="33%">
-<h3>🎯 Goal Alignment</h3>
-Every task traces back to the company mission. Agents know <em>what</em> to do and <em>why</em>.
+<h3>🗺️ Roadmap-Anchored</h3>
+Every issue ladders up to a roadmap item. Agents can answer "why am I building this?"
 </td>
 <td align="center" width="33%">
-<h3>💓 Heartbeats</h3>
-Agents wake on a schedule, check work, and act. Delegation flows up and down the org chart.
+<h3>🏃 Sprints</h3>
+Time-boxed iterations with a goal, a committed set, and a burndown.
 </td>
 </tr>
 <tr>
 <td align="center">
-<h3>💰 Cost Control</h3>
-Monthly budgets per agent. When they hit the limit, they stop. No runaway costs.
+<h3>✅ Acceptance Criteria</h3>
+Every issue carries a testable checklist. Closing is refused until each criterion is met or waived.
 </td>
 <td align="center">
-<h3>🏢 Multi-Company</h3>
-One deployment, many companies. Complete data isolation. One control plane for your portfolio.
+<h3>🔍 Code Reviews</h3>
+Request PR, design, or architecture review with one API call. Reviews gate closure.
 </td>
 <td align="center">
-<h3>🎫 Ticket System</h3>
-Every conversation traced. Every decision explained. Full tool-call tracing and immutable audit log.
+<h3>🎤 Ceremonies</h3>
+Standup, planning, retro, review, grooming — seeded with substantive prompts, not placeholders.
 </td>
 </tr>
 <tr>
 <td align="center">
-<h3>🛡️ Governance</h3>
-You're the board. Approve hires, override strategy, pause or terminate any agent — at any time.
+<h3>👥 Dev-Team Roster</h3>
+PO at the root; software / solution / data architects, designer, engineer, QA reporting in.
 </td>
 <td align="center">
-<h3>📊 Org Chart</h3>
-Hierarchies, roles, reporting lines. Your agents have a boss, a title, and a job description.
+<h3>🗄️ Team Postgres</h3>
+<code>softclip db connect</code> points the whole team at a shared Postgres in one command.
 </td>
 <td align="center">
-<h3>📱 Mobile Ready</h3>
-Monitor and manage your autonomous businesses from anywhere.
+<h3>📖 Authored Role Prompts</h3>
+Each default role ships with a README, AGENTS, HEARTBEAT, SOUL, TOOLS bundle — editable and traceable.
 </td>
 </tr>
 </table>
 
 <br/>
 
-## Problems Paperclip solves
+## Problems Softclip solves
 
-| Without Paperclip                                                                                                                     | With Paperclip                                                                                                                         |
-| ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| ❌ You have 20 Claude Code tabs open and can't track which one does what. On reboot you lose everything.                              | ✅ Tasks are ticket-based, conversations are threaded, sessions persist across reboots.                                                |
-| ❌ You manually gather context from several places to remind your bot what you're actually doing.                                     | ✅ Context flows from the task up through the project and company goals — your agent always knows what to do and why.                  |
-| ❌ Folders of agent configs are disorganized and you're re-inventing task management, communication, and coordination between agents. | ✅ Paperclip gives you org charts, ticketing, delegation, and governance out of the box — so you run a company, not a pile of scripts. |
-| ❌ Runaway loops waste hundreds of dollars of tokens and max your quota before you even know what happened.                           | ✅ Cost tracking surfaces token budgets and throttles agents when they're out. Management prioritizes with budgets.                    |
-| ❌ You have recurring jobs (customer support, social, reports) and have to remember to manually kick them off.                        | ✅ Heartbeats handle regular work on a schedule. Management supervises.                                                                |
-| ❌ You have an idea, you have to find your repo, fire up Claude Code, keep a tab open, and babysit it.                                | ✅ Add a task in Paperclip. Your coding agent works on it until it's done. Management reviews their work.                              |
-
-<br/>
-
-## Why Paperclip is special
-
-Paperclip handles the hard orchestration details correctly.
-
-|                                   |                                                                                                               |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| **Atomic execution.**             | Task checkout and budget enforcement are atomic, so no double-work and no runaway spend.                      |
-| **Persistent agent state.**       | Agents resume the same task context across heartbeats instead of restarting from scratch.                     |
-| **Runtime skill injection.**      | Agents can learn Paperclip workflows and project context at runtime, without retraining.                      |
-| **Governance with rollback.**     | Approval gates are enforced, config changes are revisioned, and bad changes can be rolled back safely.        |
-| **Goal-aware execution.**         | Tasks carry full goal ancestry so agents consistently see the "why," not just a title.                        |
-| **Portable company templates.**   | Export/import orgs, agents, and skills with secret scrubbing and collision handling.                          |
-| **True multi-company isolation.** | Every entity is company-scoped, so one deployment can run many companies with separate data and audit trails. |
+| Without Softclip                                                                                                      | With Softclip                                                                                                                                |
+| --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| ❌ You have 20 Claude Code tabs open and can't track which one does what. On reboot you lose everything.              | ✅ Issues live in sprints. Conversations are threaded. Sessions persist across reboots.                                                      |
+| ❌ Your coding agent ships half a feature because nobody wrote down what "done" means.                                | ✅ Acceptance criteria are authored by the PO before an issue reaches Engineer. Close is refused while any criterion is still pending.       |
+| ❌ Review feedback gets lost in Slack threads next to what the agent actually shipped.                                | ✅ Code, design, and architecture reviews are first-class approvals linked to the issue.                                                     |
+| ❌ Folders of agent configs rot and you re-invent task management, delegation, and hand-off between agents.           | ✅ Softclip ships a seven-role default team with authored prompts; product-creator scaffolds the package in one conversation.                |
+| ❌ Sprints and ceremonies live in Slack reminders and one person's calendar.                                          | ✅ Ceremonies are seeded as first-class routines; sprints are a primitive with a state machine and a burndown.                               |
+| ❌ Two collaborators see different data because each runs an embedded DB.                                             | ✅ <code>softclip db connect</code> points everyone at the same team Postgres. <code>softclip db doctor</code> reports drift.                |
 
 <br/>
 
-## What Paperclip is not
+## Why Softclip is special
 
-|                              |                                                                                                                      |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Not a chatbot.**           | Agents have jobs, not chat windows.                                                                                  |
-| **Not an agent framework.**  | We don't tell you how to build agents. We tell you how to run a company made of them.                                |
-| **Not a workflow builder.**  | No drag-and-drop pipelines. Paperclip models companies — with org charts, goals, budgets, and governance.            |
-| **Not a prompt manager.**    | Agents bring their own prompts, models, and runtimes. Paperclip manages the organization they work in.               |
-| **Not a single-agent tool.** | This is for teams. If you have one agent, you probably don't need Paperclip. If you have twenty — you definitely do. |
-| **Not a code review tool.**  | Paperclip orchestrates work, not pull requests. Bring your own review process.                                       |
+Softclip handles the hard orchestration details correctly.
+
+|                                     |                                                                                                                                          |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Atomic execution.**               | Task checkout and state transitions are atomic, so no double-work and no lost updates.                                                   |
+| **Persistent agent state.**         | Agents resume the same task context across heartbeats instead of restarting from scratch.                                                |
+| **Runtime skill injection.**        | Agents learn Softclip workflows and project context at runtime, without retraining.                                                      |
+| **Governance with rollback.**       | Approval gates are enforced, config changes are revisioned, and bad changes can be rolled back safely.                                   |
+| **Roadmap-aware execution.**        | Issues carry a full roadmap-item ancestry so agents consistently see the "why," not just a title.                                        |
+| **Portable team templates.**        | Export/import agents with skills and adapter config; <code>agentcompanies/v1</code> packages are round-trippable.                        |
+| **True multi-product isolation.**   | Every entity is product-scoped, so one deployment can run many products with separate data and audit trails.                             |
+| **Sprint-aware close-guard.**       | An issue closes only when every acceptance criterion is met or explicitly waived — both in the API and behind the UI.                   |
+
+<br/>
+
+## What Softclip is not
+
+|                                 |                                                                                                                          |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Not a chatbot.**              | Agents have jobs, not chat windows.                                                                                      |
+| **Not an agent framework.**     | We don't tell you how to build agents. We tell you how to run a dev team made of them.                                   |
+| **Not a workflow builder.**     | No drag-and-drop pipelines. Softclip models dev teams — roadmap, sprints, issues, reviews, ceremonies.                   |
+| **Not a prompt manager.**       | Agents bring their own prompts, models, and runtimes. Softclip manages the team they work in.                            |
+| **Not a single-agent tool.**    | This is for teams. If you have one coding agent, you probably don't need Softclip. If you have five — you definitely do. |
+| **Not a Jira replacement.**     | Softclip is narrower and more opinionated. It's tuned for AI dev teams, not 200-person engineering orgs.                 |
 
 <br/>
 
 ## Quickstart
 
-Open source. Self-hosted. No Paperclip account required.
+Open source. Self-hosted. No Softclip account required.
 
 ```bash
 npx paperclipai onboard --yes
 ```
 
-That quickstart path now defaults to trusted local loopback mode for the fastest first run. To start in authenticated/private mode instead, choose a bind preset explicitly:
+That quickstart path defaults to trusted local loopback mode for the fastest first run.
+To start in authenticated/private mode instead, choose a bind preset explicitly:
 
 ```bash
 npx paperclipai onboard --yes --bind lan
@@ -185,7 +196,15 @@ npx paperclipai onboard --yes --bind lan
 npx paperclipai onboard --yes --bind tailnet
 ```
 
-If you already have Paperclip configured, rerunning `onboard` keeps the existing config in place. Use `paperclipai configure` to edit settings.
+If you already have Softclip configured, rerunning `onboard` keeps the existing config in place.
+Use `paperclipai configure` to edit settings.
+
+Point Softclip at a team-shared Postgres (see [docs/start/team-postgres.md](docs/start/team-postgres.md)):
+
+```bash
+paperclipai db connect          # interactive — or pass --url for non-interactive
+paperclipai db doctor           # verify migrations, row counts, privileges
+```
 
 Or manually:
 
@@ -196,7 +215,8 @@ pnpm install
 pnpm dev
 ```
 
-This starts the API server at `http://localhost:3100`. An embedded PostgreSQL database is created automatically — no setup required.
+This starts the API server at `http://localhost:3100`. An embedded PostgreSQL database
+is created automatically — no setup required.
 
 > **Requirements:** Node.js 20+, pnpm 9.15+
 
@@ -205,23 +225,32 @@ This starts the API server at `http://localhost:3100`. An embedded PostgreSQL da
 ## FAQ
 
 **What does a typical setup look like?**
-Locally, a single Node.js process manages an embedded Postgres and local file storage. For production, point it at your own Postgres and deploy however you like. Configure projects, agents, and goals — the agents take care of the rest.
+Locally, a single Node.js process manages an embedded Postgres and local file storage.
+For a shared team setup, point it at your own Postgres (see `softclip db connect`)
+and deploy however you like.
 
-If you're a solo-entreprenuer you can use Tailscale to access Paperclip on the go. Then later you can deploy to e.g. Vercel when you need it.
+**Can I run multiple products?**
+Yes. A single deployment can run an unlimited number of products (teams) with complete
+data isolation.
 
-**Can I run multiple companies?**
-Yes. A single deployment can run an unlimited number of companies with complete data isolation.
+**How is Softclip different from Claude Code / Cursor / Codex?**
+Softclip _uses_ those agents. It orchestrates them into a dev team — with a Product
+Owner, architects, engineers, QA, sprints, acceptance criteria, and code reviews.
 
-**How is Paperclip different from agents like OpenClaw or Claude Code?**
-Paperclip _uses_ those agents. It orchestrates them into a company — with org charts, budgets, goals, governance, and accountability.
-
-**Why should I use Paperclip instead of just pointing my OpenClaw to Asana or Trello?**
-Agent orchestration has subtleties in how you coordinate who has work checked out, how to maintain sessions, monitoring costs, establishing governance - Paperclip does this for you.
-
-(Bring-your-own-ticket-system is on the Roadmap)
+**Why not just point my coding agent at GitHub Issues?**
+Agent orchestration has subtleties: who owns a task, how sessions persist, how
+acceptance criteria enforce "done", how reviews gate close. GitHub Issues doesn't
+do any of that for AI dev teams. Softclip does.
 
 **Do agents run continuously?**
-By default, agents run on scheduled heartbeats and event-based triggers (task assignment, @-mentions). You can also hook in continuous agents like OpenClaw. You bring your agent and Paperclip coordinates.
+By default, agents run on scheduled heartbeats and event-based triggers (task
+assignment, @-mentions, approval resolution). You can also hook in continuous
+agents like OpenClaw.
+
+**Can I start from an existing repo?**
+Yes. Run the `product-creator` skill against a repo URL and it will analyse the
+language, framework, CI, and existing `AGENTS.md` / `.claude/` config, then propose
+a dev-team roster that fits.
 
 <br/>
 
@@ -240,7 +269,8 @@ pnpm db:generate      # Generate DB migration
 pnpm db:migrate       # Apply migrations
 ```
 
-`pnpm test` does not run Playwright. Browser suites stay separate and are typically run only when working on those flows or in CI.
+`pnpm test` does not run Playwright. Browser suites stay separate and are typically
+run only when working on those flows or in CI.
 
 See [doc/DEVELOPING.md](doc/DEVELOPING.md) for the full development guide.
 
@@ -248,29 +278,21 @@ See [doc/DEVELOPING.md](doc/DEVELOPING.md) for the full development guide.
 
 ## Roadmap
 
-- ✅ Plugin system (e.g. add a knowledge base, custom tracing, queues, etc)
-- ✅ Get OpenClaw / claw-style agent employees
-- ✅ companies.sh - import and export entire organizations
-- ✅ Easy AGENTS.md configurations
-- ✅ Skills Manager
-- ✅ Scheduled Routines
-- ✅ Better Budgeting
-- ✅ Agent Reviews and Approvals
-- ⚪ Multiple Human Users
+- ✅ Dev-team role bundles (PO, architects, designer, engineer, QA) with authored prompts
+- ✅ Product-creator skill — scaffold a dev team from scratch or from a repo
+- ✅ Sprints with state machine + burndown
+- ✅ Acceptance criteria + Definition of Done close-guard
+- ✅ Code / design / architecture reviews as first-class approvals
+- ✅ Seeded dev-team ceremonies (standup, planning, review, retro, grooming)
+- ✅ Team-shared Postgres (`softclip db connect` / `db doctor`)
+- ⚪ UI for acceptance criteria, sprints, reviews
+- ⚪ Full Paperclip → Softclip code rename (package names, DB tables)
+- ⚪ Drop budgets / finance / company governance (dev teams don't need dollar-budgets)
 - ⚪ Cloud / Sandbox agents (e.g. Cursor / e2b agents)
 - ⚪ Artifacts & Work Products
 - ⚪ Memory / Knowledge
-- ⚪ Enforced Outcomes
-- ⚪ MAXIMIZER MODE
-- ⚪ Deep Planning
-- ⚪ Work Queues
-- ⚪ Self-Organization
-- ⚪ Automatic Organizational Learning
-- ⚪ CEO Chat
-- ⚪ Cloud deployments
-- ⚪ Desktop App
 
-This is the short roadmap preview. See the full roadmap in [ROADMAP.md](ROADMAP.md).
+This is the short roadmap preview. See the full pivot plan in the branch commit history.
 
 <br/>
 
@@ -280,7 +302,9 @@ Find Plugins and more at [awesome-paperclip](https://github.com/gsxdsm/awesome-p
 
 ## Telemetry
 
-Paperclip collects anonymous usage telemetry to help us understand how the product is used and improve it. No personal information, issue content, prompts, file paths, or secrets are ever collected. Private repository references are hashed with a per-install salt before being sent.
+Softclip collects anonymous usage telemetry to help us understand how the product
+is used and improve it. No personal information, issue content, prompts, file
+paths, or secrets are ever collected.
 
 Telemetry is **enabled by default** and can be disabled with any of the following:
 
@@ -289,7 +313,7 @@ Telemetry is **enabled by default** and can be disabled with any of the followin
 | Environment variable | `PAPERCLIP_TELEMETRY_DISABLED=1`                        |
 | Standard convention  | `DO_NOT_TRACK=1`                                        |
 | CI environments      | Automatically disabled when `CI=true`                   |
-| Config file          | Set `telemetry.enabled: false` in your Paperclip config |
+| Config file          | Set `telemetry.enabled: false` in your Softclip config  |
 
 ## Contributing
 
@@ -307,7 +331,7 @@ We welcome contributions. See the [contributing guide](CONTRIBUTING.md) for deta
 
 ## License
 
-MIT &copy; 2026 Paperclip
+MIT &copy; 2026 Softclip contributors
 
 ## Star History
 
@@ -319,8 +343,4 @@ MIT &copy; 2026 Paperclip
 
 <p align="center">
   <img src="doc/assets/footer.jpg" alt="" width="720" />
-</p>
-
-<p align="center">
-  <sub>Open source under MIT. Built for people who want to run companies, not babysit agents.</sub>
 </p>

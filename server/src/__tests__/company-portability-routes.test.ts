@@ -20,9 +20,7 @@ const mockAccessService = vi.hoisted(() => ({
   ensureMembership: vi.fn(),
 }));
 
-const mockBudgetService = vi.hoisted(() => ({
-  upsertPolicy: vi.fn(),
-}));
+// Softclip pivot §6: mockBudgetService removed (service deleted).
 
 const mockCompanyPortabilityService = vi.hoisted(() => ({
   exportBundle: vi.fn(),
@@ -42,7 +40,6 @@ const mockFeedbackService = vi.hoisted(() => ({
 vi.mock("../services/index.js", () => ({
   accessService: () => mockAccessService,
   agentService: () => mockAgentService,
-  budgetService: () => mockBudgetService,
   companyPortabilityService: () => mockCompanyPortabilityService,
   companyService: () => mockCompanyService,
   feedbackService: () => mockFeedbackService,
@@ -53,8 +50,7 @@ function registerModuleMocks() {
   vi.doMock("../services/index.js", () => ({
     accessService: () => mockAccessService,
     agentService: () => mockAgentService,
-    budgetService: () => mockBudgetService,
-    companyPortabilityService: () => mockCompanyPortabilityService,
+      companyPortabilityService: () => mockCompanyPortabilityService,
     companyService: () => mockCompanyService,
     feedbackService: () => mockFeedbackService,
     logActivity: mockLogActivity,

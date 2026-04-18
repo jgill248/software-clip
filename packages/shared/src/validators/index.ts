@@ -141,6 +141,12 @@ export {
   issueExecutionWorkspaceSettingsSchema,
   checkoutIssueSchema,
   addIssueCommentSchema,
+  acceptanceCriterionStatusSchema,
+  createAcceptanceCriterionSchema,
+  updateAcceptanceCriterionSchema,
+  type AcceptanceCriterionStatus as AcceptanceCriterionStatusValidator,
+  type CreateAcceptanceCriterion,
+  type UpdateAcceptanceCriterion,
   linkIssueApprovalSchema,
   createIssueAttachmentMetadataSchema,
   issueDocumentFormatSchema,
@@ -191,16 +197,45 @@ export {
 } from "./goal.js";
 
 export {
+  SPRINT_STATES,
+  sprintStateSchema,
+  createSprintSchema,
+  updateSprintSchema,
+  assignIssueToSprintSchema,
+  type SprintStateValidator,
+  type CreateSprint,
+  type UpdateSprint,
+  type AssignIssueToSprint,
+} from "./sprint.js";
+
+export {
+  CEREMONY_SLUGS,
+  ceremonySlugSchema,
+  seedCeremoniesSchema,
+  type CeremonySlugValidator,
+  type SeedCeremonies,
+} from "./ceremony.js";
+
+export {
   createApprovalSchema,
   resolveApprovalSchema,
   requestApprovalRevisionSchema,
   resubmitApprovalSchema,
   addApprovalCommentSchema,
+  approvePrPayloadSchema,
+  approveDesignPayloadSchema,
+  approveArchitecturePayloadSchema,
+  requestIssueReviewSchema,
+  reviewPayloadSchemaByType,
   type CreateApproval,
   type ResolveApproval,
   type RequestApprovalRevision,
   type ResubmitApproval,
   type AddApprovalComment,
+  type ApprovePrPayload,
+  type ApproveDesignPayload,
+  type ApproveArchitecturePayload,
+  type RequestIssueReview,
 } from "./approval.js";
 
 export {

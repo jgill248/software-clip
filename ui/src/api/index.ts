@@ -9,7 +9,15 @@ export { issuesApi } from "./issues";
 export { routinesApi } from "./routines";
 export { goalsApi } from "./goals";
 export { approvalsApi } from "./approvals";
-export { costsApi } from "./costs";
+export { acceptanceCriteriaApi } from "./acceptance-criteria";
+export type {
+  AcceptanceCriterion,
+  AcceptanceCriterionStatus,
+  AcceptanceCriteriaSummary,
+  AcceptanceCriteriaList,
+} from "./acceptance-criteria";
+// Softclip pivot §6: costsApi removed. cost_events are still recorded
+// server-side but no UI surfaces them any more.
 export { activityApi } from "./activity";
 export { dashboardApi } from "./dashboard";
 export { heartbeatsApi } from "./heartbeats";

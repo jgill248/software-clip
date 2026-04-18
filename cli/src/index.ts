@@ -8,6 +8,8 @@ import { heartbeatRun } from "./commands/heartbeat-run.js";
 import { runCommand } from "./commands/run.js";
 import { bootstrapCeoInvite } from "./commands/auth-bootstrap-ceo.js";
 import { dbBackupCommand } from "./commands/db-backup.js";
+import { dbConnect } from "./commands/db-connect.js";
+import { dbDoctor } from "./commands/db-doctor.js";
 import { registerContextCommands } from "./commands/client/context.js";
 import { registerCompanyCommands } from "./commands/client/company.js";
 import { registerIssueCommands } from "./commands/client/issue.js";
@@ -93,6 +95,42 @@ program
   .option("--json", "Print backup metadata as JSON")
   .action(async (opts) => {
     await dbBackupCommand(opts);
+  });
+
+const db = program
+  .command("db")
+  .description("Database utilities (connect, doctor, backup)");
+
+db
+  .command("connect")
+  .description(
+    "Configure Paperclip to use an external or team-shared PostgreSQL",
+  )
+  .option("-c, --config <path>", "Path to config file")
+  .option("-d, --data-dir <path>", DATA_DIR_OPTION_HELP)
+  .option("--url <url>", "Full postgres:// connection string")
+  .option("--host <host>", "PostgreSQL host")
+  .option("--port <port>", "PostgreSQL port", (value) => Number(value))
+  .option("--database <name>", "Database name")
+  .option("--user <user>", "Database user")
+  .option("--password <password>", "Database password")
+  .option("-y, --yes", "Skip confirmation prompts (non-interactive)", false)
+  .option("--skip-migrate", "Do not run migrations after saving config", false)
+  .action(async (opts) => {
+    await dbConnect(opts);
+  });
+
+db
+  .command("doctor")
+  .description(
+    "Report on the configured database: version, migration state, row counts",
+  )
+  .option("-c, --config <path>", "Path to config file")
+  .option("-d, --data-dir <path>", DATA_DIR_OPTION_HELP)
+  .option("--db-url <url>", "Override connection string (diagnostic)")
+  .option("--json", "Emit the report as JSON")
+  .action(async (opts) => {
+    await dbDoctor(opts);
   });
 
 program

@@ -21,7 +21,7 @@ const mockAccessService = vi.hoisted(() => ({
 const mockApprovalService = vi.hoisted(() => ({
   create: vi.fn(),
 }));
-const mockBudgetService = vi.hoisted(() => ({}));
+// Softclip pivot §6: mockBudgetService removed (service deleted).
 const mockHeartbeatService = vi.hoisted(() => ({}));
 const mockIssueApprovalService = vi.hoisted(() => ({
   linkManyForApproval: vi.fn(),
@@ -73,7 +73,6 @@ vi.mock("../services/index.js", () => ({
   accessService: () => mockAccessService,
   approvalService: () => mockApprovalService,
   companySkillService: () => mockCompanySkillService,
-  budgetService: () => mockBudgetService,
   heartbeatService: () => mockHeartbeatService,
   issueApprovalService: () => mockIssueApprovalService,
   issueService: () => ({}),
@@ -106,8 +105,7 @@ function registerModuleMocks() {
     accessService: () => mockAccessService,
     approvalService: () => mockApprovalService,
     companySkillService: () => mockCompanySkillService,
-    budgetService: () => mockBudgetService,
-    heartbeatService: () => mockHeartbeatService,
+      heartbeatService: () => mockHeartbeatService,
     issueApprovalService: () => mockIssueApprovalService,
     issueService: () => ({}),
     logActivity: mockLogActivity,

@@ -147,7 +147,9 @@ export function ApprovalDetail() {
   const payload = approval.payload as Record<string, unknown>;
   const linkedAgentId = typeof payload.agentId === "string" ? payload.agentId : null;
   const isActionable = approval.status === "pending" || approval.status === "revision_requested";
-  const isBudgetApproval = approval.type === "budget_override_required";
+  // Softclip pivot §6: budget_override_required approvals are legacy
+  // (nothing creates new ones). Handled via the generic approve/reject
+  // controls below.
   const TypeIcon = typeIcon[approval.type] ?? defaultTypeIcon;
   const showApprovedBanner = searchParams.get("resolved") === "approved" && approval.status === "approved";
   const primaryLinkedIssue = linkedIssues?.[0] ?? null;
@@ -261,7 +263,7 @@ export function ApprovalDetail() {
           </div>
         )}
         <div className="flex flex-wrap items-center gap-2">
-          {isActionable && !isBudgetApproval && (
+          {isActionable && (
             <>
               <Button
                 size="sm"
@@ -281,11 +283,10 @@ export function ApprovalDetail() {
               </Button>
             </>
           )}
-          {isBudgetApproval && approval.status === "pending" && (
-            <p className="text-sm text-muted-foreground">
-              Resolve this budget stop from the budget controls on <Link to="/costs" className="underline underline-offset-2">/costs</Link>.
-            </p>
-          )}
+          {/* Softclip pivot §6: budget stop resolution UI is gone along
+              with the /costs destination. If a legacy budget_override_required
+              approval somehow lands in the queue, the generic approve/reject
+              controls above still work. */}
           {approval.status === "pending" && (
             <Button
               size="sm"

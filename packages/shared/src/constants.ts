@@ -217,11 +217,28 @@ export const PROJECT_COLORS = [
 
 export const APPROVAL_TYPES = [
   "hire_agent",
+  // Legacy alias for approve_po_strategy; retained so existing rows in
+  // production DBs keep working. Softclip pivot prefers approve_po_strategy.
   "approve_ceo_strategy",
+  "approve_po_strategy",
+  "approve_pr",
+  "approve_design",
+  "approve_architecture",
   "budget_override_required",
   "request_board_approval",
 ] as const;
 export type ApprovalType = (typeof APPROVAL_TYPES)[number];
+
+/**
+ * Subset of approval types that represent dev-team review gates. These
+ * are what the convenience POST /issues/:id/reviews endpoint emits.
+ */
+export const CODE_REVIEW_APPROVAL_TYPES = [
+  "approve_pr",
+  "approve_design",
+  "approve_architecture",
+] as const;
+export type CodeReviewApprovalType = (typeof CODE_REVIEW_APPROVAL_TYPES)[number];
 
 export const APPROVAL_STATUSES = [
   "pending",

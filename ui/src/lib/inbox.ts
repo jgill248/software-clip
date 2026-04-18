@@ -1043,17 +1043,12 @@ export function computeInboxBadgeData({
   ).length;
   const visibleMineIssues = mineIssues.filter((issue) => issue.isUnreadForMe).length;
   const agentErrorCount = dashboard?.agents.error ?? 0;
-  const monthBudgetCents = dashboard?.costs.monthBudgetCents ?? 0;
-  const monthUtilizationPercent = dashboard?.costs.monthUtilizationPercent ?? 0;
   const showAggregateAgentError =
     agentErrorCount > 0 &&
     failedRuns === 0 &&
     !dismissedAlerts.has("alert:agent-errors");
-  const showBudgetAlert =
-    monthBudgetCents > 0 &&
-    monthUtilizationPercent >= 80 &&
-    !dismissedAlerts.has("alert:budget");
-  const alerts = Number(showAggregateAgentError) + Number(showBudgetAlert);
+  // Softclip pivot §6: budget-utilization alert removed.
+  const alerts = Number(showAggregateAgentError);
 
   return {
     // The inbox badge reflects personal/actionable work, not company-wide health alerts.

@@ -22,6 +22,7 @@ import {
   projectWorkspaces,
   projects,
 } from "@paperclipai/db";
+import { issueAcceptanceCriteriaService } from "./issue-acceptance-criteria.js";
 import type { IssueRelationIssueSummary } from "@paperclipai/shared";
 import { extractAgentMentionIds, extractProjectMentionIds, isUuidLike } from "@paperclipai/shared";
 import { conflict, notFound, unprocessable } from "../errors.js";
@@ -585,6 +586,7 @@ function withActiveRuns(
 
 export function issueService(db: Db) {
   const instanceSettings = instanceSettingsService(db);
+  const acceptanceCriteria = issueAcceptanceCriteriaService(db);
 
   async function getIssueByUuid(id: string) {
     const row = await db
@@ -1672,6 +1674,7 @@ export function issueService(db: Db) {
       applyStatusSideEffects(issueData.status, patch);
       if (issueData.status && issueData.status !== "done") {
         patch.completedAt = null;
+        patch.definitionOfDoneMet = false;
       }
       if (issueData.status && issueData.status !== "cancelled") {
         patch.cancelledAt = null;
@@ -1695,6 +1698,19 @@ export function issueService(db: Db) {
       }
 
       const runUpdate = async (tx: any) => {
+        // Close-guard: block `status = done` transitions while any
+        // acceptance criteria are still `pending`. Running inside the
+        // update transaction prevents TOCTOU with concurrent criterion
+        // edits — a criterion marked pending after this check but
+        // before commit will be visible to the next close attempt.
+        if (
+          issueData.status === "done" &&
+          existing.status !== "done"
+        ) {
+          await acceptanceCriteria.assertReadyToClose(id, { dbOrTx: tx });
+          patch.definitionOfDoneMet = true;
+        }
+
         const defaultCompanyGoal = await getDefaultCompanyGoal(tx, existing.companyId);
         const [currentProjectGoalId, nextProjectGoalId] = await Promise.all([
           getProjectDefaultGoalId(tx, existing.companyId, existing.projectId),
