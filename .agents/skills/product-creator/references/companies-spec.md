@@ -1,5 +1,14 @@
 # Agent Companies Specification Reference
 
+> **Note on terminology.** This quick reference uses `COMPANY.md`,
+> `company`, and related terms because they come from the external
+> `agentcompanies/v1` specification, which is outside our control.
+> product-creator uses dev-team language when talking to the user (the
+> product, the dev team, the roster), but the files it produces still
+> use the spec-mandated names (`COMPANY.md` as the root entrypoint,
+> `kind: company`, etc.) so that any tool consuming an agentcompanies/v1
+> package stays compatible.
+
 The normative specification lives at:
 
 - Web: https://agentcompanies.io/specification
