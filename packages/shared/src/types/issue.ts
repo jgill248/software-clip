@@ -200,6 +200,22 @@ export interface Issue {
   originRunId?: string | null;
   requestDepth: number;
   billingCode: string | null;
+  /**
+   * Softclip pivot §5: the sprint this issue belongs to. `null` means the
+   * issue is in the backlog / not committed to any sprint. Assignment is
+   * managed via POST /api/issues/:id/sprint.
+   */
+  sprintId: string | null;
+  /**
+   * Softclip pivot §5: `feature | bug | tech_debt | spike | chore`. Defaults
+   * to `feature` when unspecified.
+   */
+  issueType: string;
+  /**
+   * Softclip pivot §5: flipped to true only when a `status=done` transition
+   * passes the acceptance-criteria close-guard. Reopening resets it.
+   */
+  definitionOfDoneMet: boolean;
   assigneeAdapterOverrides: IssueAssigneeAdapterOverrides | null;
   executionPolicy?: IssueExecutionPolicy | null;
   executionState?: IssueExecutionState | null;
