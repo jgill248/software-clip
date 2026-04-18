@@ -79,9 +79,8 @@ export const queryKeys = {
     list: (companyId: string) => ["goals", companyId] as const,
     detail: (id: string) => ["goals", "detail", id] as const,
   },
-  budgets: {
-    overview: (companyId: string) => ["budgets", "overview", companyId] as const,
-  },
+  // Softclip pivot §6: queryKeys.budgets branch removed along with the UI
+  // budget panels. Nothing should be reading budgets overview data any more.
   approvals: {
     list: (companyId: string, status?: string) =>
       ["approvals", companyId, status] as const,

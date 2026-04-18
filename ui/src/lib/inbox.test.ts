@@ -316,13 +316,17 @@ describe("inbox helpers", () => {
       currentUserId: "user-1",
     });
 
+    // Softclip pivot §6: budget-utilization alert was removed, so a
+    // fixture showing 90% utilization no longer produces an alert. The
+    // only remaining alert source is aggregate-agent-error (not tripped
+    // here). Assertion updated to reflect that.
     expect(result).toEqual({
       inbox: 5,
       approvals: 1,
       failedRuns: 2,
       joinRequests: 1,
       mineIssues: 1,
-      alerts: 1,
+      alerts: 0,
     });
   });
 
@@ -333,7 +337,7 @@ describe("inbox helpers", () => {
       dashboard,
       heartbeatRuns: [makeRun("run-1", "failed", "2026-03-11T00:00:00.000Z")],
       mineIssues: [],
-      dismissedAlerts: new Set<string>(["alert:budget", "alert:agent-errors"]),
+      dismissedAlerts: new Set<string>(["alert:agent-errors"]),
       dismissedAtByKey: new Map<string, number>([["run:run-1", new Date("2026-03-11T00:00:00.000Z").getTime()]]),
       currentUserId: "user-1",
     });
