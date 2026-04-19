@@ -570,6 +570,9 @@ const issueListSelect = {
   completedAt: issues.completedAt,
   cancelledAt: issues.cancelledAt,
   hiddenAt: issues.hiddenAt,
+  sprintId: issues.sprintId,
+  issueType: issues.issueType,
+  definitionOfDoneMet: issues.definitionOfDoneMet,
   createdAt: issues.createdAt,
   updatedAt: issues.updatedAt,
 };
