@@ -201,7 +201,7 @@ export type RoutineRunStatus = (typeof ROUTINE_RUN_STATUSES)[number];
 export const ROUTINE_RUN_SOURCES = ["schedule", "manual", "api", "webhook"] as const;
 export type RoutineRunSource = (typeof ROUTINE_RUN_SOURCES)[number];
 
-export const PAUSE_REASONS = ["manual", "budget", "system"] as const;
+export const PAUSE_REASONS = ["manual", "system"] as const;
 export type PauseReason = (typeof PAUSE_REASONS)[number];
 
 export const PROJECT_COLORS = [
@@ -218,7 +218,6 @@ export const PROJECT_COLORS = [
 ] as const;
 
 export const APPROVAL_TYPES = [
-  "hire_agent",
   // Legacy alias for approve_po_strategy; retained so existing rows in
   // production DBs keep working. Softclip pivot prefers approve_po_strategy.
   "approve_ceo_strategy",
@@ -227,7 +226,6 @@ export const APPROVAL_TYPES = [
   "approve_design",
   "approve_architecture",
   "approve_plan",
-  "budget_override_required",
   "request_board_approval",
 ] as const;
 export type ApprovalType = (typeof APPROVAL_TYPES)[number];

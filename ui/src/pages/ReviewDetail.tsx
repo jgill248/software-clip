@@ -131,16 +131,6 @@ export function ReviewDetail() {
     onError: (err) => setError(err instanceof Error ? err.message : "Comment failed"),
   });
 
-  const deleteAgentMutation = useMutation({
-    mutationFn: (agentId: string) => agentsApi.remove(agentId),
-    onSuccess: () => {
-      setError(null);
-      refresh();
-      navigate("/reviews");
-    },
-    onError: (err) => setError(err instanceof Error ? err.message : "Delete failed"),
-  });
-
   const materializeMutation = useMutation({
     mutationFn: () => approvalsApi.materializePlan(approvalId!),
     onSuccess: (result) => {
@@ -164,9 +154,6 @@ export function ReviewDetail() {
   const payload = approval.payload as Record<string, unknown>;
   const linkedAgentId = typeof payload.agentId === "string" ? payload.agentId : null;
   const isActionable = approval.status === "pending" || approval.status === "revision_requested";
-  // Softclip pivot §6: budget_override_required approvals are legacy
-  // (nothing creates new ones). Handled via the generic approve/reject
-  // controls below.
   const TypeIcon = typeIcon[approval.type] ?? defaultTypeIcon;
   const showApprovedBanner = searchParams.get("resolved") === "approved" && approval.status === "approved";
   const primaryLinkedIssue = linkedIssues?.[0] ?? null;
@@ -300,10 +287,6 @@ export function ReviewDetail() {
               </Button>
             </>
           )}
-          {/* Softclip pivot §6: budget stop resolution UI is gone along
-              with the /costs destination. If a legacy budget_override_required
-              approval somehow lands in the queue, the generic approve/reject
-              controls above still work. */}
           {approval.status === "pending" && (
             <Button
               size="sm"
@@ -322,20 +305,6 @@ export function ReviewDetail() {
               disabled={resubmitMutation.isPending}
             >
               Mark resubmitted
-            </Button>
-          )}
-          {approval.status === "rejected" && approval.type === "hire_agent" && linkedAgentId && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="text-destructive border-destructive/40"
-              onClick={() => {
-                if (!window.confirm("Delete this disapproved agent? This cannot be undone.")) return;
-                deleteAgentMutation.mutate(linkedAgentId);
-              }}
-              disabled={deleteAgentMutation.isPending}
-            >
-              Delete disapproved agent
             </Button>
           )}
           {approval.status === "approved" &&

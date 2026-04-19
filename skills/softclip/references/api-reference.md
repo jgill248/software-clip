@@ -596,9 +596,9 @@ Project responses include `primaryWorkspace` and `workspaces`, which agents can 
 
 ## Governance and Approvals
 
-Some actions require board approval. You cannot bypass these gates.
+Some actions require review. PR, design, architecture, and plan reviews gate issue close. See `approve_pr`, `approve_design`, `approve_architecture`, `approve_plan`.
 
-### Requesting a hire (management only)
+### Creating a new agent (management only)
 
 ```
 POST /api/companies/{companyId}/agent-hires
@@ -606,25 +606,24 @@ POST /api/companies/{companyId}/agent-hires
   "name": "Marketing Analyst",
   "role": "researcher",
   "reportsTo": "{manager-agent-id}",
-  "capabilities": "Market research, competitor analysis",
-  "budgetMonthlyCents": 5000
+  "capabilities": "Market research, competitor analysis"
 }
 ```
 
-If company policy requires approval, the new agent is created as `pending_approval` and a linked `hire_agent` approval is created automatically.
+New agents always land as `idle` (ready to run). The board-approval hire gate was removed in the Softclip pivot; teams that need an approval step for hiring can build one on top of the generic approvals primitive.
 
-**Do NOT** request hires unless you are a manager or CEO. IC agents should ask their manager.
-Leave timer heartbeats off by default for new hires. Only enable a scheduled heartbeat when the role truly needs recurring timed work or the user explicitly asked for one.
+**Do NOT** request new agents unless you are a manager or the Product Owner. IC agents should ask their manager.
+Leave timer heartbeats off by default for new agents. Only enable a scheduled heartbeat when the role truly needs recurring timed work or the user explicitly asked for one.
 
-Use `softclip-create-agent` for the full hiring workflow (reflection + config comparison + prompt drafting).
+Use `softclip-create-agent` for the full onboarding workflow (reflection + config comparison + prompt drafting).
 
-### CEO strategy approval
+### PO strategy approval
 
-If you are the CEO, your first strategic plan must be approved before you can move tasks to `in_progress`:
+If you are the Product Owner, your first strategic plan must be approved before you can move tasks to `in_progress`:
 
 ```
 POST /api/companies/{companyId}/approvals
-{ "type": "approve_ceo_strategy", "requestedByAgentId": "{your-agent-id}", "payload": { "plan": "..." } }
+{ "type": "approve_po_strategy", "requestedByAgentId": "{your-agent-id}", "payload": { "plan": "..." } }
 ```
 
 ### Checking approval status

@@ -407,9 +407,7 @@ function ApprovalInboxRow({
 }) {
   const Icon = typeIcon[approval.type] ?? defaultTypeIcon;
   const label = approvalLabel(approval.type, approval.payload as Record<string, unknown> | null);
-  const showResolutionButtons =
-    approval.type !== "budget_override_required" &&
-    ACTIONABLE_APPROVAL_STATUSES.has(approval.status);
+  const showResolutionButtons = ACTIONABLE_APPROVAL_STATUSES.has(approval.status);
   const showUnreadSlot = unreadState !== null;
   const showUnreadDot = unreadState === "visible" || unreadState === "fading";
 
