@@ -21,4 +21,12 @@ export const approvalsApi = {
   addComment: (id: string, body: string) =>
     api.post<ApprovalComment>(`/approvals/${id}/comments`, { body }),
   listIssues: (id: string) => api.get<Issue[]>(`/approvals/${id}/issues`),
+  materializePlan: (id: string, storyIndexes?: number[]) =>
+    api.post<{
+      approvalId: string;
+      parentIssueId: string;
+      createdIssueIds: string[];
+      alreadyMaterialised: boolean;
+      childIssueIds: string[];
+    }>(`/approvals/${id}/materialize`, storyIndexes ? { storyIndexes } : {}),
 };

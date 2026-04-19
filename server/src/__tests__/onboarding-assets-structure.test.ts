@@ -21,6 +21,8 @@ const DEFAULT_ROLE_DIRS = [
   "designer",
   "engineer",
   "qa",
+  "security",
+  "devops",
 ];
 
 const REQUIRED_FILES = [

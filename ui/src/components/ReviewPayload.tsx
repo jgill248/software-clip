@@ -6,6 +6,7 @@ import {
   GitPullRequest,
   PenTool,
   Building2,
+  ClipboardList,
 } from "lucide-react";
 import { formatCents } from "../lib/utils";
 
@@ -18,6 +19,7 @@ export const typeLabel: Record<string, string> = {
   approve_pr: "Code Review",
   approve_design: "Design Review",
   approve_architecture: "Architecture Review",
+  approve_plan: "Plan Review",
   budget_override_required: "Budget Override",
   request_board_approval: "Board Approval",
 };
@@ -57,6 +59,7 @@ export const typeIcon: Record<string, typeof UserPlus> = {
   approve_pr: GitPullRequest,
   approve_design: PenTool,
   approve_architecture: Building2,
+  approve_plan: ClipboardList,
   budget_override_required: ShieldAlert,
   request_board_approval: ShieldCheck,
 };
@@ -494,6 +497,200 @@ export function ArchitectureReviewPayload({
   );
 }
 
+function PlanArchitectSection({
+  label,
+  section,
+}: {
+  label: string;
+  section: Record<string, unknown> | null | undefined;
+}) {
+  if (!section || typeof section !== "object") return null;
+  const summary = firstNonEmptyString((section as Record<string, unknown>).summary);
+  const interfaces = Array.isArray((section as Record<string, unknown>).interfaces)
+    ? ((section as Record<string, unknown>).interfaces as unknown[]).filter(
+        (v): v is string => typeof v === "string" && v.trim().length > 0,
+      )
+    : [];
+  const contracts = Array.isArray((section as Record<string, unknown>).contracts)
+    ? ((section as Record<string, unknown>).contracts as unknown[]).filter(
+        (v): v is string => typeof v === "string" && v.trim().length > 0,
+      )
+    : [];
+  const risks = Array.isArray((section as Record<string, unknown>).risks)
+    ? ((section as Record<string, unknown>).risks as unknown[]).filter(
+        (v): v is string => typeof v === "string" && v.trim().length > 0,
+      )
+    : [];
+  if (!summary && interfaces.length === 0 && contracts.length === 0 && risks.length === 0) {
+    return (
+      <div className="rounded-md border border-dashed border-border/50 px-3 py-2 text-xs text-muted-foreground">
+        <span className="font-medium">{label}</span> — no input yet
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-md border border-border/60 bg-muted/20 px-3 py-2.5 space-y-1.5">
+      <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+        {label}
+      </p>
+      {summary && <p className="text-sm leading-6 text-foreground/90">{summary}</p>}
+      {interfaces.length > 0 && (
+        <div className="pt-1">
+          <p className="text-[11px] text-muted-foreground mb-1">Interfaces</p>
+          <ul className="space-y-0.5 text-xs text-foreground/80">
+            {interfaces.map((entry) => (
+              <li key={entry} className="font-mono">{entry}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {contracts.length > 0 && (
+        <div className="pt-1">
+          <p className="text-[11px] text-muted-foreground mb-1">Contracts</p>
+          <ul className="space-y-0.5 text-xs text-foreground/80">
+            {contracts.map((entry) => (
+              <li key={entry} className="font-mono">{entry}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {risks.length > 0 && (
+        <div className="pt-1">
+          <p className="text-[11px] text-muted-foreground mb-1">Risks</p>
+          <ul className="space-y-0.5 text-xs text-foreground/80">
+            {risks.map((entry) => (
+              <li key={entry}>• {entry}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function PlanReviewPayload({ payload }: { payload: Record<string, unknown> }) {
+  const summary = firstNonEmptyString(payload.summary);
+  const agreedInterfaces = Array.isArray(payload.agreedInterfaces)
+    ? (payload.agreedInterfaces as unknown[]).filter(
+        (v): v is string => typeof v === "string" && v.trim().length > 0,
+      )
+    : [];
+  const proposedStories = Array.isArray(payload.proposedStories)
+    ? (payload.proposedStories as Record<string, unknown>[])
+    : [];
+
+  return (
+    <div className="mt-3 space-y-3 text-sm">
+      {summary && (
+        <div className="space-y-1">
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            Summary
+          </p>
+          <p className="leading-6 text-foreground/90">{summary}</p>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+          Architect sections
+        </p>
+        <PlanArchitectSection
+          label="Solution Architect"
+          section={payload.solutionArchitect as Record<string, unknown> | null | undefined}
+        />
+        <PlanArchitectSection
+          label="Software Architect"
+          section={payload.softwareArchitect as Record<string, unknown> | null | undefined}
+        />
+        <PlanArchitectSection
+          label="Data Architect"
+          section={payload.dataArchitect as Record<string, unknown> | null | undefined}
+        />
+      </div>
+
+      {agreedInterfaces.length > 0 && (
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            Agreed interfaces
+          </p>
+          <ul className="space-y-0.5 text-xs text-foreground/80">
+            {agreedInterfaces.map((entry) => (
+              <li key={entry} className="font-mono">{entry}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="space-y-1.5">
+        <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+          Proposed stories ({proposedStories.length})
+        </p>
+        {proposedStories.length === 0 ? (
+          <p className="text-xs text-muted-foreground">
+            No stories proposed yet — architects still drafting.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {proposedStories.map((story, idx) => {
+              const title = firstNonEmptyString(story.title) ?? `Story ${idx + 1}`;
+              const storySummary = firstNonEmptyString(story.summary);
+              const role = firstNonEmptyString(story.role);
+              const ac = Array.isArray(story.acceptanceCriteria)
+                ? (story.acceptanceCriteria as unknown[]).filter(
+                    (v): v is string => typeof v === "string" && v.trim().length > 0,
+                  )
+                : [];
+              const dod = Array.isArray(story.definitionOfDone)
+                ? (story.definitionOfDone as unknown[]).filter(
+                    (v): v is string => typeof v === "string" && v.trim().length > 0,
+                  )
+                : [];
+              return (
+                <li
+                  key={`${title}-${idx}`}
+                  className="rounded-md border border-border/60 bg-background/40 px-3 py-2.5 space-y-1.5"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-medium leading-6">{title}</p>
+                    {role && (
+                      <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+                        {role}
+                      </span>
+                    )}
+                  </div>
+                  {storySummary && (
+                    <p className="text-xs leading-5 text-foreground/80">{storySummary}</p>
+                  )}
+                  {ac.length > 0 && (
+                    <div>
+                      <p className="text-[11px] text-muted-foreground">Acceptance criteria</p>
+                      <ul className="text-xs text-foreground/80 space-y-0.5">
+                        {ac.map((entry) => (
+                          <li key={entry}>• {entry}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {dod.length > 0 && (
+                    <div>
+                      <p className="text-[11px] text-muted-foreground">Definition of done</p>
+                      <ul className="text-xs text-foreground/80 space-y-0.5">
+                        {dod.map((entry) => (
+                          <li key={entry}>• {entry}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function ApprovalPayloadRenderer({
   type,
   payload,
@@ -511,5 +708,6 @@ export function ApprovalPayloadRenderer({
   if (type === "approve_pr") return <CodeReviewPayload payload={payload} />;
   if (type === "approve_design") return <DesignReviewPayload payload={payload} />;
   if (type === "approve_architecture") return <ArchitectureReviewPayload payload={payload} />;
+  if (type === "approve_plan") return <PlanReviewPayload payload={payload} />;
   return <CeoStrategyPayload payload={payload} />;
 }

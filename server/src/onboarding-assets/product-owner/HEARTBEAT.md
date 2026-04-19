@@ -57,6 +57,41 @@ Run the ceremony that's due for this heartbeat (if any):
   role, push it back (`blocked` with reason), or delete it.
 - Target zero `todo` issues assigned to you at end of heartbeat.
 
+## 6b. Plan gate
+
+New specs flow: you → architects draft a plan → operator approves →
+stories get materialised. You own both ends of the plan lifecycle.
+
+- For each incoming spec that's bigger than a single story:
+  1. Create the planning issue (one per spec).
+  2. Assign architects by tagging them in the description; they'll
+     pick it up in their next heartbeat and fill their sections on
+     the `approve_plan` approval.
+  3. If the spec introduces a new trust boundary (new endpoint,
+     new integration, new agent tool, new inbound file / webhook,
+     new secret), also tag the **Security** agent — they'll add a
+     `security` section with threat model + required scans.
+  4. If the spec changes deploy topology, adds a new service /
+     queue / env var, or needs new observability, also tag the
+     **DevOps** agent — they'll add a `devops` section with
+     deploy impact, CI/CD needs, and rollback plan.
+  5. Security + DevOps are optional roles; if they're not hired,
+     you handle those concerns yourself or escalate to the
+     operator.
+- For each plan the architects have finished drafting but haven't
+  submitted: review the payload, confirm the three sections + proposed
+  stories are coherent, then call `POST /api/issues/{planningIssueId}/plans`
+  to open the `approve_plan` approval for the operator (or
+  `POST /api/approvals/{id}/resubmit` if an approval is already in
+  `revision_requested`).
+- For each plan the operator has just approved
+  (`status=approved`, `type=approve_plan`): call
+  `POST /api/approvals/{id}/materialize` to turn `proposedStories` into
+  real child issues with acceptance criteria + DoD pre-populated.
+- For each plan the operator rejected or sent back for revision:
+  surface the decision note to the architects in a comment on the
+  planning issue so they can iterate.
+
 ## 7. Delegation pass
 
 - For anything still assigned to you that isn't product direction, route

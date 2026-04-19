@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { APPROVAL_TYPES, CODE_REVIEW_APPROVAL_TYPES } from "../constants.js";
+import {
+  APPROVAL_TYPES,
+  CODE_REVIEW_APPROVAL_TYPES,
+  ISSUE_PRIORITIES,
+  PLAN_STORY_ROLES,
+} from "../constants.js";
 
 export const createApprovalSchema = z.object({
   type: z.enum(APPROVAL_TYPES),
@@ -78,6 +83,88 @@ export const approveArchitecturePayloadSchema = z
 export type ApproveArchitecturePayload = z.infer<
   typeof approveArchitecturePayloadSchema
 >;
+
+/**
+ * Payload shape for an `approve_plan` approval — the consolidated
+ * architect/PO plan the operator reviews before any stories get created.
+ *
+ * The three architect sections are authored by the Solution / Software /
+ * Data Architects respectively and then composed into a single payload.
+ * `proposedStories` is the list the `/materialize` endpoint turns into
+ * real issues (each with acceptance criteria + definition of done).
+ *
+ * Fields are loose on purpose so the architects can progressively fill
+ * the plan as they iterate; the schema documents intent more than it
+ * enforces completeness.
+ */
+export const planArchitectSectionSchema = z
+  .object({
+    summary: z.string().trim().max(4000).optional().nullable(),
+    interfaces: z.array(z.string().trim().max(1000)).optional(),
+    contracts: z.array(z.string().trim().max(1000)).optional(),
+    risks: z.array(z.string().trim().max(1000)).optional(),
+    authoredByAgentId: z.string().uuid().optional().nullable(),
+  })
+  .passthrough();
+
+export type PlanArchitectSection = z.infer<typeof planArchitectSectionSchema>;
+
+export const planProposedStorySchema = z
+  .object({
+    title: z.string().trim().min(1).max(200),
+    summary: z.string().trim().max(4000).optional().nullable(),
+    role: z.enum(PLAN_STORY_ROLES).optional(),
+    priority: z.enum(ISSUE_PRIORITIES).optional(),
+    acceptanceCriteria: z
+      .array(z.string().trim().min(1).max(2000))
+      .default([]),
+    definitionOfDone: z
+      .array(z.string().trim().min(1).max(2000))
+      .default([]),
+  })
+  .passthrough();
+
+export type PlanProposedStory = z.infer<typeof planProposedStorySchema>;
+
+export const approvePlanPayloadSchema = z
+  .object({
+    title: z.string().trim().max(200).optional(),
+    summary: z.string().trim().max(4000).optional(),
+    solutionArchitect: planArchitectSectionSchema.optional(),
+    softwareArchitect: planArchitectSectionSchema.optional(),
+    dataArchitect: planArchitectSectionSchema.optional(),
+    agreedInterfaces: z.array(z.string().trim().max(1000)).optional(),
+    proposedStories: z.array(planProposedStorySchema).default([]),
+  })
+  .passthrough();
+
+export type ApprovePlanPayload = z.infer<typeof approvePlanPayloadSchema>;
+
+/**
+ * Convenience "request a plan review" endpoint body. Mirrors
+ * {@link requestIssueReviewSchema} but scoped to a single approval type.
+ */
+export const requestIssuePlanSchema = z.object({
+  requestedByAgentId: z.string().uuid().optional().nullable(),
+  payload: approvePlanPayloadSchema.default({ proposedStories: [] }),
+});
+
+export type RequestIssuePlan = z.infer<typeof requestIssuePlanSchema>;
+
+/**
+ * Body for POST /api/approvals/:id/materialize. The operator has
+ * approved a plan; this turns its `proposedStories` into real issues
+ * under `parentIssueId`, each seeded with acceptance criteria + DoD
+ * criteria.
+ *
+ * If `storyIndexes` is provided, only those entries (0-indexed into
+ * `proposedStories`) are materialised; otherwise every story is created.
+ */
+export const materializePlanSchema = z.object({
+  storyIndexes: z.array(z.number().int().nonnegative()).optional(),
+});
+
+export type MaterializePlan = z.infer<typeof materializePlanSchema>;
 
 /**
  * Convenience "request a review" endpoint body. The route reshapes this

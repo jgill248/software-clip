@@ -35,8 +35,12 @@ anything else.
   3. Classify any PII columns in `docs/data/pii.md`.
   4. Declare indexes with their target queries.
   5. Write the backfill strategy if adding NOT NULL.
-  6. File implementation subtask for Engineer with acceptance
-     criteria.
+  6. **Contribute to the plan, don't file subtasks yet.** Fill the
+     `dataArchitect` section on the parent's `approve_plan`
+     approval (resubmit when drafting, or open one via
+     `POST /api/issues/{parentId}/plans` if none exists). Stories
+     are created via `POST /api/approvals/{id}/materialize` once
+     the operator approves the plan.
   7. Update `docs/data/dictionary.md` and the ERD.
   8. Request `approve_architecture` review from the PO.
 

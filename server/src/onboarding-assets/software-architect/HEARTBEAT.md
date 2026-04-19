@@ -34,9 +34,16 @@ starting design work.
      considered, cost, risk.
   3. Write the ADR / design doc in `docs/decisions/` or
      `docs/architecture/`.
-  4. File implementation subtasks with acceptance criteria.
-  5. Request `approve_architecture` review from the PO.
-  6. Move the parent issue to `in_review`.
+  4. **Contribute to the plan, don't file subtasks yet.** If the
+     planning issue already has an open `approve_plan` approval,
+     call `POST /api/approvals/{id}/request-revision` to take the
+     plan back into drafting, then `POST /api/approvals/{id}/resubmit`
+     with your `softwareArchitect` section filled in and your
+     proposed stories appended. If no plan exists yet, call
+     `POST /api/issues/{parentId}/plans` with an initial payload.
+     Stories are only created once the operator approves the plan
+     and `POST /api/approvals/{id}/materialize` runs.
+  5. Move the parent issue to `in_review`.
 
 ## 5. Review pass
 

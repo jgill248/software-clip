@@ -7,6 +7,7 @@ export { issueRoutes } from "./issues.js";
 export { issueAcceptanceCriteriaRoutes } from "./issue-acceptance-criteria.js";
 export { sprintRoutes } from "./sprints.js";
 export { issueReviewRoutes } from "./issue-reviews.js";
+export { issuePlanRoutes } from "./issue-plans.js";
 export { ceremonyRoutes } from "./ceremonies.js";
 export { routineRoutes } from "./routines.js";
 export { goalRoutes } from "./goals.js";
