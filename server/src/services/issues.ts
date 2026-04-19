@@ -3,6 +3,7 @@ import type { Db } from "@softclipai/db";
 import {
   activityLog,
   agents,
+  approvals,
   assets,
   products,
   companyMemberships,
@@ -10,6 +11,7 @@ import {
   goals,
   heartbeatRuns,
   executionWorkspaces,
+  issueApprovals,
   issueAttachments,
   issueInboxArchives,
   issueLabels,
@@ -1455,6 +1457,37 @@ export function issueService(db: Db) {
         throw unprocessable("in_progress issues require an assignee");
       }
       return db.transaction(async (tx) => {
+        // Plan-approval gate: when a parent issue has an `approve_plan`
+        // approval in a non-terminal state, block manual child creation
+        // until the plan resolves. The /materialize endpoint only runs
+        // after the plan is approved, so it sails past this check
+        // naturally. Once the plan is approved / rejected / cancelled,
+        // operators can file one-off follow-up stories under the same
+        // parent without resubmitting a plan.
+        if (issueData.parentId) {
+          const inFlightPlan = await tx
+            .select({ id: approvals.id, status: approvals.status })
+            .from(approvals)
+            .innerJoin(issueApprovals, eq(issueApprovals.approvalId, approvals.id))
+            .where(
+              and(
+                eq(issueApprovals.issueId, issueData.parentId),
+                eq(approvals.type, "approve_plan"),
+                inArray(approvals.status, ["pending", "revision_requested"]),
+              ),
+            )
+            .limit(1)
+            .then((rows) => rows[0] ?? null);
+          if (inFlightPlan) {
+            throw conflict(
+              `Parent issue has an in-flight approve_plan approval ` +
+                `(${inFlightPlan.id}, status=${inFlightPlan.status}). ` +
+                `Wait for the plan to be approved or rejected, or use ` +
+                `POST /api/approvals/:id/materialize once it is approved.`,
+              { approvalId: inFlightPlan.id, approvalStatus: inFlightPlan.status },
+            );
+          }
+        }
         const defaultCompanyGoal = await getDefaultCompanyGoal(tx, productId);
         const projectGoalId = await getProjectDefaultGoalId(tx, productId, issueData.projectId);
         let projectWorkspaceId = issueData.projectWorkspaceId ?? null;
