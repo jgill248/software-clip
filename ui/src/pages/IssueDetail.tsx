@@ -868,7 +868,7 @@ export function IssueDetail() {
   const { selectedCompanyId } = useCompany();
   const { openNewIssue } = useDialog();
   const { openPanel, closePanel, panelVisible, setPanelVisible } = usePanel();
-  const { setBreadcrumbs, setMobileToolbar } = useBreadcrumbs();
+  const { setBreadcrumbs, setMobileToolbar, setRightActions } = useBreadcrumbs();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const navigationType = useNavigationType();
@@ -1798,6 +1798,31 @@ export function IssueDetail() {
     sourceBreadcrumb.href,
     sourceBreadcrumb.label,
   ]);
+
+  // Right-side topbar actions per the Softclip prototype (Copy link + Subscribe stub).
+  useEffect(() => {
+    const onCopyLink = async () => {
+      try {
+        if (typeof navigator !== "undefined" && navigator.clipboard) {
+          await navigator.clipboard.writeText(window.location.href);
+        }
+      } catch {
+        // ignore clipboard errors in restricted contexts
+      }
+    };
+    setRightActions(
+      <>
+        <button
+          type="button"
+          className="sc-btn size-sm variant-outline"
+          onClick={onCopyLink}
+        >
+          Copy link
+        </button>
+      </>,
+    );
+    return () => setRightActions(null);
+  }, [setRightActions]);
 
   const isFromInbox = resolvedIssueDetailState?.issueDetailSource === "inbox";
 
