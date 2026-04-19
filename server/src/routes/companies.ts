@@ -17,6 +17,7 @@ import { validate } from "../middleware/validate.js";
 import {
   accessService,
   agentService,
+  ceremonyService,
   companyPortabilityService,
   companyService,
   feedbackService,
@@ -32,6 +33,7 @@ export function companyRoutes(db: Db, storage?: StorageService) {
   const portability = companyPortabilityService(db, storage);
   const access = accessService(db);
   const feedback = feedbackService(db);
+  const ceremonies = ceremonyService(db);
 
   function parseBooleanQuery(value: unknown) {
     return value === true || value === "true" || value === "1";
@@ -268,6 +270,28 @@ export function companyRoutes(db: Db, storage?: StorageService) {
       entityId: company.id,
       details: { name: company.name },
     });
+
+    // Softclip pivot §10: every new product lands with the five default
+    // dev-team ceremonies (standup, planning, review, retro, grooming)
+    // already in the list. They seed as drafts with no assignee; the PO
+    // activates them once they're hired. Seeding is best-effort — if the
+    // ceremony service fails, the product is still usable and the user
+    // can re-run via POST /companies/:id/ceremonies/seed.
+    try {
+      await ceremonies.seedDefaults(
+        company.id,
+        {
+          agentId: null,
+          userId: req.actor.userId ?? null,
+        },
+      );
+    } catch (err) {
+      console.error("[softclip] ceremony seed failed on product create", {
+        companyId: company.id,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+
     // Softclip pivot §6: dev teams don't run on dollar budgets, so we
     // no longer auto-seed a budget_policies row at product creation.
     // budgetMonthlyCents on the product row is still accepted for backward
