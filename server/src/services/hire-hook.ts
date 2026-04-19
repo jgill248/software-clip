@@ -12,14 +12,15 @@ const HIRE_APPROVED_MESSAGE =
 export interface NotifyHireApprovedInput {
   productId: string;
   agentId: string;
-  source: "join_request" | "approval";
+  source: "join_request";
   sourceId: string;
   approvedAt?: Date;
 }
 
 /**
- * Invokes the adapter's onHireApproved hook when an agent is approved (join-request or hire_agent approval).
- * Failures are non-fatal: we log and write to activity, never throw.
+ * Invokes the adapter's onHireApproved hook when an agent is approved via a
+ * join-request. Failures are non-fatal: we log and write to activity, never
+ * throw.
  */
 export async function notifyHireApproved(
   db: Db,

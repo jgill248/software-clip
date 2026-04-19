@@ -218,7 +218,6 @@ export const PROJECT_COLORS = [
 ] as const;
 
 export const APPROVAL_TYPES = [
-  "hire_agent",
   // Legacy alias for approve_po_strategy; retained so existing rows in
   // production DBs keep working. Softclip pivot prefers approve_po_strategy.
   "approve_ceo_strategy",

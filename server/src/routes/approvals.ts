@@ -14,7 +14,6 @@ import {
   heartbeatService,
   issueApprovalService,
   logActivity,
-  secretService,
 } from "../services/index.js";
 import { assertBoard, assertCompanyAccess, getActorInfo } from "./authz.js";
 import { redactEventPayload } from "../redaction.js";
@@ -31,8 +30,6 @@ export function approvalRoutes(db: Db) {
   const svc = approvalService(db);
   const heartbeat = heartbeatService(db);
   const issueApprovalsSvc = issueApprovalService(db);
-  const secretsSvc = secretService(db);
-  const strictSecretsMode = process.env.SOFTCLIP_SECRETS_STRICT_MODE === "true";
 
   async function requireApprovalAccess(req: Request, id: string) {
     const approval = await svc.getById(id);
@@ -71,14 +68,7 @@ export function approvalRoutes(db: Db) {
       : [];
     const uniqueIssueIds = Array.from(new Set(issueIds));
     const { issueIds: _issueIds, ...approvalInput } = req.body;
-    const normalizedPayload =
-      approvalInput.type === "hire_agent"
-        ? await secretsSvc.normalizeHireApprovalPayloadForPersistence(
-            productId,
-            approvalInput.payload,
-            { strictMode: strictSecretsMode },
-          )
-        : approvalInput.payload;
+    const normalizedPayload = approvalInput.payload;
 
     const actor = getActorInfo(req);
     const approval = await svc.create(productId, {
@@ -289,15 +279,7 @@ export function approvalRoutes(db: Db) {
       return;
     }
 
-    const normalizedPayload = req.body.payload
-      ? existing.type === "hire_agent"
-        ? await secretsSvc.normalizeHireApprovalPayloadForPersistence(
-            existing.productId,
-            req.body.payload,
-            { strictMode: strictSecretsMode },
-          )
-        : req.body.payload
-      : undefined;
+    const normalizedPayload = req.body.payload ?? undefined;
     const approval = await svc.resubmit(id, normalizedPayload);
     const actor = getActorInfo(req);
     await logActivity(db, {

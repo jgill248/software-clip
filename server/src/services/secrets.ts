@@ -303,23 +303,6 @@ export function secretService(db: Db) {
       opts?: NormalizeEnvOptions,
     ) => normalizeEnvConfig(productId, envValue, opts),
 
-    normalizeHireApprovalPayloadForPersistence: async (
-      productId: string,
-      payload: Record<string, unknown>,
-      opts?: { strictMode?: boolean },
-    ) => {
-      const normalized = { ...payload };
-      const adapterConfig = asRecord(payload.adapterConfig);
-      if (adapterConfig) {
-        normalized.adapterConfig = await normalizeAdapterConfigForPersistenceInternal(
-          productId,
-          adapterConfig,
-          opts,
-        );
-      }
-      return normalized;
-    },
-
     resolveEnvBindings: async (productId: string, envValue: unknown): Promise<{ env: Record<string, string>; secretKeys: Set<string> }> => {
       const record = asRecord(envValue);
       if (!record) return { env: {} as Record<string, string>, secretKeys: new Set<string>() };

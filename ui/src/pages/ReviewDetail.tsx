@@ -131,16 +131,6 @@ export function ReviewDetail() {
     onError: (err) => setError(err instanceof Error ? err.message : "Comment failed"),
   });
 
-  const deleteAgentMutation = useMutation({
-    mutationFn: (agentId: string) => agentsApi.remove(agentId),
-    onSuccess: () => {
-      setError(null);
-      refresh();
-      navigate("/reviews");
-    },
-    onError: (err) => setError(err instanceof Error ? err.message : "Delete failed"),
-  });
-
   const materializeMutation = useMutation({
     mutationFn: () => approvalsApi.materializePlan(approvalId!),
     onSuccess: (result) => {
@@ -315,20 +305,6 @@ export function ReviewDetail() {
               disabled={resubmitMutation.isPending}
             >
               Mark resubmitted
-            </Button>
-          )}
-          {approval.status === "rejected" && approval.type === "hire_agent" && linkedAgentId && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="text-destructive border-destructive/40"
-              onClick={() => {
-                if (!window.confirm("Delete this disapproved agent? This cannot be undone.")) return;
-                deleteAgentMutation.mutate(linkedAgentId);
-              }}
-              disabled={deleteAgentMutation.isPending}
-            >
-              Delete disapproved agent
             </Button>
           )}
           {approval.status === "approved" &&
