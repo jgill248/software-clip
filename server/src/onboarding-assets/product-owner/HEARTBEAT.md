@@ -67,6 +67,17 @@ stories get materialised. You own both ends of the plan lifecycle.
   2. Assign architects by tagging them in the description; they'll
      pick it up in their next heartbeat and fill their sections on
      the `approve_plan` approval.
+  3. If the spec introduces a new trust boundary (new endpoint,
+     new integration, new agent tool, new inbound file / webhook,
+     new secret), also tag the **Security** agent — they'll add a
+     `security` section with threat model + required scans.
+  4. If the spec changes deploy topology, adds a new service /
+     queue / env var, or needs new observability, also tag the
+     **DevOps** agent — they'll add a `devops` section with
+     deploy impact, CI/CD needs, and rollback plan.
+  5. Security + DevOps are optional roles; if they're not hired,
+     you handle those concerns yourself or escalate to the
+     operator.
 - For each plan the architects have finished drafting but haven't
   submitted: review the payload, confirm the three sections + proposed
   stories are coherent, then call `POST /api/issues/{planningIssueId}/plans`

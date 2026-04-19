@@ -22,6 +22,8 @@ const DEFAULT_AGENT_BUNDLE_FILES: Record<string, readonly string[]> = {
   designer: FULL_BUNDLE,
   engineer: FULL_BUNDLE,
   qa: FULL_BUNDLE,
+  security: FULL_BUNDLE,
+  devops: FULL_BUNDLE,
 };
 
 export type DefaultAgentBundleRole =
@@ -33,7 +35,9 @@ export type DefaultAgentBundleRole =
   | "data-architect"
   | "designer"
   | "engineer"
-  | "qa";
+  | "qa"
+  | "security"
+  | "devops";
 
 /**
  * Maps free-form agent `role` strings to a bundle folder. New default roles
@@ -67,6 +71,17 @@ const ROLE_STRING_ALIASES: Record<string, DefaultAgentBundleRole> = {
   qa: "qa",
   tester: "qa",
   quality: "qa",
+  security: "security",
+  sec: "security",
+  "security-engineer": "security",
+  security_engineer: "security",
+  appsec: "security",
+  devops: "devops",
+  "dev-ops": "devops",
+  sre: "devops",
+  ops: "devops",
+  "platform-engineer": "devops",
+  platform_engineer: "devops",
 };
 
 function resolveDefaultAgentBundleUrl(role: DefaultAgentBundleRole, fileName: string) {

@@ -17,6 +17,8 @@ every future agent you hire in that role.
 | `designer/`              | Designer            | Product Owner | Owns user flows, wireframes, design-system usage, a11y, user copy.     |
 | `engineer/`              | Engineer            | Product Owner | Ships code. Implements, tests, opens PRs, responds to review.          |
 | `qa/`                    | QA                  | Product Owner | Writes test plans, authors regression tests, signs off DoD, triages bugs. |
+| `security/`              | Security            | Product Owner | Optional. Runs vulnerability scans, owns CVE triage, reviews security-sensitive PRs, threat-models new surfaces, contributes a security section to every plan. |
+| `devops/`                | DevOps              | Product Owner | Optional. Owns CI/CD, infrastructure-as-code, release cuts, observability, incident response, and contributes a deploy/ops section to every plan. |
 
 Plus two special folders:
 

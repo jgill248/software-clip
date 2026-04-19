@@ -47,6 +47,7 @@ export const AGENT_ROLES = [
   "pm",
   "qa",
   "devops",
+  "security",
   "researcher",
   "general",
 ] as const;
@@ -62,6 +63,7 @@ export const AGENT_ROLE_LABELS: Record<AgentRole, string> = {
   pm: "PM",
   qa: "QA",
   devops: "DevOps",
+  security: "Security",
   researcher: "Researcher",
   general: "General",
 };
