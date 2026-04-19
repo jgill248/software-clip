@@ -201,7 +201,7 @@ export type RoutineRunStatus = (typeof ROUTINE_RUN_STATUSES)[number];
 export const ROUTINE_RUN_SOURCES = ["schedule", "manual", "api", "webhook"] as const;
 export type RoutineRunSource = (typeof ROUTINE_RUN_SOURCES)[number];
 
-export const PAUSE_REASONS = ["manual", "budget", "system"] as const;
+export const PAUSE_REASONS = ["manual", "system"] as const;
 export type PauseReason = (typeof PAUSE_REASONS)[number];
 
 export const PROJECT_COLORS = [
@@ -227,7 +227,6 @@ export const APPROVAL_TYPES = [
   "approve_design",
   "approve_architecture",
   "approve_plan",
-  "budget_override_required",
   "request_board_approval",
 ] as const;
 export type ApprovalType = (typeof APPROVAL_TYPES)[number];

@@ -98,7 +98,7 @@ export function costService(db: Db) {
 
       // Softclip pivot §6: budget evaluation hook removed. cost_events
       // are still recorded for observability but no longer trigger
-      // budget incidents or `budget_override_required` approvals.
+      // budget incidents or approvals.
 
       return event;
     },

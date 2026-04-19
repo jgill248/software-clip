@@ -63,20 +63,12 @@ Response:
 {
   "agent": {
     "id": "uuid",
-    "status": "pending_approval"
-  },
-  "approval": {
-    "id": "uuid",
-    "type": "hire_agent",
-    "status": "pending",
-    "payload": {
-      "desiredSkills": ["vercel-labs/agent-browser/agent-browser"]
-    }
+    "status": "idle"
   }
 }
 ```
 
-If company setting disables required approval, `approval` is `null` and the agent is created as `idle`.
+New agents always land as `idle` (ready to run). The board-approval hire gate was removed in the Softclip pivot.
 
 `desiredSkills` accepts company skill ids, canonical keys, or a unique slug. The server resolves and stores canonical company skill keys.
 Leave timer heartbeats disabled by default. Only set `runtimeConfig.heartbeat.enabled=true` and include an `intervalSec` when the role truly needs scheduled recurring work or the user explicitly requested it.
@@ -90,11 +82,6 @@ Statuses:
 - `approved`
 - `rejected`
 - `cancelled`
-
-For hire approvals:
-
-- approved: linked agent transitions `pending_approval -> idle`
-- rejected: linked agent is terminated
 
 ## Safety Notes
 

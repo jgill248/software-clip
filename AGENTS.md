@@ -183,6 +183,12 @@ This is a fork of `jgill248/software-clip` with QoL patches and an **external-on
 - `feat/externalize-hermes-adapter` → core has **no** `hermes-paperclip-adapter` dependency and **no** built-in `hermes_local` registration. Install Hermes via the Adapter Plugin manager (`@henkey/hermes-paperclip-adapter` or a `file:` path).
 - Older fork branches may still document built-in Hermes; treat this file as authoritative for the externalize branch.
 
+> **Note on the `paperclip` name.** The `hermes-paperclip-adapter` and
+> `@paperclipai/adapter-utils` npm packages are third-party dependencies
+> published before the Paperclip → Softclip rename. The names are retained
+> because those packages are published externally and we don't control their
+> publishing cadence. All first-party code and packages use `@softclipai/*`.
+
 ### Hermes (plugin only)
 
 - Register through **Board → Adapter manager** (same as Droid). Type remains `hermes_local` once the package is loaded.
