@@ -272,6 +272,41 @@ export function DesignGuide() {
             <Swatch name="Chart 5" cssVar="--chart-5" />
           </div>
         </SubSection>
+
+        <SubSection title="Softclip surfaces & text ramp">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <Swatch name="bg" cssVar="--bg" />
+            <Swatch name="bg-inset" cssVar="--bg-inset" />
+            <Swatch name="panel" cssVar="--panel" />
+            <Swatch name="panel-2" cssVar="--panel-2" />
+            <Swatch name="elevated" cssVar="--elevated" />
+            <Swatch name="hover" cssVar="--hover" />
+            <Swatch name="selected" cssVar="--selected" />
+            <Swatch name="border" cssVar="--border" />
+            <Swatch name="border-strong" cssVar="--border-strong" />
+            <Swatch name="border-subtle" cssVar="--border-subtle" />
+            <Swatch name="fg" cssVar="--fg" />
+            <Swatch name="fg-secondary" cssVar="--fg-secondary" />
+            <Swatch name="fg-muted" cssVar="--fg-muted" />
+            <Swatch name="fg-faint" cssVar="--fg-faint" />
+          </div>
+        </SubSection>
+
+        <SubSection title="Softclip accents (color is never the only signal)">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <Swatch name="blue — running" cssVar="--accent-blue" />
+            <Swatch name="green — pass" cssVar="--accent-green" />
+            <Swatch name="amber — warn" cssVar="--accent-amber" />
+            <Swatch name="red — fail" cssVar="--accent-red" />
+            <Swatch name="purple — review" cssVar="--accent-purple" />
+            <Swatch name="gray — idle" cssVar="--accent-gray" />
+            <Swatch name="blue wash" cssVar="--accent-blue-wash" />
+            <Swatch name="green wash" cssVar="--accent-green-wash" />
+            <Swatch name="amber wash" cssVar="--accent-amber-wash" />
+            <Swatch name="red wash" cssVar="--accent-red-wash" />
+            <Swatch name="purple wash" cssVar="--accent-purple-wash" />
+          </div>
+        </SubSection>
       </Section>
 
       {/* ============================================================ */}
@@ -298,6 +333,29 @@ export function DesignGuide() {
           </p>
           <p className="text-2xl font-bold">Large stat — text-2xl font-bold</p>
           <p className="font-mono text-xs">Log/code text — font-mono text-xs</p>
+        </div>
+      </Section>
+
+      {/* ============================================================ */}
+      {/*  SOFTCLIP DESIGN — three-size type scale                      */}
+      {/* ============================================================ */}
+      <Section title="Softclip type scale — Inter, three sizes">
+        <div className="space-y-3">
+          <div className="flex items-baseline gap-4">
+            <span className="font-mono text-xs w-16 text-muted-foreground">11px</span>
+            <span className="font-mono text-xs w-20 text-muted-foreground">.t-meta</span>
+            <span className="t-meta upper fg-muted">COMMITTED VS DONE · 7 / 14</span>
+          </div>
+          <div className="flex items-baseline gap-4">
+            <span className="font-mono text-xs w-16 text-muted-foreground">13px</span>
+            <span className="font-mono text-xs w-20 text-muted-foreground">.t-body</span>
+            <span className="t-body">Validate state token lifetime on callback.</span>
+          </div>
+          <div className="flex items-baseline gap-4">
+            <span className="font-mono text-xs w-16 text-muted-foreground">18px</span>
+            <span className="font-mono text-xs w-20 text-muted-foreground">.t-head</span>
+            <span className="t-head">Ship auth v2 and stabilize realtime.</span>
+          </div>
         </div>
       </Section>
 
