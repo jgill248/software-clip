@@ -19,10 +19,10 @@ import {
   formatDatabaseBackupResult,
   runDatabaseBackup,
   authUsers,
-  companies,
+  products,
   companyMemberships,
   instanceUserRoles,
-} from "@paperclipai/db";
+} from "@softclipai/db";
 import detectPort from "detect-port";
 import { createApp } from "./app.js";
 import { loadConfig } from "./config.js";
@@ -228,14 +228,14 @@ export async function startServer(): Promise<StartedServer> {
       });
     }
   
-    const companyRows = await db.select({ id: companies.id }).from(companies);
+    const companyRows = await db.select({ id: products.id }).from(products);
     for (const company of companyRows) {
       const membership = await db
         .select({ id: companyMemberships.id })
         .from(companyMemberships)
         .where(
           and(
-            eq(companyMemberships.companyId, company.id),
+            eq(companyMemberships.productId, company.id),
             eq(companyMemberships.principalType, "user"),
             eq(companyMemberships.principalId, LOCAL_BOARD_USER_ID),
           ),
@@ -243,7 +243,7 @@ export async function startServer(): Promise<StartedServer> {
         .then((rows: Array<{ id: string }>) => rows[0] ?? null);
       if (membership) continue;
       await db.insert(companyMemberships).values({
-        companyId: company.id,
+        productId: company.id,
         principalType: "user",
         principalId: LOCAL_BOARD_USER_ID,
         status: "active",

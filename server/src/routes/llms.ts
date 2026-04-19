@@ -1,6 +1,6 @@
 import { Router, type Request } from "express";
-import type { Db } from "@paperclipai/db";
-import { AGENT_ICON_NAMES } from "@paperclipai/shared";
+import type { Db } from "@softclipai/db";
+import { AGENT_ICON_NAMES } from "@softclipai/shared";
 import { forbidden } from "../errors.js";
 import { listServerAdapters } from "../adapters/index.js";
 import { agentService } from "../services/agents.js";
@@ -35,9 +35,9 @@ export function llmRoutes(db: Db) {
       ...adapters.map((adapter) => `- ${adapter.type}: /llms/agent-configuration/${adapter.type}.txt`),
       "",
       "Related API endpoints:",
-      "- GET /api/companies/:companyId/agent-configurations",
+      "- GET /api/companies/:productId/agent-configurations",
       "- GET /api/agents/:id/configuration",
-      "- POST /api/companies/:companyId/agent-hires",
+      "- POST /api/companies/:productId/agent-hires",
       "",
       "Agent identity references:",
       "- GET /llms/agent-icons.txt",

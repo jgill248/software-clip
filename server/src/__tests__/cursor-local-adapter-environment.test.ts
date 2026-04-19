@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { testEnvironment } from "@paperclipai/adapter-cursor-local/server";
+import { testEnvironment } from "@softclipai/adapter-cursor-local/server";
 
 async function writeFakeAgentCommand(binDir: string, argsCapturePath: string): Promise<string> {
   const commandPath = path.join(binDir, "agent");
@@ -45,7 +45,7 @@ describe("cursor environment diagnostics", () => {
     await fs.rm(path.dirname(cwd), { recursive: true, force: true });
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "cursor",
       config: {
         command: process.execPath,
@@ -72,7 +72,7 @@ describe("cursor environment diagnostics", () => {
     await writeFakeAgentCommand(binDir, argsCapturePath);
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "cursor",
       config: {
         command: "agent",
@@ -103,7 +103,7 @@ describe("cursor environment diagnostics", () => {
     await writeFakeAgentCommand(binDir, argsCapturePath);
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "cursor",
       config: {
         command: "agent",
@@ -146,7 +146,7 @@ describe("cursor environment diagnostics", () => {
       );
 
       const result = await testEnvironment({
-        companyId: "company-1",
+        productId: "company-1",
         adapterType: "cursor",
         config: {
           command: process.execPath,
@@ -177,7 +177,7 @@ describe("cursor environment diagnostics", () => {
       // No cli-config.json written
 
       const result = await testEnvironment({
-        companyId: "company-1",
+        productId: "company-1",
         adapterType: "cursor",
         config: {
           command: process.execPath,

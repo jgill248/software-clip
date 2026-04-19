@@ -11,7 +11,7 @@
  * @example
  * ```ts
  * // dist/worker.ts
- * import { definePlugin } from "@paperclipai/plugin-sdk";
+ * import { definePlugin } from "@softclipai/plugin-sdk";
  *
  * export default definePlugin({
  *   async setup(ctx) {
@@ -34,10 +34,10 @@
  *     });
  *
  *     // Register data for the UI
- *     ctx.data.register("sync-health", async ({ companyId }) => {
+ *     ctx.data.register("sync-health", async ({ productId }) => {
  *       const state = await ctx.state.get({
  *         scopeKind: "company",
- *         scopeId: String(companyId),
+ *         scopeId: String(productId),
  *         stateKey: "last-sync",
  *       });
  *       return { lastSync: state };
@@ -232,7 +232,7 @@ export interface PaperclipPlugin {
  *
  * @example
  * ```ts
- * import { definePlugin } from "@paperclipai/plugin-sdk";
+ * import { definePlugin } from "@softclipai/plugin-sdk";
  *
  * export default definePlugin({
  *   async setup(ctx) {

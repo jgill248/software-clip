@@ -3,7 +3,7 @@
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { Agent, Project } from "@paperclipai/shared";
+import type { Agent, Project } from "@softclipai/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { RoutineRunVariablesDialog } from "./RoutineRunVariablesDialog";
 
@@ -47,7 +47,7 @@ vi.mock("./IssueWorkspaceCard", async () => {
 function createProject(): Project {
   return {
     id: "project-1",
-    companyId: "company-1",
+    productId: "company-1",
     urlKey: "workspace-project",
     goalId: null,
     goalIds: [],
@@ -88,7 +88,7 @@ function createProject(): Project {
 function createAgent(): Agent {
   return {
     id: "agent-1",
-    companyId: "company-1",
+    productId: "company-1",
     name: "Routine Agent",
     role: "engineer",
     title: null,
@@ -142,7 +142,7 @@ describe("RoutineRunVariablesDialog", () => {
           <RoutineRunVariablesDialog
             open
             onOpenChange={() => {}}
-            companyId="company-1"
+            productId="company-1"
             projects={[createProject()]}
             agents={[createAgent()]}
             defaultProjectId="project-1"

@@ -1,13 +1,13 @@
 import { and, eq } from "drizzle-orm";
 import { Router, type Request, type Response } from "express";
-import type { Db } from "@paperclipai/db";
-import { issues, projects, projectWorkspaces } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
+import { issues, projects, projectWorkspaces } from "@softclipai/db";
 import {
   findWorkspaceCommandDefinition,
   matchWorkspaceRuntimeServiceToCommand,
   updateExecutionWorkspaceSchema,
   workspaceRuntimeControlTargetSchema,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import { validate } from "../middleware/validate.js";
 import { executionWorkspaceService, logActivity, workspaceOperationService } from "../services/index.js";
 import { mergeExecutionWorkspaceConfig, readExecutionWorkspaceConfig } from "../services/execution-workspaces.js";
@@ -34,9 +34,9 @@ export function executionWorkspaceRoutes(db: Db) {
   const svc = executionWorkspaceService(db);
   const workspaceOperationsSvc = workspaceOperationService(db);
 
-  router.get("/companies/:companyId/execution-workspaces", async (req, res) => {
-    const companyId = req.params.companyId as string;
-    assertCompanyAccess(req, companyId);
+  router.get("/companies/:productId/execution-workspaces", async (req, res) => {
+    const productId = req.params.productId as string;
+    assertCompanyAccess(req, productId);
     const filters = {
       projectId: req.query.projectId as string | undefined,
       projectWorkspaceId: req.query.projectWorkspaceId as string | undefined,
@@ -45,8 +45,8 @@ export function executionWorkspaceRoutes(db: Db) {
       reuseEligible: req.query.reuseEligible === "true",
     };
     const workspaces = req.query.summary === "true"
-      ? await svc.listSummaries(companyId, filters)
-      : await svc.list(companyId, filters);
+      ? await svc.listSummaries(productId, filters)
+      : await svc.list(productId, filters);
     res.json(workspaces);
   });
 
@@ -57,7 +57,7 @@ export function executionWorkspaceRoutes(db: Db) {
       res.status(404).json({ error: "Execution workspace not found" });
       return;
     }
-    assertCompanyAccess(req, workspace.companyId);
+    assertCompanyAccess(req, workspace.productId);
     res.json(workspace);
   });
 
@@ -68,7 +68,7 @@ export function executionWorkspaceRoutes(db: Db) {
       res.status(404).json({ error: "Execution workspace not found" });
       return;
     }
-    assertCompanyAccess(req, workspace.companyId);
+    assertCompanyAccess(req, workspace.productId);
     const readiness = await svc.getCloseReadiness(id);
     if (!readiness) {
       res.status(404).json({ error: "Execution workspace not found" });
@@ -84,7 +84,7 @@ export function executionWorkspaceRoutes(db: Db) {
       res.status(404).json({ error: "Execution workspace not found" });
       return;
     }
-    assertCompanyAccess(req, workspace.companyId);
+    assertCompanyAccess(req, workspace.productId);
     const operations = await workspaceOperationsSvc.listForExecutionWorkspace(id);
     res.json(operations);
   });
@@ -102,10 +102,10 @@ export function executionWorkspaceRoutes(db: Db) {
       res.status(404).json({ error: "Execution workspace not found" });
       return;
     }
-    assertCompanyAccess(req, existing.companyId);
+    assertCompanyAccess(req, existing.productId);
 
     await assertCanManageExecutionWorkspaceRuntimeServices(db, req, {
-      companyId: existing.companyId,
+      productId: existing.productId,
       executionWorkspaceId: existing.id,
       sourceIssueId: existing.sourceIssueId,
     });
@@ -130,7 +130,7 @@ export function executionWorkspaceRoutes(db: Db) {
           .where(
             and(
               eq(projectWorkspaces.id, existing.projectWorkspaceId),
-              eq(projectWorkspaces.companyId, existing.companyId),
+              eq(projectWorkspaces.productId, existing.productId),
             ),
           )
           .then((rows) => rows[0] ?? null)
@@ -147,7 +147,7 @@ export function executionWorkspaceRoutes(db: Db) {
           .where(
             and(
               eq(projects.id, existing.projectId),
-              eq(projects.companyId, existing.companyId),
+              eq(projects.productId, existing.productId),
             ),
           )
           .then((rows) => parseProjectExecutionWorkspacePolicy(rows[0]?.executionWorkspacePolicy))
@@ -205,7 +205,7 @@ export function executionWorkspaceRoutes(db: Db) {
 
     const actor = getActorInfo(req);
     const recorder = workspaceOperationsSvc.createRecorder({
-      companyId: existing.companyId,
+      productId: existing.productId,
       executionWorkspaceId: existing.id,
     });
     let runtimeServiceCount = existing.runtimeServices?.length ?? 0;
@@ -264,7 +264,7 @@ export function executionWorkspaceRoutes(db: Db) {
             agent: {
               id: actor.agentId ?? null,
               name: actor.actorType === "user" ? "Board" : "Agent",
-              companyId: existing.companyId,
+              productId: existing.productId,
             },
             recorder,
           });
@@ -281,7 +281,7 @@ export function executionWorkspaceRoutes(db: Db) {
             actor: {
               id: actor.agentId ?? null,
               name: actor.actorType === "user" ? "Board" : "Agent",
-              companyId: existing.companyId,
+              productId: existing.productId,
             },
             issue: existing.sourceIssueId
               ? {
@@ -333,7 +333,7 @@ export function executionWorkspaceRoutes(db: Db) {
             actor: {
               id: actor.agentId ?? null,
               name: actor.actorType === "user" ? "Board" : "Agent",
-              companyId: existing.companyId,
+              productId: existing.productId,
             },
             issue: existing.sourceIssueId
               ? {
@@ -407,7 +407,7 @@ export function executionWorkspaceRoutes(db: Db) {
     }
 
     await logActivity(db, {
-      companyId: existing.companyId,
+      productId: existing.productId,
       actorType: actor.actorType,
       actorId: actor.actorId,
       agentId: actor.agentId,
@@ -441,7 +441,7 @@ export function executionWorkspaceRoutes(db: Db) {
       res.status(404).json({ error: "Execution workspace not found" });
       return;
     }
-    assertCompanyAccess(req, existing.companyId);
+    assertCompanyAccess(req, existing.productId);
     assertNoAgentHostWorkspaceCommandMutation(
       req,
       collectExecutionWorkspaceCommandPaths({
@@ -513,7 +513,7 @@ export function executionWorkspaceRoutes(db: Db) {
           })
           .where(
             and(
-              eq(issues.companyId, existing.companyId),
+              eq(issues.productId, existing.productId),
               eq(issues.executionWorkspaceId, existing.id),
             ),
           );
@@ -535,7 +535,7 @@ export function executionWorkspaceRoutes(db: Db) {
             .where(
                 and(
                   eq(projectWorkspaces.id, existing.projectWorkspaceId),
-                  eq(projectWorkspaces.companyId, existing.companyId),
+                  eq(projectWorkspaces.productId, existing.productId),
                 ),
               )
               .then((rows) => rows[0] ?? null)
@@ -546,7 +546,7 @@ export function executionWorkspaceRoutes(db: Db) {
                 executionWorkspacePolicy: projects.executionWorkspacePolicy,
               })
               .from(projects)
-              .where(and(eq(projects.id, existing.projectId), eq(projects.companyId, existing.companyId)))
+              .where(and(eq(projects.id, existing.projectId), eq(projects.productId, existing.productId)))
               .then((rows) => parseProjectExecutionWorkspacePolicy(rows[0]?.executionWorkspacePolicy))
           : null;
         const cleanupResult = await cleanupExecutionWorkspaceArtifacts({
@@ -555,7 +555,7 @@ export function executionWorkspaceRoutes(db: Db) {
           teardownCommand: configForCleanup?.teardownCommand ?? projectPolicy?.workspaceStrategy?.teardownCommand ?? null,
           cleanupCommand: configForCleanup?.cleanupCommand ?? null,
           recorder: workspaceOperationsSvc.createRecorder({
-            companyId: existing.companyId,
+            productId: existing.productId,
             executionWorkspaceId: existing.id,
           }),
         });
@@ -593,7 +593,7 @@ export function executionWorkspaceRoutes(db: Db) {
     }
     const actor = getActorInfo(req);
     await logActivity(db, {
-      companyId: existing.companyId,
+      productId: existing.productId,
       actorType: actor.actorType,
       actorId: actor.actorId,
       agentId: actor.agentId,

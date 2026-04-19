@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AGENT_ADAPTER_TYPES } from "@paperclipai/shared";
-import type { AgentAdapterType, JoinRequest } from "@paperclipai/shared";
+import { AGENT_ADAPTER_TYPES } from "@softclipai/shared";
+import type { AgentAdapterType, JoinRequest } from "@softclipai/shared";
 import { Button } from "@/components/ui/button";
 import { useCompany } from "@/context/CompanyContext";
 import { Link, useNavigate, useParams } from "@/lib/router";
@@ -239,7 +239,7 @@ export function InviteLandingPage() {
   const companiesQuery = useQuery({
     queryKey: queryKeys.companies.all,
     queryFn: () => companiesApi.list(),
-    enabled: !!sessionQuery.data && !!inviteQuery.data?.companyId,
+    enabled: !!sessionQuery.data && !!inviteQuery.data?.productId,
     retry: false,
   });
 
@@ -252,9 +252,9 @@ export function InviteLandingPage() {
   }, [token]);
 
   useEffect(() => {
-    if (!companiesQuery.data || !inviteQuery.data?.companyId) return;
+    if (!companiesQuery.data || !inviteQuery.data?.productId) return;
     const isMember = companiesQuery.data.some(
-      (c) => c.id === inviteQuery.data!.companyId
+      (c) => c.id === inviteQuery.data!.productId
     );
     if (isMember) {
       clearPendingInviteToken(token);
@@ -265,12 +265,12 @@ export function InviteLandingPage() {
   const invite = inviteQuery.data;
   const isCheckingExistingMembership =
     Boolean(sessionQuery.data) &&
-    Boolean(invite?.companyId) &&
+    Boolean(invite?.productId) &&
     companiesQuery.isLoading;
   const isCurrentMember =
-    Boolean(invite?.companyId) &&
+    Boolean(invite?.productId) &&
     Boolean(
-      companiesQuery.data?.some((company) => company.id === invite?.companyId),
+      companiesQuery.data?.some((company) => company.id === invite?.productId),
     );
   const companyName = invite?.companyName?.trim() || null;
   const companyDisplayName = companyName || "this Paperclip company";
@@ -329,8 +329,8 @@ export function InviteLandingPage() {
       setResult({ kind: asBootstrap ? "bootstrap" : "join", payload });
       await queryClient.invalidateQueries({ queryKey: queryKeys.auth.session });
       await queryClient.invalidateQueries({ queryKey: queryKeys.companies.all });
-      if (invite?.companyId && isApprovedHumanJoinPayload(payload, showsAgentForm)) {
-        setSelectedCompanyId(invite.companyId, { source: "manual" });
+      if (invite?.productId && isApprovedHumanJoinPayload(payload, showsAgentForm)) {
+        setSelectedCompanyId(invite.productId, { source: "manual" });
         navigate("/", { replace: true });
       }
     },
@@ -368,9 +368,9 @@ export function InviteLandingPage() {
         retry: false,
       });
 
-      if (invite?.companyId && companies.some((company) => company.id === invite.companyId)) {
+      if (invite?.productId && companies.some((company) => company.id === invite.productId)) {
         clearPendingInviteToken(token);
-        setSelectedCompanyId(invite.companyId, { source: "manual" });
+        setSelectedCompanyId(invite.productId, { source: "manual" });
         navigate("/", { replace: true });
         return;
       }

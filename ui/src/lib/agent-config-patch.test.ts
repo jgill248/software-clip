@@ -1,13 +1,13 @@
 // @vitest-environment node
 
 import { describe, expect, it } from "vitest";
-import type { Agent } from "@paperclipai/shared";
+import type { Agent } from "@softclipai/shared";
 import { buildAgentUpdatePatch, type AgentConfigOverlay } from "./agent-config-patch";
 
 function makeAgent(): Agent {
   return {
     id: "agent-1",
-    companyId: "company-1",
+    productId: "company-1",
     name: "Agent",
     role: "engineer",
     title: "Engineer",

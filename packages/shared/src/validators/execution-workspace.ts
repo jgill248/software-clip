@@ -71,7 +71,7 @@ export const executionWorkspaceCloseGitReadinessSchema = z.object({
 
 export const workspaceRuntimeServiceSchema = z.object({
   id: z.string(),
-  companyId: z.string().uuid(),
+  productId: z.string().uuid(),
   projectId: z.string().uuid().nullable(),
   projectWorkspaceId: z.string().uuid().nullable(),
   executionWorkspaceId: z.string().uuid().nullable(),

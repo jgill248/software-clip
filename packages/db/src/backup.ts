@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { resolveSoftclipEnv } from "@softclipai/shared";
 import { formatDatabaseBackupResult, runDatabaseBackup } from "./backup-lib.js";
 
 type PartialConfig = {
@@ -22,15 +23,16 @@ function expandHomePrefix(value: string): string {
 }
 
 function resolvePaperclipHomeDir(): string {
-  const envHome = process.env.PAPERCLIP_HOME?.trim();
+  const envHome = resolveSoftclipEnv("HOME")?.value.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
   return path.resolve(os.homedir(), ".paperclip");
 }
 
 function resolvePaperclipInstanceId(): string {
-  const raw = process.env.PAPERCLIP_INSTANCE_ID?.trim() || "default";
+  const resolved = resolveSoftclipEnv("INSTANCE_ID");
+  const raw = resolved?.value.trim() || "default";
   if (!/^[a-zA-Z0-9_-]+$/.test(raw)) {
-    throw new Error(`Invalid PAPERCLIP_INSTANCE_ID '${raw}'.`);
+    throw new Error(`Invalid ${resolved?.varName ?? "SOFTCLIP_INSTANCE_ID"} '${raw}'.`);
   }
   return raw;
 }

@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { RoutineTrigger } from "@paperclipai/shared";
+import type { RoutineTrigger } from "@softclipai/shared";
 import { buildRoutineTriggerPatch } from "./routine-trigger-patch";
 
 function makeScheduleTrigger(overrides: Partial<RoutineTrigger> = {}): RoutineTrigger {
   return {
     id: "trigger-1",
-    companyId: "company-1",
+    productId: "company-1",
     routineId: "routine-1",
     kind: "schedule",
     label: "Daily",

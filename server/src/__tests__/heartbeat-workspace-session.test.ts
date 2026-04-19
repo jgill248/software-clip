@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { agents } from "@paperclipai/db";
-import { sessionCodec as codexSessionCodec } from "@paperclipai/adapter-codex-local/server";
+import type { agents } from "@softclipai/db";
+import { sessionCodec as codexSessionCodec } from "@softclipai/adapter-codex-local/server";
 import { resolveDefaultAgentWorkspaceDir } from "../home-paths.js";
 import {
   applyPersistedExecutionWorkspaceConfig,
@@ -35,7 +35,7 @@ function buildResolvedWorkspace(overrides: Partial<ResolvedWorkspaceForRun> = {}
 function buildAgent(adapterType: string, runtimeConfig: Record<string, unknown> = {}) {
   return {
     id: "agent-1",
-    companyId: "company-1",
+    productId: "company-1",
     projectId: null,
     goalId: null,
     name: "Agent",
@@ -167,7 +167,7 @@ describe("buildRealizedExecutionWorkspaceFromPersisted", () => {
       }),
       workspace: {
         id: "execution-workspace-1",
-        companyId: "company-1",
+        productId: "company-1",
         projectId: "project-1",
         projectWorkspaceId: "workspace-1",
         sourceIssueId: "issue-1",

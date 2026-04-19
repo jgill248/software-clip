@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { buildSkillMentionHref } from "@paperclipai/shared";
+import { buildSkillMentionHref } from "@softclipai/shared";
 import {
   applyRunScopedMentionedSkillKeys,
   extractMentionedSkillIdsFromSources,
@@ -27,7 +27,7 @@ describe("resolveExecutionRunAdapterConfig", () => {
     });
 
     const result = await resolveExecutionRunAdapterConfig({
-      companyId: "company-1",
+      productId: "company-1",
       executionRunConfig: { env: { SHARED_KEY: "agent" } },
       projectEnv: { SHARED_KEY: "project" },
       secretsSvc: {
@@ -55,7 +55,7 @@ describe("resolveExecutionRunAdapterConfig", () => {
     const resolveEnvBindings = vi.fn();
 
     const result = await resolveExecutionRunAdapterConfig({
-      companyId: "company-1",
+      productId: "company-1",
       executionRunConfig: { env: { AGENT_ONLY: "agent-only" } },
       projectEnv: null,
       secretsSvc: {

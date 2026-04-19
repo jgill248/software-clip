@@ -32,7 +32,7 @@ export function registerClientAuthCommands(auth: Command): void {
           const login = await loginBoardCli({
             apiBase: ctx.api.apiBase,
             requestedAccess: opts.instanceAdmin ? "instance_admin_required" : "board",
-            requestedCompanyId: ctx.companyId ?? null,
+            requestedCompanyId: ctx.productId ?? null,
             command: "paperclipai auth login",
           });
           printOutput(
@@ -100,7 +100,7 @@ export function registerClientAuthCommands(auth: Command): void {
             user: { id: string; name: string; email: string } | null;
             userId: string;
             isInstanceAdmin: boolean;
-            companyIds: string[];
+            productIds: string[];
             source: string;
             keyId: string | null;
           }>("/api/cli-auth/me");

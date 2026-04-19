@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "@/lib/router";
 import { useQuery } from "@tanstack/react-query";
-import type { Issue } from "@paperclipai/shared";
+import type { Issue } from "@softclipai/shared";
 import { heartbeatsApi, type LiveRunForIssue } from "../api/heartbeats";
 import type { TranscriptEntry } from "../adapters";
 import { issuesApi } from "../api/issues";
@@ -19,19 +19,19 @@ function isRunActive(run: LiveRunForIssue): boolean {
 }
 
 interface ActiveAgentsPanelProps {
-  companyId: string;
+  productId: string;
 }
 
-export function ActiveAgentsPanel({ companyId }: ActiveAgentsPanelProps) {
+export function ActiveAgentsPanel({ productId }: ActiveAgentsPanelProps) {
   const { data: liveRuns } = useQuery({
-    queryKey: [...queryKeys.liveRuns(companyId), "dashboard"],
-    queryFn: () => heartbeatsApi.liveRunsForCompany(companyId, MIN_DASHBOARD_RUNS),
+    queryKey: [...queryKeys.liveRuns(productId), "dashboard"],
+    queryFn: () => heartbeatsApi.liveRunsForCompany(productId, MIN_DASHBOARD_RUNS),
   });
 
   const runs = liveRuns ?? [];
   const { data: issues } = useQuery({
-    queryKey: [...queryKeys.issues.list(companyId), "with-routine-executions"],
-    queryFn: () => issuesApi.list(companyId, { includeRoutineExecutions: true }),
+    queryKey: [...queryKeys.issues.list(productId), "with-routine-executions"],
+    queryFn: () => issuesApi.list(productId, { includeRoutineExecutions: true }),
     enabled: runs.length > 0,
   });
 
@@ -45,7 +45,7 @@ export function ActiveAgentsPanel({ companyId }: ActiveAgentsPanelProps) {
 
   const { transcriptByRun, hasOutputForRun } = useLiveRunTranscripts({
     runs,
-    companyId,
+    productId,
     maxChunksPerRun: 120,
   });
 
@@ -63,7 +63,7 @@ export function ActiveAgentsPanel({ companyId }: ActiveAgentsPanelProps) {
           {runs.map((run) => (
             <AgentRunCard
               key={run.id}
-              companyId={companyId}
+              productId={productId}
               run={run}
               issue={run.issueId ? issueById.get(run.issueId) : undefined}
               transcript={transcriptByRun.get(run.id) ?? []}
@@ -78,14 +78,14 @@ export function ActiveAgentsPanel({ companyId }: ActiveAgentsPanelProps) {
 }
 
 function AgentRunCard({
-  companyId,
+  productId,
   run,
   issue,
   transcript,
   hasOutput,
   isActive,
 }: {
-  companyId: string;
+  productId: string;
   run: LiveRunForIssue;
   issue?: Issue;
   transcript: TranscriptEntry[];
@@ -148,7 +148,7 @@ function AgentRunCard({
           run={run}
           transcript={transcript}
           hasOutput={hasOutput}
-          companyId={companyId}
+          productId={productId}
         />
       </div>
     </div>

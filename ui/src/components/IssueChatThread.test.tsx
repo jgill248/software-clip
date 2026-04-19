@@ -241,7 +241,7 @@ describe("IssueChatThread", () => {
           <IssueChatThread
             comments={[{
               id: "comment-1",
-              companyId: "company-1",
+              productId: "company-1",
               issueId: "issue-1",
               authorAgentId: "agent-1",
               authorUserId: null,

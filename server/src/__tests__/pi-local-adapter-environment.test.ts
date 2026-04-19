@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { testEnvironment } from "@paperclipai/adapter-pi-local/server";
+import { testEnvironment } from "@softclipai/adapter-pi-local/server";
 
 async function writeFakePiCommand(binDir: string, mode: "success" | "stale-package"): Promise<void> {
   const commandPath = path.join(binDir, "pi");
@@ -51,7 +51,7 @@ describe("pi_local environment diagnostics", () => {
     await writeFakePiCommand(binDir, "success");
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "pi_local",
       config: {
         command: "pi",
@@ -82,7 +82,7 @@ describe("pi_local environment diagnostics", () => {
     await writeFakePiCommand(binDir, "stale-package");
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "pi_local",
       config: {
         command: "pi",

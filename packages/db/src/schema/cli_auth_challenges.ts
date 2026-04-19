@@ -1,6 +1,6 @@
 import { pgTable, uuid, text, timestamp, index } from "drizzle-orm/pg-core";
 import { authUsers } from "./auth.js";
-import { companies } from "./companies.js";
+import { products } from "./products.js";
 import { boardApiKeys } from "./board_api_keys.js";
 
 export const cliAuthChallenges = pgTable(
@@ -11,7 +11,7 @@ export const cliAuthChallenges = pgTable(
     command: text("command").notNull(),
     clientName: text("client_name"),
     requestedAccess: text("requested_access").notNull().default("board"),
-    requestedCompanyId: uuid("requested_company_id").references(() => companies.id, { onDelete: "set null" }),
+    requestedCompanyId: uuid("requested_company_id").references(() => products.id, { onDelete: "set null" }),
     pendingKeyHash: text("pending_key_hash").notNull(),
     pendingKeyName: text("pending_key_name").notNull(),
     approvedByUserId: text("approved_by_user_id").references(() => authUsers.id, { onDelete: "set null" }),

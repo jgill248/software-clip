@@ -1,5 +1,5 @@
 import { Router } from "express";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import {
   DEFAULT_FEEDBACK_DATA_SHARING_TERMS_VERSION,
   createCompanySchema,
@@ -8,7 +8,7 @@ import {
   feedbackVoteValueSchema,
   // Softclip pivot §6: updateCompanyBrandingSchema removed.
   updateCompanySchema,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import { badRequest, forbidden } from "../errors.js";
 import { validate } from "../middleware/validate.js";
 import {
@@ -16,7 +16,7 @@ import {
   agentInstructionsService,
   agentService,
   ceremonyService,
-  companyService,
+  productService,
   feedbackService,
   logActivity,
 } from "../services/index.js";
@@ -27,9 +27,9 @@ import {
 import type { StorageService } from "../storage/types.js";
 import { assertBoard, assertCompanyAccess, getActorInfo } from "./authz.js";
 
-export function companyRoutes(db: Db, _storage?: StorageService) {
+export function productRoutes(db: Db, _storage?: StorageService) {
   const router = Router();
-  const svc = companyService(db);
+  const svc = productService(db);
   const access = accessService(db);
   const feedback = feedbackService(db);
   const ceremonies = ceremonyService(db);
@@ -57,7 +57,7 @@ export function companyRoutes(db: Db, _storage?: StorageService) {
       res.json(result);
       return;
     }
-    const allowed = new Set(req.actor.companyIds ?? []);
+    const allowed = new Set(req.actor.productIds ?? []);
     res.json(result.filter((company) => allowed.has(company.id)));
   });
 
@@ -65,31 +65,31 @@ export function companyRoutes(db: Db, _storage?: StorageService) {
     assertBoard(req);
     const allowed = req.actor.source === "local_implicit" || req.actor.isInstanceAdmin
       ? null
-      : new Set(req.actor.companyIds ?? []);
+      : new Set(req.actor.productIds ?? []);
     const stats = await svc.stats();
     if (!allowed) {
       res.json(stats);
       return;
     }
-    const filtered = Object.fromEntries(Object.entries(stats).filter(([companyId]) => allowed.has(companyId)));
+    const filtered = Object.fromEntries(Object.entries(stats).filter(([productId]) => allowed.has(productId)));
     res.json(filtered);
   });
 
-  // Common malformed path when companyId is empty in "/api/companies/{companyId}/issues".
+  // Common malformed path when productId is empty in "/api/companies/{productId}/issues".
   router.get("/issues", (_req, res) => {
     res.status(400).json({
-      error: "Missing companyId in path. Use /api/companies/{companyId}/issues.",
+      error: "Missing productId in path. Use /api/companies/{productId}/issues.",
     });
   });
 
-  router.get("/:companyId", async (req, res) => {
-    const companyId = req.params.companyId as string;
-    assertCompanyAccess(req, companyId);
+  router.get("/:productId", async (req, res) => {
+    const productId = req.params.productId as string;
+    assertCompanyAccess(req, productId);
     // Allow agents (CEO) to read their own company; board always allowed
     if (req.actor.type !== "agent") {
       assertBoard(req);
     }
-    const company = await svc.getById(companyId);
+    const company = await svc.getById(productId);
     if (!company) {
       res.status(404).json({ error: "Company not found" });
       return;
@@ -97,9 +97,9 @@ export function companyRoutes(db: Db, _storage?: StorageService) {
     res.json(company);
   });
 
-  router.get("/:companyId/feedback-traces", async (req, res) => {
-    const companyId = req.params.companyId as string;
-    assertCompanyAccess(req, companyId);
+  router.get("/:productId/feedback-traces", async (req, res) => {
+    const productId = req.params.productId as string;
+    assertCompanyAccess(req, productId);
     assertBoard(req);
 
     const targetTypeRaw = typeof req.query.targetType === "string" ? req.query.targetType : undefined;
@@ -111,7 +111,7 @@ export function companyRoutes(db: Db, _storage?: StorageService) {
       : undefined;
 
     const traces = await feedback.listFeedbackTraces({
-      companyId,
+      productId,
       issueId,
       projectId,
       targetType: targetTypeRaw ? feedbackTargetTypeSchema.parse(targetTypeRaw) : undefined,
@@ -133,7 +133,7 @@ export function companyRoutes(db: Db, _storage?: StorageService) {
     const company = await svc.create(req.body);
     await access.ensureMembership(company.id, "user", req.actor.userId ?? "local-board", "owner", "active");
     await logActivity(db, {
-      companyId: company.id,
+      productId: company.id,
       actorType: "user",
       actorId: req.actor.userId ?? "board",
       action: "company.created",
@@ -170,7 +170,7 @@ export function companyRoutes(db: Db, _storage?: StorageService) {
       );
     } catch (err) {
       console.error("[softclip] product-owner seed failed on product create", {
-        companyId: company.id,
+        productId: company.id,
         error: err instanceof Error ? err.message : String(err),
       });
     }
@@ -186,7 +186,7 @@ export function companyRoutes(db: Db, _storage?: StorageService) {
       );
     } catch (err) {
       console.error("[softclip] ceremony seed failed on product create", {
-        companyId: company.id,
+        productId: company.id,
         error: err instanceof Error ? err.message : String(err),
       });
     }
@@ -198,12 +198,12 @@ export function companyRoutes(db: Db, _storage?: StorageService) {
     res.status(201).json(company);
   });
 
-  router.patch("/:companyId", async (req, res) => {
-    const companyId = req.params.companyId as string;
-    assertCompanyAccess(req, companyId);
+  router.patch("/:productId", async (req, res) => {
+    const productId = req.params.productId as string;
+    assertCompanyAccess(req, productId);
 
     const actor = getActorInfo(req);
-    const existingCompany = await svc.getById(companyId);
+    const existingCompany = await svc.getById(productId);
     if (!existingCompany) {
       res.status(404).json({ error: "Company not found" });
       return;
@@ -232,20 +232,20 @@ export function companyRoutes(db: Db, _storage?: StorageService) {
       }
     }
 
-    const company = await svc.update(companyId, body);
+    const company = await svc.update(productId, body);
     if (!company) {
       res.status(404).json({ error: "Company not found" });
       return;
     }
     await logActivity(db, {
-      companyId,
+      productId,
       actorType: actor.actorType,
       actorId: actor.actorId,
       agentId: actor.agentId,
       runId: actor.runId,
       action: "company.updated",
       entityType: "company",
-      entityId: companyId,
+      entityId: productId,
       details: body,
     });
     res.json(company);
@@ -255,31 +255,31 @@ export function companyRoutes(db: Db, _storage?: StorageService) {
   // the logo/brand-color UI and the CEO-only assertCanUpdateBranding
   // helper.
 
-  router.post("/:companyId/archive", async (req, res) => {
+  router.post("/:productId/archive", async (req, res) => {
     assertBoard(req);
-    const companyId = req.params.companyId as string;
-    assertCompanyAccess(req, companyId);
-    const company = await svc.archive(companyId);
+    const productId = req.params.productId as string;
+    assertCompanyAccess(req, productId);
+    const company = await svc.archive(productId);
     if (!company) {
       res.status(404).json({ error: "Company not found" });
       return;
     }
     await logActivity(db, {
-      companyId,
+      productId,
       actorType: "user",
       actorId: req.actor.userId ?? "board",
       action: "company.archived",
       entityType: "company",
-      entityId: companyId,
+      entityId: productId,
     });
     res.json(company);
   });
 
-  router.delete("/:companyId", async (req, res) => {
+  router.delete("/:productId", async (req, res) => {
     assertBoard(req);
-    const companyId = req.params.companyId as string;
-    assertCompanyAccess(req, companyId);
-    const company = await svc.remove(companyId);
+    const productId = req.params.productId as string;
+    assertCompanyAccess(req, productId);
+    const company = await svc.remove(productId);
     if (!company) {
       res.status(404).json({ error: "Company not found" });
       return;

@@ -6,13 +6,13 @@ import { randomUUID } from "node:crypto";
 import { promisify } from "node:util";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
-  companies,
+  products,
   createDb,
   executionWorkspaces,
   issues,
   projectWorkspaces,
   projects,
-} from "@paperclipai/db";
+} from "@softclipai/db";
 import {
   getEmbeddedPostgresTestSupport,
   startEmbeddedPostgresTestDatabase,
@@ -138,7 +138,7 @@ describeEmbeddedPostgres("executionWorkspaceService.getCloseReadiness", () => {
     await db.delete(executionWorkspaces);
     await db.delete(projectWorkspaces);
     await db.delete(projects);
-    await db.delete(companies);
+    await db.delete(products);
 
     for (const dir of tempDirs) {
       await fs.rm(dir, { recursive: true, force: true });
@@ -151,19 +151,19 @@ describeEmbeddedPostgres("executionWorkspaceService.getCloseReadiness", () => {
   });
 
   it("allows archiving shared workspace sessions with warnings even when issues are still open", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const projectId = randomUUID();
     const projectWorkspaceId = randomUUID();
     const executionWorkspaceId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
       issuePrefix: "PAP",
     });
     await db.insert(projects).values({
       id: projectId,
-      companyId,
+      productId,
       name: "Workspaces",
       status: "in_progress",
       executionWorkspacePolicy: {
@@ -172,7 +172,7 @@ describeEmbeddedPostgres("executionWorkspaceService.getCloseReadiness", () => {
     });
     await db.insert(projectWorkspaces).values({
       id: projectWorkspaceId,
-      companyId,
+      productId,
       projectId,
       name: "Primary",
       sourceType: "local_path",
@@ -181,7 +181,7 @@ describeEmbeddedPostgres("executionWorkspaceService.getCloseReadiness", () => {
     });
     await db.insert(executionWorkspaces).values({
       id: executionWorkspaceId,
-      companyId,
+      productId,
       projectId,
       projectWorkspaceId,
       mode: "shared_workspace",
@@ -198,7 +198,7 @@ describeEmbeddedPostgres("executionWorkspaceService.getCloseReadiness", () => {
     });
     await db.insert(issues).values({
       id: randomUUID(),
-      companyId,
+      productId,
       projectId,
       title: "Still working",
       status: "todo",
@@ -235,19 +235,19 @@ describeEmbeddedPostgres("executionWorkspaceService.getCloseReadiness", () => {
     await runGit(worktreePath, ["commit", "-m", "Feature commit"]);
     await fs.writeFile(path.join(worktreePath, "untracked.txt"), "left behind\n", "utf8");
 
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const projectId = randomUUID();
     const projectWorkspaceId = randomUUID();
     const executionWorkspaceId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
       issuePrefix: "PAP",
     });
     await db.insert(projects).values({
       id: projectId,
-      companyId,
+      productId,
       name: "Workspaces",
       status: "in_progress",
       executionWorkspacePolicy: {
@@ -260,7 +260,7 @@ describeEmbeddedPostgres("executionWorkspaceService.getCloseReadiness", () => {
     });
     await db.insert(projectWorkspaces).values({
       id: projectWorkspaceId,
-      companyId,
+      productId,
       projectId,
       name: "Primary",
       sourceType: "git_repo",
@@ -270,7 +270,7 @@ describeEmbeddedPostgres("executionWorkspaceService.getCloseReadiness", () => {
     });
     await db.insert(executionWorkspaces).values({
       id: executionWorkspaceId,
-      companyId,
+      productId,
       projectId,
       projectWorkspaceId,
       mode: "isolated_workspace",

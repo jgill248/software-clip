@@ -2,7 +2,7 @@
 
 import { act } from "react";
 import { createRoot } from "react-dom/client";
-import type { Issue } from "@paperclipai/shared";
+import type { Issue } from "@softclipai/shared";
 import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { issuesApi } from "@/api/issues";
@@ -22,7 +22,7 @@ function makeIssue(overrides: Partial<Issue> = {}): Issue {
   const now = new Date("2026-04-13T20:00:00.000Z");
   return {
     id: "issue-1",
-    companyId: "company-1",
+    productId: "company-1",
     projectId: null,
     projectWorkspaceId: null,
     goalId: null,

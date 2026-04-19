@@ -47,29 +47,29 @@ export function useDismissedInboxAlerts() {
   return { dismissed, dismiss };
 }
 
-export function useInboxDismissals(companyId: string | null | undefined) {
+export function useInboxDismissals(productId: string | null | undefined) {
   const queryClient = useQueryClient();
-  const queryKey = companyId
-    ? queryKeys.inboxDismissals(companyId)
+  const queryKey = productId
+    ? queryKeys.inboxDismissals(productId)
     : ["inbox-dismissals", "__disabled__"] as const;
 
   const { data: dismissals = [] } = useQuery({
     queryKey,
-    queryFn: () => inboxDismissalsApi.list(companyId!),
-    enabled: !!companyId,
+    queryFn: () => inboxDismissalsApi.list(productId!),
+    enabled: !!productId,
   });
 
   const dismissMutation = useMutation({
-    mutationFn: ({ itemKey }: { itemKey: string }) => inboxDismissalsApi.dismiss(companyId!, itemKey),
+    mutationFn: ({ itemKey }: { itemKey: string }) => inboxDismissalsApi.dismiss(productId!, itemKey),
     onMutate: async ({ itemKey }) => {
-      if (!companyId) return { previous: [] as typeof dismissals };
+      if (!productId) return { previous: [] as typeof dismissals };
       await queryClient.cancelQueries({ queryKey });
       const previous = queryClient.getQueryData<typeof dismissals>(queryKey) ?? [];
       const now = new Date();
       queryClient.setQueryData(queryKey, [
         {
           id: `optimistic:${itemKey}`,
-          companyId,
+          productId,
           userId: "me",
           itemKey,
           dismissedAt: now,
@@ -85,9 +85,9 @@ export function useInboxDismissals(companyId: string | null | undefined) {
       queryClient.setQueryData(queryKey, context.previous);
     },
     onSettled: () => {
-      if (!companyId) return;
+      if (!productId) return;
       queryClient.invalidateQueries({ queryKey });
-      queryClient.invalidateQueries({ queryKey: queryKeys.sidebarBadges(companyId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.sidebarBadges(productId) });
     },
   });
 
@@ -137,25 +137,25 @@ export function useReadInboxItems() {
   return { readItems, markRead, markUnread };
 }
 
-export function useInboxBadge(companyId: string | null | undefined) {
+export function useInboxBadge(productId: string | null | undefined) {
   const { dismissed: dismissedAlerts } = useDismissedInboxAlerts();
-  const { dismissedAtByKey } = useInboxDismissals(companyId);
+  const { dismissedAtByKey } = useInboxDismissals(productId);
   const { data: session } = useQuery({
     queryKey: queryKeys.auth.session,
     queryFn: () => authApi.getSession(),
   });
 
   const { data: approvals = [] } = useQuery({
-    queryKey: queryKeys.approvals.list(companyId!),
-    queryFn: () => approvalsApi.list(companyId!),
-    enabled: !!companyId,
+    queryKey: queryKeys.approvals.list(productId!),
+    queryFn: () => approvalsApi.list(productId!),
+    enabled: !!productId,
   });
 
   const { data: joinRequests = [] } = useQuery({
-    queryKey: queryKeys.access.joinRequests(companyId!),
+    queryKey: queryKeys.access.joinRequests(productId!),
     queryFn: async () => {
       try {
-        return await accessApi.listJoinRequests(companyId!, "pending_approval");
+        return await accessApi.listJoinRequests(productId!, "pending_approval");
       } catch (err) {
         if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
           return [];
@@ -163,34 +163,34 @@ export function useInboxBadge(companyId: string | null | undefined) {
         throw err;
       }
     },
-    enabled: !!companyId,
+    enabled: !!productId,
     retry: false,
   });
 
   const { data: dashboard } = useQuery({
-    queryKey: queryKeys.dashboard(companyId!),
-    queryFn: () => dashboardApi.summary(companyId!),
-    enabled: !!companyId,
+    queryKey: queryKeys.dashboard(productId!),
+    queryFn: () => dashboardApi.summary(productId!),
+    enabled: !!productId,
   });
 
   const { data: mineIssuesRaw = [] } = useQuery({
-    queryKey: queryKeys.issues.listMineByMe(companyId!),
+    queryKey: queryKeys.issues.listMineByMe(productId!),
     queryFn: () =>
-      issuesApi.list(companyId!, {
+      issuesApi.list(productId!, {
         touchedByUserId: "me",
         inboxArchivedByUserId: "me",
         status: INBOX_ISSUE_STATUSES,
       }),
-    enabled: !!companyId,
+    enabled: !!productId,
   });
 
   const mineIssues = useMemo(() => getRecentTouchedIssues(mineIssuesRaw), [mineIssuesRaw]);
   const currentUserId = session?.user.id ?? session?.session.userId ?? null;
 
   const { data: heartbeatRuns = [] } = useQuery({
-    queryKey: [...queryKeys.heartbeats(companyId!), "limit", INBOX_BADGE_HEARTBEAT_RUN_LIMIT],
-    queryFn: () => heartbeatsApi.list(companyId!, undefined, INBOX_BADGE_HEARTBEAT_RUN_LIMIT),
-    enabled: !!companyId,
+    queryKey: [...queryKeys.heartbeats(productId!), "limit", INBOX_BADGE_HEARTBEAT_RUN_LIMIT],
+    queryFn: () => heartbeatsApi.list(productId!, undefined, INBOX_BADGE_HEARTBEAT_RUN_LIMIT),
+    enabled: !!productId,
   });
 
   return useMemo(

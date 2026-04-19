@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import type { Issue } from "@paperclipai/shared";
+import type { Issue } from "@softclipai/shared";
 import { buildIssueTree, countDescendants } from "./issue-tree";
 
 function makeIssue(id: string, parentId: string | null = null): Issue {
   return {
     id,
     identifier: id.toUpperCase(),
-    companyId: "company-1",
+    productId: "company-1",
     projectId: null,
     projectWorkspaceId: null,
     goalId: null,

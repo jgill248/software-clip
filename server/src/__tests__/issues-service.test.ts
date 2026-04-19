@@ -5,7 +5,7 @@ import { sql } from "drizzle-orm";
 import {
   activityLog,
   agents,
-  companies,
+  products,
   createDb,
   executionWorkspaces,
   instanceSettings,
@@ -15,14 +15,14 @@ import {
   issues,
   projectWorkspaces,
   projects,
-} from "@paperclipai/db";
+} from "@softclipai/db";
 import {
   getEmbeddedPostgresTestSupport,
   startEmbeddedPostgresTestDatabase,
 } from "./helpers/embedded-postgres.js";
 import { instanceSettingsService } from "../services/instance-settings.ts";
 import { issueService } from "../services/issues.ts";
-import { buildProjectMentionHref } from "@paperclipai/shared";
+import { buildProjectMentionHref } from "@softclipai/shared";
 
 const embeddedPostgresSupport = await getEmbeddedPostgresTestSupport();
 const describeEmbeddedPostgres = embeddedPostgresSupport.supported ? describe : describe.skip;
@@ -72,7 +72,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     await db.delete(projects);
     await db.delete(agents);
     await db.delete(instanceSettings);
-    await db.delete(companies);
+    await db.delete(products);
   });
 
   afterAll(async () => {
@@ -80,20 +80,20 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
   });
 
   it("returns issues an agent participated in across the supported signals", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const otherAgentId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(agents).values([
       {
         id: agentId,
-        companyId,
+        productId,
         name: "CodexCoder",
         role: "engineer",
         status: "active",
@@ -104,7 +104,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: otherAgentId,
-        companyId,
+        productId,
         name: "OtherAgent",
         role: "engineer",
         status: "active",
@@ -124,7 +124,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     await db.insert(issues).values([
       {
         id: assignedIssueId,
-        companyId,
+        productId,
         title: "Assigned issue",
         status: "todo",
         priority: "medium",
@@ -133,7 +133,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: createdIssueId,
-        companyId,
+        productId,
         title: "Created issue",
         status: "todo",
         priority: "medium",
@@ -141,7 +141,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: commentedIssueId,
-        companyId,
+        productId,
         title: "Commented issue",
         status: "todo",
         priority: "medium",
@@ -149,7 +149,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: activityIssueId,
-        companyId,
+        productId,
         title: "Activity issue",
         status: "todo",
         priority: "medium",
@@ -157,7 +157,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: excludedIssueId,
-        companyId,
+        productId,
         title: "Excluded issue",
         status: "todo",
         priority: "medium",
@@ -167,14 +167,14 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     ]);
 
     await db.insert(issueComments).values({
-      companyId,
+      productId,
       issueId: commentedIssueId,
       authorAgentId: agentId,
       body: "Investigating this issue.",
     });
 
     await db.insert(activityLog).values({
-      companyId,
+      productId,
       actorType: "agent",
       actorId: agentId,
       action: "issue.updated",
@@ -184,7 +184,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       details: { changed: true },
     });
 
-    const result = await svc.list(companyId, { participantAgentId: agentId });
+    const result = await svc.list(productId, { participantAgentId: agentId });
     const resultIds = new Set(result.map((issue) => issue.id));
 
     expect(resultIds).toEqual(new Set([
@@ -197,18 +197,18 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
   });
 
   it("combines participation filtering with search", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(agents).values({
       id: agentId,
-      companyId,
+      productId,
       name: "CodexCoder",
       role: "engineer",
       status: "active",
@@ -224,7 +224,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     await db.insert(issues).values([
       {
         id: matchedIssueId,
-        companyId,
+        productId,
         title: "Invoice reconciliation",
         status: "todo",
         priority: "medium",
@@ -232,7 +232,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: otherIssueId,
-        companyId,
+        productId,
         title: "Weekly planning",
         status: "todo",
         priority: "medium",
@@ -240,7 +240,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
     ]);
 
-    const result = await svc.list(companyId, {
+    const result = await svc.list(productId, {
       participantAgentId: agentId,
       q: "invoice",
     });
@@ -249,12 +249,12 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
   });
 
   it("applies result limits to issue search", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     const exactIdentifierId = randomUUID();
@@ -264,7 +264,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     await db.insert(issues).values([
       {
         id: exactIdentifierId,
-        companyId,
+        productId,
         issueNumber: 42,
         identifier: "PAP-42",
         title: "Completely unrelated",
@@ -273,14 +273,14 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: titleMatchId,
-        companyId,
+        productId,
         title: "Search ranking issue",
         status: "todo",
         priority: "medium",
       },
       {
         id: descriptionMatchId,
-        companyId,
+        productId,
         title: "Another item",
         description: "Contains the search keyword",
         status: "todo",
@@ -288,7 +288,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
     ]);
 
-    const result = await svc.list(companyId, {
+    const result = await svc.list(productId, {
       q: "search",
       limit: 2,
     });
@@ -297,27 +297,27 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
   });
 
   it("ranks comment matches ahead of description-only matches", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const commentMatchId = randomUUID();
     const descriptionMatchId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(issues).values([
       {
         id: commentMatchId,
-        companyId,
+        productId,
         title: "Comment match",
         status: "todo",
         priority: "medium",
       },
       {
         id: descriptionMatchId,
-        companyId,
+        productId,
         title: "Description match",
         description: "Contains pull/3303 in the description",
         status: "todo",
@@ -326,12 +326,12 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     ]);
 
     await db.insert(issueComments).values({
-      companyId,
+      productId,
       issueId: commentMatchId,
       body: "Reference: https://github.com/paperclipai/paperclip/pull/3303",
     });
 
-    const result = await svc.list(companyId, {
+    const result = await svc.list(productId, {
       q: "pull/3303",
       limit: 2,
       includeRoutineExecutions: true,
@@ -341,18 +341,18 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
   });
 
   it("accepts issue identifiers through getById", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const issueId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
       issuePrefix: "PAP",
     });
 
     await db.insert(issues).values({
       id: issueId,
-      companyId,
+      productId,
       issueNumber: 1064,
       identifier: "PAP-1064",
       title: "Feedback votes error",
@@ -375,7 +375,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     await expect(svc.getById("not-a-uuid")).resolves.toBeNull();
   });
   it("filters issues by execution workspace id", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const projectId = randomUUID();
     const targetWorkspaceId = randomUUID();
     const otherWorkspaceId = randomUUID();
@@ -383,15 +383,15 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     const otherLinkedIssueId = randomUUID();
     const unlinkedIssueId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(projects).values({
       id: projectId,
-      companyId,
+      productId,
       name: "Workspace project",
       status: "in_progress",
     });
@@ -399,7 +399,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     await db.insert(executionWorkspaces).values([
       {
         id: targetWorkspaceId,
-        companyId,
+        productId,
         projectId,
         mode: "shared_workspace",
         strategyType: "project_primary",
@@ -409,7 +409,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: otherWorkspaceId,
-        companyId,
+        productId,
         projectId,
         mode: "shared_workspace",
         strategyType: "project_primary",
@@ -422,7 +422,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     await db.insert(issues).values([
       {
         id: linkedIssueId,
-        companyId,
+        productId,
         projectId,
         title: "Linked issue",
         status: "todo",
@@ -431,7 +431,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: otherLinkedIssueId,
-        companyId,
+        productId,
         projectId,
         title: "Other linked issue",
         status: "todo",
@@ -440,7 +440,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: unlinkedIssueId,
-        companyId,
+        productId,
         projectId,
         title: "Unlinked issue",
         status: "todo",
@@ -448,20 +448,20 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
     ]);
 
-    const result = await svc.list(companyId, { executionWorkspaceId: targetWorkspaceId });
+    const result = await svc.list(productId, { executionWorkspaceId: targetWorkspaceId });
 
     expect(result.map((issue) => issue.id)).toEqual([linkedIssueId]);
   });
 
   it("hides archived inbox issues until new external activity arrives", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const userId = "user-1";
     const otherUserId = "user-2";
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     const visibleIssueId = randomUUID();
@@ -471,7 +471,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     await db.insert(issues).values([
       {
         id: visibleIssueId,
-        companyId,
+        productId,
         title: "Visible issue",
         status: "todo",
         priority: "medium",
@@ -481,7 +481,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: archivedIssueId,
-        companyId,
+        productId,
         title: "Archived issue",
         status: "todo",
         priority: "medium",
@@ -491,7 +491,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: resurfacedIssueId,
-        companyId,
+        productId,
         title: "Resurfaced issue",
         status: "todo",
         priority: "medium",
@@ -501,11 +501,11 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
     ]);
 
-    await svc.archiveInbox(companyId, archivedIssueId, userId, new Date("2026-03-26T12:30:00.000Z"));
-    await svc.archiveInbox(companyId, resurfacedIssueId, userId, new Date("2026-03-26T13:00:00.000Z"));
+    await svc.archiveInbox(productId, archivedIssueId, userId, new Date("2026-03-26T12:30:00.000Z"));
+    await svc.archiveInbox(productId, resurfacedIssueId, userId, new Date("2026-03-26T13:00:00.000Z"));
 
     await db.insert(issueComments).values({
-      companyId,
+      productId,
       issueId: resurfacedIssueId,
       authorUserId: otherUserId,
       body: "This should bring the issue back into Mine.",
@@ -513,7 +513,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       updatedAt: new Date("2026-03-26T13:30:00.000Z"),
     });
 
-    const archivedFiltered = await svc.list(companyId, {
+    const archivedFiltered = await svc.list(productId, {
       touchedByUserId: userId,
       inboxArchivedByUserId: userId,
     });
@@ -523,9 +523,9 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       visibleIssueId,
     ]);
 
-    await svc.unarchiveInbox(companyId, archivedIssueId, userId);
+    await svc.unarchiveInbox(productId, archivedIssueId, userId);
 
-    const afterUnarchive = await svc.list(companyId, {
+    const afterUnarchive = await svc.list(productId, {
       touchedByUserId: userId,
       inboxArchivedByUserId: userId,
     });
@@ -538,21 +538,21 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
   });
 
   it("resurfaces archived issue when status/updatedAt changes after archiving", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const userId = "user-1";
     const otherUserId = "user-2";
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     const issueId = randomUUID();
 
     await db.insert(issues).values({
       id: issueId,
-      companyId,
+      productId,
       title: "Issue with old comment then status change",
       status: "todo",
       priority: "medium",
@@ -563,7 +563,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
 
     // Old external comment before archiving
     await db.insert(issueComments).values({
-      companyId,
+      productId,
       issueId,
       authorUserId: otherUserId,
       body: "Old comment before archive",
@@ -573,14 +573,14 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
 
     // Archive after seeing the comment
     await svc.archiveInbox(
-      companyId,
+      productId,
       issueId,
       userId,
       new Date("2026-03-26T12:00:00.000Z"),
     );
 
     // Verify it's archived
-    const afterArchive = await svc.list(companyId, {
+    const afterArchive = await svc.list(productId, {
       touchedByUserId: userId,
       inboxArchivedByUserId: userId,
     });
@@ -596,7 +596,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       .where(eq(issues.id, issueId));
 
     // Should resurface because updatedAt > archivedAt
-    const afterUpdate = await svc.list(companyId, {
+    const afterUpdate = await svc.list(productId, {
       touchedByUserId: userId,
       inboxArchivedByUserId: userId,
     });
@@ -604,21 +604,21 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
   });
 
   it("sorts and exposes last activity from comments and non-local issue activity logs", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const olderIssueId = randomUUID();
     const commentIssueId = randomUUID();
     const activityIssueId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(issues).values([
       {
         id: olderIssueId,
-        companyId,
+        productId,
         title: "Older issue",
         status: "todo",
         priority: "medium",
@@ -626,7 +626,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: commentIssueId,
-        companyId,
+        productId,
         title: "Comment activity issue",
         status: "todo",
         priority: "medium",
@@ -634,7 +634,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
       {
         id: activityIssueId,
-        companyId,
+        productId,
         title: "Logged activity issue",
         status: "todo",
         priority: "medium",
@@ -643,7 +643,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     ]);
 
     await db.insert(issueComments).values({
-      companyId,
+      productId,
       issueId: commentIssueId,
       body: "New comment without touching issue.updatedAt",
       createdAt: new Date("2026-03-26T11:00:00.000Z"),
@@ -652,7 +652,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
 
     await db.insert(activityLog).values([
       {
-        companyId,
+        productId,
         actorType: "system",
         actorId: "system",
         action: "issue.document_updated",
@@ -661,7 +661,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
         createdAt: new Date("2026-03-26T12:00:00.000Z"),
       },
       {
-        companyId,
+        productId,
         actorType: "user",
         actorId: "user-1",
         action: "issue.read_marked",
@@ -671,7 +671,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       },
     ]);
 
-    const result = await svc.list(companyId, {});
+    const result = await svc.list(productId, {});
 
     expect(result.map((issue) => issue.id)).toEqual([
       activityIssueId,
@@ -690,19 +690,19 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
   });
 
   it("trims list payload fields that can grow large on issue index routes", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const issueId = randomUUID();
     const longDescription = "x".repeat(5_000);
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(issues).values({
       id: issueId,
-      companyId,
+      productId,
       title: "Large issue",
       description: longDescription,
       status: "todo",
@@ -712,7 +712,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       executionWorkspaceSettings: { notes: "w".repeat(2_000) },
     });
 
-    const [result] = await svc.list(companyId);
+    const [result] = await svc.list(productId);
 
     expect(result).toBeTruthy();
     expect(result?.description).toHaveLength(1200);
@@ -745,7 +745,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
     await db.delete(projects);
     await db.delete(agents);
     await db.delete(instanceSettings);
-    await db.delete(companies);
+    await db.delete(products);
   });
 
   afterAll(async () => {
@@ -753,29 +753,29 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
   });
 
   it("inherits the parent issue workspace linkage when child workspace fields are omitted", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const projectId = randomUUID();
     const parentIssueId = randomUUID();
     const projectWorkspaceId = randomUUID();
     const executionWorkspaceId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
 
     await db.insert(projects).values({
       id: projectId,
-      companyId,
+      productId,
       name: "Workspace project",
       status: "in_progress",
     });
 
     await db.insert(projectWorkspaces).values({
       id: projectWorkspaceId,
-      companyId,
+      productId,
       projectId,
       name: "Primary workspace",
       isPrimary: true,
@@ -784,7 +784,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(executionWorkspaces).values({
       id: executionWorkspaceId,
-      companyId,
+      productId,
       projectId,
       projectWorkspaceId,
       mode: "isolated_workspace",
@@ -797,7 +797,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(issues).values({
       id: parentIssueId,
-      companyId,
+      productId,
       projectId,
       projectWorkspaceId,
       title: "Parent issue",
@@ -811,7 +811,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       },
     });
 
-    const child = await svc.create(companyId, {
+    const child = await svc.create(productId, {
       parentId: parentIssueId,
       projectId,
       title: "Child issue",
@@ -828,7 +828,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
   });
 
   it("keeps explicit workspace fields instead of inheriting the parent linkage", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const projectId = randomUUID();
     const parentIssueId = randomUUID();
     const parentProjectWorkspaceId = randomUUID();
@@ -836,16 +836,16 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
     const explicitProjectWorkspaceId = randomUUID();
     const explicitExecutionWorkspaceId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
 
     await db.insert(projects).values({
       id: projectId,
-      companyId,
+      productId,
       name: "Workspace project",
       status: "in_progress",
     });
@@ -853,13 +853,13 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
     await db.insert(projectWorkspaces).values([
       {
         id: parentProjectWorkspaceId,
-        companyId,
+        productId,
         projectId,
         name: "Parent workspace",
       },
       {
         id: explicitProjectWorkspaceId,
-        companyId,
+        productId,
         projectId,
         name: "Explicit workspace",
       },
@@ -868,7 +868,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
     await db.insert(executionWorkspaces).values([
       {
         id: parentExecutionWorkspaceId,
-        companyId,
+        productId,
         projectId,
         projectWorkspaceId: parentProjectWorkspaceId,
         mode: "isolated_workspace",
@@ -879,7 +879,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       },
       {
         id: explicitExecutionWorkspaceId,
-        companyId,
+        productId,
         projectId,
         projectWorkspaceId: explicitProjectWorkspaceId,
         mode: "shared_workspace",
@@ -892,7 +892,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(issues).values({
       id: parentIssueId,
-      companyId,
+      productId,
       projectId,
       projectWorkspaceId: parentProjectWorkspaceId,
       title: "Parent issue",
@@ -905,7 +905,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       },
     });
 
-    const child = await svc.create(companyId, {
+    const child = await svc.create(productId, {
       parentId: parentIssueId,
       projectId,
       title: "Child issue",
@@ -926,36 +926,36 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
   });
 
   it("inherits workspace linkage from an explicit source issue without creating a parent-child relationship", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const projectId = randomUUID();
     const sourceIssueId = randomUUID();
     const projectWorkspaceId = randomUUID();
     const executionWorkspaceId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
 
     await db.insert(projects).values({
       id: projectId,
-      companyId,
+      productId,
       name: "Workspace project",
       status: "in_progress",
     });
 
     await db.insert(projectWorkspaces).values({
       id: projectWorkspaceId,
-      companyId,
+      productId,
       projectId,
       name: "Primary workspace",
     });
 
     await db.insert(executionWorkspaces).values({
       id: executionWorkspaceId,
-      companyId,
+      productId,
       projectId,
       projectWorkspaceId,
       mode: "operator_branch",
@@ -967,7 +967,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(issues).values({
       id: sourceIssueId,
-      companyId,
+      productId,
       projectId,
       projectWorkspaceId,
       title: "Source issue",
@@ -980,7 +980,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       },
     });
 
-    const followUp = await svc.create(companyId, {
+    const followUp = await svc.create(productId, {
       projectId,
       title: "Follow-up issue",
       inheritExecutionWorkspaceFromIssueId: sourceIssueId,
@@ -1019,7 +1019,7 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
     await db.delete(projects);
     await db.delete(agents);
     await db.delete(instanceSettings);
-    await db.delete(companies);
+    await db.delete(products);
   });
 
   afterAll(async () => {
@@ -1027,11 +1027,11 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
   });
 
   it("persists blocked-by relations and exposes both blockedBy and blocks summaries", async () => {
-    const companyId = randomUUID();
-    await db.insert(companies).values({
-      id: companyId,
+    const productId = randomUUID();
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     const blockerId = randomUUID();
@@ -1039,14 +1039,14 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
     await db.insert(issues).values([
       {
         id: blockerId,
-        companyId,
+        productId,
         title: "Blocker",
         status: "todo",
         priority: "high",
       },
       {
         id: blockedId,
-        companyId,
+        productId,
         title: "Blocked issue",
         status: "blocked",
         priority: "medium",
@@ -1065,18 +1065,18 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
   });
 
   it("rejects blocking cycles", async () => {
-    const companyId = randomUUID();
-    await db.insert(companies).values({
-      id: companyId,
+    const productId = randomUUID();
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     const issueA = randomUUID();
     const issueB = randomUUID();
     await db.insert(issues).values([
-      { id: issueA, companyId, title: "Issue A", status: "todo", priority: "medium" },
-      { id: issueB, companyId, title: "Issue B", status: "todo", priority: "medium" },
+      { id: issueA, productId, title: "Issue A", status: "todo", priority: "medium" },
+      { id: issueB, productId, title: "Issue B", status: "todo", priority: "medium" },
     ]);
 
     await svc.update(issueA, { blockedByIssueIds: [issueB] });
@@ -1087,16 +1087,16 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
   });
 
   it("only returns dependents once every blocker is done", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const assigneeAgentId = randomUUID();
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await db.insert(agents).values({
       id: assigneeAgentId,
-      companyId,
+      productId,
       name: "CodexCoder",
       role: "engineer",
       status: "active",
@@ -1110,11 +1110,11 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
     const blockerB = randomUUID();
     const blockedIssueId = randomUUID();
     await db.insert(issues).values([
-      { id: blockerA, companyId, title: "Blocker A", status: "done", priority: "medium" },
-      { id: blockerB, companyId, title: "Blocker B", status: "todo", priority: "medium" },
+      { id: blockerA, productId, title: "Blocker A", status: "done", priority: "medium" },
+      { id: blockerB, productId, title: "Blocker B", status: "todo", priority: "medium" },
       {
         id: blockedIssueId,
-        companyId,
+        productId,
         title: "Blocked issue",
         status: "blocked",
         priority: "medium",
@@ -1138,16 +1138,16 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
   });
 
   it("wakes parents only when all direct children are terminal", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const assigneeAgentId = randomUUID();
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await db.insert(agents).values({
       id: assigneeAgentId,
-      companyId,
+      productId,
       name: "CodexCoder",
       role: "engineer",
       status: "active",
@@ -1163,7 +1163,7 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
     await db.insert(issues).values([
       {
         id: parentId,
-        companyId,
+        productId,
         title: "Parent issue",
         status: "todo",
         priority: "medium",
@@ -1171,7 +1171,7 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
       },
       {
         id: childA,
-        companyId,
+        productId,
         parentId,
         title: "Child A",
         status: "done",
@@ -1179,7 +1179,7 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
       },
       {
         id: childB,
-        companyId,
+        productId,
         parentId,
         title: "Child B",
         status: "blocked",
@@ -1222,7 +1222,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
     await db.delete(projects);
     await db.delete(agents);
     await db.delete(instanceSettings);
-    await db.delete(companies);
+    await db.delete(products);
   });
 
   afterAll(async () => {
@@ -1230,29 +1230,29 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
   });
 
   it("inherits the parent issue workspace linkage when child workspace fields are omitted", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const projectId = randomUUID();
     const parentIssueId = randomUUID();
     const projectWorkspaceId = randomUUID();
     const executionWorkspaceId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
 
     await db.insert(projects).values({
       id: projectId,
-      companyId,
+      productId,
       name: "Workspace project",
       status: "in_progress",
     });
 
     await db.insert(projectWorkspaces).values({
       id: projectWorkspaceId,
-      companyId,
+      productId,
       projectId,
       name: "Primary workspace",
       isPrimary: true,
@@ -1261,7 +1261,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(executionWorkspaces).values({
       id: executionWorkspaceId,
-      companyId,
+      productId,
       projectId,
       projectWorkspaceId,
       mode: "isolated_workspace",
@@ -1274,7 +1274,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(issues).values({
       id: parentIssueId,
-      companyId,
+      productId,
       projectId,
       projectWorkspaceId,
       title: "Parent issue",
@@ -1288,7 +1288,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       },
     });
 
-    const child = await svc.create(companyId, {
+    const child = await svc.create(productId, {
       parentId: parentIssueId,
       projectId,
       title: "Child issue",
@@ -1305,7 +1305,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
   });
 
   it("keeps explicit workspace fields instead of inheriting the parent linkage", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const projectId = randomUUID();
     const parentIssueId = randomUUID();
     const parentProjectWorkspaceId = randomUUID();
@@ -1313,16 +1313,16 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
     const explicitProjectWorkspaceId = randomUUID();
     const explicitExecutionWorkspaceId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
 
     await db.insert(projects).values({
       id: projectId,
-      companyId,
+      productId,
       name: "Workspace project",
       status: "in_progress",
     });
@@ -1330,13 +1330,13 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
     await db.insert(projectWorkspaces).values([
       {
         id: parentProjectWorkspaceId,
-        companyId,
+        productId,
         projectId,
         name: "Parent workspace",
       },
       {
         id: explicitProjectWorkspaceId,
-        companyId,
+        productId,
         projectId,
         name: "Explicit workspace",
       },
@@ -1345,7 +1345,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
     await db.insert(executionWorkspaces).values([
       {
         id: parentExecutionWorkspaceId,
-        companyId,
+        productId,
         projectId,
         projectWorkspaceId: parentProjectWorkspaceId,
         mode: "isolated_workspace",
@@ -1356,7 +1356,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       },
       {
         id: explicitExecutionWorkspaceId,
-        companyId,
+        productId,
         projectId,
         projectWorkspaceId: explicitProjectWorkspaceId,
         mode: "shared_workspace",
@@ -1369,7 +1369,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(issues).values({
       id: parentIssueId,
-      companyId,
+      productId,
       projectId,
       projectWorkspaceId: parentProjectWorkspaceId,
       title: "Parent issue",
@@ -1382,7 +1382,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       },
     });
 
-    const child = await svc.create(companyId, {
+    const child = await svc.create(productId, {
       parentId: parentIssueId,
       projectId,
       title: "Child issue",
@@ -1403,36 +1403,36 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
   });
 
   it("inherits workspace linkage from an explicit source issue without creating a parent-child relationship", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const projectId = randomUUID();
     const sourceIssueId = randomUUID();
     const projectWorkspaceId = randomUUID();
     const executionWorkspaceId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
 
     await db.insert(projects).values({
       id: projectId,
-      companyId,
+      productId,
       name: "Workspace project",
       status: "in_progress",
     });
 
     await db.insert(projectWorkspaces).values({
       id: projectWorkspaceId,
-      companyId,
+      productId,
       projectId,
       name: "Primary workspace",
     });
 
     await db.insert(executionWorkspaces).values({
       id: executionWorkspaceId,
-      companyId,
+      productId,
       projectId,
       projectWorkspaceId,
       mode: "operator_branch",
@@ -1444,7 +1444,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(issues).values({
       id: sourceIssueId,
-      companyId,
+      productId,
       projectId,
       projectWorkspaceId,
       title: "Source issue",
@@ -1457,7 +1457,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
       },
     });
 
-    const followUp = await svc.create(companyId, {
+    const followUp = await svc.create(productId, {
       projectId,
       title: "Follow-up issue",
       inheritExecutionWorkspaceFromIssueId: sourceIssueId,
@@ -1496,7 +1496,7 @@ describeEmbeddedPostgres("issueService.findMentionedProjectIds", () => {
     await db.delete(projects);
     await db.delete(agents);
     await db.delete(instanceSettings);
-    await db.delete(companies);
+    await db.delete(products);
   });
 
   afterAll(async () => {
@@ -1504,27 +1504,27 @@ describeEmbeddedPostgres("issueService.findMentionedProjectIds", () => {
   });
 
   it("can skip comment-body scans for bounded issue detail reads", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const issueId = randomUUID();
     const titleProjectId = randomUUID();
     const commentProjectId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(projects).values([
       {
         id: titleProjectId,
-        companyId,
+        productId,
         name: "Title project",
         status: "in_progress",
       },
       {
         id: commentProjectId,
-        companyId,
+        productId,
         name: "Comment project",
         status: "in_progress",
       },
@@ -1532,7 +1532,7 @@ describeEmbeddedPostgres("issueService.findMentionedProjectIds", () => {
 
     await db.insert(issues).values({
       id: issueId,
-      companyId,
+      productId,
       title: `Link [Title](${buildProjectMentionHref(titleProjectId)})`,
       description: null,
       status: "todo",
@@ -1540,7 +1540,7 @@ describeEmbeddedPostgres("issueService.findMentionedProjectIds", () => {
     });
 
     await db.insert(issueComments).values({
-      companyId,
+      productId,
       issueId,
       body: `Comment link [Comment](${buildProjectMentionHref(commentProjectId)})`,
     });

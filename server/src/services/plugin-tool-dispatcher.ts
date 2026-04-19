@@ -22,12 +22,12 @@
  * @see PLUGIN_SPEC.md §13.10 — `executeTool`
  */
 
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import type {
   PaperclipPluginManifestV1,
   PluginRecord,
-} from "@paperclipai/shared";
-import type { ToolRunContext, ToolResult } from "@paperclipai/plugin-sdk";
+} from "@softclipai/shared";
+import type { ToolRunContext, ToolResult } from "@softclipai/plugin-sdk";
 import type { PluginWorkerManager } from "./plugin-worker-manager.js";
 import type { PluginLifecycleManager } from "./plugin-lifecycle.js";
 import {
@@ -215,7 +215,7 @@ export interface PluginToolDispatcher {
  * const result = await dispatcher.executeTool(
  *   "acme.linear:search-issues",
  *   { query: "auth bug" },
- *   { agentId: "a-1", runId: "r-1", companyId: "c-1", projectId: "p-1" },
+ *   { agentId: "a-1", runId: "r-1", productId: "c-1", projectId: "p-1" },
  * );
  * ```
  */

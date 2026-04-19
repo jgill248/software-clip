@@ -7,7 +7,7 @@ import type {
   FeedbackVoteValue,
   Issue,
   IssueDocument,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import { useLocation } from "@/lib/router";
 import { ApiError } from "../api/client";
 import { issuesApi } from "../api/issues";
@@ -111,7 +111,7 @@ function documentHasUnsavedChanges(doc: IssueDocument, draft: DraftState | null)
 function toDocumentSummary(document: IssueDocument) {
   return {
     id: document.id,
-    companyId: document.companyId,
+    productId: document.productId,
     issueId: document.issueId,
     key: document.key,
     title: document.title,

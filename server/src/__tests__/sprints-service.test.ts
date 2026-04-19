@@ -11,7 +11,7 @@ type SprintState = "planned" | "active" | "closed";
 
 type SprintRow = {
   id: string;
-  companyId: string;
+  productId: string;
   name: string;
   goal: string | null;
   state: SprintState;
@@ -29,7 +29,7 @@ type SprintRow = {
 
 type IssueRow = {
   id: string;
-  companyId: string;
+  productId: string;
   sprintId: string | null;
   status: string;
   priority: string;
@@ -46,7 +46,7 @@ function makeSprint(overrides: Partial<SprintRow> = {}): SprintRow {
   const now = new Date("2026-04-18T00:00:00.000Z");
   return {
     id: overrides.id ?? `sprint-${Math.random().toString(36).slice(2, 8)}`,
-    companyId: overrides.companyId ?? "co-1",
+    productId: overrides.productId ?? "co-1",
     name: overrides.name ?? "Sprint 1",
     goal: overrides.goal ?? null,
     state: overrides.state ?? "planned",
@@ -172,7 +172,7 @@ function makeDbStub(state: StubState) {
   } as any;
 }
 
-// The service imports `sprints` and `issues` from @paperclipai/db. Tests
+// The service imports `sprints` and `issues` from @softclipai/db. Tests
 // don't control those imports, but the stub's fromTargetFromFirstArg()
 // falls back to "sprints" for unknown tables. To make the stub route
 // correctly for issue queries we inject the tag via module mock in the

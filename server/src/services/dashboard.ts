@@ -1,6 +1,6 @@
 import { and, eq, gte, sql } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
-import { agents, approvals, companies, costEvents, issues } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
+import { agents, approvals, products, costEvents, issues } from "@softclipai/db";
 import { notFound } from "../errors.js";
 
 // Softclip pivot §6: budgetService dependency removed. The `budgets`
@@ -9,11 +9,11 @@ import { notFound } from "../errors.js";
 // drop the field entirely.
 export function dashboardService(db: Db) {
   return {
-    summary: async (companyId: string) => {
+    summary: async (productId: string) => {
       const company = await db
         .select()
-        .from(companies)
-        .where(eq(companies.id, companyId))
+        .from(products)
+        .where(eq(products.id, productId))
         .then((rows) => rows[0] ?? null);
 
       if (!company) throw notFound("Company not found");
@@ -21,19 +21,19 @@ export function dashboardService(db: Db) {
       const agentRows = await db
         .select({ status: agents.status, count: sql<number>`count(*)` })
         .from(agents)
-        .where(eq(agents.companyId, companyId))
+        .where(eq(agents.productId, productId))
         .groupBy(agents.status);
 
       const taskRows = await db
         .select({ status: issues.status, count: sql<number>`count(*)` })
         .from(issues)
-        .where(eq(issues.companyId, companyId))
+        .where(eq(issues.productId, productId))
         .groupBy(issues.status);
 
       const pendingApprovals = await db
         .select({ count: sql<number>`count(*)` })
         .from(approvals)
-        .where(and(eq(approvals.companyId, companyId), eq(approvals.status, "pending")))
+        .where(and(eq(approvals.productId, productId), eq(approvals.status, "pending")))
         .then((rows) => Number(rows[0]?.count ?? 0));
 
       const agentCounts: Record<string, number> = {
@@ -72,7 +72,7 @@ export function dashboardService(db: Db) {
         .from(costEvents)
         .where(
           and(
-            eq(costEvents.companyId, companyId),
+            eq(costEvents.productId, productId),
             gte(costEvents.occurredAt, monthStart),
           ),
         );
@@ -83,7 +83,7 @@ export function dashboardService(db: Db) {
           ? (monthSpendCents / company.budgetMonthlyCents) * 100
           : 0;
       return {
-        companyId,
+        productId,
         agents: {
           active: agentCounts.active,
           running: agentCounts.running,

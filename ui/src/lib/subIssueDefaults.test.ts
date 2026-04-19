@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { ExecutionWorkspace, Issue } from "@paperclipai/shared";
+import type { ExecutionWorkspace, Issue } from "@softclipai/shared";
 import { buildSubIssueDefaults, buildSubIssueDefaultsForViewer } from "./subIssueDefaults";
 
 function makeExecutionWorkspace(overrides: Partial<ExecutionWorkspace> = {}): ExecutionWorkspace {
   return {
     id: "workspace-1",
-    companyId: "company-1",
+    productId: "company-1",
     projectId: "project-1",
     projectWorkspaceId: "project-workspace-1",
     sourceIssueId: null,
@@ -37,7 +37,7 @@ function makeIssue(overrides: Partial<Issue> = {}): Issue {
   return {
     id: "issue-1",
     identifier: "PAP-1",
-    companyId: "company-1",
+    productId: "company-1",
     projectId: "project-1",
     projectWorkspaceId: "project-workspace-1",
     goalId: "goal-1",

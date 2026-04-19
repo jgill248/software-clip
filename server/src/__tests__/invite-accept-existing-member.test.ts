@@ -28,7 +28,7 @@ function createDbStub() {
   const updateMock = vi.fn();
   const invite = {
     id: "invite-1",
-    companyId: "company-1",
+    productId: "company-1",
     inviteType: "company_join",
     allowedJoinTypes: "human",
     tokenHash: "hash",
@@ -82,10 +82,10 @@ function createApp(db: Record<string, unknown>) {
       type: "board",
       source: "session",
       userId: "user-1",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       memberships: [
         {
-          companyId: "company-1",
+          productId: "company-1",
           membershipRole: "owner",
           status: "active",
         },

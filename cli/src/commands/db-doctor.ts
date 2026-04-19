@@ -5,7 +5,7 @@ import {
   createDb,
   inspectMigrations,
   type MigrationState,
-} from "@paperclipai/db";
+} from "@softclipai/db";
 import { loadPaperclipEnvFile } from "../config/env.js";
 import { resolveConfigPath } from "../config/store.js";
 import { resolveDbUrl } from "../config/db-url.js";

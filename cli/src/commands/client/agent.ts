@@ -1,9 +1,9 @@
 import { Command } from "commander";
-import type { Agent } from "@paperclipai/shared";
+import type { Agent } from "@softclipai/shared";
 import {
   removeMaintainerOnlySkillSymlinks,
   resolvePaperclipSkillsDir,
-} from "@paperclipai/adapter-utils/server-utils";
+} from "@softclipai/adapter-utils/server-utils";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -18,11 +18,11 @@ import {
 } from "./common.js";
 
 interface AgentListOptions extends BaseClientOptions {
-  companyId?: string;
+  productId?: string;
 }
 
 interface AgentLocalCliOptions extends BaseClientOptions {
-  companyId?: string;
+  productId?: string;
   keyName?: string;
   installSkills?: boolean;
 }
@@ -143,14 +143,14 @@ async function installSkillsForTarget(
 
 function buildAgentEnvExports(input: {
   apiBase: string;
-  companyId: string;
+  productId: string;
   agentId: string;
   apiKey: string;
 }): string {
   const escaped = (value: string) => value.replace(/'/g, "'\"'\"'");
   return [
     `export PAPERCLIP_API_URL='${escaped(input.apiBase)}'`,
-    `export PAPERCLIP_COMPANY_ID='${escaped(input.companyId)}'`,
+    `export PAPERCLIP_COMPANY_ID='${escaped(input.productId)}'`,
     `export PAPERCLIP_AGENT_ID='${escaped(input.agentId)}'`,
     `export PAPERCLIP_API_KEY='${escaped(input.apiKey)}'`,
   ].join("\n");
@@ -167,7 +167,7 @@ export function registerAgentCommands(program: Command): void {
       .action(async (opts: AgentListOptions) => {
         try {
           const ctx = resolveCommandContext(opts, { requireCompany: true });
-          const rows = (await ctx.api.get<Agent[]>(`/api/companies/${ctx.companyId}/agents`)) ?? [];
+          const rows = (await ctx.api.get<Agent[]>(`/api/companies/${ctx.productId}/agents`)) ?? [];
 
           if (ctx.json) {
             printOutput(rows, { json: true });
@@ -231,7 +231,7 @@ export function registerAgentCommands(program: Command): void {
       .action(async (agentRef: string, opts: AgentLocalCliOptions) => {
         try {
           const ctx = resolveCommandContext(opts, { requireCompany: true });
-          const query = new URLSearchParams({ companyId: ctx.companyId ?? "" });
+          const query = new URLSearchParams({ productId: ctx.productId ?? "" });
           const agentRow = await ctx.api.get<Agent>(
             `/api/agents/${encodeURIComponent(agentRef)}?${query.toString()}`,
           );
@@ -263,7 +263,7 @@ export function registerAgentCommands(program: Command): void {
 
           const exportsText = buildAgentEnvExports({
             apiBase: ctx.api.apiBase,
-            companyId: agentRow.companyId,
+            productId: agentRow.productId,
             agentId: agentRow.id,
             apiKey: key.token,
           });
@@ -275,7 +275,7 @@ export function registerAgentCommands(program: Command): void {
                   id: agentRow.id,
                   name: agentRow.name,
                   urlKey: agentRow.urlKey,
-                  companyId: agentRow.companyId,
+                  productId: agentRow.productId,
                 },
                 key: {
                   id: key.id,

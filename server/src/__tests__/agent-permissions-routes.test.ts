@@ -3,11 +3,11 @@ import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const agentId = "11111111-1111-4111-8111-111111111111";
-const companyId = "22222222-2222-4222-8222-222222222222";
+const productId = "22222222-2222-4222-8222-222222222222";
 
 const baseAgent = {
   id: agentId,
-  companyId,
+  productId,
   name: "Builder",
   urlKey: "builder",
   role: "engineer",
@@ -89,7 +89,7 @@ const mockGetTelemetryClient = vi.hoisted(() => vi.fn());
 const mockSyncInstructionsBundleConfigFromFilePath = vi.hoisted(() => vi.fn());
 
 function registerModuleMocks() {
-  vi.doMock("@paperclipai/shared/telemetry", () => ({
+  vi.doMock("@softclipai/shared/telemetry", () => ({
     trackAgentCreated: mockTrackAgentCreated,
     trackErrorHandlerCrash: vi.fn(),
   }));
@@ -120,7 +120,7 @@ function createDbStub() {
       from: vi.fn().mockReturnValue({
         where: vi.fn().mockReturnValue({
           then: vi.fn().mockResolvedValue([{
-            id: companyId,
+            id: productId,
             name: "Paperclip",
           }]),
         }),
@@ -148,7 +148,7 @@ async function createApp(actor: Record<string, unknown>) {
 describe("agent permission routes", () => {
   beforeEach(() => {
     vi.resetModules();
-    vi.doUnmock("@paperclipai/shared/telemetry");
+    vi.doUnmock("@softclipai/shared/telemetry");
     vi.doUnmock("../telemetry.js");
     vi.doUnmock("../services/index.js");
     vi.doUnmock("../routes/agents.js");
@@ -165,7 +165,7 @@ describe("agent permission routes", () => {
     mockAgentService.updatePermissions.mockResolvedValue(baseAgent);
     mockAccessService.getMembership.mockResolvedValue({
       id: "membership-1",
-      companyId,
+      productId,
       principalType: "agent",
       principalId: agentId,
       status: "active",
@@ -208,7 +208,7 @@ describe("agent permission routes", () => {
       userId: "member-user",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app).get(`/api/agents/${agentId}`);
@@ -226,10 +226,10 @@ describe("agent permission routes", () => {
       userId: "member-user",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
-    const res = await request(app).get(`/api/companies/${companyId}/agents`);
+    const res = await request(app).get(`/api/companies/${productId}/agents`);
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual([
@@ -249,7 +249,7 @@ describe("agent permission routes", () => {
       userId: "member-user",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
@@ -267,7 +267,7 @@ describe("agent permission routes", () => {
       userId: "member-user",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
@@ -285,7 +285,7 @@ describe("agent permission routes", () => {
       userId: "member-user",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
@@ -299,7 +299,7 @@ describe("agent permission routes", () => {
     const app = await createApp({
       type: "agent",
       agentId,
-      companyId,
+      productId,
       source: "agent_key",
       runId: "run-1",
     });
@@ -324,7 +324,7 @@ describe("agent permission routes", () => {
     const app = await createApp({
       type: "agent",
       agentId,
-      companyId,
+      productId,
       source: "agent_key",
       runId: "run-1",
     });
@@ -347,7 +347,7 @@ describe("agent permission routes", () => {
     const app = await createApp({
       type: "agent",
       agentId,
-      companyId,
+      productId,
       source: "agent_key",
       runId: "run-1",
     });
@@ -367,13 +367,13 @@ describe("agent permission routes", () => {
     const app = await createApp({
       type: "agent",
       agentId,
-      companyId,
+      productId,
       source: "agent_key",
       runId: "run-1",
     });
 
     const res = await request(app)
-      .post(`/api/companies/${companyId}/agent-hires`)
+      .post(`/api/companies/${productId}/agent-hires`)
       .send({
         name: "Injected",
         role: "engineer",
@@ -396,11 +396,11 @@ describe("agent permission routes", () => {
       userId: "board-user",
       source: "local_implicit",
       isInstanceAdmin: true,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
-      .post(`/api/companies/${companyId}/agents`)
+      .post(`/api/companies/${productId}/agents`)
       .send({
         name: "Builder",
         role: "engineer",
@@ -410,14 +410,14 @@ describe("agent permission routes", () => {
 
     expect([200, 201]).toContain(res.status);
     expect(mockAccessService.ensureMembership).toHaveBeenCalledWith(
-      companyId,
+      productId,
       "agent",
       agentId,
       "member",
       "active",
     );
     expect(mockAccessService.setPrincipalPermission).toHaveBeenCalledWith(
-      companyId,
+      productId,
       "agent",
       agentId,
       "tasks:assign",
@@ -432,11 +432,11 @@ describe("agent permission routes", () => {
       userId: "board-user",
       source: "local_implicit",
       isInstanceAdmin: true,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
-      .get(`/api/companies/${companyId}/agents`)
+      .get(`/api/companies/${productId}/agents`)
       .query({ urlKey: "builder" });
 
     expect(res.status).toBe(400);
@@ -450,11 +450,11 @@ describe("agent permission routes", () => {
       userId: "board-user",
       source: "local_implicit",
       isInstanceAdmin: true,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
-      .post(`/api/companies/${companyId}/agents`)
+      .post(`/api/companies/${productId}/agents`)
       .send({
         name: "Builder",
         role: "engineer",
@@ -469,7 +469,7 @@ describe("agent permission routes", () => {
 
     expect([200, 201]).toContain(res.status);
     expect(mockAgentService.create).toHaveBeenCalledWith(
-      companyId,
+      productId,
       expect.objectContaining({
         runtimeConfig: {
           heartbeat: {
@@ -487,11 +487,11 @@ describe("agent permission routes", () => {
       userId: "board-user",
       source: "local_implicit",
       isInstanceAdmin: true,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
-      .post(`/api/companies/${companyId}/agent-hires`)
+      .post(`/api/companies/${productId}/agent-hires`)
       .send({
         name: "Builder",
         role: "engineer",
@@ -506,7 +506,7 @@ describe("agent permission routes", () => {
 
     expect(res.status).toBe(201);
     expect(mockAgentService.create).toHaveBeenCalledWith(
-      companyId,
+      productId,
       expect.objectContaining({
         runtimeConfig: {
           heartbeat: {
@@ -522,7 +522,7 @@ describe("agent permission routes", () => {
     mockAccessService.listPrincipalGrants.mockResolvedValue([
       {
         id: "grant-1",
-        companyId,
+        productId,
         principalType: "agent",
         principalId: agentId,
         permissionKey: "tasks:assign",
@@ -538,7 +538,7 @@ describe("agent permission routes", () => {
       userId: "board-user",
       source: "local_implicit",
       isInstanceAdmin: true,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app).get(`/api/agents/${agentId}`);
@@ -559,7 +559,7 @@ describe("agent permission routes", () => {
       userId: "board-user",
       source: "local_implicit",
       isInstanceAdmin: true,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
@@ -568,7 +568,7 @@ describe("agent permission routes", () => {
 
     expect(res.status).toBe(200);
     expect(mockAccessService.setPrincipalPermission).toHaveBeenCalledWith(
-      companyId,
+      productId,
       "agent",
       agentId,
       "tasks:assign",
@@ -592,7 +592,7 @@ describe("agent permission routes", () => {
     const app = await createApp({
       type: "agent",
       agentId,
-      companyId,
+      productId,
       runId: "run-1",
       source: "agent_key",
     });
@@ -615,7 +615,7 @@ describe("agent permission routes", () => {
   it("rejects heartbeat cancellation outside the caller company scope", async () => {
     mockHeartbeatService.getRun.mockResolvedValue({
       id: "run-1",
-      companyId: "33333333-3333-4333-8333-333333333333",
+      productId: "33333333-3333-4333-8333-333333333333",
       agentId,
       status: "running",
     });
@@ -625,7 +625,7 @@ describe("agent permission routes", () => {
       userId: "board-user",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app).post("/api/heartbeat-runs/run-1/cancel").send({});

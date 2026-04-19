@@ -7,7 +7,7 @@ import type {
   ThreadSystemMessage,
   ThreadUserMessage,
 } from "@assistant-ui/react";
-import type { Agent, IssueComment } from "@paperclipai/shared";
+import type { Agent, IssueComment } from "@softclipai/shared";
 import type { ActiveRunForIssue, LiveRunForIssue } from "../api/heartbeats";
 import { formatAssigneeUserLabel } from "./assignees";
 import type { IssueTimelineEvent } from "./issue-timeline-events";
@@ -291,10 +291,10 @@ function createCommentMessage(args: {
   agentMap?: Map<string, Agent>;
   currentUserId?: string | null;
   userLabelMap?: ReadonlyMap<string, string> | null;
-  companyId?: string | null;
+  productId?: string | null;
   projectId?: string | null;
 }): ThreadMessage {
-  const { comment, agentMap, currentUserId, userLabelMap, companyId, projectId } = args;
+  const { comment, agentMap, currentUserId, userLabelMap, productId, projectId } = args;
   const createdAt = toDate(comment.createdAt);
   const authorName = authorNameForComment(comment, agentMap, currentUserId, userLabelMap);
   const custom = {
@@ -304,7 +304,7 @@ function createCommentMessage(args: {
     authorName,
     authorAgentId: comment.authorAgentId,
     authorUserId: comment.authorUserId,
-    companyId: companyId ?? comment.companyId,
+    productId: productId ?? comment.productId,
     projectId: projectId ?? null,
     runId: comment.runId ?? null,
     runAgentId: comment.runAgentId ?? null,
@@ -746,7 +746,7 @@ export function buildIssueChatMessages(args: {
   hasOutputForRun?: (runId: string) => boolean;
   includeSucceededRunsWithoutOutput?: boolean;
   issueId?: string;
-  companyId?: string | null;
+  productId?: string | null;
   projectId?: string | null;
   agentMap?: Map<string, Agent>;
   currentUserId?: string | null;
@@ -762,7 +762,7 @@ export function buildIssueChatMessages(args: {
     hasOutputForRun,
     includeSucceededRunsWithoutOutput = false,
     issueId,
-    companyId,
+    productId,
     projectId,
     agentMap,
     currentUserId,
@@ -775,7 +775,7 @@ export function buildIssueChatMessages(args: {
     orderedMessages.push({
       createdAtMs: toTimestamp(comment.createdAt),
       order: 1,
-      message: createCommentMessage({ comment, agentMap, currentUserId, userLabelMap, companyId, projectId }),
+      message: createCommentMessage({ comment, agentMap, currentUserId, userLabelMap, productId, projectId }),
     });
   }
 

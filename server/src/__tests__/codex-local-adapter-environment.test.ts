@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { testEnvironment } from "@paperclipai/adapter-codex-local/server";
+import { testEnvironment } from "@softclipai/adapter-codex-local/server";
 
 const itWindows = process.platform === "win32" ? it : it.skip;
 
@@ -23,7 +23,7 @@ describe("codex_local environment diagnostics", () => {
     await fs.rm(path.dirname(cwd), { recursive: true, force: true });
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "codex_local",
       config: {
         command: process.execPath,
@@ -54,7 +54,7 @@ describe("codex_local environment diagnostics", () => {
       );
 
       const result = await testEnvironment({
-        companyId: "company-1",
+        productId: "company-1",
         adapterType: "codex_local",
         config: {
           command: process.execPath,
@@ -83,7 +83,7 @@ describe("codex_local environment diagnostics", () => {
       // No auth.json written
 
       const result = await testEnvironment({
-        companyId: "company-1",
+        productId: "company-1",
         adapterType: "codex_local",
         config: {
           command: process.execPath,
@@ -121,7 +121,7 @@ describe("codex_local environment diagnostics", () => {
       await fs.writeFile(fakeCodex, script, "utf8");
 
       const result = await testEnvironment({
-        companyId: "company-1",
+        productId: "company-1",
         adapterType: "codex_local",
         config: {
           command: "codex",

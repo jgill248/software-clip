@@ -17,9 +17,9 @@ const clipboardWriteTextMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/api/access", () => ({
   accessApi: {
-    listInvites: (companyId: string, options?: unknown) => listInvitesMock(companyId, options),
-    createCompanyInvite: (companyId: string, input: unknown) =>
-      createCompanyInviteMock(companyId, input),
+    listInvites: (productId: string, options?: unknown) => listInvitesMock(productId, options),
+    createCompanyInvite: (productId: string, input: unknown) =>
+      createCompanyInviteMock(productId, input),
     revokeInvite: (inviteId: string) => revokeInviteMock(inviteId),
   },
 }));
@@ -56,7 +56,7 @@ describe("CompanyInvites", () => {
     const isActive = inviteNumber === 25;
     return {
       id: `invite-${inviteNumber}`,
-      companyId: "company-1",
+      productId: "company-1",
       inviteType: "company_join",
       tokenHash: `hash-${inviteNumber}`,
       allowedJoinTypes: "human",

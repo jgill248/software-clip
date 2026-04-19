@@ -1,11 +1,11 @@
 import { pgTable, uuid, text, timestamp, jsonb, uniqueIndex, index } from "drizzle-orm/pg-core";
-import { companies } from "./companies.js";
+import { products } from "./products.js";
 
 export const principalPermissionGrants = pgTable(
   "principal_permission_grants",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     principalType: text("principal_type").notNull(),
     principalId: text("principal_id").notNull(),
     permissionKey: text("permission_key").notNull(),
@@ -16,13 +16,13 @@ export const principalPermissionGrants = pgTable(
   },
   (table) => ({
     uniqueGrantIdx: uniqueIndex("principal_permission_grants_unique_idx").on(
-      table.companyId,
+      table.productId,
       table.principalType,
       table.principalId,
       table.permissionKey,
     ),
-    companyPermissionIdx: index("principal_permission_grants_company_permission_idx").on(
-      table.companyId,
+    companyPermissionIdx: index("principal_permission_grants_product_permission_idx").on(
+      table.productId,
       table.permissionKey,
     ),
   }),

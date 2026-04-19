@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@/lib/router";
-import type { Issue, ExecutionWorkspace } from "@paperclipai/shared";
+import type { Issue, ExecutionWorkspace } from "@softclipai/shared";
 import { useQuery } from "@tanstack/react-query";
 import { executionWorkspacesApi } from "../api/execution-workspaces";
 import { instanceSettingsApi } from "../api/instanceSettings";
@@ -184,16 +184,16 @@ interface IssueWorkspaceCardProps {
   issue: Omit<
     Pick<
       Issue,
-      | "companyId"
+      | "productId"
       | "projectId"
       | "projectWorkspaceId"
       | "executionWorkspaceId"
       | "executionWorkspacePreference"
       | "executionWorkspaceSettings"
     >,
-    "companyId"
+    "productId"
   > & {
-    companyId: string | null;
+    productId: string | null;
     currentExecutionWorkspace?: ExecutionWorkspace | null;
   };
   project: { id: string; executionWorkspacePolicy?: { enabled?: boolean; defaultMode?: string | null; defaultProjectWorkspaceId?: string | null } | null; workspaces?: Array<{ id: string; isPrimary: boolean }> } | null;
@@ -212,7 +212,7 @@ export function IssueWorkspaceCard({
   onDraftChange,
 }: IssueWorkspaceCardProps) {
   const { selectedCompanyId } = useCompany();
-  const companyId = issue.companyId ?? selectedCompanyId;
+  const productId = issue.productId ?? selectedCompanyId;
   const [editing, setEditing] = useState(initialEditing);
 
   const { data: experimentalSettings, isLoading: experimentalSettingsLoading } = useQuery({
@@ -228,18 +228,18 @@ export function IssueWorkspaceCard({
   const workspace = issue.currentExecutionWorkspace as ExecutionWorkspace | null | undefined;
 
   const { data: reusableExecutionWorkspaces } = useQuery({
-    queryKey: queryKeys.executionWorkspaces.list(companyId!, {
+    queryKey: queryKeys.executionWorkspaces.list(productId!, {
       projectId: issue.projectId ?? undefined,
       projectWorkspaceId: issue.projectWorkspaceId ?? undefined,
       reuseEligible: true,
     }),
     queryFn: () =>
-      executionWorkspacesApi.list(companyId!, {
+      executionWorkspacesApi.list(productId!, {
         projectId: issue.projectId ?? undefined,
         projectWorkspaceId: issue.projectWorkspaceId ?? undefined,
         reuseEligible: true,
       }),
-    enabled: Boolean(companyId) && Boolean(issue.projectId) && editing,
+    enabled: Boolean(productId) && Boolean(issue.projectId) && editing,
   });
 
   const deduplicatedReusableWorkspaces = useMemo(() => {

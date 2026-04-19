@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   listCursorSkills,
   syncCursorSkills,
-} from "@paperclipai/adapter-cursor-local/server";
+} from "@softclipai/adapter-cursor-local/server";
 
 async function makeTempDir(prefix: string): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), prefix));
@@ -33,7 +33,7 @@ describe("cursor local skill sync", () => {
 
     const ctx = {
       agentId: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "cursor",
       config: {
         env: {
@@ -67,7 +67,7 @@ describe("cursor local skill sync", () => {
 
     const ctx = {
       agentId: "agent-3",
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "cursor",
       config: {
         env: {
@@ -110,7 +110,7 @@ describe("cursor local skill sync", () => {
 
     const configuredCtx = {
       agentId: "agent-2",
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "cursor",
       config: {
         env: {

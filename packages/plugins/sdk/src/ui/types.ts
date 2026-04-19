@@ -1,7 +1,7 @@
 /**
  * Paperclip plugin UI SDK — types for plugin frontend components.
  *
- * Plugin UI bundles import from `@paperclipai/plugin-sdk/ui`.  This subpath
+ * Plugin UI bundles import from `@softclipai/plugin-sdk/ui`.  This subpath
  * provides the bridge hooks, component prop interfaces, and error types that
  * plugin React components use to communicate with the host.
  *
@@ -18,7 +18,7 @@ import type {
   PluginBridgeErrorCode,
   PluginLauncherBounds,
   PluginLauncherRenderEnvironment,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import type {
   PluginLauncherRenderContextSnapshot,
   PluginModalBoundsRequest,
@@ -30,7 +30,7 @@ export type {
   PluginBridgeErrorCode,
   PluginLauncherBounds,
   PluginLauncherRenderEnvironment,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 export type {
   PluginLauncherRenderContextSnapshot,
   PluginModalBoundsRequest,
@@ -82,7 +82,7 @@ export interface PluginBridgeError {
  */
 export interface PluginHostContext {
   /** UUID of the currently active company, if any. */
-  companyId: string | null;
+  productId: string | null;
   /** URL prefix for the current company (e.g. `"my-company"`). */
   companyPrefix: string | null;
   /** UUID of the currently active project, if any. */
@@ -373,7 +373,7 @@ export interface PluginStreamResult<T = unknown> {
  * @example
  * ```tsx
  * const resync = usePluginAction("resync");
- * <button onClick={() => resync({ companyId }).catch(err => console.error(err))}>
+ * <button onClick={() => resync({ productId }).catch(err => console.error(err))}>
  *   Resync Now
  * </button>
  * ```

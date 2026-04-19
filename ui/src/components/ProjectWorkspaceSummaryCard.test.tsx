@@ -3,7 +3,7 @@
 import { act } from "react";
 import type { ComponentProps, ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import type { ExecutionWorkspace, Issue } from "@paperclipai/shared";
+import type { ExecutionWorkspace, Issue } from "@softclipai/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ProjectWorkspaceSummary } from "../lib/project-workspaces-tab";
 import { ProjectWorkspaceSummaryCard } from "./ProjectWorkspaceSummaryCard";
@@ -26,7 +26,7 @@ vi.mock("./CopyText", () => ({
 function createIssue(overrides: Partial<Issue> = {}): Issue {
   return {
     id: overrides.id ?? "issue-1",
-    companyId: overrides.companyId ?? "company-1",
+    productId: overrides.productId ?? "company-1",
     projectId: overrides.projectId ?? "project-1",
     projectWorkspaceId: overrides.projectWorkspaceId ?? null,
     goalId: overrides.goalId ?? null,

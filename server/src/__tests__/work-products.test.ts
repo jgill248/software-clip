@@ -5,7 +5,7 @@ function createWorkProductRow(overrides: Partial<Record<string, unknown>> = {}) 
   const now = new Date("2026-03-17T00:00:00.000Z");
   return {
     id: "work-product-1",
-    companyId: "company-1",
+    productId: "company-1",
     projectId: "project-1",
     issueId: "issue-1",
     executionWorkspaceId: null,

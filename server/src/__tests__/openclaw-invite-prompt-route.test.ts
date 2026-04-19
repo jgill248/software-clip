@@ -54,7 +54,7 @@ vi.mock("../storage/index.js", () => ({
 function createDbStub() {
   const createdInvite = {
     id: "invite-1",
-    companyId: "company-1",
+    productId: "company-1",
     inviteType: "company_join",
     allowedJoinTypes: "agent",
     defaultsPayload: null,
@@ -90,7 +90,7 @@ function createDbStub() {
           }
           if (selection && typeof selection === "object" && "objectKey" in selection) {
             return Promise.resolve([{
-              companyId: "company-1",
+              productId: "company-1",
               objectKey: "company-1/assets/companies/logo-1",
               contentType: "image/png",
               byteSize: 3,
@@ -142,7 +142,7 @@ async function createApp(actor: Record<string, unknown>, db: Record<string, unkn
   return app;
 }
 
-describe("POST /companies/:companyId/openclaw/invite-prompt", () => {
+describe("POST /companies/:productId/openclaw/invite-prompt", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.doUnmock("../services/index.js");
@@ -161,14 +161,14 @@ describe("POST /companies/:companyId/openclaw/invite-prompt", () => {
     const db = createDbStub();
     mockAgentService.getById.mockResolvedValue({
       id: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       role: "engineer",
     });
     const app = await createApp(
       {
         type: "agent",
         agentId: "agent-1",
-        companyId: "company-1",
+        productId: "company-1",
         source: "agent_key",
       },
       db,
@@ -186,14 +186,14 @@ describe("POST /companies/:companyId/openclaw/invite-prompt", () => {
     const db = createDbStub();
     mockAgentService.getById.mockResolvedValue({
       id: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       role: "ceo",
     });
     const app = await createApp(
       {
         type: "agent",
         agentId: "agent-1",
-        companyId: "company-1",
+        productId: "company-1",
         source: "agent_key",
       },
       db,
@@ -208,7 +208,7 @@ describe("POST /companies/:companyId/openclaw/invite-prompt", () => {
     expect(res.body.onboardingTextPath).toContain("/api/invites/");
     expect((db as any).__insertValues).toHaveBeenCalledWith(
       expect.objectContaining({
-        companyId: "company-1",
+        productId: "company-1",
         inviteType: "company_join",
         allowedJoinTypes: "agent",
       }),
@@ -221,7 +221,7 @@ describe("POST /companies/:companyId/openclaw/invite-prompt", () => {
       {
         type: "board",
         userId: "user-1",
-        companyIds: ["company-1"],
+        productIds: ["company-1"],
         source: "session",
         isInstanceAdmin: false,
       },
@@ -243,7 +243,7 @@ describe("POST /companies/:companyId/openclaw/invite-prompt", () => {
       {
         type: "board",
         userId: "user-1",
-        companyIds: ["company-1"],
+        productIds: ["company-1"],
         source: "session",
         isInstanceAdmin: false,
       },
@@ -257,7 +257,7 @@ describe("POST /companies/:companyId/openclaw/invite-prompt", () => {
     expect(res.status).toBe(201);
     expect((db as any).__insertValues).toHaveBeenCalledWith(
       expect.objectContaining({
-        companyId: "company-1",
+        productId: "company-1",
         inviteType: "company_join",
         allowedJoinTypes: "agent",
       }),
@@ -271,7 +271,7 @@ describe("POST /companies/:companyId/openclaw/invite-prompt", () => {
       {
         type: "board",
         userId: "user-1",
-        companyIds: ["company-1"],
+        productIds: ["company-1"],
         source: "session",
         isInstanceAdmin: false,
       },

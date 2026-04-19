@@ -1,4 +1,5 @@
 import type { Request, RequestHandler } from "express";
+import { resolveSoftclipEnv } from "@softclipai/shared";
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const DEFAULT_DEV_ORIGINS = [
@@ -27,8 +28,9 @@ function trustedOriginsForRequest(req: Request) {
   // Behind some reverse proxies the Host / X-Forwarded-Host header may
   // not match the public URL (for example when TLS terminates at the
   // edge and the inbound Host is an internal service name). Trust the
-  // explicitly-configured PAPERCLIP_PUBLIC_URL when it's set.
-  const publicUrl = parseOrigin(process.env.PAPERCLIP_PUBLIC_URL?.trim());
+  // explicitly-configured SOFTCLIP_PUBLIC_URL (or legacy PAPERCLIP_PUBLIC_URL)
+  // when it's set.
+  const publicUrl = parseOrigin(resolveSoftclipEnv("PUBLIC_URL")?.value.trim());
   if (publicUrl) origins.add(publicUrl);
   return origins;
 }

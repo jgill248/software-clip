@@ -1,5 +1,5 @@
 export interface DashboardSummary {
-  companyId: string;
+  productId: string;
   agents: {
     active: number;
     running: number;

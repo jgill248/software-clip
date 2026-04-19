@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
-import type { Db } from "@paperclipai/db";
-import { workspaceOperations } from "@paperclipai/db";
-import type { WorkspaceOperation, WorkspaceOperationPhase, WorkspaceOperationStatus } from "@paperclipai/shared";
+import type { Db } from "@softclipai/db";
+import { workspaceOperations } from "@softclipai/db";
+import type { WorkspaceOperation, WorkspaceOperationPhase, WorkspaceOperationStatus } from "@softclipai/shared";
 import { asc, desc, eq, inArray, isNull, or, and } from "drizzle-orm";
 import { notFound } from "../errors.js";
 import { redactCurrentUserText, redactCurrentUserValue } from "../log-redaction.js";
@@ -13,7 +13,7 @@ type WorkspaceOperationRow = typeof workspaceOperations.$inferSelect;
 function toWorkspaceOperation(row: WorkspaceOperationRow): WorkspaceOperation {
   return {
     id: row.id,
-    companyId: row.companyId,
+    productId: row.productId,
     executionWorkspaceId: row.executionWorkspaceId ?? null,
     heartbeatRunId: row.heartbeatRunId ?? null,
     phase: row.phase as WorkspaceOperationPhase,
@@ -86,7 +86,7 @@ export function workspaceOperationService(db: Db) {
     getById,
 
     createRecorder(input: {
-      companyId: string;
+      productId: string;
       heartbeatRunId?: string | null;
       executionWorkspaceId?: string | null;
     }): WorkspaceOperationRecorder {
@@ -113,7 +113,7 @@ export function workspaceOperationService(db: Db) {
           const startedAt = new Date();
           const id = randomUUID();
           const handle = await logStore.begin({
-            companyId: input.companyId,
+            productId: input.productId,
             operationId: id,
           });
 
@@ -133,7 +133,7 @@ export function workspaceOperationService(db: Db) {
 
           await db.insert(workspaceOperations).values({
             id,
-            companyId: input.companyId,
+            productId: input.productId,
             executionWorkspaceId,
             heartbeatRunId: input.heartbeatRunId ?? null,
             phase: recordInput.phase,

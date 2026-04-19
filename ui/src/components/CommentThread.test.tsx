@@ -4,7 +4,7 @@ import { act } from "react";
 import type { ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
-import type { Agent, Approval } from "@paperclipai/shared";
+import type { Agent, Approval } from "@softclipai/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CommentThread } from "./CommentThread";
 
@@ -92,7 +92,7 @@ describe("CommentThread", () => {
     const root = createRoot(container);
     const agent: Agent = {
       id: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       name: "CodexCoder",
       urlKey: "codexcoder",
       role: "engineer",
@@ -228,7 +228,7 @@ describe("CommentThread", () => {
     const root = createRoot(container);
     const agent: Agent = {
       id: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       name: "CodexCoder",
       urlKey: "codexcoder",
       role: "engineer",
@@ -252,7 +252,7 @@ describe("CommentThread", () => {
     };
     const approval: Approval = {
       id: "approval-1",
-      companyId: "company-1",
+      productId: "company-1",
       type: "request_board_approval",
       requestedByAgentId: "agent-1",
       requestedByUserId: null,
@@ -304,7 +304,7 @@ describe("CommentThread", () => {
           <CommentThread
             comments={[{
               id: "comment-1",
-              companyId: "company-1",
+              productId: "company-1",
               issueId: "issue-1",
               authorAgentId: null,
               authorUserId: "user-1",

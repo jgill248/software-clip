@@ -6,7 +6,7 @@ import {
   resubmitApprovalSchema,
   type Approval,
   type ApprovalComment,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import {
   addCommonClientOptions,
   formatInlineRecord,
@@ -17,7 +17,7 @@ import {
 } from "./common.js";
 
 interface ApprovalListOptions extends BaseClientOptions {
-  companyId?: string;
+  productId?: string;
   status?: string;
 }
 
@@ -27,7 +27,7 @@ interface ApprovalDecisionOptions extends BaseClientOptions {
 }
 
 interface ApprovalCreateOptions extends BaseClientOptions {
-  companyId?: string;
+  productId?: string;
   type: string;
   requestedByAgentId?: string;
   payload: string;
@@ -59,7 +59,7 @@ export function registerApprovalCommands(program: Command): void {
           const query = params.toString();
           const rows =
             (await ctx.api.get<Approval[]>(
-              `/api/companies/${ctx.companyId}/approvals${query ? `?${query}` : ""}`,
+              `/api/companies/${ctx.productId}/approvals${query ? `?${query}` : ""}`,
             )) ?? [];
 
           if (ctx.json) {
@@ -125,7 +125,7 @@ export function registerApprovalCommands(program: Command): void {
             requestedByAgentId: opts.requestedByAgentId,
             issueIds: parseCsv(opts.issueIds),
           });
-          const created = await ctx.api.post<Approval>(`/api/companies/${ctx.companyId}/approvals`, payload);
+          const created = await ctx.api.post<Approval>(`/api/companies/${ctx.productId}/approvals`, payload);
           printOutput(created, { json: ctx.json });
         } catch (err) {
           handleCommandError(err);

@@ -3,8 +3,8 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { createHash, type Hash } from "node:crypto";
-import type { AdapterExecutionContext } from "@paperclipai/adapter-utils";
-import { ensurePaperclipSkillSymlink, type PaperclipSkillEntry } from "@paperclipai/adapter-utils/server-utils";
+import type { AdapterExecutionContext } from "@softclipai/adapter-utils";
+import { ensurePaperclipSkillSymlink, type PaperclipSkillEntry } from "@softclipai/adapter-utils/server-utils";
 
 const DEFAULT_PAPERCLIP_INSTANCE_ID = "default";
 
@@ -23,7 +23,7 @@ function nonEmpty(value: string | undefined): string | null {
 
 function resolveManagedClaudePromptCacheRoot(
   env: NodeJS.ProcessEnv,
-  companyId: string,
+  productId: string,
 ): string {
   const paperclipHome = nonEmpty(env.PAPERCLIP_HOME) ?? path.resolve(os.homedir(), ".paperclip");
   const instanceId = nonEmpty(env.PAPERCLIP_INSTANCE_ID) ?? DEFAULT_PAPERCLIP_INSTANCE_ID;
@@ -32,7 +32,7 @@ function resolveManagedClaudePromptCacheRoot(
     "instances",
     instanceId,
     "companies",
-    companyId,
+    productId,
     "claude-prompt-cache",
   );
 }
@@ -130,17 +130,17 @@ async function ensureReadableFile(targetPath: string, contents: string): Promise
 }
 
 export async function prepareClaudePromptBundle(input: {
-  companyId: string;
+  productId: string;
   skills: SkillEntry[];
   instructionsContents: string | null;
   onLog: AdapterExecutionContext["onLog"];
 }): Promise<ClaudePromptBundle> {
-  const { companyId, skills, instructionsContents, onLog } = input;
+  const { productId, skills, instructionsContents, onLog } = input;
   const bundleKey = await buildClaudePromptBundleKey({
     skills,
     instructionsContents,
   });
-  const rootDir = path.join(resolveManagedClaudePromptCacheRoot(process.env, companyId), bundleKey);
+  const rootDir = path.join(resolveManagedClaudePromptCacheRoot(process.env, productId), bundleKey);
   const skillsHome = path.join(rootDir, ".claude", "skills");
   await fs.mkdir(skillsHome, { recursive: true });
 

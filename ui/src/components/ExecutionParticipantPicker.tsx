@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { Agent, Issue } from "@paperclipai/shared";
+import type { Agent, Issue } from "@softclipai/shared";
 import { useQuery } from "@tanstack/react-query";
 import { accessApi } from "../api/access";
 import { formatAssigneeUserLabel } from "../lib/assignees";
@@ -39,9 +39,9 @@ export function ExecutionParticipantPicker({
   const approverValues = stageParticipantValues(issue.executionPolicy, "approval");
   const values = stageType === "review" ? reviewerValues : approverValues;
   const { data: companyMembers } = useQuery({
-    queryKey: queryKeys.access.companyUserDirectory(issue.companyId),
-    queryFn: () => accessApi.listUserDirectory(issue.companyId),
-    enabled: !!issue.companyId,
+    queryKey: queryKeys.access.companyUserDirectory(issue.productId),
+    queryFn: () => accessApi.listUserDirectory(issue.productId),
+    enabled: !!issue.productId,
   });
 
   const sortedAgents = sortAgentsByRecency(

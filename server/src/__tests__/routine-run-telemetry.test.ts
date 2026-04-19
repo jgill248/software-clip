@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import {
   agents,
-  companies,
+  products,
   createDb,
   executionWorkspaces,
   heartbeatRuns,
@@ -13,7 +13,7 @@ import {
   routineRuns,
   routines,
   routineTriggers,
-} from "@paperclipai/db";
+} from "@softclipai/db";
 import {
   getEmbeddedPostgresTestSupport,
   startEmbeddedPostgresTestDatabase,
@@ -26,9 +26,9 @@ vi.mock("../telemetry.js", () => ({
   getTelemetryClient: () => mockTelemetryClient,
 }));
 
-vi.mock("@paperclipai/shared/telemetry", async () => {
-  const actual = await vi.importActual<typeof import("@paperclipai/shared/telemetry")>(
-    "@paperclipai/shared/telemetry",
+vi.mock("@softclipai/shared/telemetry", async () => {
+  const actual = await vi.importActual<typeof import("@softclipai/shared/telemetry")>(
+    "@softclipai/shared/telemetry",
   );
   return {
     ...actual,
@@ -61,7 +61,7 @@ describeEmbeddedPostgres("routine run telemetry", () => {
     await db.delete(projectWorkspaces);
     await db.delete(projects);
     await db.delete(agents);
-    await db.delete(companies);
+    await db.delete(products);
   });
 
   afterAll(async () => {
@@ -69,19 +69,19 @@ describeEmbeddedPostgres("routine run telemetry", () => {
   });
 
   async function seedFixture() {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const projectId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(agents).values({
       id: agentId,
-      companyId,
+      productId,
       name: "CodexCoder",
       role: "engineer",
       status: "active",
@@ -93,7 +93,7 @@ describeEmbeddedPostgres("routine run telemetry", () => {
 
     await db.insert(projects).values({
       id: projectId,
-      companyId,
+      productId,
       name: "Routines",
       status: "in_progress",
     });
@@ -109,7 +109,7 @@ describeEmbeddedPostgres("routine run telemetry", () => {
           const queuedRunId = randomUUID();
           await db.insert(heartbeatRuns).values({
             id: queuedRunId,
-            companyId,
+            productId,
             agentId: wakeupAgentId,
             invocationSource: wakeupOpts.source ?? "assignment",
             triggerDetail: wakeupOpts.triggerDetail ?? null,
@@ -129,7 +129,7 @@ describeEmbeddedPostgres("routine run telemetry", () => {
     });
 
     const routine = await svc.create(
-      companyId,
+      productId,
       {
         projectId,
         goalId: null,

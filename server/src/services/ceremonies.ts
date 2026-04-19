@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
-import { routines } from "@paperclipai/db";
-import type { CreateRoutine } from "@paperclipai/shared";
+import type { Db } from "@softclipai/db";
+import { routines } from "@softclipai/db";
+import type { CreateRoutine } from "@softclipai/shared";
 import { routineService } from "./routines.js";
 import { notFound, unprocessable } from "../errors.js";
 
@@ -147,12 +147,12 @@ export interface SeedOutcome {
 export function ceremonyService(db: Db) {
   const routineSvc = routineService(db);
 
-  async function findExistingByTitle(companyId: string, title: string) {
+  async function findExistingByTitle(productId: string, title: string) {
     const rows = await db
       .select({ id: routines.id })
       .from(routines)
       .where(
-        and(eq(routines.companyId, companyId), eq(routines.title, title)),
+        and(eq(routines.productId, productId), eq(routines.title, title)),
       );
     return rows[0] ?? null;
   }
@@ -166,7 +166,7 @@ export function ceremonyService(db: Db) {
      * per-slug breakdown so the caller can report what changed.
      */
     seedDefaults: async (
-      companyId: string,
+      productId: string,
       actor: SeedActor,
       options: SeedOptions = {},
     ): Promise<SeedOutcome> => {
@@ -184,7 +184,7 @@ export function ceremonyService(db: Db) {
       for (const template of CEREMONY_TEMPLATES) {
         if (slugFilter && !slugFilter.has(template.slug)) continue;
 
-        const existing = await findExistingByTitle(companyId, template.title);
+        const existing = await findExistingByTitle(productId, template.title);
         if (existing) {
           outcome.skipped.push({
             slug: template.slug,
@@ -208,7 +208,7 @@ export function ceremonyService(db: Db) {
           variables: [],
         };
 
-        const routine = await routineSvc.create(companyId, input, {
+        const routine = await routineSvc.create(productId, input, {
           agentId: actor.agentId ?? null,
           userId: actor.userId ?? null,
         });
@@ -223,7 +223,7 @@ export function ceremonyService(db: Db) {
      * titles) present in a company. Handy for the UI to detect whether a
      * product has ceremonies configured yet.
      */
-    listSeeded: async (companyId: string) => {
+    listSeeded: async (productId: string) => {
       const titles = CEREMONY_TEMPLATES.map((t) => t.title);
       const rows = await db
         .select({
@@ -233,7 +233,7 @@ export function ceremonyService(db: Db) {
           assigneeAgentId: routines.assigneeAgentId,
         })
         .from(routines)
-        .where(eq(routines.companyId, companyId));
+        .where(eq(routines.productId, productId));
       return rows
         .filter((row) => titles.includes(row.title))
         .map((row) => ({

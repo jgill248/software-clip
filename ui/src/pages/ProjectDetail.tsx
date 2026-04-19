@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { Link, useParams, useNavigate, useLocation, Navigate } from "@/lib/router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { PROJECT_COLORS, isUuidLike, type ExecutionWorkspace } from "@paperclipai/shared";
+import { PROJECT_COLORS, isUuidLike, type ExecutionWorkspace } from "@softclipai/shared";
 import { executionWorkspacesApi } from "../api/execution-workspaces";
 import { instanceSettingsApi } from "../api/instanceSettings";
 import { projectsApi } from "../api/projects";
@@ -153,25 +153,25 @@ function ColorPicker({
 
 /* ── List (issues) tab content ── */
 
-function ProjectIssuesList({ projectId, companyId }: { projectId: string; companyId: string }) {
+function ProjectIssuesList({ projectId, productId }: { projectId: string; productId: string }) {
   const queryClient = useQueryClient();
 
   const { data: agents } = useQuery({
-    queryKey: queryKeys.agents.list(companyId),
-    queryFn: () => agentsApi.list(companyId),
-    enabled: !!companyId,
+    queryKey: queryKeys.agents.list(productId),
+    queryFn: () => agentsApi.list(productId),
+    enabled: !!productId,
   });
 
   const { data: liveRuns } = useQuery({
-    queryKey: queryKeys.liveRuns(companyId),
-    queryFn: () => heartbeatsApi.liveRunsForCompany(companyId),
-    enabled: !!companyId,
+    queryKey: queryKeys.liveRuns(productId),
+    queryFn: () => heartbeatsApi.liveRunsForCompany(productId),
+    enabled: !!productId,
     refetchInterval: 5000,
   });
   const { data: projects } = useQuery({
-    queryKey: queryKeys.projects.list(companyId),
-    queryFn: () => projectsApi.list(companyId),
-    enabled: !!companyId,
+    queryKey: queryKeys.projects.list(productId),
+    queryFn: () => projectsApi.list(productId),
+    enabled: !!productId,
   });
 
   const liveIssueIds = useMemo(() => {
@@ -183,17 +183,17 @@ function ProjectIssuesList({ projectId, companyId }: { projectId: string; compan
   }, [liveRuns]);
 
   const { data: issues, isLoading, error } = useQuery({
-    queryKey: queryKeys.issues.listByProject(companyId, projectId),
-    queryFn: () => issuesApi.list(companyId, { projectId }),
-    enabled: !!companyId,
+    queryKey: queryKeys.issues.listByProject(productId, projectId),
+    queryFn: () => issuesApi.list(productId, { projectId }),
+    enabled: !!productId,
   });
 
   const updateIssue = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) =>
       issuesApi.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.issues.listByProject(companyId, projectId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.issues.list(companyId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.issues.listByProject(productId, projectId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.issues.list(productId) });
     },
   });
 
@@ -213,12 +213,12 @@ function ProjectIssuesList({ projectId, companyId }: { projectId: string; compan
 }
 
 function ProjectWorkspacesContent({
-  companyId,
+  productId,
   projectId,
   projectRef,
   summaries,
 }: {
-  companyId: string;
+  productId: string;
   projectId: string;
   projectRef: string;
   summaries: ReturnType<typeof buildProjectWorkspaceSummaries>;
@@ -239,15 +239,15 @@ function ProjectWorkspacesContent({
     }) => {
       setRuntimeActionKey(`${input.key}:${input.action}`);
       if (input.kind === "project_workspace") {
-        return await projectsApi.controlWorkspaceRuntimeServices(projectId, input.workspaceId, input.action, companyId);
+        return await projectsApi.controlWorkspaceRuntimeServices(projectId, input.workspaceId, input.action, productId);
       }
       return await executionWorkspacesApi.controlRuntimeServices(input.workspaceId, input.action);
     },
     onSettled: () => {
       setRuntimeActionKey(null);
-      queryClient.invalidateQueries({ queryKey: queryKeys.executionWorkspaces.list(companyId, { projectId }) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.executionWorkspaces.list(productId, { projectId }) });
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.detail(projectId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.issues.listByProject(companyId, projectId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.issues.listByProject(productId, projectId) });
     },
   });
 
@@ -305,9 +305,9 @@ function ProjectWorkspacesContent({
             if (!open) setClosingWorkspace(null);
           }}
           onClosed={() => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.executionWorkspaces.list(companyId, { projectId }) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.executionWorkspaces.list(productId, { projectId }) });
             queryClient.invalidateQueries({ queryKey: queryKeys.projects.detail(projectId) });
-            queryClient.invalidateQueries({ queryKey: queryKeys.issues.listByProject(companyId, projectId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.issues.listByProject(productId, projectId) });
             setClosingWorkspace(null);
           }}
         />
@@ -356,7 +356,7 @@ export function ProjectDetail() {
   });
   const canonicalProjectRef = project ? projectRouteRef(project) : routeProjectRef;
   const projectLookupRef = project?.id ?? routeProjectRef;
-  const resolvedCompanyId = project?.companyId ?? selectedCompanyId;
+  const resolvedCompanyId = project?.productId ?? selectedCompanyId;
   const experimentalSettingsQuery = useQuery({
     queryKey: queryKeys.instance.experimentalSettings,
     queryFn: () => instanceSettingsApi.getExperimental(),
@@ -367,7 +367,7 @@ export function ProjectDetail() {
   } = usePluginSlots({
     slotTypes: ["detailTab"],
     entityType: "project",
-    companyId: resolvedCompanyId,
+    productId: resolvedCompanyId,
     enabled: !!resolvedCompanyId,
   });
   const pluginTabItems = useMemo(
@@ -414,9 +414,9 @@ export function ProjectDetail() {
   const workspaceTabError = (workspaceTabIssuesError ?? workspaceTabExecutionWorkspacesError) as Error | null;
 
   useEffect(() => {
-    if (!project?.companyId || project.companyId === selectedCompanyId) return;
-    setSelectedCompanyId(project.companyId, { source: "route_sync" });
-  }, [project?.companyId, selectedCompanyId, setSelectedCompanyId]);
+    if (!project?.productId || project.productId === selectedCompanyId) return;
+    setSelectedCompanyId(project.productId, { source: "route_sync" });
+  }, [project?.productId, selectedCompanyId, setSelectedCompanyId]);
 
   const invalidateProject = () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.projects.detail(routeProjectRef) });
@@ -634,7 +634,7 @@ export function ProjectDetail() {
         slotTypes={["toolbarButton", "contextMenuItem"]}
         entityType="project"
         context={{
-          companyId: resolvedCompanyId ?? null,
+          productId: resolvedCompanyId ?? null,
           companyPrefix: companyPrefix ?? null,
           projectId: project.id,
           projectRef: canonicalProjectRef,
@@ -650,7 +650,7 @@ export function ProjectDetail() {
         placementZones={["toolbarButton"]}
         entityType="project"
         context={{
-          companyId: resolvedCompanyId ?? null,
+          productId: resolvedCompanyId ?? null,
           companyPrefix: companyPrefix ?? null,
           projectId: project.id,
           projectRef: canonicalProjectRef,
@@ -691,7 +691,7 @@ export function ProjectDetail() {
       )}
 
       {activeTab === "list" && project?.id && resolvedCompanyId && (
-        <ProjectIssuesList projectId={project.id} companyId={resolvedCompanyId} />
+        <ProjectIssuesList projectId={project.id} productId={resolvedCompanyId} />
       )}
 
       {activeTab === "workspaces" ? (
@@ -700,7 +700,7 @@ export function ProjectDetail() {
             <p className="text-sm text-destructive">{workspaceTabError.message}</p>
           ) : (
             <ProjectWorkspacesContent
-              companyId={resolvedCompanyId!}
+              productId={resolvedCompanyId!}
               projectId={project.id}
               projectRef={canonicalProjectRef}
               summaries={workspaceSummaries}
@@ -730,7 +730,7 @@ export function ProjectDetail() {
         <PluginSlotMount
           slot={activePluginTab.slot}
           context={{
-            companyId: resolvedCompanyId,
+            productId: resolvedCompanyId,
             companyPrefix: companyPrefix ?? null,
             projectId: project.id,
             projectRef: canonicalProjectRef,

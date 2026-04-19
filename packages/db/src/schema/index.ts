@@ -1,4 +1,6 @@
-export { companies } from "./companies.js";
+// Softclip pivot §1 (Stage 4a): companies table renamed to products.
+// Stage 4c retired the `companies` alias; every caller imports `products`.
+export { products } from "./products.js";
 // Softclip pivot §6: company_logos table removed.
 export { authUsers, authSessions, authAccounts, authVerifications } from "./auth.js";
 export { instanceSettings } from "./instance_settings.js";

@@ -1,4 +1,4 @@
-import type { Issue, IssueComment } from "@paperclipai/shared";
+import type { Issue, IssueComment } from "@softclipai/shared";
 
 export interface IssueCommentReassignment {
   assigneeAgentId: string | null;
@@ -38,7 +38,7 @@ function sortIssueCommentsDesc<T extends { createdAt: Date | string; id: string 
 }
 
 export function createOptimisticIssueComment(params: {
-  companyId: string;
+  productId: string;
   issueId: string;
   body: string;
   authorUserId: string | null;
@@ -50,7 +50,7 @@ export function createOptimisticIssueComment(params: {
   return {
     id: clientId,
     clientId,
-    companyId: params.companyId,
+    productId: params.productId,
     issueId: params.issueId,
     authorAgentId: null,
     authorUserId: params.authorUserId,

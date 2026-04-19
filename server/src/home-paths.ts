@@ -1,5 +1,6 @@
 import os from "node:os";
 import path from "node:path";
+import { resolveSoftclipEnv } from "@softclipai/shared";
 
 const DEFAULT_INSTANCE_ID = "default";
 const INSTANCE_ID_RE = /^[a-zA-Z0-9_-]+$/;
@@ -13,15 +14,16 @@ function expandHomePrefix(value: string): string {
 }
 
 export function resolvePaperclipHomeDir(): string {
-  const envHome = process.env.PAPERCLIP_HOME?.trim();
+  const envHome = resolveSoftclipEnv("HOME")?.value.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
   return path.resolve(os.homedir(), ".paperclip");
 }
 
 export function resolvePaperclipInstanceId(): string {
-  const raw = process.env.PAPERCLIP_INSTANCE_ID?.trim() || DEFAULT_INSTANCE_ID;
+  const resolved = resolveSoftclipEnv("INSTANCE_ID");
+  const raw = resolved?.value.trim() || DEFAULT_INSTANCE_ID;
   if (!INSTANCE_ID_RE.test(raw)) {
-    throw new Error(`Invalid PAPERCLIP_INSTANCE_ID '${raw}'.`);
+    throw new Error(`Invalid ${resolved?.varName ?? "SOFTCLIP_INSTANCE_ID"} '${raw}'.`);
   }
   return raw;
 }
@@ -72,19 +74,19 @@ function sanitizeFriendlyPathSegment(value: string | null | undefined, fallback 
 }
 
 export function resolveManagedProjectWorkspaceDir(input: {
-  companyId: string;
+  productId: string;
   projectId: string;
   repoName?: string | null;
 }): string {
-  const companyId = input.companyId.trim();
+  const productId = input.productId.trim();
   const projectId = input.projectId.trim();
-  if (!companyId || !projectId) {
-    throw new Error("Managed project workspace path requires companyId and projectId.");
+  if (!productId || !projectId) {
+    throw new Error("Managed project workspace path requires productId and projectId.");
   }
   return path.resolve(
     resolvePaperclipInstanceRoot(),
     "projects",
-    sanitizeFriendlyPathSegment(companyId, "company"),
+    sanitizeFriendlyPathSegment(productId, "company"),
     sanitizeFriendlyPathSegment(projectId, "project"),
     sanitizeFriendlyPathSegment(input.repoName, "_default"),
   );

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import { and, eq } from "drizzle-orm";
-import { inboxDismissals, joinRequests } from "@paperclipai/db";
+import { inboxDismissals, joinRequests } from "@softclipai/db";
 import { sidebarBadgeService } from "../services/sidebar-badges.js";
 import { accessService } from "../services/access.js";
 import { dashboardService } from "../services/dashboard.js";
@@ -22,17 +22,17 @@ export function sidebarBadgeRoutes(db: Db) {
   const access = accessService(db);
   const dashboard = dashboardService(db);
 
-  router.get("/companies/:companyId/sidebar-badges", async (req, res) => {
-    const companyId = req.params.companyId as string;
-    assertCompanyAccess(req, companyId);
+  router.get("/companies/:productId/sidebar-badges", async (req, res) => {
+    const productId = req.params.productId as string;
+    assertCompanyAccess(req, productId);
     let canApproveJoins = false;
     if (req.actor.type === "board") {
       canApproveJoins =
         req.actor.source === "local_implicit" ||
         Boolean(req.actor.isInstanceAdmin) ||
-        (await access.canUser(companyId, req.actor.userId, "joins:approve"));
+        (await access.canUser(productId, req.actor.userId, "joins:approve"));
     } else if (req.actor.type === "agent" && req.actor.agentId) {
-      canApproveJoins = await access.hasPermission(companyId, "agent", req.actor.agentId, "joins:approve");
+      canApproveJoins = await access.hasPermission(productId, "agent", req.actor.agentId, "joins:approve");
     }
 
     const visibleJoinRequests = canApproveJoins
@@ -48,7 +48,7 @@ export function sidebarBadgeRoutes(db: Db) {
             createdAt: joinRequests.createdAt,
           })
           .from(joinRequests)
-          .where(and(eq(joinRequests.companyId, companyId), eq(joinRequests.status, "pending_approval")))
+          .where(and(eq(joinRequests.productId, productId), eq(joinRequests.status, "pending_approval")))
       ).map(({ id, updatedAt, createdAt }) => ({
         id,
         updatedAt,
@@ -61,15 +61,15 @@ export function sidebarBadgeRoutes(db: Db) {
         ? await db
           .select({ itemKey: inboxDismissals.itemKey, dismissedAt: inboxDismissals.dismissedAt })
           .from(inboxDismissals)
-          .where(and(eq(inboxDismissals.companyId, companyId), eq(inboxDismissals.userId, req.actor.userId)))
+          .where(and(eq(inboxDismissals.productId, productId), eq(inboxDismissals.userId, req.actor.userId)))
           .then(buildDismissedAtByKey)
         : new Map<string, number>();
 
-    const badges = await svc.get(companyId, {
+    const badges = await svc.get(productId, {
       dismissals: dismissedAtByKey,
       joinRequests: visibleJoinRequests,
     });
-    const summary = await dashboard.summary(companyId);
+    const summary = await dashboard.summary(productId);
     const hasFailedRuns = badges.failedRuns > 0;
     const alertsCount =
       (summary.agents.error > 0 && !hasFailedRuns ? 1 : 0) +

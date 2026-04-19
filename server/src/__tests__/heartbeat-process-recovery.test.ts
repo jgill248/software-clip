@@ -8,13 +8,13 @@ import {
   agentRuntimeState,
   agentWakeupRequests,
   companySkills,
-  companies,
+  products,
   createDb,
   heartbeatRunEvents,
   heartbeatRuns,
   issueComments,
   issues,
-} from "@paperclipai/db";
+} from "@softclipai/db";
 import {
   getEmbeddedPostgresTestSupport,
   startEmbeddedPostgresTestDatabase,
@@ -27,9 +27,9 @@ vi.mock("../telemetry.ts", () => ({
   getTelemetryClient: () => mockTelemetryClient,
 }));
 
-vi.mock("@paperclipai/shared/telemetry", async () => {
-  const actual = await vi.importActual<typeof import("@paperclipai/shared/telemetry")>(
-    "@paperclipai/shared/telemetry",
+vi.mock("@softclipai/shared/telemetry", async () => {
+  const actual = await vi.importActual<typeof import("@softclipai/shared/telemetry")>(
+    "@softclipai/shared/telemetry",
   );
   return {
     ...actual,
@@ -196,7 +196,7 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
         await new Promise((resolve) => setTimeout(resolve, 50));
       }
     }
-    await db.delete(companies);
+    await db.delete(products);
   });
 
   afterAll(async () => {
@@ -227,23 +227,23 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
     runErrorCode?: string | null;
     runError?: string | null;
   }) {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const runId = randomUUID();
     const wakeupRequestId = randomUUID();
     const issueId = randomUUID();
     const now = new Date("2026-03-19T00:00:00.000Z");
-    const issuePrefix = `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+    const issuePrefix = `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
       issuePrefix,
     });
 
     await db.insert(agents).values({
       id: agentId,
-      companyId,
+      productId,
       name: "CodexCoder",
       role: "engineer",
       status: input?.agentStatus ?? "paused",
@@ -255,7 +255,7 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
 
     await db.insert(agentWakeupRequests).values({
       id: wakeupRequestId,
-      companyId,
+      productId,
       agentId,
       source: "assignment",
       triggerDetail: "system",
@@ -268,7 +268,7 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
 
     await db.insert(heartbeatRuns).values({
       id: runId,
-      companyId,
+      productId,
       agentId,
       invocationSource: "assignment",
       triggerDetail: "system",
@@ -287,7 +287,7 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
     if (input?.includeIssue !== false) {
       await db.insert(issues).values({
         id: issueId,
-        companyId,
+        productId,
         title: "Recover local adapter after lost process",
         status: "in_progress",
         priority: "medium",
@@ -299,7 +299,7 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
       });
     }
 
-    return { companyId, agentId, runId, wakeupRequestId, issueId };
+    return { productId, agentId, runId, wakeupRequestId, issueId };
   }
 
   async function seedStrandedIssueFixture(input: {
@@ -308,23 +308,23 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
     retryReason?: "assignment_recovery" | "issue_continuation_needed" | null;
     assignToUser?: boolean;
   }) {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const runId = randomUUID();
     const wakeupRequestId = randomUUID();
     const issueId = randomUUID();
     const now = new Date("2026-03-19T00:00:00.000Z");
-    const issuePrefix = `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+    const issuePrefix = `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
       issuePrefix,
     });
 
     await db.insert(agents).values({
       id: agentId,
-      companyId,
+      productId,
       name: "CodexCoder",
       role: "engineer",
       status: "idle",
@@ -336,7 +336,7 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
 
     await db.insert(agentWakeupRequests).values({
       id: wakeupRequestId,
-      companyId,
+      productId,
       agentId,
       source: "assignment",
       triggerDetail: "system",
@@ -351,7 +351,7 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
 
     await db.insert(heartbeatRuns).values({
       id: runId,
-      companyId,
+      productId,
       agentId,
       invocationSource: "assignment",
       triggerDetail: "system",
@@ -374,7 +374,7 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
 
     await db.insert(issues).values({
       id: issueId,
-      companyId,
+      productId,
       title: "Recover stranded assigned work",
       status: input.status,
       priority: "medium",
@@ -387,7 +387,7 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
       startedAt: input.status === "in_progress" ? now : null,
     });
 
-    return { companyId, agentId, runId, wakeupRequestId, issueId };
+    return { productId, agentId, runId, wakeupRequestId, issueId };
   }
 
   it("keeps a local run active when the recorded pid is still alive", async () => {

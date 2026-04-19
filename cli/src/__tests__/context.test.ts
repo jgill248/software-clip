@@ -29,7 +29,7 @@ describe("client context store", () => {
       "work",
       {
         apiBase: "http://localhost:3100",
-        companyId: "company-123",
+        productId: "company-123",
         apiKeyEnvVarName: "PAPERCLIP_AGENT_TOKEN",
       },
       contextPath,
@@ -41,7 +41,7 @@ describe("client context store", () => {
     expect(context.currentProfile).toBe("work");
     expect(context.profiles.work).toEqual({
       apiBase: "http://localhost:3100",
-      companyId: "company-123",
+      productId: "company-123",
       apiKeyEnvVarName: "PAPERCLIP_AGENT_TOKEN",
     });
   });
@@ -55,7 +55,7 @@ describe("client context store", () => {
         profiles: {
           x: {
             apiBase: " ",
-            companyId: " ",
+            productId: " ",
             apiKeyEnvVarName: " ",
           },
         },

@@ -76,7 +76,7 @@ function createApp(actor: Record<string, unknown>) {
 function makeIssue(overrides: Record<string, unknown> = {}) {
   return {
     id: "issue-1",
-    companyId: "company-1",
+    productId: "company-1",
     status: "todo",
     priority: "medium",
     projectId: null,
@@ -113,7 +113,7 @@ describe("issue workspace command authorization", () => {
     const app = createApp({
       type: "agent",
       agentId: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       source: "agent_key",
       runId: "run-1",
     });
@@ -140,7 +140,7 @@ describe("issue workspace command authorization", () => {
     const app = createApp({
       type: "agent",
       agentId: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       source: "agent_key",
       runId: "run-1",
     });

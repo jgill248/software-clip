@@ -35,7 +35,7 @@ import type {
   PluginUiSlotDeclaration,
   PluginUiSlotEntityType,
   PluginUiSlotType,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import { pluginsApi, type PluginUiContribution } from "@/api/plugins";
 import { authApi } from "@/api/auth";
 import { queryKeys } from "@/lib/queryKeys";
@@ -46,7 +46,7 @@ import {
 } from "./bridge";
 
 export type PluginSlotContext = {
-  companyId?: string | null;
+  productId?: string | null;
   companyPrefix?: string | null;
   projectId?: string | null;
   entityId?: string | null;
@@ -81,7 +81,7 @@ export type RegisteredPluginComponent =
 type SlotFilters = {
   slotTypes: PluginUiSlotType[];
   entityType?: PluginUiSlotEntityType | null;
-  companyId?: string | null;
+  productId?: string | null;
   enabled?: boolean;
 };
 
@@ -189,11 +189,11 @@ function buildPluginUiUrl(contribution: PluginUiContribution): string {
 /**
  * Import a plugin's UI entry module with bare-specifier rewriting.
  *
- * Plugin bundles are built with `external: ["@paperclipai/plugin-sdk/ui", "react", "react-dom"]`,
+ * Plugin bundles are built with `external: ["@softclipai/plugin-sdk/ui", "react", "react-dom"]`,
  * so their ESM output contains bare specifier imports like:
  *
  * ```js
- * import { usePluginData } from "@paperclipai/plugin-sdk/ui";
+ * import { usePluginData } from "@softclipai/plugin-sdk/ui";
  * import React from "react";
  * ```
  *
@@ -276,7 +276,7 @@ function getShimBlobUrl(specifier: "react" | "react-dom" | "react-dom/client" | 
  * - `import { ... } from "react";`
  * - `import React from "react";`
  * - `import * as React from "react";`
- * - `import { ... } from "@paperclipai/plugin-sdk/ui";`
+ * - `import { ... } from "@softclipai/plugin-sdk/ui";`
  *
  * Also handles re-exports:
  * - `export { ... } from "react";`
@@ -284,10 +284,10 @@ function getShimBlobUrl(specifier: "react" | "react-dom" | "react-dom/client" | 
 function rewriteBareSpecifiers(source: string): string {
   // Build a mapping of bare specifiers to blob URLs.
   const rewrites: Record<string, string> = {
-    '"@paperclipai/plugin-sdk/ui"': `"${getShimBlobUrl("sdk-ui")}"`,
-    "'@paperclipai/plugin-sdk/ui'": `'${getShimBlobUrl("sdk-ui")}'`,
-    '"@paperclipai/plugin-sdk/ui/hooks"': `"${getShimBlobUrl("sdk-ui")}"`,
-    "'@paperclipai/plugin-sdk/ui/hooks'": `'${getShimBlobUrl("sdk-ui")}'`,
+    '"@softclipai/plugin-sdk/ui"': `"${getShimBlobUrl("sdk-ui")}"`,
+    "'@softclipai/plugin-sdk/ui'": `'${getShimBlobUrl("sdk-ui")}'`,
+    '"@softclipai/plugin-sdk/ui/hooks"': `"${getShimBlobUrl("sdk-ui")}"`,
+    "'@softclipai/plugin-sdk/ui/hooks'": `'${getShimBlobUrl("sdk-ui")}'`,
     '"react/jsx-runtime"': `"${getShimBlobUrl("react/jsx-runtime")}"`,
     "'react/jsx-runtime'": `'${getShimBlobUrl("react/jsx-runtime")}'`,
     '"react-dom/client"': `"${getShimBlobUrl("react-dom/client")}"`,
@@ -359,7 +359,7 @@ async function importPluginModule(url: string): Promise<Record<string, unknown>>
  * exports to the correct `pluginKey:exportName` registry keys.
  *
  * Plugin modules are loaded with bare-specifier rewriting so that imports
- * of `@paperclipai/plugin-sdk/ui`, `react`, and `react-dom` resolve to the
+ * of `@softclipai/plugin-sdk/ui`, `react`, and `react-dom` resolve to the
  * host-provided implementations via the bridge registry.
  *
  * Web-component registrations still work: if the module has a named export
@@ -679,7 +679,7 @@ function slotContextToHostContext(
   userId: string | null,
 ): PluginHostContext {
   return {
-    companyId: pluginSlotContext.companyId ?? null,
+    productId: pluginSlotContext.productId ?? null,
     companyPrefix: pluginSlotContext.companyPrefix ?? null,
     projectId: pluginSlotContext.projectId ?? (pluginSlotContext.entityType === "project" ? pluginSlotContext.entityId ?? null : null),
     entityId: pluginSlotContext.entityId ?? null,
@@ -800,7 +800,7 @@ export function PluginSlotOutlet({
   const { slots, errorMessage } = usePluginSlots({
     slotTypes,
     entityType,
-    companyId: context.companyId,
+    productId: context.productId,
   });
 
   if (errorMessage) {

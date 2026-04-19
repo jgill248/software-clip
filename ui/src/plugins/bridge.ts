@@ -2,7 +2,7 @@
  * Plugin UI bridge runtime — concrete implementations of the bridge hooks.
  *
  * Plugin UI bundles import `usePluginData`, `usePluginAction`, and
- * `useHostContext` from `@paperclipai/plugin-sdk/ui`.  Those are type-only
+ * `useHostContext` from `@softclipai/plugin-sdk/ui`.  Those are type-only
  * declarations in the SDK package. The host provides the real implementations
  * by injecting this bridge runtime into the plugin's module scope.
  *
@@ -31,7 +31,7 @@ import type {
   PluginLauncherBounds,
   PluginLauncherRenderContextSnapshot,
   PluginLauncherRenderEnvironment,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import { pluginsApi } from "@/api/plugins";
 import { ApiError } from "@/api/client";
 import { useToastActions, type ToastInput } from "@/context/ToastContext";
@@ -68,7 +68,7 @@ export type PluginToastFn = (input: PluginToastInput) => string | null;
 // ---------------------------------------------------------------------------
 
 export interface PluginHostContext {
-  companyId: string | null;
+  productId: string | null;
   companyPrefix: string | null;
   projectId: string | null;
   entityId: string | null;
@@ -234,7 +234,7 @@ export function usePluginData<T = unknown>(
   params?: Record<string, unknown>,
 ): PluginDataResult<T> {
   const { pluginId, hostContext } = usePluginBridgeContext();
-  const companyId = hostContext.companyId;
+  const productId = hostContext.productId;
   const renderEnvironmentSnapshot = serializeRenderEnvironment(hostContext.renderEnvironment);
   const renderEnvironmentKey = serializeRenderEnvironmentSnapshot(renderEnvironmentSnapshot);
 
@@ -259,7 +259,7 @@ export function usePluginData<T = unknown>(
           pluginId,
           key,
           params,
-          companyId,
+          productId,
           renderEnvironmentSnapshot,
         )
         .then((response) => {
@@ -295,7 +295,7 @@ export function usePluginData<T = unknown>(
       if (retryTimer) clearTimeout(retryTimer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pluginId, key, paramsKey, refreshCounter, companyId, renderEnvironmentKey]);
+  }, [pluginId, key, paramsKey, refreshCounter, productId, renderEnvironmentKey]);
 
   const refresh = useCallback(() => {
     setRefreshCounter((c) => c + 1);
@@ -329,7 +329,7 @@ export function usePluginAction(key: string): PluginActionFn {
   return useCallback(
     async (params?: Record<string, unknown>): Promise<unknown> => {
       const { pluginId, hostContext } = contextRef.current;
-      const companyId = hostContext.companyId;
+      const productId = hostContext.productId;
       const renderEnvironment = serializeRenderEnvironment(hostContext.renderEnvironment);
 
       try {
@@ -337,7 +337,7 @@ export function usePluginAction(key: string): PluginActionFn {
           pluginId,
           key,
           params,
-          companyId,
+          productId,
           renderEnvironment,
         );
         return response.data;
@@ -391,10 +391,10 @@ export interface PluginStreamResult<T = unknown> {
 
 export function usePluginStream<T = unknown>(
   channel: string,
-  options?: { companyId?: string },
+  options?: { productId?: string },
 ): PluginStreamResult<T> {
   const { pluginId, hostContext } = usePluginBridgeContext();
-  const effectiveCompanyId = options?.companyId ?? hostContext.companyId ?? undefined;
+  const effectiveCompanyId = options?.productId ?? hostContext.productId ?? undefined;
   const [events, setEvents] = useState<T[]>([]);
   const [lastEvent, setLastEvent] = useState<T | null>(null);
   const [connecting, setConnecting] = useState<boolean>(Boolean(effectiveCompanyId));
@@ -419,7 +419,7 @@ export function usePluginStream<T = unknown>(
       return;
     }
 
-    const params = new URLSearchParams({ companyId: effectiveCompanyId });
+    const params = new URLSearchParams({ productId: effectiveCompanyId });
     const source = new EventSource(
       `/api/plugins/${encodeURIComponent(pluginId)}/bridge/stream/${encodeURIComponent(channel)}?${params.toString()}`,
       { withCredentials: true },

@@ -1,6 +1,6 @@
 import { and, desc, eq, inArray } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
-import { approvals, issueApprovals, issues } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
+import { approvals, issueApprovals, issues } from "@softclipai/db";
 import { notFound, unprocessable } from "../errors.js";
 import { redactEventPayload } from "../redaction.js";
 
@@ -33,7 +33,7 @@ export function issueApprovalService(db: Db) {
     const approval = await getApproval(approvalId);
     if (!approval) throw notFound("Approval not found");
 
-    if (issue.companyId !== approval.companyId) {
+    if (issue.productId !== approval.productId) {
       throw unprocessable("Issue and approval must belong to the same company");
     }
 
@@ -48,7 +48,7 @@ export function issueApprovalService(db: Db) {
       const result = await db
         .select({
           id: approvals.id,
-          companyId: approvals.companyId,
+          productId: approvals.productId,
           type: approvals.type,
           requestedByAgentId: approvals.requestedByAgentId,
           requestedByUserId: approvals.requestedByUserId,
@@ -77,7 +77,7 @@ export function issueApprovalService(db: Db) {
       return db
         .select({
           id: issues.id,
-          companyId: issues.companyId,
+          productId: issues.productId,
           projectId: issues.projectId,
           goalId: issues.goalId,
           parentId: issues.parentId,
@@ -110,7 +110,7 @@ export function issueApprovalService(db: Db) {
       await db
         .insert(issueApprovals)
         .values({
-          companyId: issue.companyId,
+          productId: issue.productId,
           issueId,
           approvalId,
           linkedByAgentId: actor?.agentId ?? null,
@@ -142,7 +142,7 @@ export function issueApprovalService(db: Db) {
       const rows = await db
         .select({
           id: issues.id,
-          companyId: issues.companyId,
+          productId: issues.productId,
         })
         .from(issues)
         .where(inArray(issues.id, uniqueIssueIds));
@@ -152,7 +152,7 @@ export function issueApprovalService(db: Db) {
       }
 
       for (const row of rows) {
-        if (row.companyId !== approval.companyId) {
+        if (row.productId !== approval.productId) {
           throw unprocessable("Issue and approval must belong to the same company");
         }
       }
@@ -161,7 +161,7 @@ export function issueApprovalService(db: Db) {
         .insert(issueApprovals)
         .values(
           uniqueIssueIds.map((issueId) => ({
-            companyId: approval.companyId,
+            productId: approval.productId,
             issueId,
             approvalId,
             linkedByAgentId: actor?.agentId ?? null,

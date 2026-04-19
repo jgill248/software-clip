@@ -32,7 +32,7 @@ vi.mock("../services/index.js", () => ({
   agentInstructionsService: () => mockAgentInstructionsService,
   agentService: () => mockAgentService,
   ceremonyService: () => mockCeremonyService,
-  companyService: () => mockCompanyService,
+  productService: () => mockCompanyService,
   feedbackService: () => mockFeedbackService,
   logActivity: mockLogActivity,
 }));
@@ -43,8 +43,8 @@ vi.mock("../services/default-agent-instructions.js", () => ({
 }));
 
 async function createApp(actor: Record<string, unknown>) {
-  const [{ companyRoutes }, { errorHandler }] = await Promise.all([
-    vi.importActual<typeof import("../routes/companies.js")>("../routes/companies.js"),
+  const [{ productRoutes }, { errorHandler }] = await Promise.all([
+    vi.importActual<typeof import("../routes/products.js")>("../routes/products.js"),
     vi.importActual<typeof import("../middleware/index.js")>("../middleware/index.js"),
   ]);
   const app = express();
@@ -53,7 +53,7 @@ async function createApp(actor: Record<string, unknown>) {
     (req as { actor: unknown }).actor = actor;
     next();
   });
-  app.use("/api/companies", companyRoutes({} as never));
+  app.use("/api/companies", productRoutes({} as never));
   app.use(errorHandler);
   return app;
 }
@@ -71,7 +71,7 @@ describe("POST /api/companies bootstraps a Product Owner + ceremonies (§10)", (
       id: "agent-po",
       name: "Product Owner",
       role: "product-owner",
-      companyId: "company-new",
+      productId: "company-new",
       adapterType: "process",
       adapterConfig: {},
     });

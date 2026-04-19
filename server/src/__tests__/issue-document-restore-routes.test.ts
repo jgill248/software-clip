@@ -3,7 +3,7 @@ import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const issueId = "11111111-1111-4111-8111-111111111111";
-const companyId = "22222222-2222-4222-8222-222222222222";
+const productId = "22222222-2222-4222-8222-222222222222";
 
 const mockIssueService = vi.hoisted(() => ({
   getById: vi.fn(),
@@ -88,7 +88,7 @@ async function createApp() {
     (req as any).actor = {
       type: "board",
       userId: "board-user",
-      companyIds: [companyId],
+      productIds: [productId],
       source: "local_implicit",
       isInstanceAdmin: false,
     };
@@ -109,7 +109,7 @@ describe("issue document revision routes", () => {
     vi.resetAllMocks();
     mockIssueService.getById.mockResolvedValue({
       id: issueId,
-      companyId,
+      productId,
       identifier: "PAP-881",
       title: "Document revisions",
       status: "in_progress",
@@ -117,7 +117,7 @@ describe("issue document revision routes", () => {
     mockDocumentsService.listIssueDocumentRevisions.mockResolvedValue([
       {
         id: "revision-2",
-        companyId,
+        productId,
         documentId: "document-1",
         issueId,
         key: "plan",
@@ -136,7 +136,7 @@ describe("issue document revision routes", () => {
       restoredFromRevisionNumber: 1,
       document: {
         id: "document-1",
-        companyId,
+        productId,
         issueId,
         key: "plan",
         title: "Plan v1",

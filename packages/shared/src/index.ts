@@ -665,6 +665,14 @@ export {
   type ListPluginState,
 } from "./validators/index.js";
 
+export {
+  resolveSoftclipEnv,
+  resetSoftclipEnvWarnings,
+  setSoftclipEnvWarnSink,
+  type ResolvedSoftclipEnv,
+  type SoftclipEnvSource,
+} from "./env/resolveSoftclipEnv.js";
+
 export { API_PREFIX, API } from "./api.js";
 export { normalizeAgentUrlKey, deriveAgentUrlKey, isUuidLike } from "./agent-url-key.js";
 export { deriveProjectUrlKey, normalizeProjectUrlKey, hasNonAsciiContent } from "./project-url-key.js";

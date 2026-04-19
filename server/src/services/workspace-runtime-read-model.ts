@@ -1,5 +1,5 @@
-import type { Db } from "@paperclipai/db";
-import { workspaceRuntimeServices } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
+import { workspaceRuntimeServices } from "@softclipai/db";
 import { and, desc, eq, inArray } from "drizzle-orm";
 
 type WorkspaceRuntimeServiceRow = typeof workspaceRuntimeServices.$inferSelect;
@@ -28,7 +28,7 @@ export function selectCurrentRuntimeServiceRows(rows: WorkspaceRuntimeServiceRow
 
 export async function listCurrentRuntimeServicesForProjectWorkspaces(
   db: Db,
-  companyId: string,
+  productId: string,
   projectWorkspaceIds: string[],
 ) {
   if (projectWorkspaceIds.length === 0) return new Map<string, WorkspaceRuntimeServiceRow[]>();
@@ -38,7 +38,7 @@ export async function listCurrentRuntimeServicesForProjectWorkspaces(
     .from(workspaceRuntimeServices)
     .where(
       and(
-        eq(workspaceRuntimeServices.companyId, companyId),
+        eq(workspaceRuntimeServices.productId, productId),
         inArray(workspaceRuntimeServices.projectWorkspaceId, projectWorkspaceIds),
         eq(workspaceRuntimeServices.scopeType, "project_workspace"),
       ),
@@ -63,7 +63,7 @@ export async function listCurrentRuntimeServicesForProjectWorkspaces(
 
 export async function listCurrentRuntimeServicesForExecutionWorkspaces(
   db: Db,
-  companyId: string,
+  productId: string,
   executionWorkspaceIds: string[],
 ) {
   if (executionWorkspaceIds.length === 0) return new Map<string, WorkspaceRuntimeServiceRow[]>();
@@ -73,7 +73,7 @@ export async function listCurrentRuntimeServicesForExecutionWorkspaces(
     .from(workspaceRuntimeServices)
     .where(
       and(
-        eq(workspaceRuntimeServices.companyId, companyId),
+        eq(workspaceRuntimeServices.productId, productId),
         inArray(workspaceRuntimeServices.executionWorkspaceId, executionWorkspaceIds),
       ),
     )

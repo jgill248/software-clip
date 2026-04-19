@@ -1,10 +1,10 @@
 import { and, asc, eq, inArray } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import {
   issueAcceptanceCriteria,
   issues,
   type AcceptanceCriterionStatus,
-} from "@paperclipai/db";
+} from "@softclipai/db";
 import { badRequest, notFound, unprocessable } from "../errors.js";
 
 /**
@@ -33,7 +33,7 @@ function isValidStatus(value: unknown): value is AcceptanceCriterionStatus {
 
 async function loadIssue(db: Dbish, issueId: string) {
   const rows = await db
-    .select({ id: issues.id, companyId: issues.companyId, status: issues.status })
+    .select({ id: issues.id, productId: issues.productId, status: issues.status })
     .from(issues)
     .where(eq(issues.id, issueId));
   return rows[0] ?? null;

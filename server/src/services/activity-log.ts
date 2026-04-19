@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
-import type { Db } from "@paperclipai/db";
-import { activityLog } from "@paperclipai/db";
-import { PLUGIN_EVENT_TYPES, type PluginEventType } from "@paperclipai/shared";
-import type { PluginEvent } from "@paperclipai/plugin-sdk";
+import type { Db } from "@softclipai/db";
+import { activityLog } from "@softclipai/db";
+import { PLUGIN_EVENT_TYPES, type PluginEventType } from "@softclipai/shared";
+import type { PluginEvent } from "@softclipai/plugin-sdk";
 import { publishLiveEvent } from "./live-events.js";
 import { redactCurrentUserValue } from "../log-redaction.js";
 import { sanitizeRecord } from "../redaction.js";
@@ -23,7 +23,7 @@ export function setPluginEventBus(bus: PluginEventBus): void {
 }
 
 export interface LogActivityInput {
-  companyId: string;
+  productId: string;
   actorType: "agent" | "user" | "system";
   actorId: string;
   action: string;
@@ -43,7 +43,7 @@ export async function logActivity(db: Db, input: LogActivityInput) {
     ? redactCurrentUserValue(sanitizedDetails, currentUserRedactionOptions)
     : null;
   await db.insert(activityLog).values({
-    companyId: input.companyId,
+    productId: input.productId,
     actorType: input.actorType,
     actorId: input.actorId,
     action: input.action,
@@ -55,7 +55,7 @@ export async function logActivity(db: Db, input: LogActivityInput) {
   });
 
   publishLiveEvent({
-    companyId: input.companyId,
+    productId: input.productId,
     type: "activity.logged",
     payload: {
       actorType: input.actorType,
@@ -78,7 +78,7 @@ export async function logActivity(db: Db, input: LogActivityInput) {
       actorType: input.actorType,
       entityId: input.entityId,
       entityType: input.entityType,
-      companyId: input.companyId,
+      productId: input.productId,
       payload: {
         ...redactedDetails,
         agentId: input.agentId ?? null,

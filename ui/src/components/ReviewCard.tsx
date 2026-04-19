@@ -11,7 +11,7 @@ import {
   typeLabel,
 } from "./ReviewPayload";
 import { timeAgo } from "../lib/timeAgo";
-import type { Approval, Agent } from "@paperclipai/shared";
+import type { Approval, Agent } from "@softclipai/shared";
 import { cn } from "@/lib/utils";
 
 function statusIcon(status: string) {

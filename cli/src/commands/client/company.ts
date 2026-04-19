@@ -5,7 +5,7 @@ import pc from "picocolors";
 import type {
   Company,
   FeedbackTrace,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import { ApiRequestError } from "../../client/http.js";
 import {
   addCommonClientOptions,
@@ -171,11 +171,11 @@ export function registerCompanyCommands(program: Command): void {
     company
       .command("get")
       .description("Get one company")
-      .argument("<companyId>", "Company ID")
-      .action(async (companyId: string, opts: CompanyCommandOptions) => {
+      .argument("<productId>", "Company ID")
+      .action(async (productId: string, opts: CompanyCommandOptions) => {
         try {
           const ctx = resolveCommandContext(opts);
-          const row = await ctx.api.get<Company>(`/api/companies/${companyId}`);
+          const row = await ctx.api.get<Company>(`/api/companies/${productId}`);
           printOutput(row, { json: ctx.json });
         } catch (err) {
           handleCommandError(err);
@@ -201,7 +201,7 @@ export function registerCompanyCommands(program: Command): void {
         try {
           const ctx = resolveCommandContext(opts, { requireCompany: true });
           const traces = (await ctx.api.get<FeedbackTrace[]>(
-            `/api/companies/${ctx.companyId}/feedback-traces${buildFeedbackTraceQuery(opts)}`,
+            `/api/companies/${ctx.productId}/feedback-traces${buildFeedbackTraceQuery(opts)}`,
           )) ?? [];
           if (ctx.json) {
             printOutput(traces, { json: true });
@@ -245,7 +245,7 @@ export function registerCompanyCommands(program: Command): void {
         try {
           const ctx = resolveCommandContext(opts, { requireCompany: true });
           const traces = (await ctx.api.get<FeedbackTrace[]>(
-            `/api/companies/${ctx.companyId}/feedback-traces${buildFeedbackTraceQuery(opts, opts.includePayload ?? true)}`,
+            `/api/companies/${ctx.productId}/feedback-traces${buildFeedbackTraceQuery(opts, opts.includePayload ?? true)}`,
           )) ?? [];
           const serialized = serializeFeedbackTraces(traces, opts.format);
           if (opts.out?.trim()) {
@@ -306,8 +306,8 @@ export function registerCompanyCommands(program: Command): void {
             }
           }
 
-          if (!target && ctx.companyId) {
-            const scoped = await ctx.api.get<Company>(`/api/companies/${ctx.companyId}`, { ignoreNotFound: true });
+          if (!target && ctx.productId) {
+            const scoped = await ctx.api.get<Company>(`/api/companies/${ctx.productId}`, { ignoreNotFound: true });
             if (scoped) {
               try {
                 target = resolveCompanyForDeletion([scoped], normalizedSelector, by);

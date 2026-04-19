@@ -32,7 +32,7 @@ function createAsset() {
   const now = new Date("2026-01-01T00:00:00.000Z");
   return {
     id: "asset-1",
-    companyId: "company-1",
+    productId: "company-1",
     provider: "local",
     objectKey: "assets/abc",
     contentType: "image/png",
@@ -49,7 +49,7 @@ function createAsset() {
 type TestStorageService = StorageService & {
   __calls: {
     putFileInputs: Array<{
-      companyId: string;
+      productId: string;
       namespace: string;
       originalFilename: string | null;
       contentType: string;
@@ -61,7 +61,7 @@ type TestStorageService = StorageService & {
 function createStorageService(contentType = "image/png"): TestStorageService {
   const calls: TestStorageService["__calls"] = { putFileInputs: [] };
   const putFile: StorageService["putFile"] = async (input: {
-    companyId: string;
+    productId: string;
     namespace: string;
     originalFilename: string | null;
     contentType: string;
@@ -105,7 +105,7 @@ async function createApp(storage: ReturnType<typeof createStorageService>) {
   return app;
 }
 
-describe("POST /api/companies/:companyId/assets/images", () => {
+describe("POST /api/companies/:productId/assets/images", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.doUnmock("../routes/assets.js");
@@ -131,7 +131,7 @@ describe("POST /api/companies/:companyId/assets/images", () => {
     expect(res.body.contentPath).toBe("/api/assets/asset-1/content");
     expect(createAssetMock).toHaveBeenCalledTimes(1);
     expect(png.__calls.putFileInputs[0]).toMatchObject({
-      companyId: "company-1",
+      productId: "company-1",
       namespace: "assets/goals",
       originalFilename: "logo.png",
       contentType: "image/png",
@@ -156,7 +156,7 @@ describe("POST /api/companies/:companyId/assets/images", () => {
 
     expect(res.status).toBe(201);
     expect(text.__calls.putFileInputs[0]).toMatchObject({
-      companyId: "company-1",
+      productId: "company-1",
       namespace: "assets/issues/drafts",
       originalFilename: "note.txt",
       contentType: "text/plain",
@@ -165,7 +165,7 @@ describe("POST /api/companies/:companyId/assets/images", () => {
   });
 });
 
-describe("POST /api/companies/:companyId/logo", () => {
+describe("POST /api/companies/:productId/logo", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.doUnmock("../routes/assets.js");
@@ -190,7 +190,7 @@ describe("POST /api/companies/:companyId/logo", () => {
     expect(res.body.contentPath).toBe("/api/assets/asset-1/content");
     expect(createAssetMock).toHaveBeenCalledTimes(1);
     expect(png.__calls.putFileInputs[0]).toMatchObject({
-      companyId: "company-1",
+      productId: "company-1",
       namespace: "assets/companies",
       originalFilename: "logo.png",
       contentType: "image/png",

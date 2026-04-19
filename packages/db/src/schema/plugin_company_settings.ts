@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, timestamp, jsonb, index, uniqueIndex, boolean } from "drizzle-orm/pg-core";
-import { companies } from "./companies.js";
+import { products } from "./products.js";
 import { plugins } from "./plugins.js";
 
 /**
@@ -18,9 +18,9 @@ export const pluginCompanySettings = pgTable(
   "plugin_company_settings",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id")
+    productId: uuid("product_id")
       .notNull()
-      .references(() => companies.id, { onDelete: "cascade" }),
+      .references(() => products.id, { onDelete: "cascade" }),
     pluginId: uuid("plugin_id")
       .notNull()
       .references(() => plugins.id, { onDelete: "cascade" }),
@@ -31,10 +31,10 @@ export const pluginCompanySettings = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyIdx: index("plugin_company_settings_company_idx").on(table.companyId),
+    companyIdx: index("plugin_company_settings_product_idx").on(table.productId),
     pluginIdx: index("plugin_company_settings_plugin_idx").on(table.pluginId),
-    companyPluginUq: uniqueIndex("plugin_company_settings_company_plugin_uq").on(
-      table.companyId,
+    companyPluginUq: uniqueIndex("plugin_company_settings_product_plugin_uq").on(
+      table.productId,
       table.pluginId,
     ),
   }),

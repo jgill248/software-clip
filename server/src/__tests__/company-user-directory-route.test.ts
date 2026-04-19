@@ -96,7 +96,7 @@ function createApp(actor: Express.Request["actor"]) {
   return app;
 }
 
-describe("GET /companies/:companyId/user-directory", () => {
+describe("GET /companies/:productId/user-directory", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -107,8 +107,8 @@ describe("GET /companies/:companyId/user-directory", () => {
       userId: "user-1",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: ["company-1"],
-      memberships: [{ companyId: "company-1", membershipRole: "operator", status: "active" }],
+      productIds: ["company-1"],
+      memberships: [{ productId: "company-1", membershipRole: "operator", status: "active" }],
     });
 
     const res = await request(app).get("/api/companies/company-1/user-directory");

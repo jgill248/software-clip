@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { execute } from "@paperclipai/adapter-codex-local/server";
+import { execute } from "@softclipai/adapter-codex-local/server";
 
 async function writeFakeCodexCommand(commandPath: string): Promise<void> {
   const script = `#!/usr/bin/env node
@@ -81,7 +81,7 @@ describe("codex execute", () => {
         runId: "run-default",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Codex Coder",
           adapterType: "codex_local",
           adapterConfig: {},
@@ -158,7 +158,7 @@ describe("codex execute", () => {
         runId: "run-notes",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Codex Coder",
           adapterType: "codex_local",
           adapterConfig: {},
@@ -219,7 +219,7 @@ describe("codex execute", () => {
         runId: "run-meta",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Codex Coder",
           adapterType: "codex_local",
           adapterConfig: {},
@@ -277,7 +277,7 @@ describe("codex execute", () => {
         runId: "run-wake",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Codex Coder",
           adapterType: "codex_local",
           adapterConfig: {},
@@ -385,7 +385,7 @@ describe("codex execute", () => {
         runId: "run-stage-wake",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Codex Coder",
           adapterType: "codex_local",
           adapterConfig: {},
@@ -454,7 +454,7 @@ describe("codex execute", () => {
         runId: "run-stage-wake-executor",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Codex Coder",
           adapterType: "codex_local",
           adapterConfig: {},
@@ -539,7 +539,7 @@ describe("codex execute", () => {
         runId: "run-issue-wake",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Codex Coder",
           adapterType: "codex_local",
           adapterConfig: {},
@@ -640,7 +640,7 @@ describe("codex execute", () => {
         runId: "run-resume-wake",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Codex Coder",
           adapterType: "codex_local",
           adapterConfig: {},
@@ -768,7 +768,7 @@ describe("codex execute", () => {
         runId: "run-1",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Codex Coder",
           adapterType: "codex_local",
           adapterConfig: {},
@@ -875,7 +875,7 @@ describe("codex execute", () => {
         runId: "run-2",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Codex Coder",
           adapterType: "codex_local",
           adapterConfig: {},

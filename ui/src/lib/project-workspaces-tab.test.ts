@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { ExecutionWorkspace, Issue, Project, ProjectWorkspace } from "@paperclipai/shared";
+import type { ExecutionWorkspace, Issue, Project, ProjectWorkspace } from "@softclipai/shared";
 import { buildProjectWorkspaceSummaries } from "./project-workspaces-tab";
 
 function createProjectWorkspace(overrides: Partial<ProjectWorkspace>): ProjectWorkspace {
   return {
     id: overrides.id ?? "workspace-default",
-    companyId: overrides.companyId ?? "company-1",
+    productId: overrides.productId ?? "company-1",
     projectId: overrides.projectId ?? "project-1",
     name: overrides.name ?? "paperclip",
     sourceType: overrides.sourceType ?? "local_path",
@@ -31,7 +31,7 @@ function createProjectWorkspace(overrides: Partial<ProjectWorkspace>): ProjectWo
 function createIssue(overrides: Partial<Issue>): Issue {
   return {
     id: overrides.id ?? "issue-1",
-    companyId: overrides.companyId ?? "company-1",
+    productId: overrides.productId ?? "company-1",
     projectId: overrides.projectId ?? "project-1",
     projectWorkspaceId: overrides.projectWorkspaceId ?? null,
     goalId: overrides.goalId ?? null,
@@ -68,7 +68,7 @@ function createIssue(overrides: Partial<Issue>): Issue {
 function createExecutionWorkspace(overrides: Partial<ExecutionWorkspace>): ExecutionWorkspace {
   return {
     id: overrides.id ?? "exec-1",
-    companyId: overrides.companyId ?? "company-1",
+    productId: overrides.productId ?? "company-1",
     projectId: overrides.projectId ?? "project-1",
     projectWorkspaceId: overrides.projectWorkspaceId ?? "workspace-default",
     sourceIssueId: overrides.sourceIssueId ?? null,

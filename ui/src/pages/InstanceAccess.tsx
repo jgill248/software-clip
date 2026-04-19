@@ -51,7 +51,7 @@ export function InstanceAccess() {
   useEffect(() => {
     if (!userAccessQuery.data) return;
     setSelectedCompanyIds(
-      new Set(userAccessQuery.data.companyAccess.map((membership) => membership.companyId)),
+      new Set(userAccessQuery.data.companyAccess.map((membership) => membership.productId)),
     );
   }, [userAccessQuery.data]);
 
@@ -224,7 +224,7 @@ export function InstanceAccess() {
                       className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm"
                     >
                       <div>
-                        <div className="font-medium">{membership.companyName || membership.companyId}</div>
+                        <div className="font-medium">{membership.companyName || membership.productId}</div>
                         <div className="text-muted-foreground">
                           {membership.membershipRole || "unset"} • {membership.status}
                         </div>

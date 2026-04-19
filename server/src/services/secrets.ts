@@ -1,8 +1,8 @@
 import { and, desc, eq } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
-import { companySecrets, companySecretVersions } from "@paperclipai/db";
-import type { AgentEnvConfig, EnvBinding, SecretProvider } from "@paperclipai/shared";
-import { envBindingSchema } from "@paperclipai/shared";
+import type { Db } from "@softclipai/db";
+import { companySecrets, companySecretVersions } from "@softclipai/db";
+import type { AgentEnvConfig, EnvBinding, SecretProvider } from "@softclipai/shared";
+import { envBindingSchema } from "@softclipai/shared";
 import { conflict, notFound, unprocessable } from "../errors.js";
 import { getSecretProvider, listSecretProviders } from "../secrets/provider-registry.js";
 
@@ -52,11 +52,11 @@ export function secretService(db: Db) {
       .then((rows) => rows[0] ?? null);
   }
 
-  async function getByName(companyId: string, name: string) {
+  async function getByName(productId: string, name: string) {
     return db
       .select()
       .from(companySecrets)
-      .where(and(eq(companySecrets.companyId, companyId), eq(companySecrets.name, name)))
+      .where(and(eq(companySecrets.productId, productId), eq(companySecrets.name, name)))
       .then((rows) => rows[0] ?? null);
   }
 
@@ -73,19 +73,19 @@ export function secretService(db: Db) {
       .then((rows) => rows[0] ?? null);
   }
 
-  async function assertSecretInCompany(companyId: string, secretId: string) {
+  async function assertSecretInCompany(productId: string, secretId: string) {
     const secret = await getById(secretId);
     if (!secret) throw notFound("Secret not found");
-    if (secret.companyId !== companyId) throw unprocessable("Secret must belong to same company");
+    if (secret.productId !== productId) throw unprocessable("Secret must belong to same company");
     return secret;
   }
 
   async function resolveSecretValue(
-    companyId: string,
+    productId: string,
     secretId: string,
     version: number | "latest",
   ): Promise<string> {
-    const secret = await assertSecretInCompany(companyId, secretId);
+    const secret = await assertSecretInCompany(productId, secretId);
     const resolvedVersion = version === "latest" ? secret.latestVersion : version;
     const versionRow = await getSecretVersion(secret.id, resolvedVersion);
     if (!versionRow) throw notFound("Secret version not found");
@@ -97,7 +97,7 @@ export function secretService(db: Db) {
   }
 
   async function normalizeEnvConfig(
-    companyId: string,
+    productId: string,
     envValue: unknown,
     opts?: NormalizeEnvOptions,
   ): Promise<AgentEnvConfig> {
@@ -129,7 +129,7 @@ export function secretService(db: Db) {
         continue;
       }
 
-      await assertSecretInCompany(companyId, binding.secretId);
+      await assertSecretInCompany(productId, binding.secretId);
       normalized[key] = {
         type: "secret_ref",
         secretId: binding.secretId,
@@ -140,7 +140,7 @@ export function secretService(db: Db) {
   }
 
   async function normalizeAdapterConfigForPersistenceInternal(
-    companyId: string,
+    productId: string,
     adapterConfig: Record<string, unknown>,
     opts?: { strictMode?: boolean },
   ) {
@@ -148,18 +148,18 @@ export function secretService(db: Db) {
     if (!Object.prototype.hasOwnProperty.call(adapterConfig, "env")) {
       return normalized;
     }
-    normalized.env = await normalizeEnvConfig(companyId, adapterConfig.env, opts);
+    normalized.env = await normalizeEnvConfig(productId, adapterConfig.env, opts);
     return normalized;
   }
 
   return {
     listProviders: () => listSecretProviders(),
 
-    list: (companyId: string) =>
+    list: (productId: string) =>
       db
         .select()
         .from(companySecrets)
-        .where(eq(companySecrets.companyId, companyId))
+        .where(eq(companySecrets.productId, productId))
         .orderBy(desc(companySecrets.createdAt)),
 
     getById,
@@ -167,7 +167,7 @@ export function secretService(db: Db) {
     resolveSecretValue,
 
     create: async (
-      companyId: string,
+      productId: string,
       input: {
         name: string;
         provider: SecretProvider;
@@ -177,7 +177,7 @@ export function secretService(db: Db) {
       },
       actor?: { userId?: string | null; agentId?: string | null },
     ) => {
-      const existing = await getByName(companyId, input.name);
+      const existing = await getByName(productId, input.name);
       if (existing) throw conflict(`Secret already exists: ${input.name}`);
 
       const provider = getSecretProvider(input.provider);
@@ -190,7 +190,7 @@ export function secretService(db: Db) {
         const secret = await tx
           .insert(companySecrets)
           .values({
-            companyId,
+            productId,
             name: input.name,
             provider: input.provider,
             externalRef: prepared.externalRef,
@@ -263,7 +263,7 @@ export function secretService(db: Db) {
       if (!secret) throw notFound("Secret not found");
 
       if (patch.name && patch.name !== secret.name) {
-        const duplicate = await getByName(secret.companyId, patch.name);
+        const duplicate = await getByName(secret.productId, patch.name);
         if (duplicate && duplicate.id !== secret.id) {
           throw conflict(`Secret already exists: ${patch.name}`);
         }
@@ -292,19 +292,19 @@ export function secretService(db: Db) {
     },
 
     normalizeAdapterConfigForPersistence: async (
-      companyId: string,
+      productId: string,
       adapterConfig: Record<string, unknown>,
       opts?: { strictMode?: boolean },
-    ) => normalizeAdapterConfigForPersistenceInternal(companyId, adapterConfig, opts),
+    ) => normalizeAdapterConfigForPersistenceInternal(productId, adapterConfig, opts),
 
     normalizeEnvBindingsForPersistence: async (
-      companyId: string,
+      productId: string,
       envValue: unknown,
       opts?: NormalizeEnvOptions,
-    ) => normalizeEnvConfig(companyId, envValue, opts),
+    ) => normalizeEnvConfig(productId, envValue, opts),
 
     normalizeHireApprovalPayloadForPersistence: async (
-      companyId: string,
+      productId: string,
       payload: Record<string, unknown>,
       opts?: { strictMode?: boolean },
     ) => {
@@ -312,7 +312,7 @@ export function secretService(db: Db) {
       const adapterConfig = asRecord(payload.adapterConfig);
       if (adapterConfig) {
         normalized.adapterConfig = await normalizeAdapterConfigForPersistenceInternal(
-          companyId,
+          productId,
           adapterConfig,
           opts,
         );
@@ -320,7 +320,7 @@ export function secretService(db: Db) {
       return normalized;
     },
 
-    resolveEnvBindings: async (companyId: string, envValue: unknown): Promise<{ env: Record<string, string>; secretKeys: Set<string> }> => {
+    resolveEnvBindings: async (productId: string, envValue: unknown): Promise<{ env: Record<string, string>; secretKeys: Set<string> }> => {
       const record = asRecord(envValue);
       if (!record) return { env: {} as Record<string, string>, secretKeys: new Set<string>() };
       const resolved: Record<string, string> = {};
@@ -338,14 +338,14 @@ export function secretService(db: Db) {
         if (binding.type === "plain") {
           resolved[key] = binding.value;
         } else {
-          resolved[key] = await resolveSecretValue(companyId, binding.secretId, binding.version);
+          resolved[key] = await resolveSecretValue(productId, binding.secretId, binding.version);
           secretKeys.add(key);
         }
       }
       return { env: resolved, secretKeys };
     },
 
-    resolveAdapterConfigForRuntime: async (companyId: string, adapterConfig: Record<string, unknown>): Promise<{ config: Record<string, unknown>; secretKeys: Set<string> }> => {
+    resolveAdapterConfigForRuntime: async (productId: string, adapterConfig: Record<string, unknown>): Promise<{ config: Record<string, unknown>; secretKeys: Set<string> }> => {
       const resolved = { ...adapterConfig };
       const secretKeys = new Set<string>();
       if (!Object.prototype.hasOwnProperty.call(adapterConfig, "env")) {
@@ -369,7 +369,7 @@ export function secretService(db: Db) {
         if (binding.type === "plain") {
           env[key] = binding.value;
         } else {
-          env[key] = await resolveSecretValue(companyId, binding.secretId, binding.version);
+          env[key] = await resolveSecretValue(productId, binding.secretId, binding.version);
           secretKeys.add(key);
         }
       }

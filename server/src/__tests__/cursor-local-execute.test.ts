@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { execute } from "@paperclipai/adapter-cursor-local/server";
+import { execute } from "@softclipai/adapter-cursor-local/server";
 
 async function writeFakeCursorCommand(commandPath: string): Promise<void> {
   const script = `#!/usr/bin/env node
@@ -71,7 +71,7 @@ describe("cursor execute", () => {
         runId: "run-1",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Cursor Coder",
           adapterType: "cursor",
           adapterConfig: {},
@@ -145,7 +145,7 @@ describe("cursor execute", () => {
         runId: "run-2",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Cursor Coder",
           adapterType: "cursor",
           adapterConfig: {},
@@ -206,7 +206,7 @@ describe("cursor execute", () => {
         runId: "run-3",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Cursor Coder",
           adapterType: "cursor",
           adapterConfig: {},

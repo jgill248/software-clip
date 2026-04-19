@@ -14,7 +14,7 @@ import {
 import { agents } from "./agents.js";
 import { projects } from "./projects.js";
 import { goals } from "./goals.js";
-import { companies } from "./companies.js";
+import { products } from "./products.js";
 import { heartbeatRuns } from "./heartbeat_runs.js";
 import { projectWorkspaces } from "./project_workspaces.js";
 import { executionWorkspaces } from "./execution_workspaces.js";
@@ -24,7 +24,7 @@ export const issues = pgTable(
   "issues",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     projectId: uuid("project_id").references(() => projects.id),
     projectWorkspaceId: uuid("project_workspace_id").references(() => projectWorkspaces.id, { onDelete: "set null" }),
     goalId: uuid("goal_id").references(() => goals.id),
@@ -66,29 +66,29 @@ export const issues = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyStatusIdx: index("issues_company_status_idx").on(table.companyId, table.status),
-    assigneeStatusIdx: index("issues_company_assignee_status_idx").on(
-      table.companyId,
+    companyStatusIdx: index("issues_product_status_idx").on(table.productId, table.status),
+    assigneeStatusIdx: index("issues_product_assignee_status_idx").on(
+      table.productId,
       table.assigneeAgentId,
       table.status,
     ),
-    assigneeUserStatusIdx: index("issues_company_assignee_user_status_idx").on(
-      table.companyId,
+    assigneeUserStatusIdx: index("issues_product_assignee_user_status_idx").on(
+      table.productId,
       table.assigneeUserId,
       table.status,
     ),
-    parentIdx: index("issues_company_parent_idx").on(table.companyId, table.parentId),
-    projectIdx: index("issues_company_project_idx").on(table.companyId, table.projectId),
-    originIdx: index("issues_company_origin_idx").on(table.companyId, table.originKind, table.originId),
-    projectWorkspaceIdx: index("issues_company_project_workspace_idx").on(table.companyId, table.projectWorkspaceId),
-    executionWorkspaceIdx: index("issues_company_execution_workspace_idx").on(table.companyId, table.executionWorkspaceId),
-    sprintIdx: index("issues_company_sprint_idx").on(table.companyId, table.sprintId),
+    parentIdx: index("issues_product_parent_idx").on(table.productId, table.parentId),
+    projectIdx: index("issues_product_project_idx").on(table.productId, table.projectId),
+    originIdx: index("issues_product_origin_idx").on(table.productId, table.originKind, table.originId),
+    projectWorkspaceIdx: index("issues_product_project_workspace_idx").on(table.productId, table.projectWorkspaceId),
+    executionWorkspaceIdx: index("issues_product_execution_workspace_idx").on(table.productId, table.executionWorkspaceId),
+    sprintIdx: index("issues_product_sprint_idx").on(table.productId, table.sprintId),
     identifierIdx: uniqueIndex("issues_identifier_idx").on(table.identifier),
     titleSearchIdx: index("issues_title_search_idx").using("gin", table.title.op("gin_trgm_ops")),
     identifierSearchIdx: index("issues_identifier_search_idx").using("gin", table.identifier.op("gin_trgm_ops")),
     descriptionSearchIdx: index("issues_description_search_idx").using("gin", table.description.op("gin_trgm_ops")),
     openRoutineExecutionIdx: uniqueIndex("issues_open_routine_execution_uq")
-      .on(table.companyId, table.originKind, table.originId)
+      .on(table.productId, table.originKind, table.originId)
       .where(
         sql`${table.originKind} = 'routine_execution'
           and ${table.originId} is not null

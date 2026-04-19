@@ -1,5 +1,5 @@
 import { gzipSync } from "node:zlib";
-import type { FeedbackTraceBundle } from "@paperclipai/shared";
+import type { FeedbackTraceBundle } from "@softclipai/shared";
 import type { Config } from "../config.js";
 
 const DEFAULT_FEEDBACK_EXPORT_BACKEND_URL = "https://telemetry.paperclip.ing";
@@ -8,7 +8,7 @@ function buildFeedbackShareObjectKey(bundle: FeedbackTraceBundle, exportedAt: Da
   const year = String(exportedAt.getUTCFullYear());
   const month = String(exportedAt.getUTCMonth() + 1).padStart(2, "0");
   const day = String(exportedAt.getUTCDate()).padStart(2, "0");
-  return `feedback-traces/${bundle.companyId}/${year}/${month}/${day}/${bundle.exportId ?? bundle.traceId}.json`;
+  return `feedback-traces/${bundle.productId}/${year}/${month}/${day}/${bundle.exportId ?? bundle.traceId}.json`;
 }
 
 export interface FeedbackTraceShareClient {

@@ -3,8 +3,8 @@ import path from "node:path";
 import { execFile as execFileCallback } from "node:child_process";
 import { promisify } from "node:util";
 import { and, asc, desc, eq, getTableColumns, gt, inArray, isNull, or, sql } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
-import type { BillingType, ExecutionWorkspace, ExecutionWorkspaceConfig } from "@paperclipai/shared";
+import type { Db } from "@softclipai/db";
+import type { BillingType, ExecutionWorkspace, ExecutionWorkspaceConfig } from "@softclipai/shared";
 import {
   agents,
   agentRuntimeState,
@@ -17,7 +17,7 @@ import {
   issues,
   projects,
   projectWorkspaces,
-} from "@paperclipai/db";
+} from "@softclipai/db";
 import { conflict, HttpError, notFound } from "../errors.js";
 import { logger } from "../middleware/logger.js";
 import { publishLiveEvent } from "./live-events.js";
@@ -27,7 +27,7 @@ import type { AdapterExecutionResult, AdapterInvocationMeta, AdapterSessionCodec
 import { createLocalAgentJwt } from "../agent-auth-jwt.js";
 import { parseObject, asBoolean, asNumber, appendWithCap, MAX_EXCERPT_BYTES } from "../adapters/utils.js";
 import { costService } from "./costs.js";
-import { trackAgentFirstHeartbeat } from "@paperclipai/shared/telemetry";
+import { trackAgentFirstHeartbeat } from "@softclipai/shared/telemetry";
 import { getTelemetryClient } from "../telemetry.js";
 import { companySkillService } from "./company-skills.js";
 // Softclip pivot §6: budgetService import removed. Budget-based
@@ -71,12 +71,12 @@ import {
   hasSessionCompactionThresholds,
   resolveSessionCompactionPolicy,
   type SessionCompactionPolicy,
-} from "@paperclipai/adapter-utils";
+} from "@softclipai/adapter-utils";
 import {
   readPaperclipSkillSyncPreference,
   writePaperclipSkillSyncPreference,
-} from "@paperclipai/adapter-utils/server-utils";
-import { extractSkillMentionIds } from "@paperclipai/shared";
+} from "@softclipai/adapter-utils/server-utils";
+import { extractSkillMentionIds } from "@softclipai/shared";
 
 const MAX_LIVE_LOG_CHUNK_BYTES = 8 * 1024;
 const MAX_PERSISTED_LOG_CHUNK_CHARS = 64 * 1024;
@@ -112,17 +112,17 @@ type RuntimeConfigSecretResolver = Pick<
 >;
 
 export async function resolveExecutionRunAdapterConfig(input: {
-  companyId: string;
+  productId: string;
   executionRunConfig: Record<string, unknown>;
   projectEnv: unknown;
   secretsSvc: RuntimeConfigSecretResolver;
 }) {
   const { config: resolvedConfig, secretKeys } = await input.secretsSvc.resolveAdapterConfigForRuntime(
-    input.companyId,
+    input.productId,
     input.executionRunConfig,
   );
   const projectEnvResolution = input.projectEnv
-    ? await input.secretsSvc.resolveEnvBindings(input.companyId, input.projectEnv)
+    ? await input.secretsSvc.resolveEnvBindings(input.productId, input.projectEnv)
     : { env: {}, secretKeys: new Set<string>() };
   if (Object.keys(projectEnvResolution.env).length > 0) {
     resolvedConfig.env = {
@@ -171,7 +171,7 @@ export function applyRunScopedMentionedSkillKeys(
 
 async function resolveRunScopedMentionedSkillKeys(input: {
   db: Db;
-  companyId: string;
+  productId: string;
   issueId: string | null;
 }): Promise<string[]> {
   if (!input.issueId) return [];
@@ -182,7 +182,7 @@ async function resolveRunScopedMentionedSkillKeys(input: {
       description: issues.description,
     })
     .from(issues)
-    .where(and(eq(issues.id, input.issueId), eq(issues.companyId, input.companyId)))
+    .where(and(eq(issues.id, input.issueId), eq(issues.productId, input.productId)))
     .then((rows) => rows[0] ?? null);
   if (!issue) return [];
 
@@ -192,7 +192,7 @@ async function resolveRunScopedMentionedSkillKeys(input: {
     .where(
       and(
         eq(issueComments.issueId, input.issueId),
-        eq(issueComments.companyId, input.companyId),
+        eq(issueComments.productId, input.productId),
       ),
     );
   const mentionedSkillIds = extractMentionedSkillIdsFromSources([
@@ -210,7 +210,7 @@ async function resolveRunScopedMentionedSkillKeys(input: {
     .from(companySkillsTable)
     .where(
       and(
-        eq(companySkillsTable.companyId, input.companyId),
+        eq(companySkillsTable.productId, input.productId),
         inArray(companySkillsTable.id, mentionedSkillIds),
       ),
     );
@@ -315,12 +315,12 @@ function deriveRepoNameFromRepoUrl(repoUrl: string | null): string | null {
 }
 
 async function ensureManagedProjectWorkspace(input: {
-  companyId: string;
+  productId: string;
   projectId: string;
   repoUrl: string | null;
 }): Promise<{ cwd: string; warning: string | null }> {
   const cwd = resolveManagedProjectWorkspaceDir({
-    companyId: input.companyId,
+    productId: input.productId,
     projectId: input.projectId,
     repoName: deriveRepoNameFromRepoUrl(input.repoUrl),
   });
@@ -370,7 +370,7 @@ const heartbeatRunProcessGroupIdColumn =
 
 const heartbeatRunListColumns = {
   id: heartbeatRuns.id,
-  companyId: heartbeatRuns.companyId,
+  productId: heartbeatRuns.productId,
   agentId: heartbeatRuns.agentId,
   invocationSource: heartbeatRuns.invocationSource,
   triggerDetail: heartbeatRuns.triggerDetail,
@@ -477,7 +477,7 @@ const heartbeatRunSafeColumns = {
 
 const heartbeatRunLogAccessColumns = {
   id: heartbeatRuns.id,
-  companyId: heartbeatRuns.companyId,
+  productId: heartbeatRuns.productId,
   logStore: heartbeatRuns.logStore,
   logRef: heartbeatRuns.logRef,
 } as const;
@@ -714,7 +714,7 @@ function normalizeBilledCostCents(costUsd: number | null | undefined, billingTyp
 
 async function resolveLedgerScopeForRun(
   db: Db,
-  companyId: string,
+  productId: string,
   run: typeof heartbeatRuns.$inferSelect,
 ) {
   const context = parseObject(run.contextSnapshot);
@@ -734,7 +734,7 @@ async function resolveLedgerScopeForRun(
       projectId: issues.projectId,
     })
     .from(issues)
-    .where(and(eq(issues.id, contextIssueId), eq(issues.companyId, companyId)))
+    .where(and(eq(issues.id, contextIssueId), eq(issues.productId, productId)))
     .then((rows) => rows[0] ?? null);
 
   return {
@@ -1203,7 +1203,7 @@ export function mergeCoalescedContextSnapshot(
 
 async function buildPaperclipWakePayload(input: {
   db: Db;
-  companyId: string;
+  productId: string;
   contextSnapshot: Record<string, unknown>;
   issueSummary?:
     | {
@@ -1230,7 +1230,7 @@ async function buildPaperclipWakePayload(input: {
             priority: issues.priority,
           })
           .from(issues)
-          .where(and(eq(issues.id, issueId), eq(issues.companyId, input.companyId)))
+          .where(and(eq(issues.id, issueId), eq(issues.productId, input.productId)))
           .then((rows) => rows[0] ?? null)
       : null);
   if (commentIds.length === 0 && Object.keys(executionStage).length === 0 && !issueSummary) return null;
@@ -1250,7 +1250,7 @@ async function buildPaperclipWakePayload(input: {
           .from(issueComments)
           .where(
             and(
-              eq(issueComments.companyId, input.companyId),
+              eq(issueComments.productId, input.productId),
               inArray(issueComments.id, commentIds),
             ),
           );
@@ -1527,7 +1527,7 @@ export function heartbeatService(db: Db) {
       .then((rows) => rows[0] ?? null);
   }
 
-  async function getIssueExecutionContext(companyId: string, issueId: string) {
+  async function getIssueExecutionContext(productId: string, issueId: string) {
     return db
       .select({
         id: issues.id,
@@ -1544,7 +1544,7 @@ export function heartbeatService(db: Db) {
         executionWorkspaceSettings: issues.executionWorkspaceSettings,
       })
       .from(issues)
-      .where(and(eq(issues.id, issueId), eq(issues.companyId, companyId)))
+      .where(and(eq(issues.id, issueId), eq(issues.productId, productId)))
       .then((rows) => rows[0] ?? null);
   }
 
@@ -1557,7 +1557,7 @@ export function heartbeatService(db: Db) {
   }
 
   async function getTaskSession(
-    companyId: string,
+    productId: string,
     agentId: string,
     adapterType: string,
     taskKey: string,
@@ -1567,7 +1567,7 @@ export function heartbeatService(db: Db) {
       .from(agentTaskSessions)
       .where(
         and(
-          eq(agentTaskSessions.companyId, companyId),
+          eq(agentTaskSessions.productId, productId),
           eq(agentTaskSessions.agentId, agentId),
           eq(agentTaskSessions.adapterType, adapterType),
           eq(agentTaskSessions.taskKey, taskKey),
@@ -1764,7 +1764,7 @@ export function heartbeatService(db: Db) {
     if (taskKey) {
       const codec = getAdapterSessionCodec(agent.adapterType);
       const existingTaskSession = await getTaskSession(
-        agent.companyId,
+        agent.productId,
         agent.id,
         agent.adapterType,
         taskKey,
@@ -1802,7 +1802,7 @@ export function heartbeatService(db: Db) {
       .where(
         and(
           eq(heartbeatRuns.id, resumeFromRunId),
-          eq(heartbeatRuns.companyId, agent.companyId),
+          eq(heartbeatRuns.productId, agent.productId),
           eq(heartbeatRuns.agentId, agent.id),
         ),
       )
@@ -1812,7 +1812,7 @@ export function heartbeatService(db: Db) {
     const resumeContext = parseObject(resumeRun.contextSnapshot);
     const resumeTaskKey = deriveTaskKey(resumeContext, null) ?? taskKey;
     const resumeTaskSession = resumeTaskKey
-      ? await getTaskSession(agent.companyId, agent.id, agent.adapterType, resumeTaskKey)
+      ? await getTaskSession(agent.productId, agent.id, agent.adapterType, resumeTaskKey)
       : null;
     const sessionCodec = getAdapterSessionCodec(agent.adapterType);
     const sessionOverride = buildExplicitResumeSessionOverride({
@@ -1850,7 +1850,7 @@ export function heartbeatService(db: Db) {
             projectWorkspaceId: issues.projectWorkspaceId,
           })
           .from(issues)
-          .where(and(eq(issues.id, issueId), eq(issues.companyId, agent.companyId)))
+          .where(and(eq(issues.id, issueId), eq(issues.productId, agent.productId)))
           .then((rows) => rows[0] ?? null)
       : null;
     const issueProjectId = issueProjectRef?.projectId ?? null;
@@ -1866,7 +1866,7 @@ export function heartbeatService(db: Db) {
           .from(projectWorkspaces)
           .where(
             and(
-              eq(projectWorkspaces.companyId, agent.companyId),
+              eq(projectWorkspaces.productId, agent.productId),
               eq(projectWorkspaces.projectId, workspaceProjectId),
             ),
           )
@@ -1901,7 +1901,7 @@ export function heartbeatService(db: Db) {
         if (!projectCwd || projectCwd === REPO_ONLY_CWD_SENTINEL) {
           try {
             const managedWorkspace = await ensureManagedProjectWorkspace({
-              companyId: agent.companyId,
+              productId: agent.productId,
               projectId: workspaceProjectId ?? resolvedProjectId ?? workspace.projectId,
               repoUrl: readNonEmptyString(workspace.repoUrl),
             });
@@ -1973,7 +1973,7 @@ export function heartbeatService(db: Db) {
 
     if (workspaceProjectId) {
       const managedWorkspace = await ensureManagedProjectWorkspace({
-        companyId: agent.companyId,
+        productId: agent.productId,
         projectId: workspaceProjectId,
         repoUrl: null,
       });
@@ -2038,7 +2038,7 @@ export function heartbeatService(db: Db) {
   }
 
   async function upsertTaskSession(input: {
-    companyId: string;
+    productId: string;
     agentId: string;
     adapterType: string;
     taskKey: string;
@@ -2048,7 +2048,7 @@ export function heartbeatService(db: Db) {
     lastError: string | null;
   }) {
     const existing = await getTaskSession(
-      input.companyId,
+      input.productId,
       input.agentId,
       input.adapterType,
       input.taskKey,
@@ -2071,7 +2071,7 @@ export function heartbeatService(db: Db) {
     return db
       .insert(agentTaskSessions)
       .values({
-        companyId: input.companyId,
+        productId: input.productId,
         agentId: input.agentId,
         adapterType: input.adapterType,
         taskKey: input.taskKey,
@@ -2085,12 +2085,12 @@ export function heartbeatService(db: Db) {
   }
 
   async function clearTaskSessions(
-    companyId: string,
+    productId: string,
     agentId: string,
     opts?: { taskKey?: string | null; adapterType?: string | null },
   ) {
     const conditions = [
-      eq(agentTaskSessions.companyId, companyId),
+      eq(agentTaskSessions.productId, productId),
       eq(agentTaskSessions.agentId, agentId),
     ];
     if (opts?.taskKey) {
@@ -2115,7 +2115,7 @@ export function heartbeatService(db: Db) {
       .insert(agentRuntimeState)
       .values({
         agentId: agent.id,
-        companyId: agent.companyId,
+        productId: agent.productId,
         adapterType: agent.adapterType,
         stateJson: {},
       })
@@ -2137,7 +2137,7 @@ export function heartbeatService(db: Db) {
 
     if (updated) {
       publishLiveEvent({
-        companyId: updated.companyId,
+        productId: updated.productId,
         type: "heartbeat.run.status",
         payload: {
           runId: updated.id,
@@ -2189,7 +2189,7 @@ export function heartbeatService(db: Db) {
       : event.payload;
 
     await db.insert(heartbeatRunEvents).values({
-      companyId: run.companyId,
+      productId: run.productId,
       runId: run.id,
       agentId: run.agentId,
       seq,
@@ -2202,7 +2202,7 @@ export function heartbeatService(db: Db) {
     });
 
     publishLiveEvent({
-      companyId: run.companyId,
+      productId: run.productId,
       type: "heartbeat.run.event",
       payload: {
         runId: run.id,
@@ -2278,7 +2278,7 @@ export function heartbeatService(db: Db) {
       .then((rows) => rows[0] ?? null);
   }
 
-  async function findRunIssueComment(runId: string, companyId: string, issueId: string) {
+  async function findRunIssueComment(runId: string, productId: string, issueId: string) {
     return db
       .select({
         id: issueComments.id,
@@ -2286,7 +2286,7 @@ export function heartbeatService(db: Db) {
       .from(issueComments)
       .where(
         and(
-          eq(issueComments.companyId, companyId),
+          eq(issueComments.productId, productId),
           eq(issueComments.issueId, issueId),
           eq(issueComments.createdByRunId, runId),
         ),
@@ -2315,20 +2315,20 @@ export function heartbeatService(db: Db) {
 
     const retryRun = await db.transaction(async (tx) => {
       await tx.execute(
-        sql`select id from issues where company_id = ${run.companyId} and execution_run_id = ${run.id} for update`,
+        sql`select id from issues where company_id = ${run.productId} and execution_run_id = ${run.id} for update`,
       );
 
       const issue = await tx
         .select({ id: issues.id })
         .from(issues)
-        .where(and(eq(issues.companyId, run.companyId), eq(issues.executionRunId, run.id)))
+        .where(and(eq(issues.productId, run.productId), eq(issues.executionRunId, run.id)))
         .then((rows) => rows[0] ?? null);
       if (!issue) return null;
 
       const wakeupRequest = await tx
         .insert(agentWakeupRequests)
         .values({
-          companyId: run.companyId,
+          productId: run.productId,
           agentId: run.agentId,
           source: "automation",
           triggerDetail: "system",
@@ -2349,7 +2349,7 @@ export function heartbeatService(db: Db) {
       const queuedRun = await tx
         .insert(heartbeatRuns)
         .values({
-          companyId: run.companyId,
+          productId: run.productId,
           agentId: run.agentId,
           invocationSource: "automation",
           triggerDetail: "system",
@@ -2397,7 +2397,7 @@ export function heartbeatService(db: Db) {
     if (!retryRun) return null;
 
     publishLiveEvent({
-      companyId: retryRun.companyId,
+      productId: retryRun.productId,
       type: "heartbeat.run.queued",
       payload: {
         runId: retryRun.id,
@@ -2428,7 +2428,7 @@ export function heartbeatService(db: Db) {
       return { outcome: "not_applicable" as const, queuedRun: null };
     }
 
-    const postedComment = await findRunIssueComment(run.id, run.companyId, issueId);
+    const postedComment = await findRunIssueComment(run.id, run.productId, issueId);
     if (postedComment) {
       await patchRunIssueCommentStatus(run.id, {
         issueCommentStatus: "satisfied",
@@ -2501,7 +2501,7 @@ export function heartbeatService(db: Db) {
       const wakeupRequest = await tx
         .insert(agentWakeupRequests)
         .values({
-          companyId: run.companyId,
+          productId: run.productId,
           agentId: run.agentId,
           source: "automation",
           triggerDetail: "system",
@@ -2521,7 +2521,7 @@ export function heartbeatService(db: Db) {
       const retryRun = await tx
         .insert(heartbeatRuns)
         .values({
-          companyId: run.companyId,
+          productId: run.productId,
           agentId: run.agentId,
           invocationSource: "automation",
           triggerDetail: "system",
@@ -2553,14 +2553,14 @@ export function heartbeatService(db: Db) {
             executionLockedAt: now,
             updatedAt: now,
           })
-          .where(and(eq(issues.id, issueId), eq(issues.companyId, run.companyId), eq(issues.executionRunId, run.id)));
+          .where(and(eq(issues.id, issueId), eq(issues.productId, run.productId), eq(issues.executionRunId, run.id)));
       }
 
       return retryRun;
     });
 
     publishLiveEvent({
-      companyId: queued.companyId,
+      productId: queued.productId,
       type: "heartbeat.run.queued",
       payload: {
         runId: queued.id,
@@ -2633,7 +2633,7 @@ export function heartbeatService(db: Db) {
     if (!claimed) return null;
 
     publishLiveEvent({
-      companyId: claimed.companyId,
+      productId: claimed.productId,
       type: "heartbeat.run.status",
       payload: {
         runId: claimed.id,
@@ -2666,7 +2666,7 @@ export function heartbeatService(db: Db) {
         .where(
           and(
             eq(issues.id, claimedIssueId),
-            eq(issues.companyId, claimed.companyId),
+            eq(issues.productId, claimed.productId),
             or(isNull(issues.executionRunId), eq(issues.executionRunId, claimed.id)),
           ),
         );
@@ -2714,7 +2714,7 @@ export function heartbeatService(db: Db) {
 
     if (updated) {
       publishLiveEvent({
-        companyId: updated.companyId,
+        productId: updated.productId,
         type: "agent.status",
         payload: {
           agentId: updated.id,
@@ -2851,7 +2851,7 @@ export function heartbeatService(db: Db) {
     }
   }
 
-  async function getLatestIssueRun(companyId: string, issueId: string) {
+  async function getLatestIssueRun(productId: string, issueId: string) {
     return db
       .select({
         id: heartbeatRuns.id,
@@ -2863,7 +2863,7 @@ export function heartbeatService(db: Db) {
       .from(heartbeatRuns)
       .where(
         and(
-          eq(heartbeatRuns.companyId, companyId),
+          eq(heartbeatRuns.productId, productId),
           sql`${heartbeatRuns.contextSnapshot} ->> 'issueId' = ${issueId}`,
         ),
       )
@@ -2872,14 +2872,14 @@ export function heartbeatService(db: Db) {
       .then((rows) => rows[0] ?? null);
   }
 
-  async function hasActiveExecutionPath(companyId: string, issueId: string) {
+  async function hasActiveExecutionPath(productId: string, issueId: string) {
     const [run, deferredWake] = await Promise.all([
       db
         .select({ id: heartbeatRuns.id })
         .from(heartbeatRuns)
         .where(
           and(
-            eq(heartbeatRuns.companyId, companyId),
+            eq(heartbeatRuns.productId, productId),
             inArray(heartbeatRuns.status, [...ACTIVE_HEARTBEAT_RUN_STATUSES]),
             sql`${heartbeatRuns.contextSnapshot} ->> 'issueId' = ${issueId}`,
           ),
@@ -2891,7 +2891,7 @@ export function heartbeatService(db: Db) {
         .from(agentWakeupRequests)
         .where(
           and(
-            eq(agentWakeupRequests.companyId, companyId),
+            eq(agentWakeupRequests.productId, productId),
             eq(agentWakeupRequests.status, "deferred_issue_execution"),
             sql`${agentWakeupRequests.payload} ->> 'issueId' = ${issueId}`,
           ),
@@ -2963,7 +2963,7 @@ export function heartbeatService(db: Db) {
     await issuesSvc.addComment(input.issue.id, input.comment, {});
 
     await logActivity(db, {
-      companyId: input.issue.companyId,
+      productId: input.issue.productId,
       actorType: "system",
       actorId: "system",
       agentId: null,
@@ -3013,7 +3013,7 @@ export function heartbeatService(db: Db) {
       }
 
       const agent = await getAgent(agentId);
-      if (!agent || agent.companyId !== issue.companyId) {
+      if (!agent || agent.productId !== issue.productId) {
         result.skipped += 1;
         continue;
       }
@@ -3022,12 +3022,12 @@ export function heartbeatService(db: Db) {
         continue;
       }
 
-      if (await hasActiveExecutionPath(issue.companyId, issue.id)) {
+      if (await hasActiveExecutionPath(issue.productId, issue.id)) {
         result.skipped += 1;
         continue;
       }
 
-      const latestRun = await getLatestIssueRun(issue.companyId, issue.id);
+      const latestRun = await getLatestIssueRun(issue.productId, issue.id);
       const latestContext = parseObject(latestRun?.contextSnapshot);
       const latestRetryReason = readNonEmptyString(latestContext.retryReason);
 
@@ -3130,7 +3130,7 @@ export function heartbeatService(db: Db) {
     const hasTokenUsage = inputTokens > 0 || outputTokens > 0 || cachedInputTokens > 0;
     const provider = result.provider ?? "unknown";
     const biller = resolveLedgerBiller(result);
-    const ledgerScope = await resolveLedgerScopeForRun(db, agent.companyId, run);
+    const ledgerScope = await resolveLedgerScopeForRun(db, agent.productId, run);
 
     await db
       .update(agentRuntimeState)
@@ -3150,7 +3150,7 @@ export function heartbeatService(db: Db) {
 
     if (additionalCostCents > 0 || hasTokenUsage) {
       const costs = costService(db);
-      await costs.createEvent(agent.companyId, {
+      await costs.createEvent(agent.productId, {
         heartbeatRunId: run.id,
         agentId: agent.id,
         issueId: ledgerScope.issueId,
@@ -3242,7 +3242,7 @@ export function heartbeatService(db: Db) {
     const taskKey = deriveTaskKeyWithHeartbeatFallback(context, null);
     const sessionCodec = getAdapterSessionCodec(agent.adapterType);
     const issueId = readNonEmptyString(context.issueId);
-    let issueContext = issueId ? await getIssueExecutionContext(agent.companyId, issueId) : null;
+    let issueContext = issueId ? await getIssueExecutionContext(agent.productId, issueId) : null;
     if (
       issueId &&
       issueContext &&
@@ -3260,7 +3260,7 @@ export function heartbeatService(db: Db) {
         if (!isCheckoutConflictError(error)) throw error;
         context[PAPERCLIP_HARNESS_CHECKOUT_KEY] = false;
       }
-      issueContext = await getIssueExecutionContext(agent.companyId, issueId);
+      issueContext = await getIssueExecutionContext(agent.productId, issueId);
     }
     const issueAssigneeOverrides =
       issueContext && issueContext.assigneeAgentId === agent.id
@@ -3281,7 +3281,7 @@ export function heartbeatService(db: Db) {
             env: projects.env,
           })
           .from(projects)
-          .where(and(eq(projects.id, executionProjectId), eq(projects.companyId, agent.companyId)))
+          .where(and(eq(projects.id, executionProjectId), eq(projects.productId, agent.productId)))
           .then((rows) => rows[0] ?? null)
       : null;
     const projectExecutionWorkspacePolicy = gateProjectExecutionWorkspacePolicy(
@@ -3289,7 +3289,7 @@ export function heartbeatService(db: Db) {
       isolatedWorkspacesEnabled,
     );
     const taskSession = taskKey
-      ? await getTaskSession(agent.companyId, agent.id, agent.adapterType, taskKey)
+      ? await getTaskSession(agent.productId, agent.id, agent.adapterType, taskKey)
       : null;
     const resetTaskSession = shouldResetTaskSessionForWake(context);
     const sessionResetReason = describeSessionResetReason(context);
@@ -3333,7 +3333,7 @@ export function heartbeatService(db: Db) {
       : null;
     const paperclipWakePayload = await buildPaperclipWakePayload({
       db,
-      companyId: agent.companyId,
+      productId: agent.productId,
       contextSnapshot: context,
       issueSummary: issueRef
         ? {
@@ -3385,27 +3385,27 @@ export function heartbeatService(db: Db) {
     const configSnapshot = buildExecutionWorkspaceConfigSnapshot(mergedConfig);
     const executionRunConfig = stripWorkspaceRuntimeFromExecutionRunConfig(mergedConfig);
     const { resolvedConfig, secretKeys } = await resolveExecutionRunAdapterConfig({
-      companyId: agent.companyId,
+      productId: agent.productId,
       executionRunConfig,
       projectEnv: projectContext?.env ?? null,
       secretsSvc,
     });
     const runScopedMentionedSkillKeys = await resolveRunScopedMentionedSkillKeys({
       db,
-      companyId: agent.companyId,
+      productId: agent.productId,
       issueId,
     });
     const effectiveResolvedConfig = applyRunScopedMentionedSkillKeys(
       resolvedConfig,
       runScopedMentionedSkillKeys,
     );
-    const runtimeSkillEntries = await companySkills.listRuntimeSkillEntries(agent.companyId);
+    const runtimeSkillEntries = await companySkills.listRuntimeSkillEntries(agent.productId);
     const runtimeConfig = {
       ...effectiveResolvedConfig,
       paperclipRuntimeSkills: runtimeSkillEntries,
     };
     const workspaceOperationRecorder = workspaceOperationsSvc.createRecorder({
-      companyId: agent.companyId,
+      productId: agent.productId,
       heartbeatRunId: run.id,
       executionWorkspaceId: existingExecutionWorkspace?.id ?? null,
     });
@@ -3430,7 +3430,7 @@ export function heartbeatService(db: Db) {
           agent: {
             id: agent.id,
             name: agent.name,
-            companyId: agent.companyId,
+            productId: agent.productId,
           },
           recorder: workspaceOperationRecorder,
         });
@@ -3462,7 +3462,7 @@ export function heartbeatService(db: Db) {
           })
         : resolvedProjectId
           ? await executionWorkspacesSvc.create({
-              companyId: agent.companyId,
+              productId: agent.productId,
               projectId: resolvedProjectId,
               projectWorkspaceId: resolvedProjectWorkspaceId,
               sourceIssueId: issueRef?.id ?? null,
@@ -3701,7 +3701,7 @@ export function heartbeatService(db: Db) {
 
       if (runningAgent) {
         publishLiveEvent({
-          companyId: runningAgent.companyId,
+          productId: runningAgent.productId,
           type: "agent.status",
           payload: {
             agentId: runningAgent.id,
@@ -3720,7 +3720,7 @@ export function heartbeatService(db: Db) {
       });
 
       handle = await runLogStore.begin({
-        companyId: run.companyId,
+        productId: run.productId,
         agentId: run.agentId,
         runId,
       });
@@ -3757,7 +3757,7 @@ export function heartbeatService(db: Db) {
             : sanitizedChunk;
 
         publishLiveEvent({
-          companyId: run.companyId,
+          productId: run.productId,
           type: "heartbeat.run.log",
           payload: {
             runId: run.id,
@@ -3790,7 +3790,7 @@ export function heartbeatService(db: Db) {
         agent: {
           id: agent.id,
           name: agent.name,
-          companyId: agent.companyId,
+          productId: agent.productId,
         },
         issue: issueRef,
         workspace: executionWorkspace,
@@ -3845,12 +3845,12 @@ export function heartbeatService(db: Db) {
 
       const adapter = getServerAdapter(agent.adapterType);
       const authToken = adapter.supportsLocalAgentJwt
-        ? createLocalAgentJwt(agent.id, agent.companyId, agent.adapterType, run.id)
+        ? createLocalAgentJwt(agent.id, agent.productId, agent.adapterType, run.id)
         : null;
       if (adapter.supportsLocalAgentJwt && !authToken) {
         logger.warn(
           {
-            companyId: agent.companyId,
+            productId: agent.productId,
             agentId: agent.id,
             runId: run.id,
             adapterType: agent.adapterType,
@@ -3886,7 +3886,7 @@ export function heartbeatService(db: Db) {
             agent: {
               id: agent.id,
               name: agent.name,
-              companyId: agent.companyId,
+              productId: agent.productId,
             },
             issue: issueRef,
             workspace: executionWorkspace,
@@ -4047,7 +4047,7 @@ export function heartbeatService(db: Db) {
         });
         if (issueId && outcome === "succeeded") {
           try {
-            const existingRunComment = await findRunIssueComment(finalizedRun.id, finalizedRun.companyId, issueId);
+            const existingRunComment = await findRunIssueComment(finalizedRun.id, finalizedRun.productId, issueId);
             if (!existingRunComment) {
               const issueComment = buildHeartbeatRunIssueComment(persistedResultJson);
               if (issueComment) {
@@ -4071,13 +4071,13 @@ export function heartbeatService(db: Db) {
         }, normalizedUsage);
         if (taskKey) {
           if (adapterResult.clearSession || (!nextSessionState.params && !nextSessionState.displayId)) {
-            await clearTaskSessions(agent.companyId, agent.id, {
+            await clearTaskSessions(agent.productId, agent.id, {
               taskKey,
               adapterType: agent.adapterType,
             });
           } else {
             await upsertTaskSession({
-              companyId: agent.companyId,
+              productId: agent.productId,
               agentId: agent.id,
               adapterType: agent.adapterType,
               taskKey,
@@ -4142,7 +4142,7 @@ export function heartbeatService(db: Db) {
 
         if (taskKey && (previousSessionParams || previousSessionDisplayId || taskSession)) {
           await upsertTaskSession({
-            companyId: agent.companyId,
+            productId: agent.productId,
             agentId: agent.id,
             adapterType: agent.adapterType,
             taskKey,
@@ -4202,18 +4202,18 @@ export function heartbeatService(db: Db) {
     const promotionResult = await db.transaction(async (tx) => {
       if (contextIssueId) {
         await tx.execute(
-          sql`select id from issues where company_id = ${run.companyId} and id = ${contextIssueId} for update`,
+          sql`select id from issues where company_id = ${run.productId} and id = ${contextIssueId} for update`,
         );
       } else {
         await tx.execute(
-          sql`select id from issues where company_id = ${run.companyId} and execution_run_id = ${run.id} for update`,
+          sql`select id from issues where company_id = ${run.productId} and execution_run_id = ${run.id} for update`,
         );
       }
 
       let issue = await tx
         .select({
           id: issues.id,
-          companyId: issues.companyId,
+          productId: issues.productId,
           identifier: issues.identifier,
           status: issues.status,
           executionRunId: issues.executionRunId,
@@ -4221,7 +4221,7 @@ export function heartbeatService(db: Db) {
         .from(issues)
         .where(
           and(
-            eq(issues.companyId, run.companyId),
+            eq(issues.productId, run.productId),
             contextIssueId ? eq(issues.id, contextIssueId) : eq(issues.executionRunId, run.id),
           ),
         )
@@ -4248,7 +4248,7 @@ export function heartbeatService(db: Db) {
           .from(agentWakeupRequests)
           .where(
             and(
-              eq(agentWakeupRequests.companyId, issue.companyId),
+              eq(agentWakeupRequests.productId, issue.productId),
               eq(agentWakeupRequests.status, "deferred_issue_execution"),
               sql`${agentWakeupRequests.payload} ->> 'issueId' = ${issue.id}`,
             ),
@@ -4267,7 +4267,7 @@ export function heartbeatService(db: Db) {
 
         if (
           !deferredAgent ||
-          deferredAgent.companyId !== issue.companyId ||
+          deferredAgent.productId !== issue.productId ||
           deferredAgent.status === "paused" ||
           deferredAgent.status === "terminated" ||
           deferredAgent.status === "pending_approval"
@@ -4313,7 +4313,7 @@ export function heartbeatService(db: Db) {
               promotedContextSeed.reopenedFrom = reopenedFromStatus;
             }
             reopenedActivity = {
-              companyId: issue.companyId,
+              productId: issue.productId,
               actorType: "system",
               actorId: "heartbeat",
               agentId: deferred.agentId,
@@ -4358,7 +4358,7 @@ export function heartbeatService(db: Db) {
         const newRun = await tx
           .insert(heartbeatRuns)
           .values({
-            companyId: deferredAgent.companyId,
+            productId: deferredAgent.productId,
             agentId: deferredAgent.id,
             invocationSource: promotedSource,
             triggerDetail: promotedTriggerDetail,
@@ -4408,7 +4408,7 @@ export function heartbeatService(db: Db) {
     }
 
     publishLiveEvent({
-      companyId: promotedRun.companyId,
+      productId: promotedRun.productId,
       type: "heartbeat.run.queued",
       payload: {
         runId: promotedRun.id,
@@ -4467,7 +4467,7 @@ export function heartbeatService(db: Db) {
 
     const writeSkippedRequest = async (skipReason: string) => {
       await db.insert(agentWakeupRequests).values({
-        companyId: agent.companyId,
+        productId: agent.productId,
         agentId,
         source,
         triggerDetail,
@@ -4486,7 +4486,7 @@ export function heartbeatService(db: Db) {
       projectId = await db
         .select({ projectId: issues.projectId })
         .from(issues)
-        .where(and(eq(issues.id, issueId), eq(issues.companyId, agent.companyId)))
+        .where(and(eq(issues.id, issueId), eq(issues.productId, agent.productId)))
         .then((rows) => rows[0]?.projectId ?? null);
     }
 
@@ -4519,23 +4519,23 @@ export function heartbeatService(db: Db) {
 
       const outcome = await db.transaction(async (tx) => {
         await tx.execute(
-          sql`select id from issues where id = ${issueId} and company_id = ${agent.companyId} for update`,
+          sql`select id from issues where id = ${issueId} and company_id = ${agent.productId} for update`,
         );
 
         const issue = await tx
           .select({
             id: issues.id,
-            companyId: issues.companyId,
+            productId: issues.productId,
             executionRunId: issues.executionRunId,
             executionAgentNameKey: issues.executionAgentNameKey,
           })
           .from(issues)
-          .where(and(eq(issues.id, issueId), eq(issues.companyId, agent.companyId)))
+          .where(and(eq(issues.id, issueId), eq(issues.productId, agent.productId)))
           .then((rows) => rows[0] ?? null);
 
         if (!issue) {
           await tx.insert(agentWakeupRequests).values({
-            companyId: agent.companyId,
+            productId: agent.productId,
             agentId,
             source,
             triggerDetail,
@@ -4580,7 +4580,7 @@ export function heartbeatService(db: Db) {
             .from(heartbeatRuns)
             .where(
               and(
-                eq(heartbeatRuns.companyId, issue.companyId),
+                eq(heartbeatRuns.productId, issue.productId),
                 inArray(heartbeatRuns.status, ["queued", "running"]),
                 sql`${heartbeatRuns.contextSnapshot} ->> 'issueId' = ${issue.id}`,
               ),
@@ -4643,7 +4643,7 @@ export function heartbeatService(db: Db) {
               .then((rows) => rows[0] ?? activeExecutionRun);
 
             await tx.insert(agentWakeupRequests).values({
-              companyId: agent.companyId,
+              productId: agent.productId,
               agentId,
               source,
               triggerDetail,
@@ -4672,7 +4672,7 @@ export function heartbeatService(db: Db) {
             .from(agentWakeupRequests)
             .where(
               and(
-                eq(agentWakeupRequests.companyId, agent.companyId),
+                eq(agentWakeupRequests.productId, agent.productId),
                 eq(agentWakeupRequests.agentId, agentId),
                 eq(agentWakeupRequests.status, "deferred_issue_execution"),
                 sql`${agentWakeupRequests.payload} ->> 'issueId' = ${issue.id}`,
@@ -4709,7 +4709,7 @@ export function heartbeatService(db: Db) {
           }
 
           await tx.insert(agentWakeupRequests).values({
-            companyId: agent.companyId,
+            productId: agent.productId,
             agentId,
             source,
             triggerDetail,
@@ -4727,7 +4727,7 @@ export function heartbeatService(db: Db) {
         const wakeupRequest = await tx
           .insert(agentWakeupRequests)
           .values({
-            companyId: agent.companyId,
+            productId: agent.productId,
             agentId,
             source,
             triggerDetail,
@@ -4744,7 +4744,7 @@ export function heartbeatService(db: Db) {
         const newRun = await tx
           .insert(heartbeatRuns)
           .values({
-            companyId: agent.companyId,
+            productId: agent.productId,
             agentId,
             invocationSource: source,
             triggerDetail,
@@ -4776,7 +4776,7 @@ export function heartbeatService(db: Db) {
 
       const newRun = outcome.run;
       publishLiveEvent({
-        companyId: newRun.companyId,
+        productId: newRun.productId,
         type: "heartbeat.run.queued",
         payload: {
           runId: newRun.id,
@@ -4826,7 +4826,7 @@ export function heartbeatService(db: Db) {
         .then((rows) => rows[0] ?? coalescedTargetRun);
 
       await db.insert(agentWakeupRequests).values({
-        companyId: agent.companyId,
+        productId: agent.productId,
         agentId,
         source,
         triggerDetail,
@@ -4846,7 +4846,7 @@ export function heartbeatService(db: Db) {
     const wakeupRequest = await db
       .insert(agentWakeupRequests)
       .values({
-        companyId: agent.companyId,
+        productId: agent.productId,
         agentId,
         source,
         triggerDetail,
@@ -4863,7 +4863,7 @@ export function heartbeatService(db: Db) {
     const newRun = await db
       .insert(heartbeatRuns)
       .values({
-        companyId: agent.companyId,
+        productId: agent.productId,
         agentId,
         invocationSource: source,
         triggerDetail,
@@ -4884,7 +4884,7 @@ export function heartbeatService(db: Db) {
       .where(eq(agentWakeupRequests.id, wakeupRequest.id));
 
     publishLiveEvent({
-      companyId: newRun.companyId,
+      productId: newRun.productId,
       type: "heartbeat.run.queued",
       payload: {
         runId: newRun.id,
@@ -4996,7 +4996,7 @@ export function heartbeatService(db: Db) {
   // a budget hard-stop — budget hard-stops no longer exist.
 
   return {
-    list: async (companyId: string, agentId?: string, limit?: number) => {
+    list: async (productId: string, agentId?: string, limit?: number) => {
       const query = db
         .select({
           ...heartbeatRunListColumns,
@@ -5006,8 +5006,8 @@ export function heartbeatService(db: Db) {
         .from(heartbeatRuns)
         .where(
           agentId
-            ? and(eq(heartbeatRuns.companyId, companyId), eq(heartbeatRuns.agentId, agentId))
-            : eq(heartbeatRuns.companyId, companyId),
+            ? and(eq(heartbeatRuns.productId, productId), eq(heartbeatRuns.agentId, agentId))
+            : eq(heartbeatRuns.productId, productId),
         )
         .orderBy(desc(heartbeatRuns.createdAt));
 
@@ -5069,7 +5069,7 @@ export function heartbeatService(db: Db) {
       const latestTaskSession = await db
         .select()
         .from(agentTaskSessions)
-        .where(and(eq(agentTaskSessions.companyId, agent.companyId), eq(agentTaskSessions.agentId, agent.id)))
+        .where(and(eq(agentTaskSessions.productId, agent.productId), eq(agentTaskSessions.agentId, agent.id)))
         .orderBy(desc(agentTaskSessions.updatedAt))
         .limit(1)
         .then((rows) => rows[0] ?? null);
@@ -5087,7 +5087,7 @@ export function heartbeatService(db: Db) {
       return db
         .select()
         .from(agentTaskSessions)
-        .where(and(eq(agentTaskSessions.companyId, agent.companyId), eq(agentTaskSessions.agentId, agentId)))
+        .where(and(eq(agentTaskSessions.productId, agent.productId), eq(agentTaskSessions.agentId, agentId)))
         .orderBy(desc(agentTaskSessions.updatedAt), desc(agentTaskSessions.createdAt));
     },
 
@@ -5097,7 +5097,7 @@ export function heartbeatService(db: Db) {
       await ensureRuntimeState(agent);
       const taskKey = readNonEmptyString(opts?.taskKey);
       const clearedTaskSessions = await clearTaskSessions(
-        agent.companyId,
+        agent.productId,
         agent.id,
         taskKey ? { taskKey, adapterType: agent.adapterType } : undefined,
       );
@@ -5137,7 +5137,7 @@ export function heartbeatService(db: Db) {
     readLog: async (
       runOrLookup: string | {
         id: string;
-        companyId: string;
+        productId: string;
         logStore: string | null;
         logRef: string | null;
       },

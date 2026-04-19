@@ -1,13 +1,13 @@
-import type { Approval, ApprovalComment, Issue } from "@paperclipai/shared";
+import type { Approval, ApprovalComment, Issue } from "@softclipai/shared";
 import { api } from "./client";
 
 export const approvalsApi = {
-  list: (companyId: string, status?: string) =>
+  list: (productId: string, status?: string) =>
     api.get<Approval[]>(
-      `/companies/${companyId}/approvals${status ? `?status=${encodeURIComponent(status)}` : ""}`,
+      `/companies/${productId}/approvals${status ? `?status=${encodeURIComponent(status)}` : ""}`,
     ),
-  create: (companyId: string, data: Record<string, unknown>) =>
-    api.post<Approval>(`/companies/${companyId}/approvals`, data),
+  create: (productId: string, data: Record<string, unknown>) =>
+    api.post<Approval>(`/companies/${productId}/approvals`, data),
   get: (id: string) => api.get<Approval>(`/approvals/${id}`),
   approve: (id: string, decisionNote?: string) =>
     api.post<Approval>(`/approvals/${id}/approve`, { decisionNote }),

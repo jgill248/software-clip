@@ -1,7 +1,10 @@
 import { pgTable, uuid, text, integer, timestamp, boolean, uniqueIndex } from "drizzle-orm/pg-core";
 
-export const companies = pgTable(
-  "companies",
+// Softclip pivot §1 (Stage 4a): core entity table renamed from
+// `companies` to `products`. The `companies` back-compat alias was
+// retired in Stage 4c; all callers reference `products` directly.
+export const products = pgTable(
+  "products",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     name: text("name").notNull(),
@@ -25,6 +28,6 @@ export const companies = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    issuePrefixUniqueIdx: uniqueIndex("companies_issue_prefix_idx").on(table.issuePrefix),
+    issuePrefixUniqueIdx: uniqueIndex("products_issue_prefix_idx").on(table.issuePrefix),
   }),
 );

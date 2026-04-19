@@ -48,7 +48,7 @@
  * @see PLUGIN_SPEC.md §15 — Capability Model
  */
 
-import type { PluginCapability } from "@paperclipai/shared";
+import type { PluginCapability } from "@softclipai/shared";
 import type { WorkerToHostMethods, WorkerToHostMethodName } from "./protocol.js";
 import { PLUGIN_RPC_ERROR_CODES } from "./protocol.js";
 
@@ -122,7 +122,7 @@ export interface HostServices {
   /** Provides `activity.log`. */
   activity: {
     log(params: {
-      companyId: string;
+      productId: string;
       message: string;
       entityType?: string;
       entityId?: string;

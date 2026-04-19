@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { execute } from "@paperclipai/adapter-pi-local/server";
+import { execute } from "@softclipai/adapter-pi-local/server";
 
 async function writeFakePiCommand(commandPath: string): Promise<void> {
   const script = `#!/usr/bin/env node
@@ -43,7 +43,7 @@ describe("pi_local execute", () => {
         runId: "run-pi-quota-exhausted",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Pi Agent",
           adapterType: "pi_local",
           adapterConfig: {},

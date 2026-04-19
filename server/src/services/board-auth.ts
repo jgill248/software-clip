@@ -1,14 +1,14 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { and, eq, isNull, sql } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import {
   authUsers,
   boardApiKeys,
   cliAuthChallenges,
-  companies,
+  products,
   companyMemberships,
   instanceUserRoles,
-} from "@paperclipai/db";
+} from "@softclipai/db";
 import { conflict, forbidden, notFound } from "../errors.js";
 
 export const BOARD_API_KEY_TTL_MS = 30 * 24 * 60 * 60 * 1000;
@@ -63,7 +63,7 @@ export function boardAuthService(db: Db) {
         .then((rows) => rows[0] ?? null),
       db
         .select({
-          companyId: companyMemberships.companyId,
+          productId: companyMemberships.productId,
           membershipRole: companyMemberships.membershipRole,
           status: companyMemberships.status,
         })
@@ -85,7 +85,7 @@ export function boardAuthService(db: Db) {
 
     return {
       user,
-      companyIds: memberships.map((row) => row.companyId),
+      productIds: memberships.map((row) => row.productId),
       memberships,
       isInstanceAdmin: Boolean(adminRole),
     };
@@ -97,13 +97,13 @@ export function boardAuthService(db: Db) {
     boardApiKeyId?: string | null;
   }) {
     const access = await resolveBoardAccess(input.userId);
-    const companyIds = new Set(access.companyIds);
+    const productIds = new Set(access.productIds);
 
-    if (companyIds.size === 0 && input.requestedCompanyId?.trim()) {
-      companyIds.add(input.requestedCompanyId.trim());
+    if (productIds.size === 0 && input.requestedCompanyId?.trim()) {
+      productIds.add(input.requestedCompanyId.trim());
     }
 
-    if (companyIds.size === 0 && input.boardApiKeyId?.trim()) {
+    if (productIds.size === 0 && input.boardApiKeyId?.trim()) {
       const challengeCompanyIds = await db
         .select({ requestedCompanyId: cliAuthChallenges.requestedCompanyId })
         .from(cliAuthChallenges)
@@ -113,22 +113,22 @@ export function boardAuthService(db: Db) {
             .map((row) => row.requestedCompanyId?.trim() ?? null)
             .filter((value): value is string => Boolean(value)),
         );
-      for (const companyId of challengeCompanyIds) {
-        companyIds.add(companyId);
+      for (const productId of challengeCompanyIds) {
+        productIds.add(productId);
       }
     }
 
-    if (companyIds.size === 0 && access.isInstanceAdmin) {
+    if (productIds.size === 0 && access.isInstanceAdmin) {
       const allCompanyIds = await db
-        .select({ id: companies.id })
-        .from(companies)
+        .select({ id: products.id })
+        .from(products)
         .then((rows) => rows.map((row) => row.id));
-      for (const companyId of allCompanyIds) {
-        companyIds.add(companyId);
+      for (const productId of allCompanyIds) {
+        productIds.add(productId);
       }
     }
 
-    return Array.from(companyIds);
+    return Array.from(productIds);
   }
 
   async function findBoardApiKeyByToken(token: string) {
@@ -219,9 +219,9 @@ export function boardAuthService(db: Db) {
     const [company, approvedBy] = await Promise.all([
       challenge.requestedCompanyId
         ? db
-            .select({ id: companies.id, name: companies.name })
-            .from(companies)
-            .where(eq(companies.id, challenge.requestedCompanyId))
+            .select({ id: products.id, name: products.name })
+            .from(products)
+            .where(eq(products.id, challenge.requestedCompanyId))
             .then((rows) => rows[0] ?? null)
         : Promise.resolve(null),
       challenge.approvedByUserId

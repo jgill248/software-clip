@@ -4,7 +4,7 @@ export type SprintState = "planned" | "active" | "closed";
 
 export interface Sprint {
   id: string;
-  companyId: string;
+  productId: string;
   name: string;
   goal: string | null;
   state: SprintState;
@@ -43,14 +43,14 @@ export interface UpdateSprintInput {
 }
 
 export const sprintsApi = {
-  list: (companyId: string, filters: { state?: SprintState } = {}) => {
+  list: (productId: string, filters: { state?: SprintState } = {}) => {
     const params = filters.state ? `?state=${encodeURIComponent(filters.state)}` : "";
-    return api.get<Sprint[]>(`/companies/${companyId}/sprints${params}`);
+    return api.get<Sprint[]>(`/companies/${productId}/sprints${params}`);
   },
-  getActive: (companyId: string) =>
-    api.get<Sprint>(`/companies/${companyId}/sprints/active`),
-  create: (companyId: string, input: CreateSprintInput) =>
-    api.post<Sprint>(`/companies/${companyId}/sprints`, input),
+  getActive: (productId: string) =>
+    api.get<Sprint>(`/companies/${productId}/sprints/active`),
+  create: (productId: string, input: CreateSprintInput) =>
+    api.post<Sprint>(`/companies/${productId}/sprints`, input),
   get: (id: string) => api.get<Sprint>(`/sprints/${id}`),
   update: (id: string, patch: UpdateSprintInput) =>
     api.patch<Sprint>(`/sprints/${id}`, patch),

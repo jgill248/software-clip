@@ -1,6 +1,6 @@
 import { pgTable, uuid, text, timestamp, date, index, jsonb } from "drizzle-orm/pg-core";
-import type { AgentEnvConfig } from "@paperclipai/shared";
-import { companies } from "./companies.js";
+import type { AgentEnvConfig } from "@softclipai/shared";
+import { products } from "./products.js";
 import { goals } from "./goals.js";
 import { agents } from "./agents.js";
 
@@ -8,7 +8,7 @@ export const projects = pgTable(
   "projects",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     goalId: uuid("goal_id").references(() => goals.id),
     name: text("name").notNull(),
     description: text("description"),
@@ -25,6 +25,6 @@ export const projects = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyIdx: index("projects_company_idx").on(table.companyId),
+    companyIdx: index("projects_product_idx").on(table.productId),
   }),
 );

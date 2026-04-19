@@ -9,7 +9,7 @@ import type {
   Issue,
   JoinRequest,
   ProjectWorkspace,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import {
   DEFAULT_INBOX_ISSUE_COLUMNS,
   buildGroupedInboxSections,
@@ -73,7 +73,7 @@ Object.defineProperty(globalThis, "localStorage", {
 function makeApproval(status: Approval["status"]): Approval {
   return {
     id: `approval-${status}`,
-    companyId: "company-1",
+    productId: "company-1",
     type: "hire_agent",
     requestedByAgentId: null,
     requestedByUserId: null,
@@ -104,7 +104,7 @@ function makeJoinRequest(id: string): JoinRequest {
   return {
     id,
     inviteId: "invite-1",
-    companyId: "company-1",
+    productId: "company-1",
     requestType: "human",
     status: "pending_approval",
     requestEmailSnapshot: null,
@@ -129,7 +129,7 @@ function makeJoinRequest(id: string): JoinRequest {
 function makeRun(id: string, status: HeartbeatRun["status"], createdAt: string, agentId = "agent-1"): HeartbeatRun {
   return {
     id,
-    companyId: "company-1",
+    productId: "company-1",
     agentId,
     invocationSource: "assignment",
     triggerDetail: null,
@@ -167,7 +167,7 @@ function makeRun(id: string, status: HeartbeatRun["status"], createdAt: string, 
 function makeIssue(id: string, isUnreadForMe: boolean): Issue {
   return {
     id,
-    companyId: "company-1",
+    productId: "company-1",
     projectId: null,
     projectWorkspaceId: null,
     goalId: null,
@@ -213,7 +213,7 @@ function makeIssue(id: string, isUnreadForMe: boolean): Issue {
 function makeProjectWorkspace(overrides: Partial<ProjectWorkspace> = {}): ProjectWorkspace {
   return {
     id: "project-workspace-1",
-    companyId: "company-1",
+    productId: "company-1",
     projectId: "project-1",
     name: "Primary workspace",
     sourceType: "local_path",
@@ -239,7 +239,7 @@ function makeProjectWorkspace(overrides: Partial<ProjectWorkspace> = {}): Projec
 function makeExecutionWorkspace(overrides: Partial<ExecutionWorkspace> = {}): ExecutionWorkspace {
   return {
     id: "execution-workspace-1",
-    companyId: "company-1",
+    productId: "company-1",
     projectId: "project-1",
     projectWorkspaceId: "project-workspace-1",
     sourceIssueId: "issue-1",
@@ -268,7 +268,7 @@ function makeExecutionWorkspace(overrides: Partial<ExecutionWorkspace> = {}): Ex
 }
 
 const dashboard: DashboardSummary = {
-  companyId: "company-1",
+  productId: "company-1",
   agents: {
     active: 1,
     running: 0,
@@ -376,7 +376,7 @@ describe("inbox helpers", () => {
     const dismissedAtByKey = buildInboxDismissedAtByKey([
       {
         id: "dismissal-1",
-        companyId: "company-1",
+        productId: "company-1",
         userId: "user-1",
         itemKey: "approval:approval-1",
         dismissedAt: new Date("2026-03-11T01:00:00.000Z"),

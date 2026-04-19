@@ -2,7 +2,7 @@ import express from "express";
 import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const companyId = "22222222-2222-4222-8222-222222222222";
+const productId = "22222222-2222-4222-8222-222222222222";
 const agentId = "11111111-1111-4111-8111-111111111111";
 const routineId = "33333333-3333-4333-8333-333333333333";
 const projectId = "44444444-4444-4444-8444-444444444444";
@@ -10,7 +10,7 @@ const otherAgentId = "55555555-5555-4555-8555-555555555555";
 
 const routine = {
   id: routineId,
-  companyId,
+  productId,
   projectId,
   goalId: null,
   parentIssueId: null,
@@ -36,7 +36,7 @@ const pausedRoutine = {
 };
 const trigger = {
   id: "66666666-6666-4666-8666-666666666666",
-  companyId,
+  productId,
   routineId,
   kind: "schedule",
   label: "weekday",
@@ -84,7 +84,7 @@ const mockTrackRoutineCreated = vi.hoisted(() => vi.fn());
 const mockGetTelemetryClient = vi.hoisted(() => vi.fn());
 
 function registerModuleMocks() {
-  vi.doMock("@paperclipai/shared/telemetry", () => ({
+  vi.doMock("@softclipai/shared/telemetry", () => ({
     trackRoutineCreated: mockTrackRoutineCreated,
     trackErrorHandlerCrash: vi.fn(),
   }));
@@ -119,7 +119,7 @@ async function createApp(actor: Record<string, unknown>) {
 describe("routine routes", () => {
   beforeEach(() => {
     vi.resetModules();
-    vi.doUnmock("@paperclipai/shared/telemetry");
+    vi.doUnmock("@softclipai/shared/telemetry");
     vi.doUnmock("../telemetry.js");
     vi.doUnmock("../services/index.js");
     vi.doUnmock("../routes/routines.js");
@@ -147,11 +147,11 @@ describe("routine routes", () => {
       userId: "board-user",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
-      .post(`/api/companies/${companyId}/routines`)
+      .post(`/api/companies/${productId}/routines`)
       .send({
         projectId,
         title: "Daily routine",
@@ -169,7 +169,7 @@ describe("routine routes", () => {
       userId: "board-user",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
@@ -190,7 +190,7 @@ describe("routine routes", () => {
       userId: "board-user",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
@@ -210,7 +210,7 @@ describe("routine routes", () => {
       userId: "board-user",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
@@ -232,7 +232,7 @@ describe("routine routes", () => {
       userId: "board-user",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
@@ -252,7 +252,7 @@ describe("routine routes", () => {
       userId: "board-user",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
@@ -271,11 +271,11 @@ describe("routine routes", () => {
       userId: "board-user",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [companyId],
+      productIds: [productId],
     });
 
     const res = await request(app)
-      .post(`/api/companies/${companyId}/routines`)
+      .post(`/api/companies/${productId}/routines`)
       .send({
         projectId,
         title: "Daily routine",
@@ -283,7 +283,7 @@ describe("routine routes", () => {
       });
 
     expect(res.status).toBe(201);
-    expect(mockRoutineService.create).toHaveBeenCalledWith(companyId, expect.objectContaining({
+    expect(mockRoutineService.create).toHaveBeenCalledWith(productId, expect.objectContaining({
       projectId,
       title: "Daily routine",
       assigneeAgentId: agentId,

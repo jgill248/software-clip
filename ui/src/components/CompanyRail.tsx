@@ -30,7 +30,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Company } from "@paperclipai/shared";
+import type { Company } from "@softclipai/shared";
 // Softclip pivot §6: CompanyPatternIcon removed.
 
 function SortableCompanyItem({
@@ -142,36 +142,36 @@ export function CompanyRail() {
     queryFn: () => authApi.getSession(),
   });
   const currentUserId = session?.user?.id ?? session?.session?.userId ?? null;
-  const companyIds = useMemo(() => sidebarCompanies.map((company) => company.id), [sidebarCompanies]);
+  const productIds = useMemo(() => sidebarCompanies.map((company) => company.id), [sidebarCompanies]);
 
   const liveRunsQueries = useQueries({
-    queries: companyIds.map((companyId) => ({
-      queryKey: queryKeys.liveRuns(companyId),
-      queryFn: () => heartbeatsApi.liveRunsForCompany(companyId),
+    queries: productIds.map((productId) => ({
+      queryKey: queryKeys.liveRuns(productId),
+      queryFn: () => heartbeatsApi.liveRunsForCompany(productId),
       refetchInterval: 10_000,
     })),
   });
   const sidebarBadgeQueries = useQueries({
-    queries: companyIds.map((companyId) => ({
-      queryKey: queryKeys.sidebarBadges(companyId),
-      queryFn: () => sidebarBadgesApi.get(companyId),
+    queries: productIds.map((productId) => ({
+      queryKey: queryKeys.sidebarBadges(productId),
+      queryFn: () => sidebarBadgesApi.get(productId),
       refetchInterval: 15_000,
     })),
   });
   const hasLiveAgentsByCompanyId = useMemo(() => {
     const result = new Map<string, boolean>();
-    companyIds.forEach((companyId, index) => {
-      result.set(companyId, (liveRunsQueries[index]?.data?.length ?? 0) > 0);
+    productIds.forEach((productId, index) => {
+      result.set(productId, (liveRunsQueries[index]?.data?.length ?? 0) > 0);
     });
     return result;
-  }, [companyIds, liveRunsQueries]);
+  }, [productIds, liveRunsQueries]);
   const hasUnreadInboxByCompanyId = useMemo(() => {
     const result = new Map<string, boolean>();
-    companyIds.forEach((companyId, index) => {
-      result.set(companyId, (sidebarBadgeQueries[index]?.data?.inbox ?? 0) > 0);
+    productIds.forEach((productId, index) => {
+      result.set(productId, (sidebarBadgeQueries[index]?.data?.inbox ?? 0) > 0);
     });
     return result;
-  }, [companyIds, sidebarBadgeQueries]);
+  }, [productIds, sidebarBadgeQueries]);
 
   const { orderedCompanies, persistOrder } = useCompanyOrder({
     companies: sidebarCompanies,

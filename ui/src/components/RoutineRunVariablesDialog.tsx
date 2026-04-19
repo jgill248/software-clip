@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { Agent, IssueExecutionWorkspaceSettings, Project, RoutineVariable } from "@paperclipai/shared";
+import type { Agent, IssueExecutionWorkspaceSettings, Project, RoutineVariable } from "@softclipai/shared";
 import { useQuery } from "@tanstack/react-query";
 import { instanceSettingsApi } from "../api/instanceSettings";
 import { queryKeys } from "../lib/queryKeys";
@@ -130,7 +130,7 @@ export interface RoutineRunDialogSubmitData {
 export function RoutineRunVariablesDialog({
   open,
   onOpenChange,
-  companyId,
+  productId,
   routineName,
   projects,
   agents,
@@ -142,7 +142,7 @@ export function RoutineRunVariablesDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  companyId: string | null | undefined;
+  productId: string | null | undefined;
   routineName?: string | null;
   projects: Project[];
   agents: Agent[];
@@ -218,7 +218,7 @@ export function RoutineRunVariablesDialog({
   );
 
   const workspaceIssue = useMemo(() => ({
-    companyId: companyId ?? null,
+    productId: productId ?? null,
     projectId: selectedProject?.id ?? null,
     projectWorkspaceId: workspaceConfig.projectWorkspaceId,
     executionWorkspaceId: workspaceConfig.executionWorkspaceId,
@@ -226,7 +226,7 @@ export function RoutineRunVariablesDialog({
     executionWorkspaceSettings: workspaceConfig.executionWorkspaceSettings,
     currentExecutionWorkspace: null,
   }), [
-    companyId,
+    productId,
     selectedProject?.id,
     workspaceConfig.executionWorkspaceId,
     workspaceConfig.executionWorkspacePreference,
@@ -411,7 +411,7 @@ export function RoutineRunVariablesDialog({
             </div>
           ))}
 
-          {workspaceSelectionEnabled && selectedProject && companyId ? (
+          {workspaceSelectionEnabled && selectedProject && productId ? (
             <IssueWorkspaceCard
               key={`${open ? "open" : "closed"}:${selectedProject.id}`}
               issue={workspaceIssue}

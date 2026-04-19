@@ -1,5 +1,5 @@
 import { index, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { companies } from "./companies.js";
+import { products } from "./products.js";
 import { issues } from "./issues.js";
 import { agents } from "./agents.js";
 import { heartbeatRuns } from "./heartbeat_runs.js";
@@ -8,7 +8,7 @@ export const issueExecutionDecisions = pgTable(
   "issue_execution_decisions",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     issueId: uuid("issue_id").notNull().references(() => issues.id, { onDelete: "cascade" }),
     stageId: uuid("stage_id").notNull(),
     stageType: text("stage_type").notNull(),
@@ -21,7 +21,7 @@ export const issueExecutionDecisions = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyIssueIdx: index("issue_execution_decisions_company_issue_idx").on(table.companyId, table.issueId),
+    companyIssueIdx: index("issue_execution_decisions_product_issue_idx").on(table.productId, table.issueId),
     stageIdx: index("issue_execution_decisions_stage_idx").on(table.issueId, table.stageId, table.createdAt),
   }),
 );

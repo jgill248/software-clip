@@ -1,5 +1,5 @@
 {
-  "name": "@paperclipai/mcp-server",
+  "name": "@softclipai/mcp-server",
   "version": "0.1.0",
   "license": "MIT",
   "homepage": "https://github.com/paperclipai/paperclip",
@@ -13,6 +13,7 @@
   },
   "type": "module",
   "bin": {
+    "softclip-mcp-server": "./dist/stdio.js",
     "paperclip-mcp-server": "./dist/stdio.js"
   },
   "exports": {
@@ -21,6 +22,7 @@
   "publishConfig": {
     "access": "public",
     "bin": {
+      "softclip-mcp-server": "./dist/stdio.js",
       "paperclip-mcp-server": "./dist/stdio.js"
     },
     "exports": {
@@ -44,7 +46,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "@paperclipai/shared": "workspace:*",
+    "@softclipai/shared": "workspace:*",
     "zod": "^3.24.2"
   },
   "devDependencies": {

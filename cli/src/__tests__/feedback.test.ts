@@ -3,7 +3,7 @@ import path from "node:path";
 import { mkdtemp, readFile } from "node:fs/promises";
 import { Command } from "commander";
 import { describe, expect, it } from "vitest";
-import type { FeedbackTrace } from "@paperclipai/shared";
+import type { FeedbackTrace } from "@softclipai/shared";
 import { readZipArchive } from "../commands/client/zip.js";
 import {
   buildFeedbackTraceQuery,
@@ -16,7 +16,7 @@ import {
 function makeTrace(overrides: Partial<FeedbackTrace> = {}): FeedbackTrace {
   return {
     id: "trace-12345678",
-    companyId: "company-123",
+    productId: "company-123",
     feedbackVoteId: "vote-12345678",
     issueId: "issue-123",
     projectId: "project-123",
@@ -113,7 +113,7 @@ describe("renderFeedbackReport", () => {
 
     const report = renderFeedbackReport({
       apiBase: "http://127.0.0.1:3100",
-      companyId: "company-123",
+      productId: "company-123",
       traces,
       summary: summarizeFeedbackTraces(traces),
       includePayloads: false,
@@ -150,7 +150,7 @@ describe("writeFeedbackExportBundle", () => {
 
     const exported = await writeFeedbackExportBundle({
       apiBase: "http://127.0.0.1:3100",
-      companyId: "company-123",
+      productId: "company-123",
       traces,
       outputDir,
     });

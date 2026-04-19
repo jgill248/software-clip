@@ -4,7 +4,7 @@ import { act } from "react";
 import type { ComponentProps } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { Issue, Project } from "@paperclipai/shared";
+import type { Issue, Project } from "@softclipai/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { IssueWorkspaceCard } from "./IssueWorkspaceCard";
 
@@ -40,7 +40,7 @@ vi.mock("@/lib/router", () => ({
 function createIssue(overrides: Partial<Issue> = {}): Issue {
   return {
     id: "issue-1",
-    companyId: "company-1",
+    productId: "company-1",
     projectId: "project-1",
     projectWorkspaceId: null,
     goalId: null,
@@ -81,7 +81,7 @@ function createIssue(overrides: Partial<Issue> = {}): Issue {
 function createProject(): Project {
   return {
     id: "project-1",
-    companyId: "company-1",
+    productId: "company-1",
     urlKey: "project-1",
     goalId: null,
     goalIds: [],

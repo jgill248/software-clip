@@ -1,10 +1,10 @@
 import { and, eq } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import {
   companyUserSidebarPreferences,
   userSidebarPreferences,
-} from "@paperclipai/db";
-import type { SidebarOrderPreference } from "@paperclipai/shared";
+} from "@softclipai/db";
+import type { SidebarOrderPreference } from "@softclipai/shared";
 
 function normalizeOrderedIds(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
@@ -58,10 +58,10 @@ export function sidebarPreferenceService(db: Db) {
       return toPreference(row?.companyOrder ?? normalized, row?.updatedAt ?? now);
     },
 
-    async getProjectOrder(companyId: string, userId: string): Promise<SidebarOrderPreference> {
+    async getProjectOrder(productId: string, userId: string): Promise<SidebarOrderPreference> {
       const row = await db.query.companyUserSidebarPreferences.findFirst({
         where: and(
-          eq(companyUserSidebarPreferences.companyId, companyId),
+          eq(companyUserSidebarPreferences.productId, productId),
           eq(companyUserSidebarPreferences.userId, userId),
         ),
       });
@@ -69,7 +69,7 @@ export function sidebarPreferenceService(db: Db) {
     },
 
     async upsertProjectOrder(
-      companyId: string,
+      productId: string,
       userId: string,
       orderedIds: string[],
     ): Promise<SidebarOrderPreference> {
@@ -78,13 +78,13 @@ export function sidebarPreferenceService(db: Db) {
       const [row] = await db
         .insert(companyUserSidebarPreferences)
         .values({
-          companyId,
+          productId,
           userId,
           projectOrder: normalized,
           updatedAt: now,
         })
         .onConflictDoUpdate({
-          target: [companyUserSidebarPreferences.companyId, companyUserSidebarPreferences.userId],
+          target: [companyUserSidebarPreferences.productId, companyUserSidebarPreferences.userId],
           set: {
             projectOrder: normalized,
             updatedAt: now,

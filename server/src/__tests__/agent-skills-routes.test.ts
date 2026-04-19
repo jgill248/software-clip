@@ -58,7 +58,7 @@ const mockAdapter = vi.hoisted(() => ({
   syncSkills: vi.fn(),
 }));
 
-vi.mock("@paperclipai/shared/telemetry", () => ({
+vi.mock("@softclipai/shared/telemetry", () => ({
   trackAgentCreated: mockTrackAgentCreated,
   trackErrorHandlerCrash: vi.fn(),
 }));
@@ -90,7 +90,7 @@ vi.mock("../adapters/index.js", () => ({
 }));
 
 function registerModuleMocks() {
-  vi.doMock("@paperclipai/shared/telemetry", () => ({
+  vi.doMock("@softclipai/shared/telemetry", () => ({
     trackAgentCreated: mockTrackAgentCreated,
     trackErrorHandlerCrash: vi.fn(),
   }));
@@ -145,7 +145,7 @@ async function createApp(db: Record<string, unknown> = createDb()) {
     (req as any).actor = {
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     };
@@ -159,7 +159,7 @@ async function createApp(db: Record<string, unknown> = createDb()) {
 function makeAgent(adapterType: string) {
   return {
     id: "11111111-1111-4111-8111-111111111111",
-    companyId: "company-1",
+    productId: "company-1",
     name: "Agent",
     role: "engineer",
     title: "Engineer",
@@ -236,7 +236,7 @@ describe("agent skill routes", () => {
     }));
     mockApprovalService.create.mockImplementation(async (_companyId: string, input: Record<string, unknown>) => ({
       id: "approval-1",
-      companyId: "company-1",
+      productId: "company-1",
       type: "hire_agent",
       status: "pending",
       payload: input.payload ?? {},
@@ -267,7 +267,7 @@ describe("agent skill routes", () => {
     mockAgentService.getById.mockResolvedValue(makeAgent("claude_local"));
 
     const res = await request(await createApp())
-      .get("/api/agents/11111111-1111-4111-8111-111111111111/skills?companyId=company-1");
+      .get("/api/agents/11111111-1111-4111-8111-111111111111/skills?productId=company-1");
 
     expect(res.status, JSON.stringify(res.body)).toBe(200);
     expect(mockAdapter.listSkills).toHaveBeenCalledWith(
@@ -292,7 +292,7 @@ describe("agent skill routes", () => {
     });
 
     const res = await request(await createApp())
-      .get("/api/agents/11111111-1111-4111-8111-111111111111/skills?companyId=company-1");
+      .get("/api/agents/11111111-1111-4111-8111-111111111111/skills?productId=company-1");
 
     expect(res.status, JSON.stringify(res.body)).toBe(200);
   });
@@ -309,7 +309,7 @@ describe("agent skill routes", () => {
     });
 
     const res = await request(await createApp())
-      .get("/api/agents/11111111-1111-4111-8111-111111111111/skills?companyId=company-1");
+      .get("/api/agents/11111111-1111-4111-8111-111111111111/skills?productId=company-1");
 
     expect(res.status, JSON.stringify(res.body)).toBe(200);
   });
@@ -318,7 +318,7 @@ describe("agent skill routes", () => {
     mockAgentService.getById.mockResolvedValue(makeAgent("claude_local"));
 
     const res = await request(await createApp())
-      .post("/api/agents/11111111-1111-4111-8111-111111111111/skills/sync?companyId=company-1")
+      .post("/api/agents/11111111-1111-4111-8111-111111111111/skills/sync?productId=company-1")
       .send({ desiredSkills: ["paperclipai/paperclip/paperclip"] });
 
     expect(res.status, JSON.stringify(res.body)).toBe(200);
@@ -329,7 +329,7 @@ describe("agent skill routes", () => {
     mockAgentService.getById.mockResolvedValue(makeAgent("claude_local"));
 
     const res = await request(await createApp())
-      .post("/api/agents/11111111-1111-4111-8111-111111111111/skills/sync?companyId=company-1")
+      .post("/api/agents/11111111-1111-4111-8111-111111111111/skills/sync?productId=company-1")
       .send({ desiredSkills: ["paperclip"] });
 
     expect(res.status, JSON.stringify(res.body)).toBe(200);

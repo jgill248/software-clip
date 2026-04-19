@@ -72,7 +72,7 @@ async function createApp(routeType: "project" | "goal") {
     (req as any).actor = {
       type: "board",
       userId: "board-user",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     };
@@ -110,14 +110,14 @@ describe("project and goal telemetry routes", () => {
     mockSecretService.normalizeEnvBindingsForPersistence.mockImplementation(async (_companyId, env) => env);
     mockProjectService.create.mockResolvedValue({
       id: "project-1",
-      companyId: "company-1",
+      productId: "company-1",
       name: "Telemetry project",
       description: null,
       status: "backlog",
     });
     mockGoalService.create.mockResolvedValue({
       id: "goal-1",
-      companyId: "company-1",
+      productId: "company-1",
       title: "Telemetry goal",
       description: null,
       level: "team",

@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import type { ActivityEvent } from "@paperclipai/shared";
+import type { ActivityEvent } from "@softclipai/shared";
 import {
   addCommonClientOptions,
   formatInlineRecord,
@@ -10,7 +10,7 @@ import {
 } from "./common.js";
 
 interface ActivityListOptions extends BaseClientOptions {
-  companyId?: string;
+  productId?: string;
   agentId?: string;
   entityType?: string;
   entityId?: string;
@@ -36,7 +36,7 @@ export function registerActivityCommands(program: Command): void {
           if (opts.entityId) params.set("entityId", opts.entityId);
 
           const query = params.toString();
-          const path = `/api/companies/${ctx.companyId}/activity${query ? `?${query}` : ""}`;
+          const path = `/api/companies/${ctx.productId}/activity${query ? `?${query}` : ""}`;
           const rows = (await ctx.api.get<ActivityEvent[]>(path)) ?? [];
 
           if (ctx.json) {

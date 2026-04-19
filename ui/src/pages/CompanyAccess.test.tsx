@@ -12,12 +12,12 @@ const updateMemberAccessMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/api/access", () => ({
   accessApi: {
-    listMembers: (companyId: string) => listMembersMock(companyId),
-    listJoinRequests: (companyId: string, status: string) => listJoinRequestsMock(companyId, status),
+    listMembers: (productId: string) => listMembersMock(productId),
+    listJoinRequests: (productId: string, status: string) => listJoinRequestsMock(productId, status),
     updateMember: vi.fn(),
     updateMemberPermissions: vi.fn(),
-    updateMemberAccess: (companyId: string, memberId: string, input: unknown) =>
-      updateMemberAccessMock(companyId, memberId, input),
+    updateMemberAccess: (productId: string, memberId: string, input: unknown) =>
+      updateMemberAccessMock(productId, memberId, input),
     approveJoinRequest: vi.fn(),
     rejectJoinRequest: vi.fn(),
   },
@@ -58,7 +58,7 @@ describe("CompanyAccess", () => {
       members: [
         {
           id: "member-1",
-          companyId: "company-1",
+          productId: "company-1",
           principalType: "user",
           principalId: "user-1",
           status: "active",

@@ -1,8 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { and, eq } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
-import { companies, companyMemberships, instanceUserRoles } from "@paperclipai/db";
-import type { DeploymentMode } from "@paperclipai/shared";
+import type { Db } from "@softclipai/db";
+import { products, companyMemberships, instanceUserRoles } from "@softclipai/db";
+import type { DeploymentMode } from "@softclipai/shared";
 
 const LOCAL_BOARD_USER_ID = "local-board";
 const CLAIM_TTL_MS = 1000 * 60 * 60 * 24;
@@ -106,14 +106,14 @@ export async function claimBoardOwnership(
       .delete(instanceUserRoles)
       .where(and(eq(instanceUserRoles.userId, LOCAL_BOARD_USER_ID), eq(instanceUserRoles.role, "instance_admin")));
 
-    const allCompanies = await tx.select({ id: companies.id }).from(companies);
+    const allCompanies = await tx.select({ id: products.id }).from(products);
     for (const company of allCompanies) {
       const existing = await tx
         .select({ id: companyMemberships.id, status: companyMemberships.status })
         .from(companyMemberships)
         .where(
           and(
-            eq(companyMemberships.companyId, company.id),
+            eq(companyMemberships.productId, company.id),
             eq(companyMemberships.principalType, "user"),
             eq(companyMemberships.principalId, opts.userId),
           ),
@@ -122,7 +122,7 @@ export async function claimBoardOwnership(
 
       if (!existing) {
         await tx.insert(companyMemberships).values({
-          companyId: company.id,
+          productId: company.id,
           principalType: "user",
           principalId: opts.userId,
           status: "active",

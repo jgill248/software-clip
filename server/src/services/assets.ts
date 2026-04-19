@@ -1,13 +1,13 @@
 import { eq } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
-import { assets } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
+import { assets } from "@softclipai/db";
 
 export function assetService(db: Db) {
   return {
-    create: (companyId: string, data: Omit<typeof assets.$inferInsert, "companyId">) =>
+    create: (productId: string, data: Omit<typeof assets.$inferInsert, "productId">) =>
       db
         .insert(assets)
-        .values({ ...data, companyId })
+        .values({ ...data, productId })
         .returning()
         .then((rows) => rows[0]),
 

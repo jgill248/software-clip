@@ -21,7 +21,7 @@ const mockHeartbeatService = vi.hoisted(() => ({
 
 const mockLogActivity = vi.hoisted(() => vi.fn(async () => undefined));
 
-vi.mock("@paperclipai/shared/telemetry", () => ({
+vi.mock("@softclipai/shared/telemetry", () => ({
   trackAgentTaskCompleted: vi.fn(),
   trackErrorHandlerCrash: vi.fn(),
 }));
@@ -75,7 +75,7 @@ async function installActor(app: express.Express, actor?: Record<string, unknown
     (req as any).actor = actor ?? {
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     };
@@ -89,7 +89,7 @@ async function installActor(app: express.Express, actor?: Record<string, unknown
 function makeIssue() {
   return {
     id: "11111111-1111-4111-8111-111111111111",
-    companyId: "company-1",
+    productId: "company-1",
     status: "in_progress",
     assigneeAgentId: "22222222-2222-4222-8222-222222222222",
     assigneeUserId: null,
@@ -102,7 +102,7 @@ function makeIssue() {
 function makeComment(overrides: Record<string, unknown> = {}) {
   return {
     id: "comment-1",
-    companyId: "company-1",
+    productId: "company-1",
     issueId: "11111111-1111-4111-8111-111111111111",
     authorAgentId: null,
     authorUserId: "local-board",
@@ -125,7 +125,7 @@ describe("issue comment cancel routes", () => {
     mockAccessService.hasPermission.mockResolvedValue(false);
     mockHeartbeatService.getRun.mockResolvedValue({
       id: "run-1",
-      companyId: "company-1",
+      productId: "company-1",
       agentId: "22222222-2222-4222-8222-222222222222",
       status: "running",
       startedAt: new Date("2026-04-11T15:00:00.000Z"),

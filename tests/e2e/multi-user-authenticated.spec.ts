@@ -65,7 +65,7 @@ function createBootstrapInvite() {
     pnpmCommand,
     [
       "--filter",
-      "@paperclipai/db",
+      "@softclipai/db",
       "exec",
       "tsx",
       BOOTSTRAP_SCRIPT_PATH,
@@ -195,14 +195,14 @@ async function sessionJsonRequest<T>(
   ) as Promise<SessionJsonResponse<T>>;
 }
 
-async function waitForMember(page: Page, companyId: string, email: string) {
+async function waitForMember(page: Page, productId: string, email: string) {
   let member: CompanyMember | null = null;
   await expect
     .poll(
       async () => {
         const membersRes = await sessionJsonRequest<{ members: CompanyMember[] }>(
           page,
-          `${BASE}/api/companies/${companyId}/members`
+          `${BASE}/api/companies/${productId}/members`
         );
         expect(membersRes.ok).toBe(true);
         const body = membersRes.json;
@@ -225,7 +225,7 @@ async function waitForMember(page: Page, companyId: string, email: string) {
 
 async function waitForMemberRole(
   page: Page,
-  companyId: string,
+  productId: string,
   memberId: string,
   membershipRole: CompanyMember["membershipRole"]
 ) {
@@ -234,7 +234,7 @@ async function waitForMemberRole(
       async () => {
         const membersRes = await sessionJsonRequest<{ members: CompanyMember[] }>(
           page,
-          `${BASE}/api/companies/${companyId}/members`
+          `${BASE}/api/companies/${productId}/members`
         );
         expect(membersRes.ok).toBe(true);
         const body = membersRes.json;

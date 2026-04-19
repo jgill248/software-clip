@@ -1,9 +1,9 @@
 import { Router, type Request } from "express";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import {
   createAcceptanceCriterionSchema,
   updateAcceptanceCriterionSchema,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import { validate } from "../middleware/validate.js";
 import {
   issueAcceptanceCriteriaService,
@@ -31,7 +31,7 @@ export function issueAcceptanceCriteriaRoutes(db: Db) {
   async function requireIssueAccess(req: Request, issueId: string) {
     const issue = await issues.getById(issueId);
     if (!issue) throw notFound("Issue not found");
-    assertCompanyAccess(req, issue.companyId);
+    assertCompanyAccess(req, issue.productId);
     return issue;
   }
 

@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { createServer } from "node:http";
 import { WebSocketServer } from "ws";
-import { execute, testEnvironment } from "@paperclipai/adapter-openclaw-gateway/server";
+import { execute, testEnvironment } from "@softclipai/adapter-openclaw-gateway/server";
 import {
   buildOpenClawGatewayConfig,
   parseOpenClawGatewayStdoutLine,
-} from "@paperclipai/adapter-openclaw-gateway/ui";
-import type { AdapterExecutionContext } from "@paperclipai/adapter-utils";
+} from "@softclipai/adapter-openclaw-gateway/ui";
+import type { AdapterExecutionContext } from "@softclipai/adapter-utils";
 
 function buildContext(
   config: Record<string, unknown>,
@@ -16,7 +16,7 @@ function buildContext(
     runId: "run-123",
     agent: {
       id: "agent-123",
-      companyId: "company-123",
+      productId: "company-123",
       name: "OpenClaw Gateway Agent",
       adapterType: "openclaw_gateway",
       adapterConfig: {},
@@ -666,7 +666,7 @@ describe("openclaw gateway ui build config", () => {
 describe("openclaw gateway testEnvironment", () => {
   it("reports missing url as failure", async () => {
     const result = await testEnvironment({
-      companyId: "company-123",
+      productId: "company-123",
       adapterType: "openclaw_gateway",
       config: {},
     });

@@ -1,4 +1,4 @@
-import type { DocumentRevision, IssueDocument } from "@paperclipai/shared";
+import type { DocumentRevision, IssueDocument } from "@softclipai/shared";
 
 type DocumentRevisionState = {
   currentRevision: DocumentRevision;
@@ -25,7 +25,7 @@ function sortRevisionsDescending(revisions: DocumentRevision[]) {
 function createCurrentRevisionSnapshot(document: IssueDocument): DocumentRevision {
   return {
     id: document.latestRevisionId ?? `${document.id}-latest`,
-    companyId: document.companyId,
+    productId: document.productId,
     documentId: document.id,
     issueId: document.issueId,
     key: document.key,

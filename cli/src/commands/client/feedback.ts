@@ -2,7 +2,7 @@ import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import pc from "picocolors";
 import { Command } from "commander";
-import type { Company, FeedbackTrace, FeedbackTraceBundle } from "@paperclipai/shared";
+import type { Company, FeedbackTrace, FeedbackTraceBundle } from "@softclipai/shared";
 import {
   addCommonClientOptions,
   handleCommandError,
@@ -53,7 +53,7 @@ interface FeedbackSummary {
 interface FeedbackExportManifest {
   exportedAt: string;
   serverUrl: string;
-  companyId: string;
+  productId: string;
   summary: FeedbackSummary & {
     uniqueIssues: number;
     issues: string[];
@@ -92,14 +92,14 @@ export function registerFeedbackCommands(program: Command): void {
       .action(async (opts: FeedbackReportOptions) => {
         try {
           const ctx = resolveCommandContext(opts);
-          const companyId = await resolveFeedbackCompanyId(ctx, opts.companyId);
-          const traces = await fetchCompanyFeedbackTraces(ctx, companyId, opts);
+          const productId = await resolveFeedbackCompanyId(ctx, opts.productId);
+          const traces = await fetchCompanyFeedbackTraces(ctx, productId, opts);
           const summary = summarizeFeedbackTraces(traces);
           if (ctx.json) {
             printOutput(
               {
                 apiBase: ctx.api.apiBase,
-                companyId,
+                productId,
                 summary,
                 traces,
               },
@@ -109,7 +109,7 @@ export function registerFeedbackCommands(program: Command): void {
           }
           console.log(renderFeedbackReport({
             apiBase: ctx.api.apiBase,
-            companyId,
+            productId,
             traces,
             summary,
             includePayloads: Boolean(opts.payloads),
@@ -138,12 +138,12 @@ export function registerFeedbackCommands(program: Command): void {
       .action(async (opts: FeedbackExportOptions) => {
         try {
           const ctx = resolveCommandContext(opts);
-          const companyId = await resolveFeedbackCompanyId(ctx, opts.companyId);
-          const traces = await fetchCompanyFeedbackTraces(ctx, companyId, opts);
+          const productId = await resolveFeedbackCompanyId(ctx, opts.productId);
+          const traces = await fetchCompanyFeedbackTraces(ctx, productId, opts);
           const outputDir = path.resolve(opts.out?.trim() || defaultFeedbackExportDirName());
           const exported = await writeFeedbackExportBundle({
             apiBase: ctx.api.apiBase,
-            companyId,
+            productId,
             traces,
             outputDir,
             traceBundleFetcher: (trace) => fetchFeedbackTraceBundle(ctx, trace.id),
@@ -151,7 +151,7 @@ export function registerFeedbackCommands(program: Command): void {
           if (ctx.json) {
             printOutput(
               {
-                companyId,
+                productId,
                 outputDir: exported.outputDir,
                 zipPath: exported.zipPath,
                 summary: exported.manifest.summary,
@@ -173,16 +173,16 @@ export async function resolveFeedbackCompanyId(
   ctx: ResolvedClientContext,
   explicitCompanyId?: string,
 ): Promise<string> {
-  const direct = explicitCompanyId?.trim() || ctx.companyId?.trim();
+  const direct = explicitCompanyId?.trim() || ctx.productId?.trim();
   if (direct) return direct;
   const companies = (await ctx.api.get<Company[]>("/api/companies")) ?? [];
-  const companyId = companies[0]?.id?.trim();
-  if (!companyId) {
+  const productId = companies[0]?.id?.trim();
+  if (!productId) {
     throw new Error(
       "Company ID is required. Pass --company-id, set PAPERCLIP_COMPANY_ID, or configure a CLI context default.",
     );
   }
-  return companyId;
+  return productId;
 }
 
 export function buildFeedbackTraceQuery(opts: FeedbackTraceQueryOptions, includePayload = true): string {
@@ -215,12 +215,12 @@ export function serializeFeedbackTraces(traces: FeedbackTrace[], format: string 
 
 export async function fetchCompanyFeedbackTraces(
   ctx: ResolvedClientContext,
-  companyId: string,
+  productId: string,
   opts: FeedbackFilterOptions,
 ): Promise<FeedbackTrace[]> {
   return (
     (await ctx.api.get<FeedbackTrace[]>(
-      `/api/companies/${companyId}/feedback-traces${buildFeedbackTraceQuery(opts, true)}`,
+      `/api/companies/${productId}/feedback-traces${buildFeedbackTraceQuery(opts, true)}`,
     )) ?? []
   );
 }
@@ -260,7 +260,7 @@ export function summarizeFeedbackTraces(traces: FeedbackTrace[]): FeedbackSummar
 
 export function renderFeedbackReport(input: {
   apiBase: string;
-  companyId: string;
+  productId: string;
   traces: FeedbackTrace[];
   summary: FeedbackSummary;
   includePayloads: boolean;
@@ -271,7 +271,7 @@ export function renderFeedbackReport(input: {
   lines.push(pc.dim(new Date().toISOString()));
   lines.push(horizontalRule());
   lines.push(`${pc.dim("Server:")}  ${input.apiBase}`);
-  lines.push(`${pc.dim("Company:")} ${input.companyId}`);
+  lines.push(`${pc.dim("Company:")} ${input.productId}`);
   lines.push("");
 
   if (input.traces.length === 0) {
@@ -341,7 +341,7 @@ export function renderFeedbackReport(input: {
 
 export async function writeFeedbackExportBundle(input: {
   apiBase: string;
-  companyId: string;
+  productId: string;
   traces: FeedbackTrace[];
   outputDir: string;
   traceBundleFetcher?: (trace: FeedbackTrace) => Promise<FeedbackTraceBundle>;
@@ -402,7 +402,7 @@ export async function writeFeedbackExportBundle(input: {
   const manifest: FeedbackExportManifest = {
     exportedAt: new Date().toISOString(),
     serverUrl: input.apiBase,
-    companyId: input.companyId,
+    productId: input.productId,
     summary: {
       ...summary,
       uniqueIssues: issueSet.size,
@@ -442,7 +442,7 @@ export function renderFeedbackExportSummary(exported: FeedbackExportResult): str
   lines.push(pc.bold(pc.magenta("Paperclip Feedback Export")));
   lines.push(pc.dim(exported.manifest.exportedAt));
   lines.push(horizontalRule());
-  lines.push(`${pc.dim("Company:")} ${exported.manifest.companyId}`);
+  lines.push(`${pc.dim("Company:")} ${exported.manifest.productId}`);
   lines.push(`${pc.dim("Output:")}  ${exported.outputDir}`);
   lines.push(`${pc.dim("Archive:")} ${exported.zipPath}`);
   lines.push("");

@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import type { DashboardSummary } from "@paperclipai/shared";
+import type { DashboardSummary } from "@softclipai/shared";
 import {
   addCommonClientOptions,
   handleCommandError,
@@ -9,7 +9,7 @@ import {
 } from "./common.js";
 
 interface DashboardGetOptions extends BaseClientOptions {
-  companyId?: string;
+  productId?: string;
 }
 
 export function registerDashboardCommands(program: Command): void {
@@ -23,7 +23,7 @@ export function registerDashboardCommands(program: Command): void {
       .action(async (opts: DashboardGetOptions) => {
         try {
           const ctx = resolveCommandContext(opts, { requireCompany: true });
-          const row = await ctx.api.get<DashboardSummary>(`/api/companies/${ctx.companyId}/dashboard`);
+          const row = await ctx.api.get<DashboardSummary>(`/api/companies/${ctx.productId}/dashboard`);
           printOutput(row, { json: ctx.json });
         } catch (err) {
           handleCommandError(err);

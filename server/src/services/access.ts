@@ -1,11 +1,11 @@
 import { and, eq, inArray, sql } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import {
   companyMemberships,
   instanceUserRoles,
   principalPermissionGrants,
-} from "@paperclipai/db";
-import type { PermissionKey, PrincipalType } from "@paperclipai/shared";
+} from "@softclipai/db";
+import type { PermissionKey, PrincipalType } from "@softclipai/shared";
 import { conflict } from "../errors.js";
 
 type MembershipRow = typeof companyMemberships.$inferSelect;
@@ -26,7 +26,7 @@ export function accessService(db: Db) {
   }
 
   async function getMembership(
-    companyId: string,
+    productId: string,
     principalType: PrincipalType,
     principalId: string,
   ): Promise<MembershipRow | null> {
@@ -35,7 +35,7 @@ export function accessService(db: Db) {
       .from(companyMemberships)
       .where(
         and(
-          eq(companyMemberships.companyId, companyId),
+          eq(companyMemberships.productId, productId),
           eq(companyMemberships.principalType, principalType),
           eq(companyMemberships.principalId, principalId),
         ),
@@ -44,19 +44,19 @@ export function accessService(db: Db) {
   }
 
   async function hasPermission(
-    companyId: string,
+    productId: string,
     principalType: PrincipalType,
     principalId: string,
     permissionKey: PermissionKey,
   ): Promise<boolean> {
-    const membership = await getMembership(companyId, principalType, principalId);
+    const membership = await getMembership(productId, principalType, principalId);
     if (!membership || membership.status !== "active") return false;
     const grant = await db
       .select({ id: principalPermissionGrants.id })
       .from(principalPermissionGrants)
       .where(
         and(
-          eq(principalPermissionGrants.companyId, companyId),
+          eq(principalPermissionGrants.productId, productId),
           eq(principalPermissionGrants.principalType, principalType),
           eq(principalPermissionGrants.principalId, principalId),
           eq(principalPermissionGrants.permissionKey, permissionKey),
@@ -67,38 +67,38 @@ export function accessService(db: Db) {
   }
 
   async function canUser(
-    companyId: string,
+    productId: string,
     userId: string | null | undefined,
     permissionKey: PermissionKey,
   ): Promise<boolean> {
     if (!userId) return false;
     if (await isInstanceAdmin(userId)) return true;
-    return hasPermission(companyId, "user", userId, permissionKey);
+    return hasPermission(productId, "user", userId, permissionKey);
   }
 
-  async function listMembers(companyId: string) {
+  async function listMembers(productId: string) {
     return db
       .select()
       .from(companyMemberships)
-      .where(eq(companyMemberships.companyId, companyId))
+      .where(eq(companyMemberships.productId, productId))
       .orderBy(sql`${companyMemberships.createdAt} desc`);
   }
 
-  async function getMemberById(companyId: string, memberId: string) {
+  async function getMemberById(productId: string, memberId: string) {
     return db
       .select()
       .from(companyMemberships)
-      .where(and(eq(companyMemberships.companyId, companyId), eq(companyMemberships.id, memberId)))
+      .where(and(eq(companyMemberships.productId, productId), eq(companyMemberships.id, memberId)))
       .then((rows) => rows[0] ?? null);
   }
 
-  async function listActiveUserMemberships(companyId: string) {
+  async function listActiveUserMemberships(productId: string) {
     return db
       .select()
       .from(companyMemberships)
       .where(
         and(
-          eq(companyMemberships.companyId, companyId),
+          eq(companyMemberships.productId, productId),
           eq(companyMemberships.principalType, "user"),
           eq(companyMemberships.status, "active"),
         ),
@@ -107,12 +107,12 @@ export function accessService(db: Db) {
   }
 
   async function setMemberPermissions(
-    companyId: string,
+    productId: string,
     memberId: string,
     grants: GrantInput[],
     grantedByUserId: string | null,
   ) {
-    const member = await getMemberById(companyId, memberId);
+    const member = await getMemberById(productId, memberId);
     if (!member) return null;
 
     await db.transaction(async (tx) => {
@@ -120,7 +120,7 @@ export function accessService(db: Db) {
         .delete(principalPermissionGrants)
         .where(
           and(
-            eq(principalPermissionGrants.companyId, companyId),
+            eq(principalPermissionGrants.productId, productId),
             eq(principalPermissionGrants.principalType, member.principalType),
             eq(principalPermissionGrants.principalId, member.principalId),
           ),
@@ -128,7 +128,7 @@ export function accessService(db: Db) {
       if (grants.length > 0) {
         await tx.insert(principalPermissionGrants).values(
           grants.map((grant) => ({
-            companyId,
+            productId,
             principalType: member.principalType,
             principalId: member.principalId,
             permissionKey: grant.permissionKey,
@@ -145,7 +145,7 @@ export function accessService(db: Db) {
   }
 
   async function updateMemberAndPermissions(
-    companyId: string,
+    productId: string,
     memberId: string,
     data: {
       membershipRole?: string | null;
@@ -158,7 +158,7 @@ export function accessService(db: Db) {
       await tx.execute(sql`
         select ${companyMemberships.id}
         from ${companyMemberships}
-        where ${companyMemberships.companyId} = ${companyId}
+        where ${companyMemberships.productId} = ${productId}
           and ${companyMemberships.principalType} = 'user'
           and ${companyMemberships.status} = 'active'
           and ${companyMemberships.membershipRole} = 'owner'
@@ -168,7 +168,7 @@ export function accessService(db: Db) {
       const existing = await tx
         .select()
         .from(companyMemberships)
-        .where(and(eq(companyMemberships.companyId, companyId), eq(companyMemberships.id, memberId)))
+        .where(and(eq(companyMemberships.productId, productId), eq(companyMemberships.id, memberId)))
         .then((rows) => rows[0] ?? null);
       if (!existing) return null;
 
@@ -187,7 +187,7 @@ export function accessService(db: Db) {
           .from(companyMemberships)
           .where(
             and(
-              eq(companyMemberships.companyId, companyId),
+              eq(companyMemberships.productId, productId),
               eq(companyMemberships.principalType, "user"),
               eq(companyMemberships.status, "active"),
               eq(companyMemberships.membershipRole, "owner"),
@@ -215,7 +215,7 @@ export function accessService(db: Db) {
         .delete(principalPermissionGrants)
         .where(
           and(
-            eq(principalPermissionGrants.companyId, companyId),
+            eq(principalPermissionGrants.productId, productId),
             eq(principalPermissionGrants.principalType, existing.principalType),
             eq(principalPermissionGrants.principalId, existing.principalId),
           ),
@@ -223,7 +223,7 @@ export function accessService(db: Db) {
       if (data.grants.length > 0) {
         await tx.insert(principalPermissionGrants).values(
           data.grants.map((grant) => ({
-            companyId,
+            productId,
             principalType: existing.principalType,
             principalId: existing.principalId,
             permissionKey: grant.permissionKey,
@@ -272,21 +272,21 @@ export function accessService(db: Db) {
       .orderBy(sql`${companyMemberships.createdAt} desc`);
   }
 
-  async function setUserCompanyAccess(userId: string, companyIds: string[]) {
+  async function setUserCompanyAccess(userId: string, productIds: string[]) {
     const existing = await listUserCompanyAccess(userId);
-    const existingByCompany = new Map(existing.map((row) => [row.companyId, row]));
-    const target = new Set(companyIds);
+    const existingByCompany = new Map(existing.map((row) => [row.productId, row]));
+    const target = new Set(productIds);
 
     await db.transaction(async (tx) => {
-      const toDelete = existing.filter((row) => !target.has(row.companyId)).map((row) => row.id);
+      const toDelete = existing.filter((row) => !target.has(row.productId)).map((row) => row.id);
       if (toDelete.length > 0) {
         await tx.delete(companyMemberships).where(inArray(companyMemberships.id, toDelete));
       }
 
-      for (const companyId of target) {
-        if (existingByCompany.has(companyId)) continue;
+      for (const productId of target) {
+        if (existingByCompany.has(productId)) continue;
         await tx.insert(companyMemberships).values({
-          companyId,
+          productId,
           principalType: "user",
           principalId: userId,
           status: "active",
@@ -299,13 +299,13 @@ export function accessService(db: Db) {
   }
 
   async function ensureMembership(
-    companyId: string,
+    productId: string,
     principalType: PrincipalType,
     principalId: string,
     membershipRole: string | null = "member",
     status: "pending" | "active" | "suspended" = "active",
   ) {
-    const existing = await getMembership(companyId, principalType, principalId);
+    const existing = await getMembership(productId, principalType, principalId);
     if (existing) {
       if (existing.status !== status || existing.membershipRole !== membershipRole) {
         const updated = await db
@@ -322,7 +322,7 @@ export function accessService(db: Db) {
     return db
       .insert(companyMemberships)
       .values({
-        companyId,
+        productId,
         principalType,
         principalId,
         status,
@@ -333,7 +333,7 @@ export function accessService(db: Db) {
   }
 
   async function setPrincipalGrants(
-    companyId: string,
+    productId: string,
     principalType: PrincipalType,
     principalId: string,
     grants: GrantInput[],
@@ -344,7 +344,7 @@ export function accessService(db: Db) {
         .delete(principalPermissionGrants)
         .where(
           and(
-            eq(principalPermissionGrants.companyId, companyId),
+            eq(principalPermissionGrants.productId, productId),
             eq(principalPermissionGrants.principalType, principalType),
             eq(principalPermissionGrants.principalId, principalId),
           ),
@@ -352,7 +352,7 @@ export function accessService(db: Db) {
       if (grants.length === 0) return;
       await tx.insert(principalPermissionGrants).values(
         grants.map((grant) => ({
-          companyId,
+          productId,
           principalType,
           principalId,
           permissionKey: grant.permissionKey,
@@ -380,7 +380,7 @@ export function accessService(db: Db) {
   }
 
   async function listPrincipalGrants(
-    companyId: string,
+    productId: string,
     principalType: PrincipalType,
     principalId: string,
   ) {
@@ -389,7 +389,7 @@ export function accessService(db: Db) {
       .from(principalPermissionGrants)
       .where(
         and(
-          eq(principalPermissionGrants.companyId, companyId),
+          eq(principalPermissionGrants.productId, productId),
           eq(principalPermissionGrants.principalType, principalType),
           eq(principalPermissionGrants.principalId, principalId),
         ),
@@ -398,7 +398,7 @@ export function accessService(db: Db) {
   }
 
   async function setPrincipalPermission(
-    companyId: string,
+    productId: string,
     principalType: PrincipalType,
     principalId: string,
     permissionKey: PermissionKey,
@@ -411,7 +411,7 @@ export function accessService(db: Db) {
         .delete(principalPermissionGrants)
         .where(
           and(
-            eq(principalPermissionGrants.companyId, companyId),
+            eq(principalPermissionGrants.productId, productId),
             eq(principalPermissionGrants.principalType, principalType),
             eq(principalPermissionGrants.principalId, principalId),
             eq(principalPermissionGrants.permissionKey, permissionKey),
@@ -420,14 +420,14 @@ export function accessService(db: Db) {
       return;
     }
 
-    await ensureMembership(companyId, principalType, principalId, "member", "active");
+    await ensureMembership(productId, principalType, principalId, "member", "active");
 
     const existing = await db
       .select()
       .from(principalPermissionGrants)
       .where(
         and(
-          eq(principalPermissionGrants.companyId, companyId),
+          eq(principalPermissionGrants.productId, productId),
           eq(principalPermissionGrants.principalType, principalType),
           eq(principalPermissionGrants.principalId, principalId),
           eq(principalPermissionGrants.permissionKey, permissionKey),
@@ -448,7 +448,7 @@ export function accessService(db: Db) {
     }
 
     await db.insert(principalPermissionGrants).values({
-      companyId,
+      productId,
       principalType,
       principalId,
       permissionKey,
@@ -460,7 +460,7 @@ export function accessService(db: Db) {
   }
 
   async function updateMember(
-    companyId: string,
+    productId: string,
     memberId: string,
     data: {
       membershipRole?: string | null;
@@ -471,7 +471,7 @@ export function accessService(db: Db) {
       await tx.execute(sql`
         select ${companyMemberships.id}
         from ${companyMemberships}
-        where ${companyMemberships.companyId} = ${companyId}
+        where ${companyMemberships.productId} = ${productId}
           and ${companyMemberships.principalType} = 'user'
           and ${companyMemberships.status} = 'active'
           and ${companyMemberships.membershipRole} = 'owner'
@@ -481,7 +481,7 @@ export function accessService(db: Db) {
       const existing = await tx
         .select()
         .from(companyMemberships)
-        .where(and(eq(companyMemberships.companyId, companyId), eq(companyMemberships.id, memberId)))
+        .where(and(eq(companyMemberships.productId, productId), eq(companyMemberships.id, memberId)))
         .then((rows) => rows[0] ?? null);
       if (!existing) return null;
 
@@ -500,7 +500,7 @@ export function accessService(db: Db) {
           .from(companyMemberships)
           .where(
             and(
-              eq(companyMemberships.companyId, companyId),
+              eq(companyMemberships.productId, productId),
               eq(companyMemberships.principalType, "user"),
               eq(companyMemberships.status, "active"),
               eq(companyMemberships.membershipRole, "owner"),

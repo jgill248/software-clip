@@ -3,8 +3,8 @@ import type {
   PluginDetailTabProps,
   PluginCommentAnnotationProps,
   PluginCommentContextMenuItemProps,
-} from "@paperclipai/plugin-sdk/ui";
-import { usePluginAction, usePluginData } from "@paperclipai/plugin-sdk/ui";
+} from "@softclipai/plugin-sdk/ui";
+import { usePluginAction, usePluginData } from "@softclipai/plugin-sdk/ui";
 import { useMemo, useState, useEffect, useRef, type MouseEvent, type RefObject } from "react";
 import { EditorView } from "@codemirror/view";
 import { basicSetup } from "codemirror";
@@ -131,7 +131,7 @@ type Workspace = { id: string; projectId: string; name: string; path: string; is
 type FileEntry = { name: string; path: string; isDirectory: boolean };
 type FileTreeNodeProps = {
   entry: FileEntry;
-  companyId: string | null;
+  productId: string | null;
   projectId: string;
   workspaceId: string;
   selectedPath: string | null;
@@ -237,7 +237,7 @@ function useAvailableHeight(
 
 function FileTreeNode({
   entry,
-  companyId,
+  productId,
   projectId,
   workspaceId,
   selectedPath,
@@ -263,7 +263,7 @@ function FileTreeNode({
         {isExpanded ? (
           <ExpandedDirectoryChildren
             directoryPath={entry.path}
-            companyId={companyId}
+            productId={productId}
             projectId={projectId}
             workspaceId={workspaceId}
             selectedPath={selectedPath}
@@ -293,7 +293,7 @@ function FileTreeNode({
 
 function ExpandedDirectoryChildren({
   directoryPath,
-  companyId,
+  productId,
   projectId,
   workspaceId,
   selectedPath,
@@ -301,7 +301,7 @@ function ExpandedDirectoryChildren({
   depth,
 }: {
   directoryPath: string;
-  companyId: string | null;
+  productId: string | null;
   projectId: string;
   workspaceId: string;
   selectedPath: string | null;
@@ -309,7 +309,7 @@ function ExpandedDirectoryChildren({
   depth: number;
 }) {
   const { data: childData } = usePluginData<{ entries: FileEntry[] }>("fileList", {
-    companyId,
+    productId,
     projectId,
     workspaceId,
     directoryPath,
@@ -326,7 +326,7 @@ function ExpandedDirectoryChildren({
         <FileTreeNode
           key={child.path}
           entry={child}
-          companyId={companyId}
+          productId={productId}
           projectId={projectId}
           workspaceId={workspaceId}
           selectedPath={selectedPath}
@@ -404,7 +404,7 @@ export function FilesLink({ context }: PluginProjectSidebarItemProps) {
  * Project detail tab: workspace selector, file tree, and CodeMirror editor.
  */
 export function FilesTab({ context }: PluginDetailTabProps) {
-  const companyId = context.companyId;
+  const productId = context.productId;
   const projectId = context.entityId;
   const isMobile = useIsMobile();
   const isDarkMode = useIsDarkMode();
@@ -415,7 +415,7 @@ export function FilesTab({ context }: PluginDetailTabProps) {
   });
   const { data: workspacesData } = usePluginData<Workspace[]>("workspaces", {
     projectId,
-    companyId,
+    productId,
   });
   const workspaces = workspacesData ?? [];
   const workspaceSelectKey = workspaces.map((w) => `${w.id}:${workspaceLabel(w)}`).join("|");
@@ -427,8 +427,8 @@ export function FilesTab({ context }: PluginDetailTabProps) {
   );
 
   const fileListParams = useMemo(
-    () => (selectedWorkspace ? { projectId, companyId, workspaceId: selectedWorkspace.id } : {}),
-    [companyId, projectId, selectedWorkspace],
+    () => (selectedWorkspace ? { projectId, productId, workspaceId: selectedWorkspace.id } : {}),
+    [productId, projectId, selectedWorkspace],
   );
   const { data: fileListData, loading: fileListLoading } = usePluginData<{ entries: FileEntry[] }>(
     "fileList",
@@ -472,9 +472,9 @@ export function FilesTab({ context }: PluginDetailTabProps) {
   const fileContentParams = useMemo(
     () =>
       selectedPath && selectedWorkspace
-        ? { projectId, companyId, workspaceId: selectedWorkspace.id, filePath: selectedPath }
+        ? { projectId, productId, workspaceId: selectedWorkspace.id, filePath: selectedPath }
         : null,
-    [companyId, projectId, selectedWorkspace, selectedPath],
+    [productId, projectId, selectedWorkspace, selectedPath],
   );
   const fileContentResult = usePluginData<{ content: string | null; error?: string }>(
     "fileContent",
@@ -553,7 +553,7 @@ export function FilesTab({ context }: PluginDetailTabProps) {
     try {
       await writeFile({
         projectId,
-        companyId,
+        productId,
         workspaceId: selectedWorkspace.id,
         filePath: selectedPath,
         content,
@@ -618,7 +618,7 @@ export function FilesTab({ context }: PluginDetailTabProps) {
                     <FileTreeNode
                       key={entry.path}
                       entry={entry}
-                      companyId={companyId}
+                      productId={productId}
                       projectId={projectId}
                       workspaceId={selectedWorkspace.id}
                       selectedPath={selectedPath}
@@ -732,7 +732,7 @@ export function CommentFileLinks({ context }: PluginCommentAnnotationProps) {
   const { data } = usePluginData<{ links: string[] }>("comment-file-links", {
     commentId: context.entityId,
     issueId: context.parentEntityId,
-    companyId: context.companyId,
+    productId: context.productId,
   });
 
   if (mode === "contextMenu" || mode === "none") return null;
@@ -781,7 +781,7 @@ export function CommentOpenFiles({ context }: PluginCommentContextMenuItemProps)
   const { data } = usePluginData<{ links: string[] }>("comment-file-links", {
     commentId: context.entityId,
     issueId: context.parentEntityId,
-    companyId: context.companyId,
+    productId: context.productId,
   });
 
   if (mode === "annotation" || mode === "none") return null;

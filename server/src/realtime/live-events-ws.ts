@@ -3,9 +3,9 @@ import type { IncomingMessage, Server as HttpServer } from "node:http";
 import { createRequire } from "node:module";
 import type { Duplex } from "node:stream";
 import { and, eq, isNull } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
-import { agentApiKeys, companyMemberships, instanceUserRoles } from "@paperclipai/db";
-import type { DeploymentMode } from "@paperclipai/shared";
+import type { Db } from "@softclipai/db";
+import { agentApiKeys, companyMemberships, instanceUserRoles } from "@softclipai/db";
+import type { DeploymentMode } from "@softclipai/shared";
 import type { BetterAuthSessionResult } from "../auth/better-auth.js";
 import { logger } from "../middleware/logger.js";
 import { subscribeCompanyLiveEvents } from "../services/live-events.js";
@@ -41,7 +41,7 @@ const { WebSocket, WebSocketServer } = require("ws") as {
 };
 
 interface UpgradeContext {
-  companyId: string;
+  productId: string;
   actorType: "board" | "agent";
   actorId: string;
 }
@@ -95,7 +95,7 @@ function headersFromIncomingMessage(req: IncomingMessage): Headers {
 async function authorizeUpgrade(
   db: Db,
   req: IncomingMessage,
-  companyId: string,
+  productId: string,
   url: URL,
   opts: {
     deploymentMode: DeploymentMode;
@@ -110,7 +110,7 @@ async function authorizeUpgrade(
   if (!token) {
     if (opts.deploymentMode === "local_trusted") {
       return {
-        companyId,
+        productId,
         actorType: "board",
         actorId: "board",
       };
@@ -131,7 +131,7 @@ async function authorizeUpgrade(
         .where(and(eq(instanceUserRoles.userId, userId), eq(instanceUserRoles.role, "instance_admin")))
         .then((rows) => rows[0] ?? null),
       db
-        .select({ companyId: companyMemberships.companyId })
+        .select({ productId: companyMemberships.productId })
         .from(companyMemberships)
         .where(
           and(
@@ -142,11 +142,11 @@ async function authorizeUpgrade(
         ),
     ]);
 
-    const hasCompanyMembership = memberships.some((row) => row.companyId === companyId);
+    const hasCompanyMembership = memberships.some((row) => row.productId === productId);
     if (!roleRow && !hasCompanyMembership) return null;
 
     return {
-      companyId,
+      productId,
       actorType: "board",
       actorId: userId,
     };
@@ -159,7 +159,7 @@ async function authorizeUpgrade(
     .where(and(eq(agentApiKeys.keyHash, tokenHash), isNull(agentApiKeys.revokedAt)))
     .then((rows) => rows[0] ?? null);
 
-  if (!key || key.companyId !== companyId) {
+  if (!key || key.productId !== productId) {
     return null;
   }
 
@@ -169,7 +169,7 @@ async function authorizeUpgrade(
     .where(eq(agentApiKeys.id, key.id));
 
   return {
-    companyId,
+    productId,
     actorType: "agent",
     actorId: key.agentId,
   };
@@ -205,7 +205,7 @@ export function setupLiveEventsWebSocketServer(
       return;
     }
 
-    const unsubscribe = subscribeCompanyLiveEvents(context.companyId, (event) => {
+    const unsubscribe = subscribeCompanyLiveEvents(context.productId, (event) => {
       if (socket.readyState !== WebSocket.OPEN) return;
       socket.send(JSON.stringify(event));
     });
@@ -225,7 +225,7 @@ export function setupLiveEventsWebSocketServer(
     });
 
     socket.on("error", (err: Error) => {
-      logger.warn({ err, companyId: context.companyId }, "live websocket client error");
+      logger.warn({ err, productId: context.productId }, "live websocket client error");
     });
   });
 
@@ -240,13 +240,13 @@ export function setupLiveEventsWebSocketServer(
     }
 
     const url = new URL(req.url, "http://localhost");
-    const companyId = parseCompanyId(url.pathname);
-    if (!companyId) {
+    const productId = parseCompanyId(url.pathname);
+    if (!productId) {
       socket.destroy();
       return;
     }
 
-    void authorizeUpgrade(db, req, companyId, url, {
+    void authorizeUpgrade(db, req, productId, url, {
       deploymentMode: opts.deploymentMode,
       resolveSessionFromHeaders: opts.resolveSessionFromHeaders,
     })

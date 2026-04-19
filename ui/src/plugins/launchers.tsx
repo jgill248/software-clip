@@ -16,13 +16,13 @@ import {
   type ReactNode,
 } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { PLUGIN_LAUNCHER_BOUNDS } from "@paperclipai/shared";
+import { PLUGIN_LAUNCHER_BOUNDS } from "@softclipai/shared";
 import type {
   PluginLauncherBounds,
   PluginLauncherDeclaration,
   PluginLauncherPlacementZone,
   PluginUiSlotEntityType,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import { pluginsApi, type PluginUiContribution } from "@/api/plugins";
 import { authApi } from "@/api/auth";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,7 @@ import {
 } from "./slots";
 
 export type PluginLauncherContext = {
-  companyId?: string | null;
+  productId?: string | null;
   companyPrefix?: string | null;
   projectId?: string | null;
   projectRef?: string | null;
@@ -63,7 +63,7 @@ export type ResolvedPluginLauncher = PluginLauncherDeclaration & {
 type UsePluginLaunchersFilters = {
   placementZones: PluginLauncherPlacementZone[];
   entityType?: PluginUiSlotEntityType | null;
-  companyId?: string | null;
+  productId?: string | null;
   enabled?: boolean;
 };
 
@@ -138,7 +138,7 @@ function buildLauncherHostContext(
   userId: string | null,
 ): PluginHostContext {
   return {
-    companyId: context.companyId ?? null,
+    productId: context.productId ?? null,
     companyPrefix: context.companyPrefix ?? null,
     projectId: context.projectId ?? (context.entityType === "project" ? context.entityId ?? null : null),
     entityId: context.entityId ?? null,
@@ -666,7 +666,7 @@ export function PluginLauncherProvider({ children }: { children: ReactNode }) {
             launcher.pluginId,
             launcher.action.target,
             launcher.action.params,
-            hostContext.companyId ?? null,
+            hostContext.productId ?? null,
           );
           return;
         case "openModal":
@@ -767,8 +767,8 @@ export function PluginLauncherOutlet({
   const { launchers, contributionsByPluginId, errorMessage } = usePluginLaunchers({
     placementZones,
     entityType,
-    companyId: context.companyId,
-    enabled: !!context.companyId,
+    productId: context.productId,
+    enabled: !!context.productId,
   });
 
   if (errorMessage) {

@@ -20,8 +20,8 @@
  * @see PLUGIN_SPEC.md §16.2 — Plugin-to-Plugin Events
  */
 
-import type { PluginEventType } from "@paperclipai/shared";
-import type { PluginEvent, EventFilter } from "@paperclipai/plugin-sdk";
+import type { PluginEventType } from "@softclipai/shared";
+import type { PluginEvent, EventFilter } from "@softclipai/plugin-sdk";
 
 // ---------------------------------------------------------------------------
 // Internal types
@@ -76,7 +76,7 @@ function matchesPattern(eventType: string, pattern: string): boolean {
  *   (e.g. `project.created`) and secondary events that embed a project reference in
  *   their payload (e.g. `issue.created` with `payload.projectId`).
  *
- * - `companyId` — always resolved from `payload.companyId`. Core domain events that
+ * - `productId` — always resolved from `payload.productId`. Core domain events that
  *   belong to a company embed the company ID in their payload.
  *
  * - `agentId` — checked against `event.entityId` when `entityType === "agent"`,
@@ -98,8 +98,8 @@ function passesFilter(event: PluginEvent, filter: EventFilter | null): boolean {
     if (projectId !== filter.projectId) return false;
   }
 
-  if (filter.companyId !== undefined) {
-    if (event.companyId !== filter.companyId) return false;
+  if (filter.productId !== undefined) {
+    if (event.productId !== filter.productId) return false;
   }
 
   if (filter.agentId !== undefined) {
@@ -248,13 +248,13 @@ export function createPluginEventBus(): PluginEventBus {
        * @throws {Error} if `name` already contains the `plugin.` prefix
        *   (prevents cross-namespace spoofing).
        */
-      async emit(name: string, companyId: string, payload: unknown): Promise<PluginEventBusEmitResult> {
+      async emit(name: string, productId: string, payload: unknown): Promise<PluginEventBusEmitResult> {
         if (!name || name.trim() === "") {
           throw new Error(`Plugin "${pluginId}" must provide a non-empty event name.`);
         }
 
-        if (!companyId || companyId.trim() === "") {
-          throw new Error(`Plugin "${pluginId}" must provide a companyId when emitting events.`);
+        if (!productId || productId.trim() === "") {
+          throw new Error(`Plugin "${pluginId}" must provide a productId when emitting events.`);
         }
 
         if (name.startsWith("plugin.")) {
@@ -268,7 +268,7 @@ export function createPluginEventBus(): PluginEventBus {
         const event: PluginEvent = {
           eventId: crypto.randomUUID(),
           eventType,
-          companyId,
+          productId,
           occurredAt: new Date().toISOString(),
           actorType: "plugin",
           actorId: pluginId,
@@ -397,13 +397,13 @@ export interface ScopedPluginEventBus {
    *
    * @param name  Bare event name (e.g. `"sync-done"`). Must be non-empty and
    *   must not include the `plugin.` prefix — the bus adds that automatically.
-   * @param companyId  UUID of the company this event belongs to.
+   * @param productId  UUID of the company this event belongs to.
    * @param payload  Arbitrary JSON-serializable data to attach to the event.
    *
    * @throws {Error} if `name` is empty or whitespace-only.
    * @throws {Error} if `name` starts with `"plugin."` (namespace spoofing guard).
    */
-  emit(name: string, companyId: string, payload: unknown): Promise<PluginEventBusEmitResult>;
+  emit(name: string, productId: string, payload: unknown): Promise<PluginEventBusEmitResult>;
 
   /**
    * Remove all subscriptions registered by this plugin.

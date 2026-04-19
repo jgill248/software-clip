@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { execute } from "@paperclipai/adapter-gemini-local/server";
+import { execute } from "@softclipai/adapter-gemini-local/server";
 
 async function writeFakeGeminiCommand(commandPath: string): Promise<void> {
   const script = `#!/usr/bin/env node
@@ -62,7 +62,7 @@ describe("gemini execute", () => {
         runId: "run-1",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Gemini Coder",
           adapterType: "gemini_local",
           adapterConfig: {},
@@ -141,7 +141,7 @@ describe("gemini execute", () => {
     try {
       await execute({
         runId: "run-yolo",
-        agent: { id: "a1", companyId: "c1", name: "G", adapterType: "gemini_local", adapterConfig: {} },
+        agent: { id: "a1", productId: "c1", name: "G", adapterType: "gemini_local", adapterConfig: {} },
         runtime: { sessionId: null, sessionParams: null, sessionDisplayId: null, taskKey: null },
         config: {
           command: commandPath,
@@ -185,7 +185,7 @@ describe("gemini execute", () => {
         runId: "run-resume",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Gemini Coder",
           adapterType: "gemini_local",
           adapterConfig: {},

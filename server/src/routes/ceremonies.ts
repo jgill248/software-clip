@@ -1,6 +1,6 @@
 import { Router, type Request } from "express";
-import type { Db } from "@paperclipai/db";
-import { seedCeremoniesSchema } from "@paperclipai/shared";
+import type { Db } from "@softclipai/db";
+import { seedCeremoniesSchema } from "@softclipai/shared";
 import { validate } from "../middleware/validate.js";
 import {
   ceremonyService,
@@ -15,8 +15,8 @@ import { assertCompanyAccess, getActorInfo } from "./authz.js";
  * the ceremony service. These endpoints wrap that service:
  *
  * - GET  /ceremony-templates                         (static template list)
- * - GET  /companies/:companyId/ceremonies            (ceremonies present in product)
- * - POST /companies/:companyId/ceremonies/seed       (idempotent seed)
+ * - GET  /companies/:productId/ceremonies            (ceremonies present in product)
+ * - POST /companies/:productId/ceremonies/seed       (idempotent seed)
  */
 export function ceremonyRoutes(db: Db) {
   const router = Router();
@@ -41,39 +41,39 @@ export function ceremonyRoutes(db: Db) {
     );
   });
 
-  router.get("/companies/:companyId/ceremonies", async (req, res) => {
-    const companyId = req.params.companyId as string;
-    assertCompanyAccess(req, companyId);
-    const rows = await svc.listSeeded(companyId);
+  router.get("/companies/:productId/ceremonies", async (req, res) => {
+    const productId = req.params.productId as string;
+    assertCompanyAccess(req, productId);
+    const rows = await svc.listSeeded(productId);
     res.json(rows);
   });
 
   router.post(
-    "/companies/:companyId/ceremonies/seed",
+    "/companies/:productId/ceremonies/seed",
     validate(seedCeremoniesSchema),
     async (req, res) => {
-      const companyId = req.params.companyId as string;
-      assertCompanyAccess(req, companyId);
+      const productId = req.params.productId as string;
+      assertCompanyAccess(req, productId);
 
       const body = req.body as {
         assigneeAgentId?: string | null;
         slugs?: readonly string[];
       };
 
-      const outcome = await svc.seedDefaults(companyId, actorRef(req), {
+      const outcome = await svc.seedDefaults(productId, actorRef(req), {
         assigneeAgentId: body.assigneeAgentId ?? null,
         slugs: body.slugs,
       });
 
       const actor = getActorInfo(req);
       await logActivity(db, {
-        companyId,
+        productId,
         actorType: actor.actorType,
         actorId: actor.actorId,
         agentId: actor.agentId,
         action: "ceremony.seeded",
         entityType: "company",
-        entityId: companyId,
+        entityId: productId,
         details: {
           created: outcome.created.map((c) => c.slug),
           skipped: outcome.skipped.map((c) => c.slug),

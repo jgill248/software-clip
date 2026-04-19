@@ -123,7 +123,7 @@ describe("cli auth routes", () => {
   it("serves the invite-scoped paperclip skill anonymously for active invites", async () => {
     const invite = {
       id: "invite-1",
-      companyId: "company-1",
+      productId: "company-1",
       inviteType: "company_join",
       allowedJoinTypes: "agent",
       tokenHash: "hash",
@@ -187,7 +187,7 @@ describe("cli auth routes", () => {
     });
     mockBoardAuthService.resolveBoardAccess.mockResolvedValue({
       user: { id: "user-1", name: "User One", email: "user@example.com" },
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       isInstanceAdmin: false,
     });
     mockBoardAuthService.resolveBoardActivityCompanyIds.mockResolvedValue(["company-1"]);
@@ -197,7 +197,7 @@ describe("cli auth routes", () => {
       userId: "user-1",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
     });
     const res = await request(app)
       .post("/api/cli-auth/challenges/challenge-1/approve")
@@ -213,7 +213,7 @@ describe("cli auth routes", () => {
     expect(mockLogActivity).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({
-        companyId: "company-1",
+        productId: "company-1",
         action: "board_api_key.created",
       }),
     );
@@ -237,7 +237,7 @@ describe("cli auth routes", () => {
       userId: "admin-1",
       source: "session",
       isInstanceAdmin: true,
-      companyIds: [],
+      productIds: [],
     });
     const res = await request(app)
       .post("/api/cli-auth/challenges/challenge-2/approve")
@@ -265,7 +265,7 @@ describe("cli auth routes", () => {
       keyId: "board-key-3",
       source: "board_key",
       isInstanceAdmin: true,
-      companyIds: [],
+      productIds: [],
     });
     const res = await request(app).post("/api/cli-auth/revoke-current").send({});
 
@@ -277,7 +277,7 @@ describe("cli auth routes", () => {
     expect(mockLogActivity).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({
-        companyId: "company-z",
+        productId: "company-z",
         action: "board_api_key.revoked",
       }),
     );

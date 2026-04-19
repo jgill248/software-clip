@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { testEnvironment } from "@paperclipai/adapter-gemini-local/server";
+import { testEnvironment } from "@softclipai/adapter-gemini-local/server";
 
 async function writeFakeGeminiCommand(binDir: string, argsCapturePath: string): Promise<string> {
   const commandPath = path.join(binDir, "gemini");
@@ -52,7 +52,7 @@ describe("gemini_local environment diagnostics", () => {
     await fs.rm(path.dirname(cwd), { recursive: true, force: true });
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "gemini_local",
       config: {
         command: process.execPath,
@@ -79,7 +79,7 @@ describe("gemini_local environment diagnostics", () => {
     await writeFakeGeminiCommand(binDir, argsCapturePath);
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "gemini_local",
       config: {
         command: "gemini",
@@ -115,7 +115,7 @@ describe("gemini_local environment diagnostics", () => {
     await writeQuotaGeminiCommand(binDir);
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "gemini_local",
       config: {
         command: "gemini",

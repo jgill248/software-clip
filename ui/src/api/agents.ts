@@ -12,8 +12,8 @@ import type {
   HeartbeatRun,
   Approval,
   AgentConfigRevision,
-} from "@paperclipai/shared";
-import { isUuidLike, normalizeAgentUrlKey } from "@paperclipai/shared";
+} from "@softclipai/shared";
+import { isUuidLike, normalizeAgentUrlKey } from "@softclipai/shared";
 import { ApiError, api } from "./client";
 
 export interface AgentKey {
@@ -62,31 +62,31 @@ export interface AgentPermissionUpdate {
   canAssignTasks: boolean;
 }
 
-function withCompanyScope(path: string, companyId?: string) {
-  if (!companyId) return path;
+function withCompanyScope(path: string, productId?: string) {
+  if (!productId) return path;
   const separator = path.includes("?") ? "&" : "?";
-  return `${path}${separator}companyId=${encodeURIComponent(companyId)}`;
+  return `${path}${separator}productId=${encodeURIComponent(productId)}`;
 }
 
-function agentPath(id: string, companyId?: string, suffix = "") {
-  return withCompanyScope(`/agents/${encodeURIComponent(id)}${suffix}`, companyId);
+function agentPath(id: string, productId?: string, suffix = "") {
+  return withCompanyScope(`/agents/${encodeURIComponent(id)}${suffix}`, productId);
 }
 
 export const agentsApi = {
-  list: (companyId: string) => api.get<Agent[]>(`/companies/${companyId}/agents`),
-  org: (companyId: string) => api.get<OrgNode[]>(`/companies/${companyId}/org`),
-  listConfigurations: (companyId: string) =>
-    api.get<Record<string, unknown>[]>(`/companies/${companyId}/agent-configurations`),
-  get: async (id: string, companyId?: string) => {
+  list: (productId: string) => api.get<Agent[]>(`/companies/${productId}/agents`),
+  org: (productId: string) => api.get<OrgNode[]>(`/companies/${productId}/org`),
+  listConfigurations: (productId: string) =>
+    api.get<Record<string, unknown>[]>(`/companies/${productId}/agent-configurations`),
+  get: async (id: string, productId?: string) => {
     try {
-      return await api.get<AgentDetail>(agentPath(id, companyId));
+      return await api.get<AgentDetail>(agentPath(id, productId));
     } catch (error) {
       // Backward-compat fallback: if backend shortname lookup reports ambiguity,
       // resolve using company agent list while ignoring terminated agents.
       if (
         !(error instanceof ApiError) ||
         error.status !== 409 ||
-        !companyId ||
+        !productId ||
         isUuidLike(id)
       ) {
         throw error;
@@ -95,32 +95,32 @@ export const agentsApi = {
       const urlKey = normalizeAgentUrlKey(id);
       if (!urlKey) throw error;
 
-      const agents = await api.get<Agent[]>(`/companies/${companyId}/agents`);
+      const agents = await api.get<Agent[]>(`/companies/${productId}/agents`);
       const matches = agents.filter(
         (agent) => agent.status !== "terminated" && normalizeAgentUrlKey(agent.urlKey) === urlKey,
       );
       if (matches.length !== 1) throw error;
-      return api.get<AgentDetail>(agentPath(matches[0]!.id, companyId));
+      return api.get<AgentDetail>(agentPath(matches[0]!.id, productId));
     }
   },
-  getConfiguration: (id: string, companyId?: string) =>
-    api.get<Record<string, unknown>>(agentPath(id, companyId, "/configuration")),
-  listConfigRevisions: (id: string, companyId?: string) =>
-    api.get<AgentConfigRevision[]>(agentPath(id, companyId, "/config-revisions")),
-  getConfigRevision: (id: string, revisionId: string, companyId?: string) =>
-    api.get<AgentConfigRevision>(agentPath(id, companyId, `/config-revisions/${revisionId}`)),
-  rollbackConfigRevision: (id: string, revisionId: string, companyId?: string) =>
-    api.post<Agent>(agentPath(id, companyId, `/config-revisions/${revisionId}/rollback`), {}),
-  create: (companyId: string, data: Record<string, unknown>) =>
-    api.post<Agent>(`/companies/${companyId}/agents`, data),
-  hire: (companyId: string, data: Record<string, unknown>) =>
-    api.post<AgentHireResponse>(`/companies/${companyId}/agent-hires`, data),
-  update: (id: string, data: Record<string, unknown>, companyId?: string) =>
-    api.patch<Agent>(agentPath(id, companyId), data),
-  updatePermissions: (id: string, data: AgentPermissionUpdate, companyId?: string) =>
-    api.patch<AgentDetail>(agentPath(id, companyId, "/permissions"), data),
-  instructionsBundle: (id: string, companyId?: string) =>
-    api.get<AgentInstructionsBundle>(agentPath(id, companyId, "/instructions-bundle")),
+  getConfiguration: (id: string, productId?: string) =>
+    api.get<Record<string, unknown>>(agentPath(id, productId, "/configuration")),
+  listConfigRevisions: (id: string, productId?: string) =>
+    api.get<AgentConfigRevision[]>(agentPath(id, productId, "/config-revisions")),
+  getConfigRevision: (id: string, revisionId: string, productId?: string) =>
+    api.get<AgentConfigRevision>(agentPath(id, productId, `/config-revisions/${revisionId}`)),
+  rollbackConfigRevision: (id: string, revisionId: string, productId?: string) =>
+    api.post<Agent>(agentPath(id, productId, `/config-revisions/${revisionId}/rollback`), {}),
+  create: (productId: string, data: Record<string, unknown>) =>
+    api.post<Agent>(`/companies/${productId}/agents`, data),
+  hire: (productId: string, data: Record<string, unknown>) =>
+    api.post<AgentHireResponse>(`/companies/${productId}/agent-hires`, data),
+  update: (id: string, data: Record<string, unknown>, productId?: string) =>
+    api.patch<Agent>(agentPath(id, productId), data),
+  updatePermissions: (id: string, data: AgentPermissionUpdate, productId?: string) =>
+    api.patch<AgentDetail>(agentPath(id, productId, "/permissions"), data),
+  instructionsBundle: (id: string, productId?: string) =>
+    api.get<AgentInstructionsBundle>(agentPath(id, productId, "/instructions-bundle")),
   updateInstructionsBundle: (
     id: string,
     data: {
@@ -129,58 +129,58 @@ export const agentsApi = {
       entryFile?: string;
       clearLegacyPromptTemplate?: boolean;
     },
-    companyId?: string,
-  ) => api.patch<AgentInstructionsBundle>(agentPath(id, companyId, "/instructions-bundle"), data),
-  instructionsFile: (id: string, relativePath: string, companyId?: string) =>
+    productId?: string,
+  ) => api.patch<AgentInstructionsBundle>(agentPath(id, productId, "/instructions-bundle"), data),
+  instructionsFile: (id: string, relativePath: string, productId?: string) =>
     api.get<AgentInstructionsFileDetail>(
-      agentPath(id, companyId, `/instructions-bundle/file?path=${encodeURIComponent(relativePath)}`),
+      agentPath(id, productId, `/instructions-bundle/file?path=${encodeURIComponent(relativePath)}`),
     ),
   saveInstructionsFile: (
     id: string,
     data: { path: string; content: string; clearLegacyPromptTemplate?: boolean },
-    companyId?: string,
-  ) => api.put<AgentInstructionsFileDetail>(agentPath(id, companyId, "/instructions-bundle/file"), data),
-  deleteInstructionsFile: (id: string, relativePath: string, companyId?: string) =>
+    productId?: string,
+  ) => api.put<AgentInstructionsFileDetail>(agentPath(id, productId, "/instructions-bundle/file"), data),
+  deleteInstructionsFile: (id: string, relativePath: string, productId?: string) =>
     api.delete<AgentInstructionsBundle>(
-      agentPath(id, companyId, `/instructions-bundle/file?path=${encodeURIComponent(relativePath)}`),
+      agentPath(id, productId, `/instructions-bundle/file?path=${encodeURIComponent(relativePath)}`),
     ),
-  pause: (id: string, companyId?: string) => api.post<Agent>(agentPath(id, companyId, "/pause"), {}),
-  resume: (id: string, companyId?: string) => api.post<Agent>(agentPath(id, companyId, "/resume"), {}),
-  terminate: (id: string, companyId?: string) => api.post<Agent>(agentPath(id, companyId, "/terminate"), {}),
-  remove: (id: string, companyId?: string) => api.delete<{ ok: true }>(agentPath(id, companyId)),
-  listKeys: (id: string, companyId?: string) => api.get<AgentKey[]>(agentPath(id, companyId, "/keys")),
-  skills: (id: string, companyId?: string) =>
-    api.get<AgentSkillSnapshot>(agentPath(id, companyId, "/skills")),
-  syncSkills: (id: string, desiredSkills: string[], companyId?: string) =>
-    api.post<AgentSkillSnapshot>(agentPath(id, companyId, "/skills/sync"), { desiredSkills }),
-  createKey: (id: string, name: string, companyId?: string) =>
-    api.post<AgentKeyCreated>(agentPath(id, companyId, "/keys"), { name }),
-  revokeKey: (agentId: string, keyId: string, companyId?: string) =>
-    api.delete<{ ok: true }>(agentPath(agentId, companyId, `/keys/${encodeURIComponent(keyId)}`)),
-  runtimeState: (id: string, companyId?: string) =>
-    api.get<AgentRuntimeState>(agentPath(id, companyId, "/runtime-state")),
-  taskSessions: (id: string, companyId?: string) =>
-    api.get<AgentTaskSession[]>(agentPath(id, companyId, "/task-sessions")),
-  resetSession: (id: string, taskKey?: string | null, companyId?: string) =>
-    api.post<void>(agentPath(id, companyId, "/runtime-state/reset-session"), { taskKey: taskKey ?? null }),
-  adapterModels: (companyId: string, type: string) =>
+  pause: (id: string, productId?: string) => api.post<Agent>(agentPath(id, productId, "/pause"), {}),
+  resume: (id: string, productId?: string) => api.post<Agent>(agentPath(id, productId, "/resume"), {}),
+  terminate: (id: string, productId?: string) => api.post<Agent>(agentPath(id, productId, "/terminate"), {}),
+  remove: (id: string, productId?: string) => api.delete<{ ok: true }>(agentPath(id, productId)),
+  listKeys: (id: string, productId?: string) => api.get<AgentKey[]>(agentPath(id, productId, "/keys")),
+  skills: (id: string, productId?: string) =>
+    api.get<AgentSkillSnapshot>(agentPath(id, productId, "/skills")),
+  syncSkills: (id: string, desiredSkills: string[], productId?: string) =>
+    api.post<AgentSkillSnapshot>(agentPath(id, productId, "/skills/sync"), { desiredSkills }),
+  createKey: (id: string, name: string, productId?: string) =>
+    api.post<AgentKeyCreated>(agentPath(id, productId, "/keys"), { name }),
+  revokeKey: (agentId: string, keyId: string, productId?: string) =>
+    api.delete<{ ok: true }>(agentPath(agentId, productId, `/keys/${encodeURIComponent(keyId)}`)),
+  runtimeState: (id: string, productId?: string) =>
+    api.get<AgentRuntimeState>(agentPath(id, productId, "/runtime-state")),
+  taskSessions: (id: string, productId?: string) =>
+    api.get<AgentTaskSession[]>(agentPath(id, productId, "/task-sessions")),
+  resetSession: (id: string, taskKey?: string | null, productId?: string) =>
+    api.post<void>(agentPath(id, productId, "/runtime-state/reset-session"), { taskKey: taskKey ?? null }),
+  adapterModels: (productId: string, type: string) =>
     api.get<AdapterModel[]>(
-      `/companies/${encodeURIComponent(companyId)}/adapters/${encodeURIComponent(type)}/models`,
+      `/companies/${encodeURIComponent(productId)}/adapters/${encodeURIComponent(type)}/models`,
     ),
-  detectModel: (companyId: string, type: string) =>
+  detectModel: (productId: string, type: string) =>
     api.get<DetectedAdapterModel | null>(
-      `/companies/${encodeURIComponent(companyId)}/adapters/${encodeURIComponent(type)}/detect-model`,
+      `/companies/${encodeURIComponent(productId)}/adapters/${encodeURIComponent(type)}/detect-model`,
     ),
   testEnvironment: (
-    companyId: string,
+    productId: string,
     type: string,
     data: { adapterConfig: Record<string, unknown> },
   ) =>
     api.post<AdapterEnvironmentTestResult>(
-      `/companies/${companyId}/adapters/${type}/test-environment`,
+      `/companies/${productId}/adapters/${type}/test-environment`,
       data,
     ),
-  invoke: (id: string, companyId?: string) => api.post<HeartbeatRun>(agentPath(id, companyId, "/heartbeat/invoke"), {}),
+  invoke: (id: string, productId?: string) => api.post<HeartbeatRun>(agentPath(id, productId, "/heartbeat/invoke"), {}),
   wakeup: (
     id: string,
     data: {
@@ -190,10 +190,10 @@ export const agentsApi = {
       payload?: Record<string, unknown> | null;
       idempotencyKey?: string | null;
     },
-    companyId?: string,
-  ) => api.post<AgentWakeupResponse>(agentPath(id, companyId, "/wakeup"), data),
-  loginWithClaude: (id: string, companyId?: string) =>
-    api.post<ClaudeLoginResult>(agentPath(id, companyId, "/claude-login"), {}),
+    productId?: string,
+  ) => api.post<AgentWakeupResponse>(agentPath(id, productId, "/wakeup"), data),
+  loginWithClaude: (id: string, productId?: string) =>
+    api.post<ClaudeLoginResult>(agentPath(id, productId, "/claude-login"), {}),
   availableSkills: () =>
     api.get<{ skills: AvailableSkill[] }>("/skills/available"),
 };

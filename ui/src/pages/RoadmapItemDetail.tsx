@@ -19,7 +19,7 @@ import { cn, projectUrl } from "../lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, SlidersHorizontal } from "lucide-react";
-import type { Goal, Project } from "@paperclipai/shared";
+import type { Goal, Project } from "@softclipai/shared";
 
 interface GoalPropertiesToggleButtonProps {
   panelVisible: boolean;
@@ -63,7 +63,7 @@ export function RoadmapItemDetail() {
     queryFn: () => goalsApi.get(goalId!),
     enabled: !!goalId
   });
-  const resolvedCompanyId = goal?.companyId ?? selectedCompanyId;
+  const resolvedCompanyId = goal?.productId ?? selectedCompanyId;
 
   const { data: allGoals } = useQuery({
     queryKey: queryKeys.goals.list(resolvedCompanyId!),
@@ -78,9 +78,9 @@ export function RoadmapItemDetail() {
   });
 
   useEffect(() => {
-    if (!goal?.companyId || goal.companyId === selectedCompanyId) return;
-    setSelectedCompanyId(goal.companyId, { source: "route_sync" });
-  }, [goal?.companyId, selectedCompanyId, setSelectedCompanyId]);
+    if (!goal?.productId || goal.productId === selectedCompanyId) return;
+    setSelectedCompanyId(goal.productId, { source: "route_sync" });
+  }, [goal?.productId, selectedCompanyId, setSelectedCompanyId]);
 
   const updateGoal = useMutation({
     mutationFn: (data: Record<string, unknown>) =>

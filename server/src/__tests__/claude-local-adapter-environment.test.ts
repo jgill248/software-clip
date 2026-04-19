@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { testEnvironment } from "@paperclipai/adapter-claude-local/server";
+import { testEnvironment } from "@softclipai/adapter-claude-local/server";
 
 const ORIGINAL_ANTHROPIC = process.env.ANTHROPIC_API_KEY;
 const ORIGINAL_BEDROCK = process.env.CLAUDE_CODE_USE_BEDROCK;
@@ -33,7 +33,7 @@ describe("claude_local environment diagnostics", () => {
     process.env.ANTHROPIC_API_KEY = "sk-test-host";
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "claude_local",
       config: {
         command: process.execPath,
@@ -58,7 +58,7 @@ describe("claude_local environment diagnostics", () => {
     delete process.env.ANTHROPIC_BEDROCK_BASE_URL;
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "claude_local",
       config: {
         command: process.execPath,
@@ -85,7 +85,7 @@ describe("claude_local environment diagnostics", () => {
     process.env.CLAUDE_CODE_USE_BEDROCK = "1";
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "claude_local",
       config: {
         command: process.execPath,
@@ -112,7 +112,7 @@ describe("claude_local environment diagnostics", () => {
     delete process.env.CLAUDE_CODE_USE_BEDROCK;
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "claude_local",
       config: {
         command: process.execPath,
@@ -142,7 +142,7 @@ describe("claude_local environment diagnostics", () => {
     process.env.CLAUDE_CODE_USE_BEDROCK = "1";
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "claude_local",
       config: {
         command: process.execPath,
@@ -166,7 +166,7 @@ describe("claude_local environment diagnostics", () => {
     await fs.rm(path.dirname(cwd), { recursive: true, force: true });
 
     const result = await testEnvironment({
-      companyId: "company-1",
+      productId: "company-1",
       adapterType: "claude_local",
       config: {
         command: process.execPath,

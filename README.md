@@ -44,7 +44,7 @@ and a dev-team org chart.
 
 |        | Step                | Example                                                                         |
 | ------ | ------------------- | ------------------------------------------------------------------------------- |
-| **01** | Scaffold the team   | `npx paperclipai product-creator` — PO + architects + designer + engineer + QA  |
+| **01** | Scaffold the team   | `npx softclip product-creator` — PO + architects + designer + engineer + QA     |
 | **02** | Point at your repo  | Wire in Claude Code, Codex, Cursor, or any agent that can receive a heartbeat   |
 | **03** | Plan the sprint     | PO drafts the roadmap, writes acceptance criteria, commits issues to a sprint   |
 | **04** | Ship                | Engineer implements, QA verifies DoD, PO approves the PR review — issue closes  |
@@ -184,26 +184,29 @@ Softclip handles the hard orchestration details correctly.
 Open source. Self-hosted. No Softclip account required.
 
 ```bash
-npx paperclipai onboard --yes
+npx softclip onboard --yes
 ```
 
 That quickstart path defaults to trusted local loopback mode for the fastest first run.
 To start in authenticated/private mode instead, choose a bind preset explicitly:
 
 ```bash
-npx paperclipai onboard --yes --bind lan
+npx softclip onboard --yes --bind lan
 # or:
-npx paperclipai onboard --yes --bind tailnet
+npx softclip onboard --yes --bind tailnet
 ```
 
 If you already have Softclip configured, rerunning `onboard` keeps the existing config in place.
-Use `paperclipai configure` to edit settings.
+Use `softclip configure` to edit settings.
+
+> The CLI is also available as `paperclipai` (the npm package name during the rename).
+> Both `softclip` and `paperclipai` point at the same binary; new docs use `softclip`.
 
 Point Softclip at a team-shared Postgres (see [docs/start/team-postgres.md](docs/start/team-postgres.md)):
 
 ```bash
-paperclipai db connect          # interactive — or pass --url for non-interactive
-paperclipai db doctor           # verify migrations, row counts, privileges
+softclip db connect          # interactive — or pass --url for non-interactive
+softclip db doctor           # verify migrations, row counts, privileges
 ```
 
 Or manually:
@@ -285,9 +288,9 @@ See [doc/DEVELOPING.md](doc/DEVELOPING.md) for the full development guide.
 - ✅ Code / design / architecture reviews as first-class approvals
 - ✅ Seeded dev-team ceremonies (standup, planning, review, retro, grooming)
 - ✅ Team-shared Postgres (`softclip db connect` / `db doctor`)
-- ⚪ UI for acceptance criteria, sprints, reviews
-- ⚪ Full Paperclip → Softclip code rename (package names, DB tables)
-- ⚪ Drop budgets / finance / company governance (dev teams don't need dollar-budgets)
+- ✅ UI for acceptance criteria, sprints, reviews
+- ✅ Drop budgets / finance / company governance (dev teams don't need dollar-budgets)
+- 🔄 Full Paperclip → Softclip code rename (package names, DB tables) — `softclip` CLI shipped; npm scope + DB rename in progress
 - ⚪ Cloud / Sandbox agents (e.g. Cursor / e2b agents)
 - ⚪ Artifacts & Work Products
 - ⚪ Memory / Knowledge

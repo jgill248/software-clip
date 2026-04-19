@@ -111,7 +111,7 @@ import {
   type Issue,
   type IssueAttachment,
   type IssueComment,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 
 type CommentReassignment = IssueCommentReassignment;
 type IssueDetailComment = (IssueComment | OptimisticIssueComment) & {
@@ -237,7 +237,7 @@ function mergeOptimisticFeedbackVote(
     ...existingVotes,
     {
       id: `optimistic:${nextVote.targetType}:${nextVote.targetId}`,
-      companyId: "",
+      productId: "",
       issueId: nextVote.issueId,
       targetType: nextVote.targetType,
       targetId: nextVote.targetId,
@@ -495,7 +495,7 @@ function InboxMobileToolbar({
 
 type IssueDetailChatTabProps = {
   issueId: string;
-  companyId: string;
+  productId: string;
   projectId: string | null;
   issueStatus: Issue["status"];
   executionRunId: string | null;
@@ -533,7 +533,7 @@ type IssueDetailChatTabProps = {
 
 const IssueDetailChatTab = memo(function IssueDetailChatTab({
   issueId,
-  companyId,
+  productId,
   projectId,
   issueStatus,
   executionRunId,
@@ -688,7 +688,7 @@ const IssueDetailChatTab = memo(function IssueDetailChatTab({
         timelineEvents={timelineEvents}
         liveRuns={resolvedLiveRuns}
         activeRun={resolvedActiveRun}
-        companyId={companyId}
+        productId={productId}
         projectId={projectId}
         issueStatus={issueStatus}
         agentMap={agentMap}
@@ -912,7 +912,7 @@ export function IssueDetail() {
     }),
     enabled: !!issueId,
   });
-  const resolvedCompanyId = issue?.companyId ?? selectedCompanyId;
+  const resolvedCompanyId = issue?.productId ?? selectedCompanyId;
   const commentComposerDisabledReason = useMemo(() => {
     if (!issue?.currentExecutionWorkspace || !isClosedIsolatedExecutionWorkspace(issue.currentExecutionWorkspace)) {
       return null;
@@ -1023,13 +1023,13 @@ export function IssueDetail() {
   const feedbackDataSharingPreference = instanceGeneralSettings?.feedbackDataSharingPreference ?? "prompt";
   const { orderedProjects } = useProjectOrder({
     projects: projects ?? [],
-    companyId: selectedCompanyId,
+    productId: selectedCompanyId,
     userId: currentUserId,
   });
   const { slots: issuePluginDetailSlots } = usePluginSlots({
     slotTypes: ["detailTab"],
     entityType: "issue",
-    companyId: resolvedCompanyId,
+    productId: resolvedCompanyId,
     enabled: !!resolvedCompanyId,
   });
   const issuePluginTabItems = useMemo(
@@ -1349,7 +1349,7 @@ export function IssueDetail() {
       const queuedComment = !interrupt ? readIssueRunStateFromCache(queryClient, issueId!).runningIssueRun : null;
       const optimisticComment = issue
         ? createOptimisticIssueComment({
-            companyId: issue.companyId,
+            productId: issue.productId,
             issueId: issue.id,
             body,
             authorUserId: currentUserId,
@@ -1459,7 +1459,7 @@ export function IssueDetail() {
       const queuedComment = !interrupt ? readIssueRunStateFromCache(queryClient, issueId!).runningIssueRun : null;
       const optimisticComment = issue
         ? createOptimisticIssueComment({
-            companyId: issue.companyId,
+            productId: issue.productId,
             issueId: issue.id,
             body,
             authorUserId: currentUserId,
@@ -2387,7 +2387,7 @@ export function IssueDetail() {
         slotTypes={["toolbarButton", "contextMenuItem"]}
         entityType="issue"
         context={{
-          companyId: issue.companyId,
+          productId: issue.productId,
           projectId: issue.projectId ?? null,
           entityId: issue.id,
           entityType: "issue",
@@ -2401,7 +2401,7 @@ export function IssueDetail() {
         placementZones={["toolbarButton"]}
         entityType="issue"
         context={{
-          companyId: issue.companyId,
+          productId: issue.productId,
           projectId: issue.projectId ?? null,
           entityId: issue.id,
           entityType: "issue",
@@ -2414,7 +2414,7 @@ export function IssueDetail() {
         slotTypes={["taskDetailView"]}
         entityType="issue"
         context={{
-          companyId: issue.companyId,
+          productId: issue.productId,
           projectId: issue.projectId ?? null,
           entityId: issue.id,
           entityType: "issue",
@@ -2650,7 +2650,7 @@ export function IssueDetail() {
           {detailTab === "chat" ? (
             <IssueDetailChatTab
               issueId={issue.id}
-              companyId={issue.companyId}
+              productId={issue.productId}
               projectId={issue.projectId ?? null}
               issueStatus={issue.status}
               executionRunId={issue.executionRunId ?? null}
@@ -2704,7 +2704,7 @@ export function IssueDetail() {
             <PluginSlotMount
               slot={activePluginTab.slot}
               context={{
-                companyId: issue.companyId,
+                productId: issue.productId,
                 projectId: issue.projectId ?? null,
                 entityId: issue.id,
                 entityType: "issue",

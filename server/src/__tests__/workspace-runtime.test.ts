@@ -9,14 +9,14 @@ import { parse as parseEnvContents } from "dotenv";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
   agents,
-  companies,
+  products,
   createDb,
   executionWorkspaces,
   heartbeatRuns,
   projectWorkspaces,
   projects,
   workspaceRuntimeServices,
-} from "@paperclipai/db";
+} from "@softclipai/db";
 import { eq } from "drizzle-orm";
 import {
   buildWorkspaceRuntimeDesiredStatePatch,
@@ -39,7 +39,7 @@ import {
 } from "../services/workspace-runtime.ts";
 import { writeLocalServiceRegistryRecord } from "../services/local-service-supervisor.ts";
 import { resolvePaperclipConfigPath } from "../paths.ts";
-import type { WorkspaceOperation } from "@paperclipai/shared";
+import type { WorkspaceOperation } from "@softclipai/shared";
 import type { WorkspaceOperationRecorder } from "../services/workspace-operations.ts";
 import {
   getEmbeddedPostgresTestSupport,
@@ -130,7 +130,7 @@ function createWorkspaceOperationRecorderDouble() {
       });
       return {
         id: `op-${operations.length}`,
-        companyId: "company-1",
+        productId: "company-1",
         executionWorkspaceId,
         heartbeatRunId: "run-1",
         phase: input.phase,
@@ -210,21 +210,21 @@ describe("ensureServerWorkspaceLinksCurrent", () => {
     await fs.writeFile(
       path.join(repoRoot, "server", "package.json"),
       JSON.stringify({
-        name: "@paperclipai/server",
+        name: "@softclipai/server",
         dependencies: {
-          "@paperclipai/db": "workspace:*",
+          "@softclipai/db": "workspace:*",
         },
       }),
       "utf8",
     );
     await fs.writeFile(
       path.join(expectedPackageDir, "package.json"),
-      JSON.stringify({ name: "@paperclipai/db" }),
+      JSON.stringify({ name: "@softclipai/db" }),
       "utf8",
     );
     await fs.writeFile(
       path.join(stalePackageDir, "package.json"),
-      JSON.stringify({ name: "@paperclipai/db" }),
+      JSON.stringify({ name: "@softclipai/db" }),
       "utf8",
     );
     await fs.symlink(stalePackageDir, path.join(serverNodeModulesScopeDir, "db"));
@@ -246,16 +246,16 @@ describe("ensureServerWorkspaceLinksCurrent", () => {
     await fs.writeFile(
       path.join(repoRoot, "server", "package.json"),
       JSON.stringify({
-        name: "@paperclipai/server",
+        name: "@softclipai/server",
         dependencies: {
-          "@paperclipai/db": "workspace:*",
+          "@softclipai/db": "workspace:*",
         },
       }),
       "utf8",
     );
     await fs.writeFile(
       path.join(expectedPackageDir, "package.json"),
-      JSON.stringify({ name: "@paperclipai/db" }),
+      JSON.stringify({ name: "@softclipai/db" }),
       "utf8",
     );
     await fs.symlink(expectedPackageDir, path.join(serverNodeModulesScopeDir, "db"));
@@ -279,21 +279,21 @@ describe("ensureServerWorkspaceLinksCurrent", () => {
     await fs.writeFile(
       path.join(repoRoot, "server", "package.json"),
       JSON.stringify({
-        name: "@paperclipai/server",
+        name: "@softclipai/server",
         dependencies: {
-          "@paperclipai/db": "workspace:*",
+          "@softclipai/db": "workspace:*",
         },
       }),
       "utf8",
     );
     await fs.writeFile(
       path.join(expectedPackageDir, "package.json"),
-      JSON.stringify({ name: "@paperclipai/db" }),
+      JSON.stringify({ name: "@softclipai/db" }),
       "utf8",
     );
     await fs.writeFile(
       path.join(stalePackageDir, "package.json"),
-      JSON.stringify({ name: "@paperclipai/db" }),
+      JSON.stringify({ name: "@softclipai/db" }),
       "utf8",
     );
     await fs.symlink(stalePackageDir, path.join(serverNodeModulesScopeDir, "db"));
@@ -330,7 +330,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -363,7 +363,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -402,7 +402,7 @@ describe("realizeExecutionWorkspace", () => {
         agent: {
           id: "agent-1",
           name: "Codex Coder",
-          companyId: "company-1",
+          productId: "company-1",
         },
       }),
     ).rejects.toThrow(/not a reusable git worktree \(path is not registered in `git worktree list`\)\./);
@@ -439,7 +439,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -475,7 +475,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -505,7 +505,7 @@ describe("realizeExecutionWorkspace", () => {
         agent: {
           id: "agent-1",
           name: "Codex Coder",
-          companyId: "company-1",
+          productId: "company-1",
         },
       }),
     ).rejects.toThrow(/not a reusable git worktree \(worktree HEAD is on "unexpected-branch" instead of "PAP-447-add-worktree-support"\)\./);
@@ -544,7 +544,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       recorder,
     });
@@ -589,7 +589,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -626,7 +626,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -675,7 +675,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -713,7 +713,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -759,7 +759,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -803,7 +803,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -921,7 +921,7 @@ describe("realizeExecutionWorkspace", () => {
         agent: {
           id: "agent-1",
           name: "Codex Coder",
-          companyId: "company-1",
+          productId: "company-1",
         },
       });
 
@@ -1047,7 +1047,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -1127,7 +1127,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -1355,7 +1355,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -1412,7 +1412,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       recorder,
     });
@@ -1466,7 +1466,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       recorder,
     });
@@ -1514,7 +1514,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -1572,7 +1572,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -1609,7 +1609,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -1661,7 +1661,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -1698,7 +1698,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -1744,7 +1744,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       recorder,
     });
@@ -1796,7 +1796,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       recorder,
     });
@@ -1834,7 +1834,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -1896,7 +1896,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -1963,7 +1963,7 @@ describe("realizeExecutionWorkspace", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
     });
 
@@ -2049,7 +2049,7 @@ describe("ensureRuntimeServicesForRun", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       issue: null,
       workspace,
@@ -2068,7 +2068,7 @@ describe("ensureRuntimeServicesForRun", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       issue: null,
       workspace,
@@ -2092,7 +2092,7 @@ describe("ensureRuntimeServicesForRun", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       issue: null,
       workspace,
@@ -2162,7 +2162,7 @@ describe("ensureRuntimeServicesForRun", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       issue: null,
       workspace: primaryWorkspace,
@@ -2175,7 +2175,7 @@ describe("ensureRuntimeServicesForRun", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       issue: null,
       workspace: executionWorkspace,
@@ -2235,7 +2235,7 @@ describe("ensureRuntimeServicesForRun", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       issue: null,
       workspace,
@@ -2291,7 +2291,7 @@ describe("ensureRuntimeServicesForRun", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       issue: null,
       workspace,
@@ -2350,7 +2350,7 @@ describe("ensureRuntimeServicesForRun", () => {
       agent: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       issue: null,
       workspace: siblingWorkspace,
@@ -2401,7 +2401,7 @@ describe("ensureRuntimeServicesForRun", () => {
       actor: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       issue: null,
       workspace,
@@ -2462,7 +2462,7 @@ describe("ensureRuntimeServicesForRun", () => {
       actor: {
         id: "agent-1",
         name: "Codex Coder",
-        companyId: "company-1",
+        productId: "company-1",
       },
       issue: null,
       workspace,
@@ -2707,7 +2707,7 @@ describeEmbeddedPostgres("workspace runtime startup reconciliation", () => {
     await db.delete(projects);
     await db.delete(heartbeatRuns);
     await db.delete(agents);
-    await db.delete(companies);
+    await db.delete(products);
   });
 
   it("adopts a live auto-port shared service after runtime state is reset", async () => {
@@ -2716,19 +2716,19 @@ describeEmbeddedPostgres("workspace runtime startup reconciliation", () => {
     process.env.PAPERCLIP_HOME = paperclipHome;
     process.env.PAPERCLIP_INSTANCE_ID = `runtime-reconcile-${randomUUID()}`;
 
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const runId = randomUUID();
     const executionWorkspaceId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await db.insert(agents).values({
       id: agentId,
-      companyId,
+      productId,
       name: "Codex Coder",
       role: "engineer",
       status: "active",
@@ -2739,7 +2739,7 @@ describeEmbeddedPostgres("workspace runtime startup reconciliation", () => {
     });
     await db.insert(heartbeatRuns).values({
       id: runId,
-      companyId,
+      productId,
       agentId,
       invocationSource: "manual",
       status: "running",
@@ -2760,7 +2760,7 @@ describeEmbeddedPostgres("workspace runtime startup reconciliation", () => {
       agent: {
         id: agentId,
         name: "Codex Coder",
-        companyId,
+        productId,
       },
       issue: null,
       workspace,
@@ -2818,27 +2818,27 @@ describeEmbeddedPostgres("workspace runtime startup reconciliation", () => {
   });
 
   it("marks persisted local services stopped when the registry pid is stale", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const runtimeServiceId = randomUUID();
     const startedAt = new Date("2026-04-04T17:00:00.000Z");
     const updatedAt = new Date("2026-04-04T17:10:00.000Z");
     const projectId = randomUUID();
     const projectWorkspaceId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await db.insert(projects).values({
       id: projectId,
-      companyId,
+      productId,
       name: "Runtime reconcile test",
       status: "in_progress",
     });
     await db.insert(projectWorkspaces).values({
       id: projectWorkspaceId,
-      companyId,
+      productId,
       projectId,
       name: "Primary",
       sourceType: "local_path",
@@ -2847,7 +2847,7 @@ describeEmbeddedPostgres("workspace runtime startup reconciliation", () => {
     });
     await db.insert(workspaceRuntimeServices).values({
       id: runtimeServiceId,
-      companyId,
+      productId,
       projectId,
       projectWorkspaceId,
       executionWorkspaceId: null,
@@ -2908,20 +2908,20 @@ describeEmbeddedPostgres("workspace runtime startup reconciliation", () => {
 
   it("persists controlled execution workspace stops as stopped", async () => {
     const workspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-runtime-stop-persisted-"));
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const projectId = randomUUID();
     const runId = randomUUID();
     const executionWorkspaceId = randomUUID();
 
-    await db.insert(companies).values({
-      id: companyId,
+    await db.insert(products).values({
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await db.insert(agents).values({
       id: agentId,
-      companyId,
+      productId,
       name: "Codex Coder",
       role: "engineer",
       status: "active",
@@ -2932,13 +2932,13 @@ describeEmbeddedPostgres("workspace runtime startup reconciliation", () => {
     });
     await db.insert(projects).values({
       id: projectId,
-      companyId,
+      productId,
       name: "Runtime stop test",
       status: "active",
     });
     await db.insert(executionWorkspaces).values({
       id: executionWorkspaceId,
-      companyId,
+      productId,
       projectId,
       mode: "isolated_workspace",
       strategyType: "git_worktree",
@@ -2950,7 +2950,7 @@ describeEmbeddedPostgres("workspace runtime startup reconciliation", () => {
     });
     await db.insert(heartbeatRuns).values({
       id: runId,
-      companyId,
+      productId,
       agentId,
       invocationSource: "manual",
       status: "running",
@@ -2971,7 +2971,7 @@ describeEmbeddedPostgres("workspace runtime startup reconciliation", () => {
       agent: {
         id: agentId,
         name: "Codex Coder",
-        companyId,
+        productId,
       },
       issue: null,
       workspace,
@@ -3038,7 +3038,7 @@ describe("normalizeAdapterManagedRuntimeServices", () => {
       agent: {
         id: "agent-1",
         name: "Gateway Agent",
-        companyId: "company-1",
+        productId: "company-1",
       },
       issue: {
         id: "issue-1",
@@ -3063,7 +3063,7 @@ describe("normalizeAdapterManagedRuntimeServices", () => {
       agent: {
         id: "agent-1",
         name: "Gateway Agent",
-        companyId: "company-1",
+        productId: "company-1",
       },
       issue: {
         id: "issue-1",
@@ -3084,7 +3084,7 @@ describe("normalizeAdapterManagedRuntimeServices", () => {
 
     expect(first).toHaveLength(1);
     expect(first[0]).toMatchObject({
-      companyId: "company-1",
+      productId: "company-1",
       projectId: "project-1",
       projectWorkspaceId: "workspace-1",
       executionWorkspaceId: null,
@@ -3107,7 +3107,7 @@ describe("normalizeAdapterManagedRuntimeServices", () => {
       agent: {
         id: "agent-1",
         name: "Gateway Agent",
-        companyId: "company-1",
+        productId: "company-1",
       },
       issue: null,
       workspace,

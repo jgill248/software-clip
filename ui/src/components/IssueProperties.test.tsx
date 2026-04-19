@@ -3,9 +3,9 @@
 import { act } from "react";
 import type { ComponentProps, ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import type { IssueExecutionPolicy, IssueExecutionState } from "@paperclipai/shared";
+import type { IssueExecutionPolicy, IssueExecutionState } from "@softclipai/shared";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { Issue } from "@paperclipai/shared";
+import type { Issue } from "@softclipai/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { IssueProperties } from "./IssueProperties";
 
@@ -106,7 +106,7 @@ async function flush() {
 function createIssue(overrides: Partial<Issue> = {}): Issue {
   return {
     id: "issue-1",
-    companyId: "company-1",
+    productId: "company-1",
     projectId: null,
     projectWorkspaceId: null,
     goalId: null,
@@ -235,7 +235,7 @@ describe("IssueProperties", () => {
   it("shows an add-label button when labels already exist and opens the picker", async () => {
     const root = renderProperties(container, {
       issue: createIssue({
-        labels: [{ id: "label-1", companyId: "company-1", name: "Bug", color: "#ef4444", createdAt: new Date("2026-04-06T12:00:00.000Z"), updatedAt: new Date("2026-04-06T12:00:00.000Z") }],
+        labels: [{ id: "label-1", productId: "company-1", name: "Bug", color: "#ef4444", createdAt: new Date("2026-04-06T12:00:00.000Z"), updatedAt: new Date("2026-04-06T12:00:00.000Z") }],
         labelIds: ["label-1"],
       }),
       childIssues: [],

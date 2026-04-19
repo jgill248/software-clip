@@ -107,7 +107,7 @@ export function Sprints() {
       <CreateSprintDialog
         open={createOpen}
         onOpenChange={setCreateOpen}
-        companyId={selectedCompanyId}
+        productId={selectedCompanyId}
       />
     </div>
   );
@@ -145,11 +145,11 @@ function SprintRow({ sprint }: { sprint: Sprint }) {
 function CreateSprintDialog({
   open,
   onOpenChange,
-  companyId,
+  productId,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  companyId: string;
+  productId: string;
 }) {
   const queryClient = useQueryClient();
   const { pushToast } = useToastActions();
@@ -160,14 +160,14 @@ function CreateSprintDialog({
 
   const createMutation = useMutation({
     mutationFn: () =>
-      sprintsApi.create(companyId, {
+      sprintsApi.create(productId, {
         name: name.trim(),
         goal: goal.trim() || null,
         startsAt: startsAt ? new Date(startsAt).toISOString() : null,
         endsAt: endsAt ? new Date(endsAt).toISOString() : null,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.sprints.list(companyId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.sprints.list(productId) });
       onOpenChange(false);
       setName("");
       setGoal("");

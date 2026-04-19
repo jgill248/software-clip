@@ -22,8 +22,8 @@
 import type {
   PaperclipPluginManifestV1,
   PluginToolDeclaration,
-} from "@paperclipai/shared";
-import type { ToolRunContext, ToolResult, ExecuteToolParams } from "@paperclipai/plugin-sdk";
+} from "@softclipai/shared";
+import type { ToolRunContext, ToolResult, ExecuteToolParams } from "@softclipai/plugin-sdk";
 import type { PluginWorkerManager } from "./plugin-worker-manager.js";
 import { logger } from "../middleware/logger.js";
 
@@ -220,7 +220,7 @@ export interface PluginToolRegistry {
  * const result = await toolRegistry.executeTool(
  *   "acme.linear:search-issues",
  *   { query: "auth bug" },
- *   { agentId: "agent-1", runId: "run-1", companyId: "co-1", projectId: "proj-1" },
+ *   { agentId: "agent-1", runId: "run-1", productId: "co-1", projectId: "proj-1" },
  * );
  * ```
  */

@@ -1,4 +1,4 @@
-import type { Agent } from "@paperclipai/shared";
+import type { Agent } from "@softclipai/shared";
 
 export const AGENT_ORDER_UPDATED_EVENT = "paperclip:agent-order-updated";
 const AGENT_ORDER_STORAGE_PREFIX = "paperclip.agentOrder";
@@ -20,8 +20,8 @@ function resolveUserId(userId: string | null | undefined): string {
   return trimmed.length > 0 ? trimmed : ANONYMOUS_USER_ID;
 }
 
-export function getAgentOrderStorageKey(companyId: string, userId: string | null | undefined): string {
-  return `${AGENT_ORDER_STORAGE_PREFIX}:${companyId}:${resolveUserId(userId)}`;
+export function getAgentOrderStorageKey(productId: string, userId: string | null | undefined): string {
+  return `${AGENT_ORDER_STORAGE_PREFIX}:${productId}:${resolveUserId(userId)}`;
 }
 
 export function readAgentOrder(storageKey: string): string[] {

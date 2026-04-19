@@ -1,6 +1,6 @@
 import { and, asc, eq, inArray } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
-import { approvalComments, approvals } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
+import { approvalComments, approvals } from "@softclipai/db";
 import { notFound, unprocessable } from "../errors.js";
 import { redactCurrentUserText } from "../log-redaction.js";
 import { agentService } from "./agents.js";
@@ -77,8 +77,8 @@ export function approvalService(db: Db) {
   }
 
   return {
-    list: (companyId: string, status?: string) => {
-      const conditions = [eq(approvals.companyId, companyId)];
+    list: (productId: string, status?: string) => {
+      const conditions = [eq(approvals.productId, productId)];
       if (status) conditions.push(eq(approvals.status, status));
       return db.select().from(approvals).where(and(...conditions));
     },
@@ -90,10 +90,10 @@ export function approvalService(db: Db) {
         .where(eq(approvals.id, id))
         .then((rows) => rows[0] ?? null),
 
-    create: (companyId: string, data: Omit<typeof approvals.$inferInsert, "companyId">) =>
+    create: (productId: string, data: Omit<typeof approvals.$inferInsert, "productId">) =>
       db
         .insert(approvals)
-        .values({ ...data, companyId })
+        .values({ ...data, productId })
         .returning()
         .then((rows) => rows[0]),
 
@@ -114,7 +114,7 @@ export function approvalService(db: Db) {
           await agentsSvc.activatePendingApproval(payloadAgentId);
           hireApprovedAgentId = payloadAgentId;
         } else {
-          const created = await agentsSvc.create(updated.companyId, {
+          const created = await agentsSvc.create(updated.productId, {
             name: String(payload.name ?? "New Agent"),
             role: String(payload.role ?? "general"),
             title: typeof payload.title === "string" ? payload.title : null,
@@ -144,7 +144,7 @@ export function approvalService(db: Db) {
           // value. Budget governance is removed; the value is still
           // accepted on the agent row but no policy is persisted.
           void notifyHireApproved(db, {
-            companyId: updated.companyId,
+            productId: updated.productId,
             agentId: hireApprovedAgentId,
             source: "approval",
             sourceId: id,
@@ -227,7 +227,7 @@ export function approvalService(db: Db) {
         .where(
           and(
             eq(approvalComments.approvalId, approvalId),
-            eq(approvalComments.companyId, existing.companyId),
+            eq(approvalComments.productId, existing.productId),
           ),
         )
         .orderBy(asc(approvalComments.createdAt))
@@ -247,7 +247,7 @@ export function approvalService(db: Db) {
       return db
         .insert(approvalComments)
         .values({
-          companyId: existing.companyId,
+          productId: existing.productId,
           approvalId,
           authorAgentId: actor.agentId ?? null,
           authorUserId: actor.userId ?? null,

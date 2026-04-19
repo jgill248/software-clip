@@ -25,17 +25,17 @@ import { fileURLToPath } from "node:url";
 import { Router } from "express";
 import type { Request } from "express";
 import { and, desc, eq, gte } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
-import { companies, pluginLogs, pluginWebhookDeliveries } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
+import { products, pluginLogs, pluginWebhookDeliveries } from "@softclipai/db";
 import type {
   PluginStatus,
   PaperclipPluginManifestV1,
   PluginBridgeErrorCode,
   PluginLauncherRenderContextSnapshot,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import {
   PLUGIN_STATUSES,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import { pluginRegistryService } from "../services/plugin-registry.js";
 import { pluginLifecycleManager } from "../services/plugin-lifecycle.js";
 import { getPluginUiContributionMetadata, pluginLoader } from "../services/plugin-loader.js";
@@ -46,8 +46,8 @@ import type { PluginJobStore } from "../services/plugin-job-store.js";
 import type { PluginWorkerManager } from "../services/plugin-worker-manager.js";
 import type { PluginStreamBus } from "../services/plugin-stream-bus.js";
 import type { PluginToolDispatcher } from "../services/plugin-tool-dispatcher.js";
-import type { ToolRunContext } from "@paperclipai/plugin-sdk";
-import { JsonRpcCallError, PLUGIN_RPC_ERROR_CODES } from "@paperclipai/plugin-sdk";
+import type { ToolRunContext } from "@softclipai/plugin-sdk";
+import { JsonRpcCallError, PLUGIN_RPC_ERROR_CODES } from "@softclipai/plugin-sdk";
 import { assertBoardOrgAccess, assertCompanyAccess, assertInstanceAdmin, getActorInfo } from "./authz.js";
 import { validateInstanceConfig } from "../services/plugin-config-validator.js";
 
@@ -117,7 +117,7 @@ const REPO_ROOT = path.resolve(__dirname, "../../..");
 
 const BUNDLED_PLUGIN_EXAMPLES: AvailablePluginExample[] = [
   {
-    packageName: "@paperclipai/plugin-hello-world-example",
+    packageName: "@softclipai/plugin-hello-world-example",
     pluginKey: "paperclip.hello-world-example",
     displayName: "Hello World Widget (Example)",
     description: "Reference UI plugin that adds a simple Hello World widget to the Paperclip dashboard.",
@@ -125,7 +125,7 @@ const BUNDLED_PLUGIN_EXAMPLES: AvailablePluginExample[] = [
     tag: "example",
   },
   {
-    packageName: "@paperclipai/plugin-file-browser-example",
+    packageName: "@softclipai/plugin-file-browser-example",
     pluginKey: "paperclip-file-browser-example",
     displayName: "File Browser (Example)",
     description: "Example plugin that adds a Files link in project navigation plus a project detail file browser.",
@@ -133,7 +133,7 @@ const BUNDLED_PLUGIN_EXAMPLES: AvailablePluginExample[] = [
     tag: "example",
   },
   {
-    packageName: "@paperclipai/plugin-kitchen-sink-example",
+    packageName: "@softclipai/plugin-kitchen-sink-example",
     pluginKey: "paperclip-kitchen-sink-example",
     displayName: "Kitchen Sink (Example)",
     description: "Reference plugin that demonstrates the current Paperclip plugin API surface, bridge flows, UI extension surfaces, jobs, webhooks, tools, streams, and trusted local workspace/process demos.",
@@ -318,17 +318,17 @@ export function pluginRoutes(
   async function resolvePluginAuditCompanyIds(req: Request): Promise<string[]> {
     if (typeof (db as { select?: unknown }).select === "function") {
       const rows = await db
-        .select({ id: companies.id })
-        .from(companies);
+        .select({ id: products.id })
+        .from(products);
       return rows.map((row) => row.id);
     }
 
-    if (req.actor.type === "agent" && req.actor.companyId) {
-      return [req.actor.companyId];
+    if (req.actor.type === "agent" && req.actor.productId) {
+      return [req.actor.productId];
     }
 
     if (req.actor.type === "board") {
-      return req.actor.companyIds ?? [];
+      return req.actor.productIds ?? [];
     }
 
     return [];
@@ -340,13 +340,13 @@ export function pluginRoutes(
     entityId: string,
     details: Record<string, unknown>,
   ): Promise<void> {
-    const companyIds = await resolvePluginAuditCompanyIds(req);
-    if (companyIds.length === 0) return;
+    const productIds = await resolvePluginAuditCompanyIds(req);
+    if (productIds.length === 0) return;
 
     const actor = getActorInfo(req);
-    await Promise.all(companyIds.map((companyId) =>
+    await Promise.all(productIds.map((productId) =>
       logActivity(db, {
-        companyId,
+        productId,
         actorType: actor.actorType,
         actorId: actor.actorId,
         agentId: actor.agentId,
@@ -508,7 +508,7 @@ export function pluginRoutes(
    * Request body:
    * - `tool`: Fully namespaced tool name (e.g., "acme.linear:search-issues")
    * - `parameters`: Parameters matching the tool's declared JSON Schema
-   * - `runContext`: Agent run context with agentId, runId, companyId, projectId
+   * - `runContext`: Agent run context with agentId, runId, productId, projectId
    *
    * Response: `ToolExecutionResult`
    * Errors:
@@ -544,14 +544,14 @@ export function pluginRoutes(
       return;
     }
 
-    if (!runContext.agentId || !runContext.runId || !runContext.companyId || !runContext.projectId) {
+    if (!runContext.agentId || !runContext.runId || !runContext.productId || !runContext.projectId) {
       res.status(400).json({
-        error: '"runContext" must include agentId, runId, companyId, and projectId',
+        error: '"runContext" must include agentId, runId, productId, and projectId',
       });
       return;
     }
 
-    assertCompanyAccess(req, runContext.companyId);
+    assertCompanyAccess(req, runContext.productId);
 
     // Verify the tool exists
     const registeredTool = toolDeps.toolDispatcher.getTool(tool);
@@ -682,7 +682,7 @@ export function pluginRoutes(
     /** Plugin-defined data key (e.g. `"sync-health"`). */
     key: string;
     /** Optional company scope for authorizing company-context bridge calls. */
-    companyId?: string;
+    productId?: string;
     /** Optional context and query parameters from the UI. */
     params?: Record<string, unknown>;
     /** Optional host launcher/render metadata for the worker bridge call. */
@@ -694,7 +694,7 @@ export function pluginRoutes(
     /** Plugin-defined action key (e.g. `"resync"`). */
     key: string;
     /** Optional company scope for authorizing company-context bridge calls. */
-    companyId?: string;
+    productId?: string;
     /** Optional parameters from the UI. */
     params?: Record<string, unknown>;
     /** Optional host launcher/render metadata for the worker bridge call. */
@@ -830,8 +830,8 @@ export function pluginRoutes(
       return;
     }
 
-    if (body.companyId) {
-      assertCompanyAccess(req, body.companyId);
+    if (body.productId) {
+      assertCompanyAccess(req, body.productId);
     }
 
     try {
@@ -913,8 +913,8 @@ export function pluginRoutes(
       return;
     }
 
-    if (body.companyId) {
-      assertCompanyAccess(req, body.companyId);
+    if (body.productId) {
+      assertCompanyAccess(req, body.productId);
     }
 
     try {
@@ -991,13 +991,13 @@ export function pluginRoutes(
     }
 
     const body = req.body as {
-      companyId?: string;
+      productId?: string;
       params?: Record<string, unknown>;
       renderEnvironment?: PluginLauncherRenderContextSnapshot | null;
     } | undefined;
 
-    if (body?.companyId) {
-      assertCompanyAccess(req, body.companyId);
+    if (body?.productId) {
+      assertCompanyAccess(req, body.productId);
     }
 
     try {
@@ -1070,13 +1070,13 @@ export function pluginRoutes(
     }
 
     const body = req.body as {
-      companyId?: string;
+      productId?: string;
       params?: Record<string, unknown>;
       renderEnvironment?: PluginLauncherRenderContextSnapshot | null;
     } | undefined;
 
-    if (body?.companyId) {
-      assertCompanyAccess(req, body.companyId);
+    if (body?.productId) {
+      assertCompanyAccess(req, body.productId);
     }
 
     try {
@@ -1108,10 +1108,10 @@ export function pluginRoutes(
    * The worker pushes events via `ctx.streams.emit(channel, event)` which arrive
    * as JSON-RPC notifications to the host, get published on the PluginStreamBus,
    * and are fanned out to all connected SSE clients matching (pluginId, channel,
-   * companyId).
+   * productId).
    *
    * Query parameters:
-   * - `companyId` (required): Scope events to a specific company
+   * - `productId` (required): Scope events to a specific company
    *
    * SSE event types:
    * - `message`: A data event from the worker (default)
@@ -1119,7 +1119,7 @@ export function pluginRoutes(
    * - `close`: The worker closed the stream channel — client should disconnect
    *
    * Errors:
-   * - 400 if companyId is missing
+   * - 400 if productId is missing
    * - 404 if plugin not found
    * - 501 if bridge deps or stream bus are not configured
    */
@@ -1132,10 +1132,10 @@ export function pluginRoutes(
     }
 
     const { pluginId, channel } = req.params;
-    const companyId = req.query.companyId as string | undefined;
+    const productId = req.query.productId as string | undefined;
 
-    if (!companyId) {
-      res.status(400).json({ error: '"companyId" query parameter is required' });
+    if (!productId) {
+      res.status(400).json({ error: '"productId" query parameter is required' });
       return;
     }
 
@@ -1145,7 +1145,7 @@ export function pluginRoutes(
       return;
     }
 
-    assertCompanyAccess(req, companyId);
+    assertCompanyAccess(req, productId);
 
     // Set SSE headers
     res.writeHead(200, {
@@ -1170,7 +1170,7 @@ export function pluginRoutes(
     const unsubscribe = bridgeDeps.streamBus.subscribe(
       plugin.id,
       channel,
-      companyId,
+      productId,
       (event, eventType) => {
         if (unsubscribed || !res.writable) return;
         try {
