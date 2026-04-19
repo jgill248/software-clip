@@ -1,3 +1,3 @@
 [Pod]
-PodName=paperclip
+PodName=softclip
 PublishPort=3100:3100

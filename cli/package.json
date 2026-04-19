@@ -4,11 +4,10 @@
   "description": "Softclip CLI — orchestrate an AI software dev team",
   "type": "module",
   "bin": {
-    "softclip": "./dist/index.js",
-    "paperclipai": "./dist/index.js"
+    "softclip": "./dist/index.js"
   },
   "keywords": [
-    "paperclip",
+    "softclip",
     "ai",
     "agents",
     "orchestration",
@@ -17,12 +16,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/paperclipai/paperclip",
+    "url": "https://github.com/jgill248/software-clip",
     "directory": "cli"
   },
-  "homepage": "https://github.com/paperclipai/paperclip",
+  "homepage": "https://github.com/jgill248/software-clip",
   "bugs": {
-    "url": "https://github.com/paperclipai/paperclip/issues"
+    "url": "https://github.com/jgill248/software-clip/issues"
   },
   "files": [
     "dist"

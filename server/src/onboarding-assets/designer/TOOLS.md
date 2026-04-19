@@ -2,7 +2,7 @@
 
 ## Skills
 
-- **`paperclip`** — control-plane coordination.
+- **`softclip`** — control-plane coordination.
 - **`para-memory-files`** — durable memory. Use for design-decision
   notes, user-research summaries, rejected-variant records.
 - **`design-guide`** — the in-repo design-system skill. Consult

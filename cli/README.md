@@ -1,18 +1,15 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/header.png" alt="Paperclip — runs your business" width="720" />
+  <img src="https://raw.githubusercontent.com/jgill248/software-clip/master/doc/assets/header.png" alt="Softclip — runs your business" width="720" />
 </p>
 
 <p align="center">
   <a href="#quickstart"><strong>Quickstart</strong></a> &middot;
-  <a href="https://paperclip.ing/docs"><strong>Docs</strong></a> &middot;
-  <a href="https://github.com/paperclipai/paperclip"><strong>GitHub</strong></a> &middot;
-  <a href="https://discord.gg/m4HZY7xNG3"><strong>Discord</strong></a>
+  <a href="https://github.com/jgill248/software-clip"><strong>GitHub</strong></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/paperclipai/paperclip/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
-  <a href="https://github.com/paperclipai/paperclip/stargazers"><img src="https://img.shields.io/github/stars/paperclipai/paperclip?style=flat" alt="Stars" /></a>
-  <a href="https://discord.gg/m4HZY7xNG3"><img src="https://img.shields.io/discord/000000000?label=discord" alt="Discord" /></a>
+  <a href="https://github.com/jgill248/software-clip/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
+  <a href="https://github.com/jgill248/software-clip/stargazers"><img src="https://img.shields.io/github/stars/jgill248/software-clip?style=flat" alt="Stars" /></a>
 </p>
 
 <br/>
@@ -23,13 +20,13 @@
 
 <br/>
 
-## What is Paperclip?
+## What is Softclip?
 
-# Open-source orchestration for zero-human companies
+# Open-source orchestration for AI software development teams
 
-**If OpenClaw is an _employee_, Paperclip is the _company_**
+**If OpenClaw is an _employee_, Softclip is the _company_**
 
-Paperclip is a Node.js server and React UI that orchestrates a team of AI agents to run a business. Bring your own agents, assign goals, and track your agents' work and costs from one dashboard.
+Softclip is a Node.js server and React UI that orchestrates a team of AI agents to run a business. Bring your own agents, assign goals, and track your agents' work and costs from one dashboard.
 
 It looks like a task manager — but under the hood it has org charts, budgets, governance, goal alignment, and agent coordination.
 
@@ -43,7 +40,7 @@ It looks like a task manager — but under the hood it has org charts, budgets, 
 
 <br/>
 
-> **COMING SOON: Clipmart** — Download and run entire companies with one click. Browse pre-built company templates — full org structures, agent configs, and skills — and import them into your Paperclip instance in seconds.
+> **COMING SOON: Clipmart** — Download and run entire companies with one click. Browse pre-built company templates — full org structures, agent configs, and skills — and import them into your Softclip instance in seconds.
 
 <br/>
 
@@ -51,12 +48,12 @@ It looks like a task manager — but under the hood it has org charts, budgets, 
 <table>
   <tr>
     <td align="center"><strong>Works<br/>with</strong></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/logos/openclaw.svg" width="32" alt="OpenClaw" /><br/><sub>OpenClaw</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/logos/claude.svg" width="32" alt="Claude" /><br/><sub>Claude Code</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/logos/codex.svg" width="32" alt="Codex" /><br/><sub>Codex</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/logos/cursor.svg" width="32" alt="Cursor" /><br/><sub>Cursor</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/logos/bash.svg" width="32" alt="Bash" /><br/><sub>Bash</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/logos/http.svg" width="32" alt="HTTP" /><br/><sub>HTTP</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/jgill248/software-clip/master/doc/assets/logos/openclaw.svg" width="32" alt="OpenClaw" /><br/><sub>OpenClaw</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/jgill248/software-clip/master/doc/assets/logos/claude.svg" width="32" alt="Claude" /><br/><sub>Claude Code</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/jgill248/software-clip/master/doc/assets/logos/codex.svg" width="32" alt="Codex" /><br/><sub>Codex</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/jgill248/software-clip/master/doc/assets/logos/cursor.svg" width="32" alt="Cursor" /><br/><sub>Cursor</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/jgill248/software-clip/master/doc/assets/logos/bash.svg" width="32" alt="Bash" /><br/><sub>Bash</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/jgill248/software-clip/master/doc/assets/logos/http.svg" width="32" alt="HTTP" /><br/><sub>HTTP</sub></td>
   </tr>
 </table>
 
@@ -66,7 +63,7 @@ It looks like a task manager — but under the hood it has org charts, budgets, 
 
 <br/>
 
-## Paperclip is right for you if
+## Softclip is right for you if
 
 - ✅ You want to build **autonomous AI companies**
 - ✅ You **coordinate many different agents** (OpenClaw, Codex, Claude, Cursor) toward a common goal
@@ -127,28 +124,28 @@ Monitor and manage your autonomous businesses from anywhere.
 
 <br/>
 
-## Problems Paperclip solves
+## Problems Softclip solves
 
-| Without Paperclip                                                                                                                     | With Paperclip                                                                                                                         |
+| Without Softclip                                                                                                                     | With Softclip                                                                                                                         |
 | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | ❌ You have 20 Claude Code tabs open and can't track which one does what. On reboot you lose everything.                              | ✅ Tasks are ticket-based, conversations are threaded, sessions persist across reboots.                                                |
 | ❌ You manually gather context from several places to remind your bot what you're actually doing.                                     | ✅ Context flows from the task up through the project and company goals — your agent always knows what to do and why.                  |
-| ❌ Folders of agent configs are disorganized and you're re-inventing task management, communication, and coordination between agents. | ✅ Paperclip gives you org charts, ticketing, delegation, and governance out of the box — so you run a company, not a pile of scripts. |
+| ❌ Folders of agent configs are disorganized and you're re-inventing task management, communication, and coordination between agents. | ✅ Softclip gives you org charts, ticketing, delegation, and governance out of the box — so you run a company, not a pile of scripts. |
 | ❌ Runaway loops waste hundreds of dollars of tokens and max your quota before you even know what happened.                           | ✅ Cost tracking surfaces token budgets and throttles agents when they're out. Management prioritizes with budgets.                    |
 | ❌ You have recurring jobs (customer support, social, reports) and have to remember to manually kick them off.                        | ✅ Heartbeats handle regular work on a schedule. Management supervises.                                                                |
-| ❌ You have an idea, you have to find your repo, fire up Claude Code, keep a tab open, and babysit it.                                | ✅ Add a task in Paperclip. Your coding agent works on it until it's done. Management reviews their work.                              |
+| ❌ You have an idea, you have to find your repo, fire up Claude Code, keep a tab open, and babysit it.                                | ✅ Add a task in Softclip. Your coding agent works on it until it's done. Management reviews their work.                              |
 
 <br/>
 
-## Why Paperclip is special
+## Why Softclip is special
 
-Paperclip handles the hard orchestration details correctly.
+Softclip handles the hard orchestration details correctly.
 
 |                                   |                                                                                                               |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | **Atomic execution.**             | Task checkout and budget enforcement are atomic, so no double-work and no runaway spend.                      |
 | **Persistent agent state.**       | Agents resume the same task context across heartbeats instead of restarting from scratch.                     |
-| **Runtime skill injection.**      | Agents can learn Paperclip workflows and project context at runtime, without retraining.                      |
+| **Runtime skill injection.**      | Agents can learn Softclip workflows and project context at runtime, without retraining.                      |
 | **Governance with rollback.**     | Approval gates are enforced, config changes are revisioned, and bad changes can be rolled back safely.        |
 | **Goal-aware execution.**         | Tasks carry full goal ancestry so agents consistently see the "why," not just a title.                        |
 | **Portable company templates.**   | Export/import orgs, agents, and skills with secret scrubbing and collision handling.                          |
@@ -156,42 +153,42 @@ Paperclip handles the hard orchestration details correctly.
 
 <br/>
 
-## What Paperclip is not
+## What Softclip is not
 
 |                              |                                                                                                                      |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | **Not a chatbot.**           | Agents have jobs, not chat windows.                                                                                  |
 | **Not an agent framework.**  | We don't tell you how to build agents. We tell you how to run a company made of them.                                |
-| **Not a workflow builder.**  | No drag-and-drop pipelines. Paperclip models companies — with org charts, goals, budgets, and governance.            |
-| **Not a prompt manager.**    | Agents bring their own prompts, models, and runtimes. Paperclip manages the organization they work in.               |
-| **Not a single-agent tool.** | This is for teams. If you have one agent, you probably don't need Paperclip. If you have twenty — you definitely do. |
-| **Not a code review tool.**  | Paperclip orchestrates work, not pull requests. Bring your own review process.                                       |
+| **Not a workflow builder.**  | No drag-and-drop pipelines. Softclip models companies — with org charts, goals, budgets, and governance.            |
+| **Not a prompt manager.**    | Agents bring their own prompts, models, and runtimes. Softclip manages the organization they work in.               |
+| **Not a single-agent tool.** | This is for teams. If you have one agent, you probably don't need Softclip. If you have twenty — you definitely do. |
+| **Not a code review tool.**  | Softclip orchestrates work, not pull requests. Bring your own review process.                                       |
 
 <br/>
 
 ## Quickstart
 
-Open source. Self-hosted. No Paperclip account required.
+Open source. Self-hosted. No Softclip account required.
 
 ```bash
-npx paperclipai onboard --yes
+npx softclip onboard --yes
 ```
 
 That quickstart path now defaults to trusted local loopback mode for the fastest first run. To start in authenticated/private mode instead, choose a bind preset explicitly:
 
 ```bash
-npx paperclipai onboard --yes --bind lan
+npx softclip onboard --yes --bind lan
 # or:
-npx paperclipai onboard --yes --bind tailnet
+npx softclip onboard --yes --bind tailnet
 ```
 
-If you already have Paperclip configured, rerunning `onboard` keeps the existing config in place. Use `paperclipai configure` to edit settings.
+If you already have Softclip configured, rerunning `onboard` keeps the existing config in place. Use `softclip configure` to edit settings.
 
 Or manually:
 
 ```bash
-git clone https://github.com/paperclipai/paperclip.git
-cd paperclip
+git clone https://github.com/jgill248/software-clip.git
+cd softclip
 pnpm install
 pnpm dev
 ```
@@ -207,21 +204,21 @@ This starts the API server at `http://localhost:3100`. An embedded PostgreSQL da
 **What does a typical setup look like?**
 Locally, a single Node.js process manages an embedded Postgres and local file storage. For production, point it at your own Postgres and deploy however you like. Configure projects, agents, and goals — the agents take care of the rest.
 
-If you're a solo-entreprenuer you can use Tailscale to access Paperclip on the go. Then later you can deploy to e.g. Vercel when you need it.
+If you're a solo-entreprenuer you can use Tailscale to access Softclip on the go. Then later you can deploy to e.g. Vercel when you need it.
 
 **Can I run multiple companies?**
 Yes. A single deployment can run an unlimited number of companies with complete data isolation.
 
-**How is Paperclip different from agents like OpenClaw or Claude Code?**
-Paperclip _uses_ those agents. It orchestrates them into a company — with org charts, budgets, goals, governance, and accountability.
+**How is Softclip different from agents like OpenClaw or Claude Code?**
+Softclip _uses_ those agents. It orchestrates them into a company — with org charts, budgets, goals, governance, and accountability.
 
-**Why should I use Paperclip instead of just pointing my OpenClaw to Asana or Trello?**
-Agent orchestration has subtleties in how you coordinate who has work checked out, how to maintain sessions, monitoring costs, establishing governance - Paperclip does this for you.
+**Why should I use Softclip instead of just pointing my OpenClaw to Asana or Trello?**
+Agent orchestration has subtleties in how you coordinate who has work checked out, how to maintain sessions, monitoring costs, establishing governance - Softclip does this for you.
 
 (Bring-your-own-ticket-system is on the Roadmap)
 
 **Do agents run continuously?**
-By default, agents run on scheduled heartbeats and event-based triggers (task assignment, @-mentions). You can also hook in continuous agents like OpenClaw. You bring your agent and Paperclip coordinates.
+By default, agents run on scheduled heartbeats and event-based triggers (task assignment, @-mentions). You can also hook in continuous agents like OpenClaw. You bring your agent and Softclip coordinates.
 
 <br/>
 
@@ -242,7 +239,7 @@ pnpm db:migrate       # Apply migrations
 
 `pnpm test` does not run Playwright. Browser suites stay separate and are typically run only when working on those flows or in CI.
 
-See [doc/DEVELOPING.md](https://github.com/paperclipai/paperclip/blob/master/doc/DEVELOPING.md) for the full development guide.
+See [doc/DEVELOPING.md](https://github.com/jgill248/software-clip/blob/master/doc/DEVELOPING.md) for the full development guide.
 
 <br/>
 
@@ -267,36 +264,36 @@ See [doc/DEVELOPING.md](https://github.com/paperclipai/paperclip/blob/master/doc
 
 ## Community & Plugins
 
-Find Plugins and more at [awesome-paperclip](https://github.com/gsxdsm/awesome-paperclip)
+Find Plugins and more at [awesome-softclip](https://github.com/gsxdsm/awesome-softclip)
 
 ## Contributing
 
-We welcome contributions. See the [contributing guide](https://github.com/paperclipai/paperclip/blob/master/CONTRIBUTING.md) for details.
+We welcome contributions. See the [contributing guide](https://github.com/jgill248/software-clip/blob/master/CONTRIBUTING.md) for details.
 
 <br/>
 
 ## Community
 
 - [Discord](https://discord.gg/m4HZY7xNG3) — Join the community
-- [GitHub Issues](https://github.com/paperclipai/paperclip/issues) — bugs and feature requests
-- [GitHub Discussions](https://github.com/paperclipai/paperclip/discussions) — ideas and RFC
+- [GitHub Issues](https://github.com/jgill248/software-clip/issues) — bugs and feature requests
+- [GitHub Discussions](https://github.com/jgill248/software-clip/discussions) — ideas and RFC
 
 <br/>
 
 ## License
 
-MIT &copy; 2026 Paperclip
+MIT &copy; 2026 Softclip
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/image?repos=paperclipai/paperclip&type=date&legend=top-left)](https://www.star-history.com/?repos=paperclipai%2Fpaperclip&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/image?repos=jgill248/software-clip&type=date&legend=top-left)](https://www.star-history.com/?repos=softclip%2Fsoftclip&type=date&legend=top-left)
 
 <br/>
 
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/paperclipai/paperclip/master/doc/assets/footer.jpg" alt="" width="720" />
+  <img src="https://raw.githubusercontent.com/jgill248/software-clip/master/doc/assets/footer.jpg" alt="" width="720" />
 </p>
 
 <p align="center">

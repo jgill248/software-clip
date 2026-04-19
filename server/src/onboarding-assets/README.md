@@ -25,7 +25,7 @@ Plus two special folders:
 - **`_template/`** — stub bundle that `product-creator` and any
   future role-add flow copies from. If you add a new role, start
   here.
-- **`ceo/`** (legacy) — the original Paperclip CEO bundle. Will be
+- **`ceo/`** (legacy) — the original Softclip CEO bundle. Will be
   removed once the Softclip pivot is fully rolled out; kept temporarily
   so existing companies keep booting.
 
@@ -49,7 +49,7 @@ onboarding wizard and "create agent" flow pull from here.
    to matter.
 2. Edit the specific file the knob points to.
 3. Update the change-log table at the bottom of the role's `README.md`.
-4. Run `pnpm --filter @paperclipai/server test -- onboarding-assets-structure`
+4. Run `pnpm --filter @softclipai/server test -- onboarding-assets-structure`
    to verify structure (every file present, required AGENTS.md
    sections non-empty).
 

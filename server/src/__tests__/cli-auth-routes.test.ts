@@ -92,8 +92,8 @@ describe("cli auth routes", () => {
     const res = await request(app)
       .post("/api/cli-auth/challenges")
       .send({
-        command: "paperclipai company import",
-        clientName: "paperclipai cli",
+        command: "softclip company import",
+        clientName: "softclip cli",
         requestedAccess: "board",
       });
 
@@ -113,14 +113,14 @@ describe("cli auth routes", () => {
     const app = await createApp({ type: "none", source: "none" });
     const [indexRes, skillRes] = await Promise.all([
       request(app).get("/api/skills/index"),
-      request(app).get("/api/skills/paperclip"),
+      request(app).get("/api/skills/softclip"),
     ]);
 
     expect(indexRes.status).toBe(401);
     expect(skillRes.status).toBe(401);
   });
 
-  it("serves the invite-scoped paperclip skill anonymously for active invites", async () => {
+  it("serves the invite-scoped softclip skill anonymously for active invites", async () => {
     const invite = {
       id: "invite-1",
       productId: "company-1",
@@ -144,19 +144,19 @@ describe("cli auth routes", () => {
     };
 
     const app = await createApp({ type: "none", source: "none" }, db);
-    const res = await request(app).get("/api/invites/token-123/skills/paperclip");
+    const res = await request(app).get("/api/invites/token-123/skills/softclip");
 
     expect(res.status).toBe(200);
     expect(res.headers["content-type"]).toContain("text/markdown");
-    expect(res.text).toContain("# Paperclip Skill");
+    expect(res.text).toContain("# Softclip Skill");
   });
 
   it("marks challenge status as requiring sign-in for anonymous viewers", async () => {
     mockBoardAuthService.describeCliAuthChallenge.mockResolvedValue({
       id: "challenge-1",
       status: "pending",
-      command: "paperclipai company import",
-      clientName: "paperclipai cli",
+      command: "softclip company import",
+      clientName: "softclip cli",
       requestedAccess: "board",
       requestedCompanyId: null,
       requestedCompanyName: null,

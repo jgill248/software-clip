@@ -11,7 +11,7 @@ import {
 } from "../client/context.js";
 
 function createTempContextPath(): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "paperclip-cli-context-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "softclip-cli-context-"));
   return path.join(dir, "context.json");
 }
 
@@ -30,7 +30,7 @@ describe("client context store", () => {
       {
         apiBase: "http://localhost:3100",
         productId: "company-123",
-        apiKeyEnvVarName: "PAPERCLIP_AGENT_TOKEN",
+        apiKeyEnvVarName: "SOFTCLIP_AGENT_TOKEN",
       },
       contextPath,
     );
@@ -42,7 +42,7 @@ describe("client context store", () => {
     expect(context.profiles.work).toEqual({
       apiBase: "http://localhost:3100",
       productId: "company-123",
-      apiKeyEnvVarName: "PAPERCLIP_AGENT_TOKEN",
+      apiKeyEnvVarName: "SOFTCLIP_AGENT_TOKEN",
     });
   });
 

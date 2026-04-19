@@ -21,7 +21,7 @@ To start Softclip again later:
 npx softclip run
 ```
 
-> **Note:** If you used `npx` for setup, always use `npx softclip` to run commands. The `pnpm softclip` form only works inside a cloned copy of the Softclip repository (see Local Development below). The CLI is also available as `paperclipai` (the npm package name during the rename); both invocations point at the same binary.
+> **Note:** If you used `npx` for setup, always use `npx softclip` to run commands. The `pnpm softclip` form only works inside a cloned copy of the Softclip repository (see Local Development below). The CLI is also available as `softclip` (the npm package name during the rename); both invocations point at the same binary.
 
 ## Local Development
 
@@ -72,6 +72,6 @@ Once Softclip is running:
 6. When the Engineer opens a PR, a code review lands in your inbox.
 
 <Card title="Core Concepts" href="/start/core-concepts">
-  Learn the key concepts behind Paperclip
+  Learn the key concepts behind Softclip
 </Card>
 

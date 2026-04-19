@@ -70,12 +70,12 @@ async function inspectGitCloseReadiness(workspace: ExecutionWorkspace): Promise<
   }
 
   if (!workspacePath) {
-    warnings.push("Workspace has no local path, so Paperclip cannot inspect git status before close.");
+    warnings.push("Workspace has no local path, so Softclip cannot inspect git status before close.");
     return { git: null, warnings };
   }
 
   if (!(await pathExists(workspacePath))) {
-    warnings.push(`Workspace path "${workspacePath}" does not exist, so Paperclip cannot inspect git status before close.`);
+    warnings.push(`Workspace path "${workspacePath}" does not exist, so Softclip cannot inspect git status before close.`);
     return {
       git: {
         repoRoot: null,
@@ -661,7 +661,7 @@ export function executionWorkspaceService(db: Db) {
         plannedActions.push({
           kind: "git_worktree_remove",
           label: "Remove git worktree",
-          description: `Paperclip will run git worktree cleanup for ${workspacePath}.`,
+          description: `Softclip will run git worktree cleanup for ${workspacePath}.`,
           command: `git worktree remove --force ${workspacePath}`,
         });
       }
@@ -670,7 +670,7 @@ export function executionWorkspaceService(db: Db) {
         plannedActions.push({
           kind: "git_branch_delete",
           label: "Delete runtime-created branch",
-          description: "Paperclip will try to delete the runtime-created branch after removing the worktree.",
+          description: "Softclip will try to delete the runtime-created branch after removing the worktree.",
           command: `git branch -d ${executionWorkspace.branchName}`,
         });
       }
@@ -685,12 +685,12 @@ export function executionWorkspaceService(db: Db) {
             )
           : false;
         if (containsProjectWorkspace) {
-          warnings.push(`Paperclip will archive this workspace but keep "${workspacePath}" because it contains the project workspace.`);
+          warnings.push(`Softclip will archive this workspace but keep "${workspacePath}" because it contains the project workspace.`);
         } else {
           plannedActions.push({
             kind: "remove_local_directory",
             label: "Remove runtime-created directory",
-            description: `Paperclip will remove the runtime-created directory at ${workspacePath}.`,
+            description: `Softclip will remove the runtime-created directory at ${workspacePath}.`,
             command: `rm -rf ${workspacePath}`,
           });
         }

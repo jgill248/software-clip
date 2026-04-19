@@ -3,8 +3,8 @@
 ## 1. Identity and context
 
 - `GET /api/agents/me`.
-- Check wake context: `PAPERCLIP_TASK_ID`, `PAPERCLIP_WAKE_REASON`,
-  `PAPERCLIP_WAKE_COMMENT_ID`, `PAPERCLIP_APPROVAL_ID`.
+- Check wake context: `SOFTCLIP_TASK_ID`, `SOFTCLIP_WAKE_REASON`,
+  `SOFTCLIP_WAKE_COMMENT_ID`, `SOFTCLIP_APPROVAL_ID`.
 
 ## 2. Review queue first
 
@@ -23,7 +23,7 @@ starting design work.
   1. Active design docs you're drafting (`in_progress`).
   2. Open architecture reviews (`in_review`).
   3. New design asks (`todo`).
-- If `PAPERCLIP_TASK_ID` is set and assigned to you, start there.
+- If `SOFTCLIP_TASK_ID` is set and assigned to you, start there.
 
 ## 4. Checkout and work
 
@@ -73,6 +73,6 @@ surfaces (interfaces in `packages/shared/`, route shapes in
 
 ## Rules
 
-- Always include `X-Paperclip-Run-Id` on mutating API calls.
+- Always include `X-Softclip-Run-Id` on mutating API calls.
 - Never merge a PR yourself — that's Engineer's responsibility.
 - Never skip the trade-offs section, even if you're confident.

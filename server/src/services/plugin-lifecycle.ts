@@ -40,7 +40,7 @@ import type { Db } from "@softclipai/db";
 import type {
   PluginStatus,
   PluginRecord,
-  PaperclipPluginManifestV1,
+  SoftclipPluginManifestV1,
 } from "@softclipai/shared";
 import { pluginRegistryService } from "./plugin-registry.js";
 import { pluginLoader, type PluginLoader } from "./plugin-loader.js";

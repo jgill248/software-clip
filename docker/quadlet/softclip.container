@@ -1,0 +1,23 @@
+[Unit]
+Description=Softclip AI Agent Orchestrator
+Requires=softclip-db.service
+After=softclip-db.service
+
+[Container]
+Image=softclip-local
+ContainerName=softclip
+Pod=softclip.pod
+Volume=%h/.local/share/softclip:/softclip:Z
+Environment=HOST=0.0.0.0
+Environment=SOFTCLIP_HOME=/softclip
+Environment=SOFTCLIP_DEPLOYMENT_MODE=authenticated
+Environment=SOFTCLIP_DEPLOYMENT_EXPOSURE=private
+Environment=SOFTCLIP_PUBLIC_URL=http://localhost:3100
+EnvironmentFile=%h/.config/containers/systemd/softclip.env
+
+[Service]
+Restart=on-failure
+TimeoutStartSec=120
+
+[Install]
+WantedBy=default.target

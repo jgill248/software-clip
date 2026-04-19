@@ -2,13 +2,13 @@
 
 ## Skills
 
-- **`paperclip`** — the control-plane skill. Use for every task
+- **`softclip`** — the control-plane skill. Use for every task
   interaction: creating, updating, commenting on, reassigning, closing
   issues. Every PO heartbeat uses this heavily.
 - **`para-memory-files`** — durable memory. Use when you make a
   decision worth remembering, want to recall past prioritization
   reasoning, or need to keep running notes on a stakeholder.
-- **`paperclip-create-agent`** — use to hire a new agent when your team
+- **`softclip-create-agent`** — use to hire a new agent when your team
   lacks a capability (e.g., no Data Architect but a schema-heavy sprint
   is coming).
 - **`product-creator`** — the meta-skill for scaffolding another

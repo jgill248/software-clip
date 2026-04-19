@@ -357,12 +357,12 @@ describe("MarkdownEditor", () => {
   });
 
   it("keeps mention queries active across spaces", () => {
-    expect(findMentionMatch("Ping @Paperclip App", "Ping @Paperclip App".length)).toEqual({
+    expect(findMentionMatch("Ping @Softclip App", "Ping @Softclip App".length)).toEqual({
       trigger: "mention",
       marker: "@",
-      query: "Paperclip App",
+      query: "Softclip App",
       atPos: 5,
-      endPos: "Ping @Paperclip App".length,
+      endPos: "Ping @Softclip App".length,
     });
   });
 
@@ -473,7 +473,7 @@ describe("MarkdownEditor", () => {
             {
               id: "project:project-123",
               kind: "project",
-              name: "Paperclip App",
+              name: "Softclip App",
               projectId: "project-123",
               projectColor: "#336699",
             },
@@ -504,7 +504,7 @@ describe("MarkdownEditor", () => {
     await flush();
 
     const option = Array.from(document.body.querySelectorAll('button[type="button"]'))
-      .find((node) => node.textContent?.includes("Paperclip App"));
+      .find((node) => node.textContent?.includes("Softclip App"));
     expect(option).toBeTruthy();
 
     act(() => {
@@ -512,7 +512,7 @@ describe("MarkdownEditor", () => {
     });
 
     expect(handleChange).toHaveBeenCalledWith(
-      `[@Paperclip App](${buildProjectMentionHref("project-123", "#336699")}) `,
+      `[@Softclip App](${buildProjectMentionHref("project-123", "#336699")}) `,
     );
 
     await act(async () => {

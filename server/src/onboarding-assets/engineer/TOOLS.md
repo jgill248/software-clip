@@ -2,7 +2,7 @@
 
 ## Skills
 
-- **`paperclip`** — control-plane coordination. Primary interface to
+- **`softclip`** — control-plane coordination. Primary interface to
   the task system.
 - **`para-memory-files`** — durable memory. Use for "how we fixed
   X" notes, gotchas, and "why we decided against Y."
@@ -32,7 +32,7 @@
 
 ## Local commands you'll run a lot
 
-- `pnpm --filter @paperclipai/<package> build` — build one workspace
+- `pnpm --filter @softclipai/<package> build` — build one workspace
   package.
 - `pnpm -r typecheck` — whole-repo typecheck.
 - `pnpm test` — run the unit test suite.
@@ -51,7 +51,7 @@
   it's too big.
 - **Silent scope creep.** Finding an unrelated bug while
   implementing? File it. Don't roll it in.
-- **Re-doing what a skill could do.** If `paperclip` already has a
+- **Re-doing what a skill could do.** If `softclip` already has a
   helper, use it. Don't reinvent the call.
 - **Skipping the manual test.** Green CI ≠ feature works.
   Click the golden path yourself before shipping.

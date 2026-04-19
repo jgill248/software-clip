@@ -485,7 +485,7 @@ class CodexRpcClient {
   async initialize() {
     await this.request("initialize", {
       clientInfo: {
-        name: "paperclip",
+        name: "softclip",
         version: "0.0.0",
       },
     });

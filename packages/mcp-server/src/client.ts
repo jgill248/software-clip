@@ -1,6 +1,6 @@
-import type { PaperclipMcpConfig } from "./config.js";
+import type { SoftclipMcpConfig } from "./config.js";
 
-export class PaperclipApiError extends Error {
+export class SoftclipApiError extends Error {
   readonly status: number;
   readonly method: string;
   readonly path: string;
@@ -14,7 +14,7 @@ export class PaperclipApiError extends Error {
     message: string;
   }) {
     super(input.message);
-    this.name = "PaperclipApiError";
+    this.name = "SoftclipApiError";
     this.status = input.status;
     this.method = input.method;
     this.path = input.path;
@@ -48,8 +48,8 @@ async function parseResponseBody(response: Response): Promise<unknown> {
   }
 }
 
-export class PaperclipApiClient {
-  constructor(private readonly config: PaperclipMcpConfig) {}
+export class SoftclipApiClient {
+  constructor(private readonly config: SoftclipMcpConfig) {}
 
   get defaults() {
     return {
@@ -62,7 +62,7 @@ export class PaperclipApiClient {
   resolveCompanyId(productId?: string | null): string {
     const resolved = productId?.trim() || this.config.productId;
     if (!resolved) {
-      throw new Error("productId is required because PAPERCLIP_COMPANY_ID is not set");
+      throw new Error("productId is required because SOFTCLIP_COMPANY_ID is not set");
     }
     return resolved;
   }
@@ -70,7 +70,7 @@ export class PaperclipApiClient {
   resolveAgentId(agentId?: string | null): string {
     const resolved = agentId?.trim() || this.config.agentId;
     if (!resolved) {
-      throw new Error("agentId is required because PAPERCLIP_AGENT_ID is not set");
+      throw new Error("agentId is required because SOFTCLIP_AGENT_ID is not set");
     }
     return resolved;
   }
@@ -89,7 +89,7 @@ export class PaperclipApiClient {
       headers["Content-Type"] = "application/json";
     }
     if ((options.includeRunId ?? isWriteMethod(method)) && this.config.runId) {
-      headers["X-Paperclip-Run-Id"] = this.config.runId;
+      headers["X-Softclip-Run-Id"] = this.config.runId;
     }
 
     const response = await fetch(url, {
@@ -100,7 +100,7 @@ export class PaperclipApiClient {
     const parsedBody = await parseResponseBody(response);
 
     if (!response.ok) {
-      throw new PaperclipApiError({
+      throw new SoftclipApiError({
         status: response.status,
         method: method.toUpperCase(),
         path,

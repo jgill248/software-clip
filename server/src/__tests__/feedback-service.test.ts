@@ -5,7 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { eq } from "drizzle-orm";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { writePaperclipSkillSyncPreference } from "@softclipai/adapter-utils/server-utils";
+import { writeSoftclipSkillSyncPreference } from "@softclipai/adapter-utils/server-utils";
 import {
   agents,
   applyPendingMigrations,
@@ -69,13 +69,13 @@ async function getAvailablePort(): Promise<number> {
 }
 
 async function startTempDatabase() {
-  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "paperclip-feedback-service-"));
+  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "softclip-feedback-service-"));
   const port = await getAvailablePort();
   const EmbeddedPostgres = await getEmbeddedPostgresCtor();
   const instance = new EmbeddedPostgres({
     databaseDir: dataDir,
-    user: "paperclip",
-    password: "paperclip",
+    user: "softclip",
+    password: "softclip",
     port,
     persistent: true,
     initdbFlags: ["--encoding=UTF8", "--locale=C", "--lc-messages=C"],
@@ -85,9 +85,9 @@ async function startTempDatabase() {
   await instance.initialise();
   await instance.start();
 
-  const adminConnectionString = `postgres://paperclip:paperclip@127.0.0.1:${port}/postgres`;
-  await ensurePostgresDatabase(adminConnectionString, "paperclip");
-  const connectionString = `postgres://paperclip:paperclip@127.0.0.1:${port}/paperclip`;
+  const adminConnectionString = `postgres://softclip:softclip@127.0.0.1:${port}/postgres`;
+  await ensurePostgresDatabase(adminConnectionString, "softclip");
+  const connectionString = `postgres://softclip:softclip@127.0.0.1:${port}/softclip`;
   await applyPendingMigrations(connectionString);
   return { connectionString, dataDir, instance };
 }
@@ -148,7 +148,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `F${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -196,7 +196,7 @@ describe("feedbackService.saveIssueVote", () => {
     // Random UUIDs occasionally produce digit pairs like "4880-8614" that
     // cross segment boundaries and match the phone pattern.
     const runId = "abcde123-face-beef-cafe-abcdef654321";
-    const instructionsDir = fs.mkdtempSync(path.join(os.tmpdir(), "paperclip-feedback-instructions-"));
+    const instructionsDir = fs.mkdtempSync(path.join(os.tmpdir(), "softclip-feedback-instructions-"));
     tempDirs.push(instructionsDir);
     const instructionsPath = path.join(instructionsDir, "AGENTS.md");
     fs.writeFileSync(
@@ -207,7 +207,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `R${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -215,10 +215,10 @@ describe("feedbackService.saveIssueVote", () => {
       {
         id: randomUUID(),
         productId,
-        key: "paperclipai/paperclip/paperclip",
-        slug: "paperclip",
-        name: "Paperclip",
-        markdown: "# Paperclip",
+        key: "softclipai/softclip/softclip",
+        slug: "softclip",
+        name: "Softclip",
+        markdown: "# Softclip",
         sourceType: "catalog",
         sourceLocator: null,
         sourceRef: null,
@@ -245,7 +245,7 @@ describe("feedbackService.saveIssueVote", () => {
       role: "engineer",
       status: "active",
       adapterType: "codex_local",
-      adapterConfig: writePaperclipSkillSyncPreference(
+      adapterConfig: writeSoftclipSkillSyncPreference(
         {
           model: "gpt-5.4",
           instructionsBundleMode: "external",
@@ -253,7 +253,7 @@ describe("feedbackService.saveIssueVote", () => {
           instructionsEntryFile: "AGENTS.md",
           instructionsFilePath: instructionsPath,
         },
-        ["paperclipai/paperclip/paperclip", "octo/research/public-skill"],
+        ["softclipai/softclip/softclip", "octo/research/public-skill"],
       ),
       runtimeConfig: {
         heartbeat: {
@@ -350,7 +350,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `D${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -418,7 +418,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -707,8 +707,8 @@ describe("feedbackService.saveIssueVote", () => {
 
     expect(trace?.status).toBe("pending");
     expect(trace?.exportId).toMatch(/^fbexp_/);
-    expect(trace?.schemaVersion).toBe("paperclip-feedback-envelope-v2");
-    expect(trace?.bundleVersion).toBe("paperclip-feedback-bundle-v2");
+    expect(trace?.schemaVersion).toBe("softclip-feedback-envelope-v2");
+    expect(trace?.bundleVersion).toBe("softclip-feedback-bundle-v2");
     expect(trace?.payloadDigest).toMatch(/^[a-f0-9]{64}$/);
     expect(primaryContent?.createdByRunId).toBe(runId);
     expect(String(primaryContent?.body)).toContain("[REDACTED]");
@@ -767,15 +767,15 @@ describe("feedbackService.saveIssueVote", () => {
 
     expect(localTrace?.status).toBe("local_only");
     expect(localTrace?.exportId).toBeNull();
-    expect(localTrace?.payloadVersion).toBe("paperclip-feedback-v1");
+    expect(localTrace?.payloadVersion).toBe("softclip-feedback-v1");
     expect(localTrace?.payloadSnapshot?.bundle).toBeNull();
     expect(sharedTrace?.status).toBe("pending");
     expect(sharedTrace?.exportId).toMatch(/^fbexp_/);
-    expect(sharedTrace?.payloadVersion).toBe("paperclip-feedback-v1");
+    expect(sharedTrace?.payloadVersion).toBe("softclip-feedback-v1");
   });
 
   it("captures Claude project session artifacts as full traces", async () => {
-    const claudeRoot = fs.mkdtempSync(path.join(os.tmpdir(), "paperclip-feedback-claude-"));
+    const claudeRoot = fs.mkdtempSync(path.join(os.tmpdir(), "softclip-feedback-claude-"));
     tempDirs.push(claudeRoot);
     const sessionId = randomUUID();
     const projectDir = path.join(claudeRoot, "projects", "workspace-1");
@@ -849,7 +849,7 @@ describe("feedbackService.saveIssueVote", () => {
   });
 
   it("captures OpenCode message and part files as full traces", async () => {
-    const opencodeRoot = fs.mkdtempSync(path.join(os.tmpdir(), "paperclip-feedback-opencode-"));
+    const opencodeRoot = fs.mkdtempSync(path.join(os.tmpdir(), "softclip-feedback-opencode-"));
     tempDirs.push(opencodeRoot);
     const sessionId = "ses_test_feedback_trace";
     const sessionDir = path.join(opencodeRoot, "storage", "session", "global");
@@ -939,7 +939,7 @@ describe("feedbackService.saveIssueVote", () => {
       JSON.stringify([{ content: "Verify exported traces" }]),
       "utf8",
     );
-    vi.stubEnv("PAPERCLIP_OPENCODE_STORAGE_DIR", opencodeRoot);
+    vi.stubEnv("SOFTCLIP_OPENCODE_STORAGE_DIR", opencodeRoot);
     const uploadTraceBundle = vi.fn().mockResolvedValue({ objectKey: "feedback-traces/test.json" });
     const flushingSvc = feedbackService(db, {
       shareClient: {
@@ -986,7 +986,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `H${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -1063,7 +1063,7 @@ describe("feedbackService.saveIssueVote", () => {
       issueIdentifier: traces[0]?.issueIdentifier,
       captureStatus: expect.stringMatching(/^(full|partial|unavailable)$/),
       envelope: {
-        destination: "paperclip_labs_feedback_v1",
+        destination: "softclip_labs_feedback_v1",
         exportId: traces[0]?.exportId,
       },
     });

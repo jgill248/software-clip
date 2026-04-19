@@ -4,11 +4,11 @@ description: >
   Scaffold an agent-driven software development team as an agentcompanies/v1
   package. Use when a user wants to stand up a new AI dev team from scratch,
   wrap an existing code repo in a dev-team structure, or generate the files
-  that will be imported into a Paperclip product. Triggers on: "create a
+  that will be imported into a Softclip product. Triggers on: "create a
   product", "scaffold a dev team", "spin up an AI dev team", "turn this repo
   into an agent team", "hire a product team". Do NOT use for importing an
   existing package (use the CLI import command) or for modifying a product
-  that is already running in Paperclip.
+  that is already running in Softclip.
 ---
 
 # Product Creator
@@ -16,7 +16,7 @@ description: >
 Scaffold an agent-driven software development team conforming to the Agent
 Companies specification (`agentcompanies/v1`). The output is a portable
 package — COMPANY.md plus agents, teams, projects, skills — that a developer
-can version-control, share with their human team, and import into Paperclip.
+can version-control, share with their human team, and import into Softclip.
 
 > The spec uses the filename `COMPANY.md` as the root entrypoint; that name
 > is external and cannot change. Everywhere else in the vocabulary you use
@@ -35,9 +35,9 @@ software"*. Common triggers:
 
 Do not use it for:
 
-- Importing a package that already exists (use `paperclipai product import`
-  once that CLI lands, or the current `paperclipai company import`).
-- Changing an already-running Paperclip product (edit it in the UI or via
+- Importing a package that already exists (use `softclip product import`
+  once that CLI lands, or the current `softclip company import`).
+- Changing an already-running Softclip product (edit it in the UI or via
   API instead).
 - Generating a non-software team (marketing-only, research-only) — those
   still fit agentcompanies/v1, but this skill's opinions are tuned for
@@ -179,7 +179,7 @@ Before writing files, read:
 │   └── <slug>/TASK.md           (if the user wants starter sprint tasks)
 ├── skills/
 │   └── <slug>/SKILL.md          (custom skills only; reference built-ins)
-├── .paperclip.yaml              (optional vendor extension)
+├── .softclip.yaml              (optional vendor extension)
 ├── README.md
 └── LICENSE
 ```
@@ -189,7 +189,7 @@ Before writing files, read:
 - Slugs are URL-safe, lowercase, hyphenated.
 - `schema: agentcompanies/v1` goes in `COMPANY.md`; other files inherit
   it.
-- Agent instructions live in the AGENTS.md body; not in `.paperclip.yaml`.
+- Agent instructions live in the AGENTS.md body; not in `.softclip.yaml`.
 - Skills referenced by shortname in AGENTS.md resolve to
   `skills/<shortname>/SKILL.md`. For external skills, use `sources` with
   `usage: referenced`.
@@ -205,7 +205,7 @@ Before writing files, read:
 
 **Sourcing the AGENTS.md bodies:**
 
-The `server/src/onboarding-assets/<role>/` directories in the Paperclip
+The `server/src/onboarding-assets/<role>/` directories in the Softclip
 repo are the canonical, hand-authored instructions for each role. When
 generating an AGENTS.md for a default role:
 
@@ -213,7 +213,7 @@ generating an AGENTS.md for a default role:
 2. Tailor one paragraph to the specific product (what this product does,
    what this role uniquely owns on *this* team).
 3. Leave HEARTBEAT.md / SOUL.md / TOOLS.md references in place — if the
-   user runs Paperclip, those files will be merged in by the platform.
+   user runs Softclip, those files will be merged in by the platform.
 
 For custom roles (e.g., "ML Engineer" that isn't in the default roster),
 copy the `_template/` bundle and fill it in.
@@ -237,7 +237,7 @@ in 60 seconds. Include:
 - Workflow pattern and what ships out of one sprint.
 - Roster as a markdown table: role, reports-to, primary responsibility.
 - Skills: custom + referenced.
-- Getting started: `paperclipai company import --from <path>` (rename to
+- Getting started: `softclip company import --from <path>` (rename to
   `product import` when available).
 - Citations: source repo (from-repo), agentcompanies spec link
   (https://agentcompanies.io/specification), Softclip repo link.
@@ -255,11 +255,11 @@ After writing all files, give the user a terse summary:
 - Skills included (custom + referenced).
 - Projects / starter tasks if any.
 - Output path.
-- Exact next command: `paperclipai company import --from <path>`.
+- Exact next command: `softclip company import --from <path>`.
 
-## `.paperclip.yaml` guidelines
+## `.softclip.yaml` guidelines
 
-The `.paperclip.yaml` file is Paperclip's vendor extension to the spec.
+The `.softclip.yaml` file is Softclip's vendor extension to the spec.
 Use it for adapter preferences and env-input declarations — nothing else.
 
 **Do not specify an adapter unless the repo/user context genuinely calls
@@ -287,7 +287,7 @@ cases:
 - Vendor API keys only when a skill explicitly needs them.
 - Never add `ANTHROPIC_API_KEY` — the runtime handles it.
 
-Agents with no overrides do not appear in `.paperclip.yaml` at all.
+Agents with no overrides do not appear in `.softclip.yaml` at all.
 
 ## External skill references
 

@@ -8,12 +8,12 @@ async function writeFakeCursorCommand(commandPath: string): Promise<void> {
   const script = `#!/usr/bin/env node
 const fs = require("node:fs");
 
-const capturePath = process.env.PAPERCLIP_TEST_CAPTURE_PATH;
+const capturePath = process.env.SOFTCLIP_TEST_CAPTURE_PATH;
 const payload = {
   argv: process.argv.slice(2),
   prompt: fs.readFileSync(0, "utf8"),
-  paperclipEnvKeys: Object.keys(process.env)
-    .filter((key) => key.startsWith("PAPERCLIP_"))
+  softclipEnvKeys: Object.keys(process.env)
+    .filter((key) => key.startsWith("SOFTCLIP_"))
     .sort(),
 };
 if (capturePath) {
@@ -43,7 +43,7 @@ console.log(JSON.stringify({
 type CapturePayload = {
   argv: string[];
   prompt: string;
-  paperclipEnvKeys: string[];
+  softclipEnvKeys: string[];
 };
 
 async function createSkillDir(root: string, name: string) {
@@ -54,8 +54,8 @@ async function createSkillDir(root: string, name: string) {
 }
 
 describe("cursor execute", () => {
-  it("injects paperclip env vars and prompt note by default", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-cursor-execute-"));
+  it("injects softclip env vars and prompt note by default", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "softclip-cursor-execute-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "agent");
     const capturePath = path.join(root, "capture.json");
@@ -87,9 +87,9 @@ describe("cursor execute", () => {
           cwd: workspace,
           model: "auto",
           env: {
-            PAPERCLIP_TEST_CAPTURE_PATH: capturePath,
+            SOFTCLIP_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the paperclip heartbeat.",
+          promptTemplate: "Follow the softclip heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -103,22 +103,22 @@ describe("cursor execute", () => {
       expect(result.errorMessage).toBeNull();
 
       const capture = JSON.parse(await fs.readFile(capturePath, "utf8")) as CapturePayload;
-      expect(capture.argv).not.toContain("Follow the paperclip heartbeat.");
+      expect(capture.argv).not.toContain("Follow the softclip heartbeat.");
       expect(capture.argv).not.toContain("--mode");
       expect(capture.argv).not.toContain("ask");
-      expect(capture.paperclipEnvKeys).toEqual(
+      expect(capture.softclipEnvKeys).toEqual(
         expect.arrayContaining([
-          "PAPERCLIP_AGENT_ID",
-          "PAPERCLIP_API_KEY",
-          "PAPERCLIP_API_URL",
-          "PAPERCLIP_COMPANY_ID",
-          "PAPERCLIP_RUN_ID",
+          "SOFTCLIP_AGENT_ID",
+          "SOFTCLIP_API_KEY",
+          "SOFTCLIP_API_URL",
+          "SOFTCLIP_COMPANY_ID",
+          "SOFTCLIP_RUN_ID",
         ]),
       );
-      expect(capture.prompt).toContain("Paperclip runtime note:");
-      expect(capture.prompt).toContain("PAPERCLIP_API_KEY");
-      expect(invocationPrompt).toContain("Paperclip runtime note:");
-      expect(invocationPrompt).toContain("PAPERCLIP_API_URL");
+      expect(capture.prompt).toContain("Softclip runtime note:");
+      expect(capture.prompt).toContain("SOFTCLIP_API_KEY");
+      expect(invocationPrompt).toContain("Softclip runtime note:");
+      expect(invocationPrompt).toContain("SOFTCLIP_API_URL");
     } finally {
       if (previousHome === undefined) {
         delete process.env.HOME;
@@ -130,7 +130,7 @@ describe("cursor execute", () => {
   });
 
   it("passes --mode when explicitly configured", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-cursor-execute-mode-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "softclip-cursor-execute-mode-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "agent");
     const capturePath = path.join(root, "capture.json");
@@ -162,9 +162,9 @@ describe("cursor execute", () => {
           model: "auto",
           mode: "ask",
           env: {
-            PAPERCLIP_TEST_CAPTURE_PATH: capturePath,
+            SOFTCLIP_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the paperclip heartbeat.",
+          promptTemplate: "Follow the softclip heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -188,14 +188,14 @@ describe("cursor execute", () => {
   });
 
   it("injects company-library runtime skills into the Cursor skills home before execution", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-cursor-execute-runtime-skill-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "softclip-cursor-execute-runtime-skill-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "agent");
     const runtimeSkillsRoot = path.join(root, "runtime-skills");
     await fs.mkdir(workspace, { recursive: true });
     await writeFakeCursorCommand(commandPath);
 
-    const paperclipDir = await createSkillDir(runtimeSkillsRoot, "paperclip");
+    const softclipDir = await createSkillDir(runtimeSkillsRoot, "softclip");
     const asciiHeartDir = await createSkillDir(runtimeSkillsRoot, "ascii-heart");
 
     const previousHome = process.env.HOME;
@@ -221,22 +221,22 @@ describe("cursor execute", () => {
           command: commandPath,
           cwd: workspace,
           model: "auto",
-          paperclipRuntimeSkills: [
+          softclipRuntimeSkills: [
             {
-              name: "paperclip",
-              source: paperclipDir,
+              name: "softclip",
+              source: softclipDir,
               required: true,
-              requiredReason: "Bundled Paperclip skills are always available for local adapters.",
+              requiredReason: "Bundled Softclip skills are always available for local adapters.",
             },
             {
               name: "ascii-heart",
               source: asciiHeartDir,
             },
           ],
-          paperclipSkillSync: {
+          softclipSkillSync: {
             desiredSkills: ["ascii-heart"],
           },
-          promptTemplate: "Follow the paperclip heartbeat.",
+          promptTemplate: "Follow the softclip heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",

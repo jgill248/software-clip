@@ -227,7 +227,7 @@ describe("IssuesList", () => {
         issues={[localIssue]}
         agents={[]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         initialSearch="server"
         onUpdateIssue={() => undefined}
       />,
@@ -260,7 +260,7 @@ describe("IssuesList", () => {
         issues={[localIssue]}
         agents={[]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         initialSearch="server"
         searchFilters={{ parentId: "parent-1" }}
         onUpdateIssue={() => undefined}
@@ -290,7 +290,7 @@ describe("IssuesList", () => {
         issues={[createIssue()]}
         agents={[]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         baseCreateIssueDefaults={{ parentId: "parent-1", projectId: "project-1" }}
         createIssueLabel="Sub-issue"
         onUpdateIssue={() => undefined}
@@ -334,7 +334,7 @@ describe("IssuesList", () => {
         issues={[localIssue]}
         agents={[]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         onSearchChange={onSearchChange}
         onUpdateIssue={() => undefined}
       />,
@@ -391,7 +391,7 @@ describe("IssuesList", () => {
         issues={[]}
         agents={[]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         initialSearch="server"
         onUpdateIssue={() => undefined}
       />,
@@ -421,7 +421,7 @@ describe("IssuesList", () => {
         issues={manyIssues}
         agents={[]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         onUpdateIssue={() => undefined}
       />,
       container,
@@ -455,7 +455,7 @@ describe("IssuesList", () => {
         issues={[parentIssue, childIssue]}
         agents={[]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         onUpdateIssue={() => undefined}
       />,
       container,
@@ -479,7 +479,7 @@ describe("IssuesList", () => {
   });
 
   it("uses context-scoped persisted column visibility", async () => {
-    localStorage.setItem("paperclip:test-issues:company-1:issue-columns", JSON.stringify(["id", "assignee"]));
+    localStorage.setItem("softclip:test-issues:company-1:issue-columns", JSON.stringify(["id", "assignee"]));
 
     const assignedIssue = createIssue({
       id: "issue-assigned",
@@ -493,7 +493,7 @@ describe("IssuesList", () => {
         issues={[assignedIssue]}
         agents={[{ id: "agent-1", name: "Agent One" }]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         onUpdateIssue={() => undefined}
       />,
       container,
@@ -515,7 +515,7 @@ describe("IssuesList", () => {
   });
 
   it("shows human assignee names from company member profiles", async () => {
-    localStorage.setItem("paperclip:test-issues:company-1:issue-columns", JSON.stringify(["id", "assignee"]));
+    localStorage.setItem("softclip:test-issues:company-1:issue-columns", JSON.stringify(["id", "assignee"]));
     mockAccessApi.listUserDirectory.mockResolvedValue({
       users: [
         {
@@ -543,7 +543,7 @@ describe("IssuesList", () => {
         issues={[assignedIssue]}
         agents={[]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         onUpdateIssue={() => undefined}
       />,
       container,
@@ -560,7 +560,7 @@ describe("IssuesList", () => {
 
   it("preserves stored grouping across refresh when initial assignees are applied", async () => {
     localStorage.setItem(
-      "paperclip:test-issues:company-1",
+      "softclip:test-issues:company-1",
       JSON.stringify({ groupBy: "status", sortField: "updated", sortDir: "desc" }),
     );
 
@@ -572,7 +572,7 @@ describe("IssuesList", () => {
         issues={[todoIssue, doneIssue]}
         agents={[{ id: "agent-1", name: "Agent One" }]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         initialAssignees={["agent-1"]}
         onUpdateIssue={() => undefined}
       />,
@@ -592,7 +592,7 @@ describe("IssuesList", () => {
   });
 
   it("filters the list to a single workspace when a workspace name is clicked", async () => {
-    localStorage.setItem("paperclip:test-issues:company-1:issue-columns", JSON.stringify(["id", "workspace"]));
+    localStorage.setItem("softclip:test-issues:company-1:issue-columns", JSON.stringify(["id", "workspace"]));
     mockInstanceSettingsApi.getExperimental.mockResolvedValue({ enableIsolatedWorkspaces: true });
     mockExecutionWorkspacesApi.listSummaries.mockResolvedValue([
       {
@@ -629,7 +629,7 @@ describe("IssuesList", () => {
         issues={[alphaIssue, betaIssue]}
         agents={[]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         onUpdateIssue={() => undefined}
       />,
       container,
@@ -681,7 +681,7 @@ describe("IssuesList", () => {
         issues={[manualIssue, routineIssue]}
         agents={[]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         enableRoutineVisibilityFilter
         onUpdateIssue={() => undefined}
       />,
@@ -731,7 +731,7 @@ describe("IssuesList", () => {
         issues={[createIssue()]}
         agents={[]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         initialSearch="bug"
         onUpdateIssue={() => undefined}
       />,
@@ -767,7 +767,7 @@ describe("IssuesList", () => {
         issues={[createIssue()]}
         agents={[]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         initialSearch=""
         onUpdateIssue={() => undefined}
       />,
@@ -805,7 +805,7 @@ describe("IssuesList", () => {
         issues={[createIssue()]}
         agents={[]}
         projects={[]}
-        viewStateKey="paperclip:test-issues"
+        viewStateKey="softclip:test-issues"
         onUpdateIssue={() => undefined}
       />,
       container,

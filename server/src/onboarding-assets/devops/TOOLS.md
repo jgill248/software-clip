@@ -2,7 +2,7 @@
 
 ## Skills
 
-- **`paperclip`** — control-plane coordination (issues, approvals,
+- **`softclip`** — control-plane coordination (issues, approvals,
   comments, release-issue management).
 - **`para-memory-files`** — durable memory. Use for runbook
   history, incident timelines, and "we tried X and it didn't

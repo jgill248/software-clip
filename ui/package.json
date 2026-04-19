@@ -1,15 +1,15 @@
 {
   "name": "@softclipai/ui",
   "version": "0.3.1",
-  "description": "Prebuilt Paperclip board UI assets.",
+  "description": "Prebuilt Softclip board UI assets.",
   "license": "MIT",
-  "homepage": "https://github.com/paperclipai/paperclip",
+  "homepage": "https://github.com/jgill248/software-clip",
   "bugs": {
-    "url": "https://github.com/paperclipai/paperclip/issues"
+    "url": "https://github.com/jgill248/software-clip/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/paperclipai/paperclip",
+    "url": "https://github.com/jgill248/software-clip",
     "directory": "ui"
   },
   "type": "module",

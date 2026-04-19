@@ -936,7 +936,7 @@ describe("inbox helpers", () => {
   });
 
   it("normalizes invalid inbox filter storage back to safe defaults", () => {
-    localStorage.setItem("paperclip:inbox:filters:company-1", JSON.stringify({
+    localStorage.setItem("softclip:inbox:filters:company-1", JSON.stringify({
       allCategoryFilter: "bogus",
       allApprovalFilter: "bogus",
       issueFilters: {
@@ -1092,7 +1092,7 @@ describe("inbox helpers", () => {
   });
 
   it("maps legacy new-tab storage to mine", () => {
-    localStorage.setItem("paperclip:inbox:last-tab", "new");
+    localStorage.setItem("softclip:inbox:last-tab", "new");
     expect(loadLastInboxTab()).toBe("mine");
   });
 
@@ -1206,7 +1206,7 @@ describe("inbox helpers", () => {
 
   it("returns empty collapsed inbox groups for missing or invalid storage", () => {
     expect(loadCollapsedInboxGroupKeys("company-1")).toEqual(new Set());
-    localStorage.setItem("paperclip:inbox:collapsed-groups:company-1", JSON.stringify({ nope: true }));
+    localStorage.setItem("softclip:inbox:collapsed-groups:company-1", JSON.stringify({ nope: true }));
     expect(loadCollapsedInboxGroupKeys("company-1")).toEqual(new Set());
   });
 

@@ -6,7 +6,7 @@ import type { AdapterExecutionContext } from "@softclipai/adapter-utils";
 const TRUTHY_ENV_RE = /^(1|true|yes|on)$/i;
 const COPIED_SHARED_FILES = ["config.json", "config.toml", "instructions.md"] as const;
 const SYMLINKED_SHARED_FILES = ["auth.json"] as const;
-const DEFAULT_PAPERCLIP_INSTANCE_ID = "default";
+const DEFAULT_SOFTCLIP_INSTANCE_ID = "default";
 
 function nonEmpty(value: string | undefined): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
@@ -24,18 +24,18 @@ export function resolveSharedCodexHomeDir(
 }
 
 function isWorktreeMode(env: NodeJS.ProcessEnv): boolean {
-  return TRUTHY_ENV_RE.test(env.PAPERCLIP_IN_WORKTREE ?? "");
+  return TRUTHY_ENV_RE.test(env.SOFTCLIP_IN_WORKTREE ?? "");
 }
 
 export function resolveManagedCodexHomeDir(
   env: NodeJS.ProcessEnv,
   productId?: string,
 ): string {
-  const paperclipHome = nonEmpty(env.PAPERCLIP_HOME) ?? path.resolve(os.homedir(), ".paperclip");
-  const instanceId = nonEmpty(env.PAPERCLIP_INSTANCE_ID) ?? DEFAULT_PAPERCLIP_INSTANCE_ID;
+  const softclipHome = nonEmpty(env.SOFTCLIP_HOME) ?? path.resolve(os.homedir(), ".softclip");
+  const instanceId = nonEmpty(env.SOFTCLIP_INSTANCE_ID) ?? DEFAULT_SOFTCLIP_INSTANCE_ID;
   return productId
-    ? path.resolve(paperclipHome, "instances", instanceId, "companies", productId, "codex-home")
-    : path.resolve(paperclipHome, "instances", instanceId, "codex-home");
+    ? path.resolve(softclipHome, "instances", instanceId, "companies", productId, "codex-home")
+    : path.resolve(softclipHome, "instances", instanceId, "codex-home");
 }
 
 async function ensureParentDir(target: string): Promise<void> {
@@ -97,7 +97,7 @@ export async function prepareManagedCodexHome(
 
   await onLog(
     "stdout",
-    `[paperclip] Using ${isWorktreeMode(env) ? "worktree-isolated" : "Paperclip-managed"} Codex home "${targetHome}" (seeded from "${sourceHome}").\n`,
+    `[softclip] Using ${isWorktreeMode(env) ? "worktree-isolated" : "Softclip-managed"} Codex home "${targetHome}" (seeded from "${sourceHome}").\n`,
   );
   return targetHome;
 }

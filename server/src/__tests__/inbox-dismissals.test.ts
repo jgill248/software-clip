@@ -33,7 +33,7 @@ describeEmbeddedPostgres("inbox dismissals", () => {
   let tempDb: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
 
   beforeAll(async () => {
-    tempDb = await startEmbeddedPostgresTestDatabase("paperclip-inbox-dismissals-");
+    tempDb = await startEmbeddedPostgresTestDatabase("softclip-inbox-dismissals-");
     db = createDb(tempDb.connectionString);
     dismissalsSvc = inboxDismissalService(db);
     badgesSvc = sidebarBadgeService(db);
@@ -61,7 +61,7 @@ describeEmbeddedPostgres("inbox dismissals", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: "PAP",
     });
 
@@ -89,7 +89,7 @@ describeEmbeddedPostgres("inbox dismissals", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: "PAP",
     });
 

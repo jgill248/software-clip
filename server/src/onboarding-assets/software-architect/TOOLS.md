@@ -2,7 +2,7 @@
 
 ## Skills
 
-- **`paperclip`** — control-plane coordination. Use for issue
+- **`softclip`** — control-plane coordination. Use for issue
   interactions and approval responses.
 - **`para-memory-files`** — durable memory. Use for ADR summaries,
   library evaluations, and "we tried X and it didn't work" records.

@@ -7,8 +7,8 @@ artifacts.
 ## 1. Identity and context
 
 - `GET /api/agents/me` — confirm id, role, chainOfCommand.
-- Check wake context: `PAPERCLIP_TASK_ID`, `PAPERCLIP_WAKE_REASON`,
-  `PAPERCLIP_WAKE_COMMENT_ID`, `PAPERCLIP_APPROVAL_ID`.
+- Check wake context: `SOFTCLIP_TASK_ID`, `SOFTCLIP_WAKE_REASON`,
+  `SOFTCLIP_WAKE_COMMENT_ID`, `SOFTCLIP_APPROVAL_ID`.
 
 ## 2. Read today's plan
 
@@ -18,7 +18,7 @@ artifacts.
 
 ## 3. Approval follow-up
 
-If `PAPERCLIP_APPROVAL_ID` is set:
+If `SOFTCLIP_APPROVAL_ID` is set:
 
 - Review the approval payload and its linked issues.
 - Either approve, reject with a concrete reason, or comment asking one
@@ -121,7 +121,7 @@ stories get materialised. You own both ends of the plan lifecycle.
 
 ## Rules
 
-- Always include `X-Paperclip-Run-Id` on mutating API calls.
+- Always include `X-Softclip-Run-Id` on mutating API calls.
 - Comment in concise markdown: status line + bullets + links.
 - Self-assign via checkout only when explicitly @-mentioned.
 - Never cancel cross-team tasks — reassign with a comment instead.

@@ -422,24 +422,24 @@ describe("openclaw gateway adapter execute", () => {
               issueId: "issue-123",
               wakeReason: "issue_assigned",
               issueIds: ["issue-123"],
-              paperclipWorkspace: {
+              softclipWorkspace: {
                 cwd: "/tmp/worktrees/pap-123",
                 strategy: "git_worktree",
                 branchName: "pap-123-test",
               },
-              paperclipWorkspaces: [
+              softclipWorkspaces: [
                 {
                   id: "workspace-1",
                   cwd: "/tmp/project",
                 },
               ],
-              paperclipRuntimeServiceIntents: [
+              softclipRuntimeServiceIntents: [
                 {
                   name: "preview",
                   lifecycle: "ephemeral",
                 },
               ],
-              paperclipWake: {
+              softclipWake: {
                 reason: "issue_commented",
                 issue: {
                   id: "issue-123",
@@ -489,11 +489,11 @@ describe("openclaw gateway adapter execute", () => {
       const payload = gateway.getAgentPayload();
       expect(payload).toBeTruthy();
       expect(payload?.idempotencyKey).toBe("run-123");
-      expect(payload?.sessionKey).toBe("paperclip:issue:issue-123");
+      expect(payload?.sessionKey).toBe("softclip:issue:issue-123");
       expect(String(payload?.message ?? "")).toContain("wake now");
-      expect(String(payload?.message ?? "")).toContain("PAPERCLIP_RUN_ID=run-123");
-      expect(String(payload?.message ?? "")).toContain("PAPERCLIP_TASK_ID=task-123");
-      expect(String(payload?.message ?? "")).toContain("## Paperclip Wake Payload");
+      expect(String(payload?.message ?? "")).toContain("SOFTCLIP_RUN_ID=run-123");
+      expect(String(payload?.message ?? "")).toContain("SOFTCLIP_TASK_ID=task-123");
+      expect(String(payload?.message ?? "")).toContain("## Softclip Wake Payload");
       expect(String(payload?.message ?? "")).toContain(
         "Treat this wake payload as the highest-priority change for the current heartbeat.",
       );
@@ -502,7 +502,7 @@ describe("openclaw gateway adapter execute", () => {
       );
       expect(String(payload?.message ?? "")).toContain("First comment");
       expect(String(payload?.message ?? "")).toContain("\"commentIds\":[\"comment-1\",\"comment-2\"]");
-      expect(payload?.paperclip).toMatchObject({
+      expect(payload?.softclip).toMatchObject({
         wake: {
           latestCommentId: "comment-2",
           commentIds: ["comment-1", "comment-2"],

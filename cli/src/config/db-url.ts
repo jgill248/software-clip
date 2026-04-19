@@ -57,5 +57,5 @@ export function resolveDbUrl(
 }
 
 export function embeddedPostgresUrl(port: number): string {
-  return `postgres://paperclip:paperclip@127.0.0.1:${port}/paperclip`;
+  return `postgres://softclip:softclip@127.0.0.1:${port}/softclip`;
 }

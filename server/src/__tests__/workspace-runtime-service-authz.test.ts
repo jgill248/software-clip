@@ -32,7 +32,7 @@ describeEmbeddedPostgres("workspace runtime service authz helper", () => {
   let tempDb: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
 
   beforeAll(async () => {
-    tempDb = await startEmbeddedPostgresTestDatabase("paperclip-workspace-runtime-authz-");
+    tempDb = await startEmbeddedPostgresTestDatabase("softclip-workspace-runtime-authz-");
     db = createDb(tempDb.connectionString);
   }, 20_000);
 
@@ -53,7 +53,7 @@ describeEmbeddedPostgres("workspace runtime service authz helper", () => {
     const productId = randomUUID();
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `PAP-${productId.slice(0, 8)}`,
     });
     return productId;
@@ -74,7 +74,7 @@ describeEmbeddedPostgres("workspace runtime service authz helper", () => {
       projectId,
       name: "Primary",
       sourceType: "local_path",
-      cwd: "/tmp/paperclip-authz-project",
+      cwd: "/tmp/softclip-authz-project",
       isPrimary: true,
     });
     return { projectId, projectWorkspaceId };
@@ -92,7 +92,7 @@ describeEmbeddedPostgres("workspace runtime service authz helper", () => {
       name: "Execution workspace",
       status: "active",
       providerType: "local_fs",
-      cwd: "/tmp/paperclip-authz-execution",
+      cwd: "/tmp/softclip-authz-execution",
     });
     return executionWorkspaceId;
   }

@@ -151,7 +151,7 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
   const cleanupPids = new Set<number>();
 
   beforeAll(async () => {
-    tempDb = await startEmbeddedPostgresTestDatabase("paperclip-heartbeat-recovery-");
+    tempDb = await startEmbeddedPostgresTestDatabase("softclip-heartbeat-recovery-");
     db = createDb(tempDb.connectionString);
   }, 20_000);
 
@@ -237,7 +237,7 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix,
     });
 
@@ -318,7 +318,7 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix,
     });
 

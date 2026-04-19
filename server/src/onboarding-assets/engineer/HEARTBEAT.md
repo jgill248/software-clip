@@ -3,8 +3,8 @@
 ## 1. Identity and context
 
 - `GET /api/agents/me`.
-- Check wake context: `PAPERCLIP_TASK_ID`, `PAPERCLIP_WAKE_REASON`,
-  `PAPERCLIP_WAKE_COMMENT_ID`, `PAPERCLIP_APPROVAL_ID`.
+- Check wake context: `SOFTCLIP_TASK_ID`, `SOFTCLIP_WAKE_REASON`,
+  `SOFTCLIP_WAKE_COMMENT_ID`, `SOFTCLIP_APPROVAL_ID`.
 
 ## 2. Review queue
 
@@ -80,7 +80,7 @@ For your own PRs that are approved + green:
 
 ## Rules
 
-- Always include `X-Paperclip-Run-Id` on mutating API calls.
+- Always include `X-Softclip-Run-Id` on mutating API calls.
 - Never merge with failing CI.
 - Never ship without tests.
 - Never retry a 409 on checkout — the task is someone else's.

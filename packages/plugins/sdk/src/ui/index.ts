@@ -1,5 +1,5 @@
 /**
- * `@softclipai/plugin-sdk/ui` — Paperclip plugin UI SDK.
+ * `@softclipai/plugin-sdk/ui` — Softclip plugin UI SDK.
  *
  * Import this subpath from plugin UI bundles (React components that run in
  * the host frontend).  Do **not** import this from plugin worker code.

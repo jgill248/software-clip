@@ -20,7 +20,7 @@ import { registerDashboardCommands } from "./commands/client/dashboard.js";
 import { registerRoutineCommands } from "./commands/routines.js";
 import { registerFeedbackCommands } from "./commands/client/feedback.js";
 import { applyDataDirOverride, type DataDirOptionLike } from "./config/data-dir.js";
-import { loadPaperclipEnvFile } from "./config/env.js";
+import { loadSoftclipEnvFile } from "./config/env.js";
 import { initTelemetryFromConfigFile, flushTelemetry } from "./telemetry.js";
 import { registerWorktreeCommands } from "./commands/worktree.js";
 import { registerPluginCommands } from "./commands/client/plugin.js";
@@ -30,13 +30,13 @@ import path from "node:path";
 
 const program = new Command();
 const DATA_DIR_OPTION_HELP =
-  "Softclip data directory root (isolates state from ~/.paperclip)";
+  "Softclip data directory root (isolates state from ~/.softclip)";
 
 const invokedAs = (() => {
   const argv1 = process.argv[1];
   if (!argv1) return "softclip";
   const base = path.basename(argv1);
-  return base === "paperclipai" ? "paperclipai" : "softclip";
+  return base === "softclip" ? "softclip" : "softclip";
 })();
 
 program
@@ -51,7 +51,7 @@ program.hook("preAction", (_thisCommand, actionCommand) => {
     hasConfigOption: optionNames.has("config"),
     hasContextOption: optionNames.has("context"),
   });
-  loadPaperclipEnvFile(options.config);
+  loadSoftclipEnvFile(options.config);
   initTelemetryFromConfigFile(options.config);
 });
 
@@ -62,12 +62,12 @@ program
   .option("-d, --data-dir <path>", DATA_DIR_OPTION_HELP)
   .option("--bind <mode>", "Quickstart reachability preset (loopback, lan, tailnet)")
   .option("-y, --yes", "Accept quickstart defaults (trusted local loopback unless --bind is set) and start immediately", false)
-  .option("--run", "Start Paperclip immediately after saving config", false)
+  .option("--run", "Start Softclip immediately after saving config", false)
   .action(onboard);
 
 program
   .command("doctor")
-  .description("Run diagnostic checks on your Paperclip setup")
+  .description("Run diagnostic checks on your Softclip setup")
   .option("-c, --config <path>", "Path to config file")
   .option("-d, --data-dir <path>", DATA_DIR_OPTION_HELP)
   .option("--repair", "Attempt to repair issues automatically")
@@ -99,7 +99,7 @@ program
   .option("-d, --data-dir <path>", DATA_DIR_OPTION_HELP)
   .option("--dir <path>", "Backup output directory (overrides config)")
   .option("--retention-days <days>", "Retention window used for pruning", (value) => Number(value))
-  .option("--filename-prefix <prefix>", "Backup filename prefix", "paperclip")
+  .option("--filename-prefix <prefix>", "Backup filename prefix", "softclip")
   .option("--json", "Print backup metadata as JSON")
   .action(async (opts) => {
     await dbBackupCommand(opts);
@@ -112,7 +112,7 @@ const db = program
 db
   .command("connect")
   .description(
-    "Configure Paperclip to use an external or team-shared PostgreSQL",
+    "Configure Softclip to use an external or team-shared PostgreSQL",
   )
   .option("-c, --config <path>", "Path to config file")
   .option("-d, --data-dir <path>", DATA_DIR_OPTION_HELP)
@@ -151,7 +151,7 @@ program
 
 program
   .command("run")
-  .description("Bootstrap local setup (onboard + doctor) and run Paperclip")
+  .description("Bootstrap local setup (onboard + doctor) and run Softclip")
   .option("-c, --config <path>", "Path to config file")
   .option("-d, --data-dir <path>", DATA_DIR_OPTION_HELP)
   .option("-i, --instance <id>", "Local instance id (default: default)")
@@ -170,7 +170,7 @@ heartbeat
   .option("-d, --data-dir <path>", DATA_DIR_OPTION_HELP)
   .option("--context <path>", "Path to CLI context file")
   .option("--profile <name>", "CLI context profile name")
-  .option("--api-base <url>", "Base URL for the Paperclip server API")
+  .option("--api-base <url>", "Base URL for the Softclip server API")
   .option("--api-key <token>", "Bearer token for agent-authenticated calls")
   .option(
     "--source <source>",

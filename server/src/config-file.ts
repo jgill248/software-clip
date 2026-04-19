@@ -1,15 +1,15 @@
 import fs from "node:fs";
-import { paperclipConfigSchema, type PaperclipConfig } from "@softclipai/shared";
-import { resolvePaperclipConfigPath } from "./paths.js";
+import { softclipConfigSchema, type SoftclipConfig } from "@softclipai/shared";
+import { resolveSoftclipConfigPath } from "./paths.js";
 
-export function readConfigFile(): PaperclipConfig | null {
-  const configPath = resolvePaperclipConfigPath();
+export function readConfigFile(): SoftclipConfig | null {
+  const configPath = resolveSoftclipConfigPath();
 
   if (!fs.existsSync(configPath)) return null;
 
   try {
     const raw = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-    return paperclipConfigSchema.parse(raw);
+    return softclipConfigSchema.parse(raw);
   } catch {
     return null;
   }

@@ -202,7 +202,7 @@ export type {
   PluginLauncherDeclaration,
   PluginMinimumHostVersion,
   PluginUiDeclaration,
-  PaperclipPluginManifestV1,
+  SoftclipPluginManifestV1,
   PluginRecord,
   PluginStateRecord,
   PluginConfig,

@@ -40,7 +40,7 @@ Rules:
 - Never assign a single task to multiple roles. If a story needs design +
   code + test, split it into subtasks with a parent issue — each subtask
   owned by one role.
-- If the right role doesn't exist yet, use the `paperclip-create-agent`
+- If the right role doesn't exist yet, use the `softclip-create-agent`
   skill to hire one before delegating.
 - For cross-cutting tasks (e.g., "add a new paid tier"), break into
   sub-issues per role; the parent issue is yours until all children close.
