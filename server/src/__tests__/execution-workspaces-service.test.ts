@@ -6,7 +6,7 @@ import { randomUUID } from "node:crypto";
 import { promisify } from "node:util";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
-  companies,
+  products,
   createDb,
   executionWorkspaces,
   issues,
@@ -138,7 +138,7 @@ describeEmbeddedPostgres("executionWorkspaceService.getCloseReadiness", () => {
     await db.delete(executionWorkspaces);
     await db.delete(projectWorkspaces);
     await db.delete(projects);
-    await db.delete(companies);
+    await db.delete(products);
 
     for (const dir of tempDirs) {
       await fs.rm(dir, { recursive: true, force: true });
@@ -156,7 +156,7 @@ describeEmbeddedPostgres("executionWorkspaceService.getCloseReadiness", () => {
     const projectWorkspaceId = randomUUID();
     const executionWorkspaceId = randomUUID();
 
-    await db.insert(companies).values({
+    await db.insert(products).values({
       id: companyId,
       name: "Paperclip",
       issuePrefix: "PAP",
@@ -240,7 +240,7 @@ describeEmbeddedPostgres("executionWorkspaceService.getCloseReadiness", () => {
     const projectWorkspaceId = randomUUID();
     const executionWorkspaceId = randomUUID();
 
-    await db.insert(companies).values({
+    await db.insert(products).values({
       id: companyId,
       name: "Paperclip",
       issuePrefix: "PAP",

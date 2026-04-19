@@ -1,10 +1,10 @@
 import express from "express";
 import request from "supertest";
 import { describe, expect, it, vi } from "vitest";
-import { companyRoutes } from "../routes/companies.js";
+import { productRoutes } from "../routes/products.js";
 
 vi.mock("../services/index.js", () => ({
-  companyService: () => ({
+  productService: () => ({
     list: vi.fn(),
     stats: vi.fn(),
     getById: vi.fn(),
@@ -52,7 +52,7 @@ describe("company routes malformed issue path guard", () => {
       };
       next();
     });
-    app.use("/api/companies", companyRoutes({} as any));
+    app.use("/api/companies", productRoutes({} as any));
 
     const res = await request(app).get("/api/companies/issues");
 

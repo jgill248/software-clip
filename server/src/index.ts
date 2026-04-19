@@ -19,7 +19,7 @@ import {
   formatDatabaseBackupResult,
   runDatabaseBackup,
   authUsers,
-  companies,
+  products,
   companyMemberships,
   instanceUserRoles,
 } from "@softclipai/db";
@@ -228,7 +228,7 @@ export async function startServer(): Promise<StartedServer> {
       });
     }
   
-    const companyRows = await db.select({ id: companies.id }).from(companies);
+    const companyRows = await db.select({ id: products.id }).from(products);
     for (const company of companyRows) {
       const membership = await db
         .select({ id: companyMemberships.id })

@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, timestamp, index, uniqueIndex } from "drizzle-orm/pg-core";
-import { companies } from "./products.js";
+import { products } from "./products.js";
 import { issues } from "./issues.js";
 import { documents } from "./documents.js";
 
@@ -7,7 +7,7 @@ export const issueDocuments = pgTable(
   "issue_documents",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => products.id),
     issueId: uuid("issue_id").notNull().references(() => issues.id, { onDelete: "cascade" }),
     documentId: uuid("document_id").notNull().references(() => documents.id, { onDelete: "cascade" }),
     key: text("key").notNull(),

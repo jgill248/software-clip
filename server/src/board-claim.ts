@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { and, eq } from "drizzle-orm";
 import type { Db } from "@softclipai/db";
-import { companies, companyMemberships, instanceUserRoles } from "@softclipai/db";
+import { products, companyMemberships, instanceUserRoles } from "@softclipai/db";
 import type { DeploymentMode } from "@softclipai/shared";
 
 const LOCAL_BOARD_USER_ID = "local-board";
@@ -106,7 +106,7 @@ export async function claimBoardOwnership(
       .delete(instanceUserRoles)
       .where(and(eq(instanceUserRoles.userId, LOCAL_BOARD_USER_ID), eq(instanceUserRoles.role, "instance_admin")));
 
-    const allCompanies = await tx.select({ id: companies.id }).from(companies);
+    const allCompanies = await tx.select({ id: products.id }).from(products);
     for (const company of allCompanies) {
       const existing = await tx
         .select({ id: companyMemberships.id, status: companyMemberships.status })

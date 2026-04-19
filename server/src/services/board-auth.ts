@@ -5,7 +5,7 @@ import {
   authUsers,
   boardApiKeys,
   cliAuthChallenges,
-  companies,
+  products,
   companyMemberships,
   instanceUserRoles,
 } from "@softclipai/db";
@@ -120,8 +120,8 @@ export function boardAuthService(db: Db) {
 
     if (companyIds.size === 0 && access.isInstanceAdmin) {
       const allCompanyIds = await db
-        .select({ id: companies.id })
-        .from(companies)
+        .select({ id: products.id })
+        .from(products)
         .then((rows) => rows.map((row) => row.id));
       for (const companyId of allCompanyIds) {
         companyIds.add(companyId);
@@ -219,9 +219,9 @@ export function boardAuthService(db: Db) {
     const [company, approvedBy] = await Promise.all([
       challenge.requestedCompanyId
         ? db
-            .select({ id: companies.id, name: companies.name })
-            .from(companies)
-            .where(eq(companies.id, challenge.requestedCompanyId))
+            .select({ id: products.id, name: products.name })
+            .from(products)
+            .where(eq(products.id, challenge.requestedCompanyId))
             .then((rows) => rows[0] ?? null)
         : Promise.resolve(null),
       challenge.approvedByUserId

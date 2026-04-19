@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   agents,
   authUsers,
-  companies,
+  products,
   createDb,
   projects,
   routines,
@@ -1061,7 +1061,7 @@ describeEmbeddedPostgres("pauseSeededScheduledRoutines", () => {
     const disabledScheduleRoutineId = randomUUID();
 
     try {
-      await db.insert(companies).values({
+      await db.insert(products).values({
         id: companyId,
         name: "Paperclip",
         issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,

@@ -1,5 +1,5 @@
 import type { Db } from "@softclipai/db";
-import { companies, instanceSettings } from "@softclipai/db";
+import { products, instanceSettings } from "@softclipai/db";
 import {
   DEFAULT_FEEDBACK_DATA_SHARING_PREFERENCE,
   DEFAULT_BACKUP_RETENTION,
@@ -139,8 +139,8 @@ export function instanceSettingsService(db: Db) {
 
     listCompanyIds: async (): Promise<string[]> =>
       db
-        .select({ id: companies.id })
-        .from(companies)
+        .select({ id: products.id })
+        .from(products)
         .then((rows) => rows.map((row) => row.id)),
   };
 }

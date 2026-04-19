@@ -15,7 +15,7 @@ import {
   assets,
   agentApiKeys,
   authUsers,
-  companies,
+  products,
   // Softclip pivot §6: companyLogos removed.
   companyMemberships,
   invites,
@@ -1128,9 +1128,9 @@ async function loadCompanyInviteRecords(
           )
       : Promise.resolve([]),
     db
-      .select({ name: companies.name })
-      .from(companies)
-      .where(eq(companies.id, companyId))
+      .select({ name: products.name })
+      .from(products)
+      .where(eq(products.id, companyId))
       .then((companyRows) => companyRows[0]?.name ?? null),
   ]);
   const joinRequestIdByInviteId = new Map(
@@ -1237,12 +1237,12 @@ async function loadUserCompanyAccessResponse(
   const companyRows = companyIds.length
     ? await db
         .select({
-          id: companies.id,
-          name: companies.name,
-          status: companies.status,
+          id: products.id,
+          name: products.name,
+          status: products.status,
         })
-        .from(companies)
-        .where(inArray(companies.id, companyIds))
+        .from(products)
+        .where(inArray(products.id, companyIds))
     : [];
   const companyMap = new Map(companyRows.map((company) => [company.id, company]));
 
@@ -2386,9 +2386,9 @@ export function accessRoutes(
   ): Promise<{ name: string | null }> {
     if (!companyId) return { name: null };
     const company = await db
-      .select({ name: companies.name })
-      .from(companies)
-      .where(eq(companies.id, companyId))
+      .select({ name: products.name })
+      .from(products)
+      .where(eq(products.id, companyId))
       .then((rows) => rows[0] ?? null);
     return { name: company?.name ?? null };
   }

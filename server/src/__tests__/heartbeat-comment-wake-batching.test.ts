@@ -11,7 +11,7 @@ import {
   agents,
   agentWakeupRequests,
   applyPendingMigrations,
-  companies,
+  products,
   createDb,
   ensurePostgresDatabase,
   heartbeatRuns,
@@ -245,7 +245,7 @@ describe("heartbeat comment wake batching", () => {
     const heartbeat = heartbeatService(db);
 
     try {
-      await db.insert(companies).values({
+      await db.insert(products).values({
         id: companyId,
         name: "Paperclip",
         issuePrefix,
@@ -437,7 +437,7 @@ describe("heartbeat comment wake batching", () => {
     const heartbeat = heartbeatService(db);
 
     try {
-      await db.insert(companies).values({
+      await db.insert(products).values({
         id: companyId,
         name: "Paperclip",
         issuePrefix,
@@ -622,7 +622,7 @@ describe("heartbeat comment wake batching", () => {
     const heartbeat = heartbeatService(db);
 
     try {
-      await db.insert(companies).values({
+      await db.insert(products).values({
         id: companyId,
         name: "Paperclip",
         issuePrefix,
@@ -773,7 +773,7 @@ describe("heartbeat comment wake batching", () => {
     const heartbeat = heartbeatService(db);
 
     try {
-      await db.insert(companies).values({
+      await db.insert(products).values({
         id: companyId,
         name: "Paperclip",
         issuePrefix,
@@ -934,7 +934,7 @@ describe("heartbeat comment wake batching", () => {
     const heartbeat = heartbeatService(db);
 
     try {
-      await db.insert(companies).values({
+      await db.insert(products).values({
         id: companyId,
         name: "Paperclip",
         issuePrefix,

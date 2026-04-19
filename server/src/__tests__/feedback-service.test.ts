@@ -9,7 +9,7 @@ import { writePaperclipSkillSyncPreference } from "@softclipai/adapter-utils/ser
 import {
   agents,
   applyPendingMigrations,
-  companies,
+  products,
   companySkills,
   costEvents,
   createDb,
@@ -124,7 +124,7 @@ describe("feedbackService.saveIssueVote", () => {
     await db.delete(companySkills);
     await db.delete(issues);
     await db.delete(agents);
-    await db.delete(companies);
+    await db.delete(products);
     for (const dir of tempDirs) {
       fs.rmSync(dir, { recursive: true, force: true });
     }
@@ -146,7 +146,7 @@ describe("feedbackService.saveIssueVote", () => {
     const issueId = randomUUID();
     const commentId = randomUUID();
 
-    await db.insert(companies).values({
+    await db.insert(products).values({
       id: companyId,
       name: "Paperclip",
       issuePrefix: `F${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
@@ -205,7 +205,7 @@ describe("feedbackService.saveIssueVote", () => {
       "utf8",
     );
 
-    await db.insert(companies).values({
+    await db.insert(products).values({
       id: companyId,
       name: "Paperclip",
       issuePrefix: `R${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
@@ -348,7 +348,7 @@ describe("feedbackService.saveIssueVote", () => {
     const documentId = randomUUID();
     const revisionId = randomUUID();
 
-    await db.insert(companies).values({
+    await db.insert(products).values({
       id: companyId,
       name: "Paperclip",
       issuePrefix: `D${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
@@ -416,7 +416,7 @@ describe("feedbackService.saveIssueVote", () => {
     const commentId = randomUUID();
     const runId = randomUUID();
 
-    await db.insert(companies).values({
+    await db.insert(products).values({
       id: companyId,
       name: "Paperclip",
       issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
@@ -488,8 +488,8 @@ describe("feedbackService.saveIssueVote", () => {
 
     const company = await db
       .select()
-      .from(companies)
-      .where(eq(companies.id, companyId))
+      .from(products)
+      .where(eq(products.id, companyId))
       .then((rows) => rows[0] ?? null);
 
     expect(company?.feedbackDataSharingEnabled).toBe(false);
@@ -557,8 +557,8 @@ describe("feedbackService.saveIssueVote", () => {
 
     const company = await db
       .select()
-      .from(companies)
-      .where(eq(companies.id, companyId))
+      .from(products)
+      .where(eq(products.id, companyId))
       .then((rows) => rows[0] ?? null);
 
     expect(company?.feedbackDataSharingEnabled).toBe(true);
@@ -984,7 +984,7 @@ describe("feedbackService.saveIssueVote", () => {
     const issueId = randomUUID();
     const commentId = randomUUID();
 
-    await db.insert(companies).values({
+    await db.insert(products).values({
       id: companyId,
       name: "Paperclip",
       issuePrefix: `H${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,

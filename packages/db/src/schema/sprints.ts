@@ -8,7 +8,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { agents } from "./agents.js";
-import { companies } from "./products.js";
+import { products } from "./products.js";
 
 /**
  * A sprint is a time-bound iteration scoped to a product (company). Issues
@@ -25,7 +25,7 @@ export const sprints = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     companyId: uuid("product_id")
       .notNull()
-      .references(() => companies.id, { onDelete: "cascade" }),
+      .references(() => products.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     goal: text("goal"),
     state: text("state").notNull().default("planned"),

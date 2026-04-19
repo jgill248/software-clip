@@ -1,6 +1,6 @@
 import { pgTable, uuid, text, timestamp, date, index, jsonb } from "drizzle-orm/pg-core";
 import type { AgentEnvConfig } from "@softclipai/shared";
-import { companies } from "./products.js";
+import { products } from "./products.js";
 import { goals } from "./goals.js";
 import { agents } from "./agents.js";
 
@@ -8,7 +8,7 @@ export const projects = pgTable(
   "projects",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => products.id),
     goalId: uuid("goal_id").references(() => goals.id),
     name: text("name").notNull(),
     description: text("description"),

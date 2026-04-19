@@ -4,7 +4,7 @@ import { and, asc, desc, eq, getTableColumns, gte, lte, ne, or } from "drizzle-o
 import type { Db } from "@softclipai/db";
 import {
   agents,
-  companies,
+  products,
   companySkills,
   costEvents,
   documentRevisions,
@@ -389,7 +389,7 @@ async function buildCodexTraceFiles(input: {
 
   const managedRoot = path.join(
     resolvePaperclipInstanceRoot(),
-    "companies",
+    "products",
     input.companyId,
     "codex-home",
     "sessions",
@@ -1885,11 +1885,11 @@ export function feedbackService(db: Db, options: FeedbackServiceOptions = {}) {
 
         const existingCompany = await tx
           .select({
-            feedbackDataSharingEnabled: companies.feedbackDataSharingEnabled,
-            feedbackDataSharingTermsVersion: companies.feedbackDataSharingTermsVersion,
+            feedbackDataSharingEnabled: products.feedbackDataSharingEnabled,
+            feedbackDataSharingTermsVersion: products.feedbackDataSharingTermsVersion,
           })
-          .from(companies)
-          .where(eq(companies.id, issue.companyId))
+          .from(products)
+          .where(eq(products.id, issue.companyId))
           .then((rows) => rows[0] ?? null);
         if (!existingCompany) throw notFound("Company not found");
 
@@ -1904,7 +1904,7 @@ export function feedbackService(db: Db, options: FeedbackServiceOptions = {}) {
           consentEnabledNow = true;
           consentVersion = DEFAULT_FEEDBACK_DATA_SHARING_TERMS_VERSION;
           await tx
-            .update(companies)
+            .update(products)
             .set({
               feedbackDataSharingEnabled: true,
               feedbackDataSharingConsentAt: now,
@@ -1912,7 +1912,7 @@ export function feedbackService(db: Db, options: FeedbackServiceOptions = {}) {
               feedbackDataSharingTermsVersion: consentVersion,
               updatedAt: now,
             })
-            .where(eq(companies.id, issue.companyId));
+            .where(eq(products.id, issue.companyId));
         }
 
         const existingInstanceSettings = await tx

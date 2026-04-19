@@ -1,9 +1,8 @@
 import { pgTable, uuid, text, integer, timestamp, boolean, uniqueIndex } from "drizzle-orm/pg-core";
 
 // Softclip pivot §1 (Stage 4a): core entity table renamed from
-// `companies` to `products`. The old `companies` identifier is kept as
-// an alias in the schema barrel for backward compatibility — existing
-// `eq(companies.id, ...)` queries continue to compile unchanged.
+// `companies` to `products`. The `companies` back-compat alias was
+// retired in Stage 4c; all callers reference `products` directly.
 export const products = pgTable(
   "products",
   {
@@ -32,8 +31,3 @@ export const products = pgTable(
     issuePrefixUniqueIdx: uniqueIndex("products_issue_prefix_idx").on(table.issuePrefix),
   }),
 );
-
-// Back-compat alias — callers using `companies` keep compiling. Remove
-// in Stage 4c once all service-layer and UI references migrate to
-// `products`.
-export const companies = products;

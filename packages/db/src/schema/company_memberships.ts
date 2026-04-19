@@ -1,11 +1,11 @@
 import { pgTable, uuid, text, timestamp, uniqueIndex, index } from "drizzle-orm/pg-core";
-import { companies } from "./products.js";
+import { products } from "./products.js";
 
 export const companyMemberships = pgTable(
   "company_memberships",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => products.id),
     principalType: text("principal_type").notNull(),
     principalId: text("principal_id").notNull(),
     status: text("status").notNull().default("active"),

@@ -11,7 +11,7 @@ import type {
   PluginWorkspace,
   IssueComment,
 } from "@softclipai/plugin-sdk";
-import { companyService } from "./companies.js";
+import { productService } from "./products.js";
 import { agentService } from "./agents.js";
 import { projectService } from "./projects.js";
 import { issueService } from "./issues.js";
@@ -448,7 +448,7 @@ export function buildHostServices(
   const registry = pluginRegistryService(db);
   const stateStore = pluginStateStore(db);
   const secretsHandler = createPluginSecretsHandler({ db, pluginId });
-  const companies = companyService(db);
+  const companies = productService(db);
   const agents = agentService(db);
   const heartbeat = heartbeatService(db);
   const projects = projectService(db);

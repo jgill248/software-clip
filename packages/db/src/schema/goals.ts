@@ -7,13 +7,13 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 import { agents } from "./agents.js";
-import { companies } from "./products.js";
+import { products } from "./products.js";
 
 export const goals = pgTable(
   "goals",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => products.id),
     title: text("title").notNull(),
     description: text("description"),
     level: text("level").notNull().default("task"),

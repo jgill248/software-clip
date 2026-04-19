@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
-  companies,
+  products,
   companyMemberships,
   createDb,
   principalPermissionGrants,
@@ -18,7 +18,7 @@ const describeEmbeddedPostgres = embeddedPostgresSupport.supported ? describe : 
 
 async function createCompanyWithOwner(db: ReturnType<typeof createDb>) {
   const company = await db
-    .insert(companies)
+    .insert(products)
     .values({
       name: `Access Service ${randomUUID()}`,
       issuePrefix: `AS${randomUUID().slice(0, 6).toUpperCase()}`,
@@ -53,7 +53,7 @@ describeEmbeddedPostgres("access service", () => {
   afterEach(async () => {
     await db.delete(principalPermissionGrants);
     await db.delete(companyMemberships);
-    await db.delete(companies);
+    await db.delete(products);
   });
 
   afterAll(async () => {

@@ -1,13 +1,13 @@
 import { pgTable, uuid, text, timestamp, index } from "drizzle-orm/pg-core";
 import { agents } from "./agents.js";
-import { companies } from "./products.js";
+import { products } from "./products.js";
 
 export const agentApiKeys = pgTable(
   "agent_api_keys",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     agentId: uuid("agent_id").notNull().references(() => agents.id),
-    companyId: uuid("product_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => products.id),
     name: text("name").notNull(),
     keyHash: text("key_hash").notNull(),
     lastUsedAt: timestamp("last_used_at", { withTimezone: true }),

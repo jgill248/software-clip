@@ -1,12 +1,12 @@
 import { pgTable, uuid, text, timestamp, index, uniqueIndex } from "drizzle-orm/pg-core";
-import { companies } from "./products.js";
+import { products } from "./products.js";
 import { issues } from "./issues.js";
 
 export const issueInboxArchives = pgTable(
   "issue_inbox_archives",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => products.id),
     issueId: uuid("issue_id").notNull().references(() => issues.id),
     userId: text("user_id").notNull(),
     archivedAt: timestamp("archived_at", { withTimezone: true }).notNull().defaultNow(),

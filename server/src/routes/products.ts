@@ -16,7 +16,7 @@ import {
   agentInstructionsService,
   agentService,
   ceremonyService,
-  companyService,
+  productService,
   feedbackService,
   logActivity,
 } from "../services/index.js";
@@ -27,9 +27,9 @@ import {
 import type { StorageService } from "../storage/types.js";
 import { assertBoard, assertCompanyAccess, getActorInfo } from "./authz.js";
 
-export function companyRoutes(db: Db, _storage?: StorageService) {
+export function productRoutes(db: Db, _storage?: StorageService) {
   const router = Router();
-  const svc = companyService(db);
+  const svc = productService(db);
   const access = accessService(db);
   const feedback = feedbackService(db);
   const ceremonies = ceremonyService(db);

@@ -1,12 +1,12 @@
 import { pgTable, uuid, text, timestamp, integer, index, uniqueIndex } from "drizzle-orm/pg-core";
-import { companies } from "./products.js";
+import { products } from "./products.js";
 import { agents } from "./agents.js";
 
 export const companySecrets = pgTable(
   "company_secrets",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => products.id),
     name: text("name").notNull(),
     provider: text("provider").notNull().default("local_encrypted"),
     externalRef: text("external_ref"),

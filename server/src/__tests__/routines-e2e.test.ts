@@ -7,7 +7,7 @@ import {
   activityLog,
   agentWakeupRequests,
   agents,
-  companies,
+  products,
   companyMemberships,
   createDb,
   executionWorkspaces,
@@ -109,7 +109,7 @@ describeEmbeddedPostgres("routine routes end-to-end", () => {
     await db.delete(routines);
     await db.delete(projects);
     await db.delete(agents);
-    await db.delete(companies);
+    await db.delete(products);
     await db.delete(instanceSettings);
   });
 
@@ -123,7 +123,7 @@ describeEmbeddedPostgres("routine routes end-to-end", () => {
     vi.doUnmock("../telemetry.js");
     vi.doUnmock("../services/access.js");
     vi.doUnmock("../services/issues.js");
-    vi.doUnmock("../services/companies.js");
+    vi.doUnmock("../services/products.js");
     vi.doUnmock("../services/projects.js");
     vi.doUnmock("../services/company-skills.js");
     vi.doUnmock("../services/assets.js");
@@ -177,7 +177,7 @@ describeEmbeddedPostgres("routine routes end-to-end", () => {
     const userId = randomUUID();
     const issuePrefix = `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
 
-    await db.insert(companies).values({
+    await db.insert(products).values({
       id: companyId,
       name: "Paperclip",
       issuePrefix,

@@ -1,12 +1,12 @@
 import { boolean, index, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
-import { companies } from "./products.js";
+import { products } from "./products.js";
 import { issues } from "./issues.js";
 
 export const feedbackVotes = pgTable(
   "feedback_votes",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => products.id),
     issueId: uuid("issue_id").notNull().references(() => issues.id),
     targetType: text("target_type").notNull(),
     targetId: text("target_id").notNull(),

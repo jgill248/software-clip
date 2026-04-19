@@ -4,7 +4,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
   activityLog,
   agents,
-  companies,
+  products,
   companySkills,
   createDb,
   heartbeatRuns,
@@ -18,7 +18,7 @@ import {
   startEmbeddedPostgresTestDatabase,
 } from "./helpers/embedded-postgres.js";
 import { agentService } from "../services/agents.ts";
-import { companyService } from "../services/companies.ts";
+import { productService } from "../services/products.ts";
 
 const embeddedPostgresSupport = await getEmbeddedPostgresTestSupport();
 const describeEmbeddedPostgres = embeddedPostgresSupport.supported ? describe : describe.skip;
@@ -47,7 +47,7 @@ describeEmbeddedPostgres("cleanup removal services", () => {
     await db.delete(heartbeatRuns);
     await db.delete(issues);
     await db.delete(agents);
-    await db.delete(companies);
+    await db.delete(products);
   });
 
   afterAll(async () => {
@@ -61,7 +61,7 @@ describeEmbeddedPostgres("cleanup removal services", () => {
     const runId = randomUUID();
     const issuePrefix = `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
 
-    await db.insert(companies).values({
+    await db.insert(products).values({
       id: companyId,
       name: "Paperclip",
       issuePrefix,
@@ -176,10 +176,10 @@ describeEmbeddedPostgres("cleanup removal services", () => {
       details: {},
     });
 
-    const removed = await companyService(db).remove(companyId);
+    const removed = await productService(db).remove(companyId);
 
     expect(removed?.id).toBe(companyId);
-    await expect(db.select().from(companies).where(eq(companies.id, companyId))).resolves.toHaveLength(0);
+    await expect(db.select().from(products).where(eq(products.id, companyId))).resolves.toHaveLength(0);
     await expect(db.select().from(issues).where(eq(issues.id, issueId))).resolves.toHaveLength(0);
     await expect(db.select().from(issueReadStates).where(eq(issueReadStates.companyId, companyId))).resolves.toHaveLength(0);
     await expect(db.select().from(activityLog).where(eq(activityLog.companyId, companyId))).resolves.toHaveLength(0);

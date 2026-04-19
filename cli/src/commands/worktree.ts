@@ -24,7 +24,7 @@ import {
   applyPendingMigrations,
   agents,
   assets,
-  companies,
+  products,
   createDb,
   documentRevisions,
   documents,
@@ -1794,18 +1794,18 @@ async function resolveMergeCompany(input: {
   const [sourceCompanies, targetCompanies] = await Promise.all([
     input.sourceDb
       .select({
-        id: companies.id,
-        name: companies.name,
-        issuePrefix: companies.issuePrefix,
+        id: products.id,
+        name: products.name,
+        issuePrefix: products.issuePrefix,
       })
-      .from(companies),
+      .from(products),
     input.targetDb
       .select({
-        id: companies.id,
-        name: companies.name,
-        issuePrefix: companies.issuePrefix,
+        id: products.id,
+        name: products.name,
+        issuePrefix: products.issuePrefix,
       })
-      .from(companies),
+      .from(products),
   ]);
 
   const targetById = new Map(targetCompanies.map((company) => [company.id, company]));
@@ -1832,7 +1832,7 @@ async function resolveMergeCompany(input: {
   const options = shared
     .map((company) => `${company.issuePrefix} (${company.name})`)
     .join(", ");
-  throw new Error(`Multiple shared companies found. Re-run with --company <id-or-prefix>. Options: ${options}`);
+  throw new Error(`Multiple shared products found. Re-run with --company <id-or-prefix>. Options: ${options}`);
 }
 
 function renderMergePlan(plan: Awaited<ReturnType<typeof collectMergePlan>>["plan"], extras: {
@@ -1974,10 +1974,10 @@ async function collectMergePlan(input: {
   ] = await Promise.all([
     input.targetDb
       .select({
-        issueCounter: companies.issueCounter,
+        issueCounter: products.issueCounter,
       })
-      .from(companies)
-      .where(eq(companies.id, companyId))
+      .from(products)
+      .where(eq(products.id, companyId))
       .then((rows) => rows[0] ?? null),
     input.sourceDb
       .select()
@@ -2482,10 +2482,10 @@ async function applyMergePlan(input: {
     let nextIssueNumber = 0;
     if (issueInserts.length > 0) {
       const [companyRow] = await tx
-        .update(companies)
-        .set({ issueCounter: sql`${companies.issueCounter} + ${issueInserts.length}` })
-        .where(eq(companies.id, companyId))
-        .returning({ issueCounter: companies.issueCounter });
+        .update(products)
+        .set({ issueCounter: sql`${products.issueCounter} + ${issueInserts.length}` })
+        .where(eq(products.id, companyId))
+        .returning({ issueCounter: products.issueCounter });
       nextIssueNumber = companyRow.issueCounter - issueInserts.length + 1;
     }
 

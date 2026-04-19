@@ -10,7 +10,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { agents } from "./agents.js";
-import { companies } from "./products.js";
+import { products } from "./products.js";
 import { companySecrets } from "./company_secrets.js";
 import { issues } from "./issues.js";
 import { projects } from "./projects.js";
@@ -21,7 +21,7 @@ export const routines = pgTable(
   "routines",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+    companyId: uuid("product_id").notNull().references(() => products.id, { onDelete: "cascade" }),
     projectId: uuid("project_id").references(() => projects.id, { onDelete: "cascade" }),
     goalId: uuid("goal_id").references(() => goals.id, { onDelete: "set null" }),
     parentIssueId: uuid("parent_issue_id").references(() => issues.id, { onDelete: "set null" }),
@@ -53,7 +53,7 @@ export const routineTriggers = pgTable(
   "routine_triggers",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+    companyId: uuid("product_id").notNull().references(() => products.id, { onDelete: "cascade" }),
     routineId: uuid("routine_id").notNull().references(() => routines.id, { onDelete: "cascade" }),
     kind: text("kind").notNull(),
     label: text("label"),
@@ -88,7 +88,7 @@ export const routineRuns = pgTable(
   "routine_runs",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+    companyId: uuid("product_id").notNull().references(() => products.id, { onDelete: "cascade" }),
     routineId: uuid("routine_id").notNull().references(() => routines.id, { onDelete: "cascade" }),
     triggerId: uuid("trigger_id").references(() => routineTriggers.id, { onDelete: "set null" }),
     source: text("source").notNull(),

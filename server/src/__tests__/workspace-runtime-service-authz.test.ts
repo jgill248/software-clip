@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
   agents,
-  companies,
+  products,
   createDb,
   executionWorkspaces,
   issues,
@@ -42,7 +42,7 @@ describeEmbeddedPostgres("workspace runtime service authz helper", () => {
     await db.delete(projectWorkspaces);
     await db.delete(projects);
     await db.delete(agents);
-    await db.delete(companies);
+    await db.delete(products);
   });
 
   afterAll(async () => {
@@ -51,7 +51,7 @@ describeEmbeddedPostgres("workspace runtime service authz helper", () => {
 
   async function seedCompany() {
     const companyId = randomUUID();
-    await db.insert(companies).values({
+    await db.insert(products).values({
       id: companyId,
       name: "Paperclip",
       issuePrefix: `PAP-${companyId.slice(0, 8)}`,

@@ -8,13 +8,13 @@ import {
   jsonb,
   index,
 } from "drizzle-orm/pg-core";
-import { companies } from "./products.js";
+import { products } from "./products.js";
 
 export const agents = pgTable(
   "agents",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => products.id),
     name: text("name").notNull(),
     role: text("role").notNull().default("general"),
     title: text("title"),

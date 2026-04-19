@@ -1,9 +1,6 @@
 // Softclip pivot §1 (Stage 4a): companies table renamed to products.
-// `companies` is retained as a back-compat alias pointing at the same
-// Drizzle table — existing `eq(companies.id, ...)` queries in
-// services, tests, and validators continue to compile unchanged.
-// The alias will be removed in Stage 4c when callers migrate.
-export { products, companies } from "./products.js";
+// Stage 4c retired the `companies` alias; every caller imports `products`.
+export { products } from "./products.js";
 // Softclip pivot §6: company_logos table removed.
 export { authUsers, authSessions, authAccounts, authVerifications } from "./auth.js";
 export { instanceSettings } from "./instance_settings.js";

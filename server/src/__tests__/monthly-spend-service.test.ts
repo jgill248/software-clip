@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { companyService } from "../services/companies.ts";
+import { productService } from "../services/products.ts";
 import { agentService } from "../services/agents.ts";
 
 function createSelectSequenceDb(results: unknown[]) {
@@ -44,7 +44,7 @@ describe("monthly spend hydration", () => {
       }],
     ]);
 
-    const companies = companyService(dbStub.db as any);
+    const companies = productService(dbStub.db as any);
     const [company] = await companies.list();
 
     expect(company.spentMonthlyCents).toBe(420);

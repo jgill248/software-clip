@@ -2,7 +2,7 @@ import { Router, type Request, type Response } from "express";
 import { generateKeyPairSync, randomUUID } from "node:crypto";
 import path from "node:path";
 import type { Db } from "@softclipai/db";
-import { agents as agentsTable, companies, heartbeatRuns, issues as issuesTable } from "@softclipai/db";
+import { agents as agentsTable, products, heartbeatRuns, issues as issuesTable } from "@softclipai/db";
 import { and, desc, eq, inArray, not, sql } from "drizzle-orm";
 import {
   agentSkillSyncSchema,
@@ -1054,12 +1054,12 @@ export function agentRoutes(db: Db) {
         adapterType: agentsTable.adapterType,
         runtimeConfig: agentsTable.runtimeConfig,
         lastHeartbeatAt: agentsTable.lastHeartbeatAt,
-        companyName: companies.name,
-        companyIssuePrefix: companies.issuePrefix,
+        companyName: products.name,
+        companyIssuePrefix: products.issuePrefix,
       })
       .from(agentsTable)
-      .innerJoin(companies, eq(agentsTable.companyId, companies.id))
-      .orderBy(companies.name, agentsTable.name);
+      .innerJoin(products, eq(agentsTable.companyId, products.id))
+      .orderBy(products.name, agentsTable.name);
 
     const items: InstanceSchedulerHeartbeatAgent[] = rows
       .map((row) => {
@@ -1407,8 +1407,8 @@ export function agentRoutes(db: Db) {
 
     const company = await db
       .select()
-      .from(companies)
-      .where(eq(companies.id, companyId))
+      .from(products)
+      .where(eq(products.id, companyId))
       .then((rows) => rows[0] ?? null);
     if (!company) {
       res.status(404).json({ error: "Company not found" });
@@ -1542,7 +1542,7 @@ export function agentRoutes(db: Db) {
     // Softclip pivot §6: dev teams don't run on dollar budgets, so we
     // no longer auto-seed a per-agent budget_policies row at hire time.
     // agent.budgetMonthlyCents is still accepted for back-compat with
-    // imported companies but is not enforced anywhere.
+    // imported products but is not enforced anywhere.
 
     res.status(201).json(agent);
   });

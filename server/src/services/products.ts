@@ -1,7 +1,7 @@
 import { and, count, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import type { Db } from "@softclipai/db";
 import {
-  companies,
+  products,
   // Softclip pivot §6: companyLogos removed. `assets` is still needed
   // for cleanup on company delete (non-logo uploads).
   assets,
@@ -30,24 +30,24 @@ import {
 } from "@softclipai/db";
 import { notFound } from "../errors.js";
 
-export function companyService(db: Db) {
+export function productService(db: Db) {
   const ISSUE_PREFIX_FALLBACK = "CMP";
 
   const companySelection = {
-    id: companies.id,
-    name: companies.name,
-    description: companies.description,
-    status: companies.status,
-    issuePrefix: companies.issuePrefix,
-    issueCounter: companies.issueCounter,
-    budgetMonthlyCents: companies.budgetMonthlyCents,
-    spentMonthlyCents: companies.spentMonthlyCents,
-    feedbackDataSharingEnabled: companies.feedbackDataSharingEnabled,
-    feedbackDataSharingConsentAt: companies.feedbackDataSharingConsentAt,
-    feedbackDataSharingConsentByUserId: companies.feedbackDataSharingConsentByUserId,
-    feedbackDataSharingTermsVersion: companies.feedbackDataSharingTermsVersion,
-    createdAt: companies.createdAt,
-    updatedAt: companies.updatedAt,
+    id: products.id,
+    name: products.name,
+    description: products.description,
+    status: products.status,
+    issuePrefix: products.issuePrefix,
+    issueCounter: products.issueCounter,
+    budgetMonthlyCents: products.budgetMonthlyCents,
+    spentMonthlyCents: products.spentMonthlyCents,
+    feedbackDataSharingEnabled: products.feedbackDataSharingEnabled,
+    feedbackDataSharingConsentAt: products.feedbackDataSharingConsentAt,
+    feedbackDataSharingConsentByUserId: products.feedbackDataSharingConsentByUserId,
+    feedbackDataSharingTermsVersion: products.feedbackDataSharingTermsVersion,
+    createdAt: products.createdAt,
+    updatedAt: products.updatedAt,
   };
 
   // Softclip pivot §6: enrichCompany (logoUrl synthesis) removed with
@@ -99,7 +99,7 @@ export function companyService(db: Db) {
   function getCompanyQuery(database: Pick<Db, "select">) {
     return database
       .select(companySelection)
-      .from(companies);
+      .from(products);
     // Softclip pivot §6: leftJoin on companyLogos removed.
   }
 
@@ -126,14 +126,14 @@ export function companyService(db: Db) {
       && constraint === "companies_issue_prefix_idx";
   }
 
-  async function createCompanyWithUniquePrefix(data: typeof companies.$inferInsert) {
+  async function createCompanyWithUniquePrefix(data: typeof products.$inferInsert) {
     const base = deriveIssuePrefixBase(data.name);
     let suffix = 1;
     while (suffix < 10000) {
       const candidate = `${base}${suffixForAttempt(suffix)}`;
       try {
         const rows = await db
-          .insert(companies)
+          .insert(products)
           .values({ ...data, issuePrefix: candidate })
           .returning();
         return rows[0];
@@ -153,17 +153,17 @@ export function companyService(db: Db) {
 
     getById: async (id: string) => {
       const row = await getCompanyQuery(db)
-        .where(eq(companies.id, id))
+        .where(eq(products.id, id))
         .then((rows) => rows[0] ?? null);
       if (!row) return null;
       const [hydrated] = await hydrateCompanySpend([row], db);
       return hydrated;
     },
 
-    create: async (data: typeof companies.$inferInsert) => {
+    create: async (data: typeof products.$inferInsert) => {
       const created = await createCompanyWithUniquePrefix(data);
       const row = await getCompanyQuery(db)
-        .where(eq(companies.id, created.id))
+        .where(eq(products.id, created.id))
         .then((rows) => rows[0] ?? null);
       if (!row) throw notFound("Company not found after creation");
       const [hydrated] = await hydrateCompanySpend([row], db);
@@ -174,17 +174,17 @@ export function companyService(db: Db) {
     // logoAssetId alongside the column patch so it could manage the
     // company_logos join row. Branding is gone, so this is now a
     // plain update.
-    update: (id: string, data: Partial<typeof companies.$inferInsert>) =>
+    update: (id: string, data: Partial<typeof products.$inferInsert>) =>
       db.transaction(async (tx) => {
         const existing = await getCompanyQuery(tx)
-          .where(eq(companies.id, id))
+          .where(eq(products.id, id))
           .then((rows) => rows[0] ?? null);
         if (!existing) return null;
 
         const updated = await tx
-          .update(companies)
+          .update(products)
           .set({ ...data, updatedAt: new Date() })
-          .where(eq(companies.id, id))
+          .where(eq(products.id, id))
           .returning()
           .then((rows) => rows[0] ?? null);
         if (!updated) return null;
@@ -196,14 +196,14 @@ export function companyService(db: Db) {
     archive: (id: string) =>
       db.transaction(async (tx) => {
         const updated = await tx
-          .update(companies)
+          .update(products)
           .set({ status: "archived", updatedAt: new Date() })
-          .where(eq(companies.id, id))
+          .where(eq(products.id, id))
           .returning()
           .then((rows) => rows[0] ?? null);
         if (!updated) return null;
         const row = await getCompanyQuery(tx)
-          .where(eq(companies.id, id))
+          .where(eq(products.id, id))
           .then((rows) => rows[0] ?? null);
         if (!row) return null;
         const [hydrated] = await hydrateCompanySpend([row], tx);
@@ -240,8 +240,8 @@ export function companyService(db: Db) {
         await tx.delete(projects).where(eq(projects.companyId, id));
         await tx.delete(agents).where(eq(agents.companyId, id));
         const rows = await tx
-          .delete(companies)
-          .where(eq(companies.id, id))
+          .delete(products)
+          .where(eq(products.id, id))
           .returning();
         return rows[0] ?? null;
       }),

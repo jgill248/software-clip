@@ -1,11 +1,11 @@
 import { pgTable, uuid, text, timestamp, index, uniqueIndex } from "drizzle-orm/pg-core";
-import { companies } from "./products.js";
+import { products } from "./products.js";
 
 export const labels = pgTable(
   "labels",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
+    companyId: uuid("product_id").notNull().references(() => products.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     color: text("color").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

@@ -1,6 +1,6 @@
 import { and, eq, gte, sql } from "drizzle-orm";
 import type { Db } from "@softclipai/db";
-import { agents, approvals, companies, costEvents, issues } from "@softclipai/db";
+import { agents, approvals, products, costEvents, issues } from "@softclipai/db";
 import { notFound } from "../errors.js";
 
 // Softclip pivot §6: budgetService dependency removed. The `budgets`
@@ -12,8 +12,8 @@ export function dashboardService(db: Db) {
     summary: async (companyId: string) => {
       const company = await db
         .select()
-        .from(companies)
-        .where(eq(companies.id, companyId))
+        .from(products)
+        .where(eq(products.id, companyId))
         .then((rows) => rows[0] ?? null);
 
       if (!company) throw notFound("Company not found");

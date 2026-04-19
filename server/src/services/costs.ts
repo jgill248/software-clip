@@ -1,6 +1,6 @@
 import { and, desc, eq, gte, isNotNull, lt, lte, sql } from "drizzle-orm";
 import type { Db } from "@softclipai/db";
-import { activityLog, agents, companies, costEvents, issues, projects } from "@softclipai/db";
+import { activityLog, agents, products, costEvents, issues, projects } from "@softclipai/db";
 import { notFound, unprocessable } from "../errors.js";
 
 export interface CostDateRange {
@@ -89,12 +89,12 @@ export function costService(db: Db) {
         .where(eq(agents.id, event.agentId));
 
       await db
-        .update(companies)
+        .update(products)
         .set({
           spentMonthlyCents: companyMonthSpend,
           updatedAt: new Date(),
         })
-        .where(eq(companies.id, companyId));
+        .where(eq(products.id, companyId));
 
       // Softclip pivot §6: budget evaluation hook removed. cost_events
       // are still recorded for observability but no longer trigger
@@ -106,8 +106,8 @@ export function costService(db: Db) {
     summary: async (companyId: string, range?: CostDateRange) => {
       const company = await db
         .select()
-        .from(companies)
-        .where(eq(companies.id, companyId))
+        .from(products)
+        .where(eq(products.id, companyId))
         .then((rows) => rows[0] ?? null);
 
       if (!company) throw notFound("Company not found");
