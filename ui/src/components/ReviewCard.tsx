@@ -9,7 +9,7 @@ import {
   defaultTypeIcon,
   ApprovalPayloadRenderer,
   typeLabel,
-} from "./ApprovalPayload";
+} from "./ReviewPayload";
 import { timeAgo } from "../lib/timeAgo";
 import type { Approval, Agent } from "@paperclipai/shared";
 import { cn } from "@/lib/utils";

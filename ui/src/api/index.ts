@@ -8,7 +8,7 @@ export { projectsApi } from "./projects";
 export { issuesApi } from "./issues";
 export { routinesApi } from "./ceremonies";
 export { goalsApi } from "./roadmap-items";
-export { approvalsApi } from "./approvals";
+export { approvalsApi } from "./reviews";
 export { acceptanceCriteriaApi } from "./acceptance-criteria";
 export type {
   AcceptanceCriterion,

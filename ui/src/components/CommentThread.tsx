@@ -16,7 +16,7 @@ import { InlineEntitySelector, type InlineEntityOption } from "./InlineEntitySel
 import { MarkdownBody } from "./MarkdownBody";
 import { MarkdownEditor, type MarkdownEditorRef, type MentionOption } from "./MarkdownEditor";
 import { OutputFeedbackButtons } from "./OutputFeedbackButtons";
-import { ApprovalCard } from "./ApprovalCard";
+import { ApprovalCard } from "./ReviewCard";
 import { AgentIcon } from "./AgentIconPicker";
 import { formatAssigneeUserLabel } from "../lib/assignees";
 import type { IssueTimelineAssignee, IssueTimelineEvent } from "../lib/issue-timeline-events";
@@ -571,7 +571,7 @@ const TimelineList = memo(function TimelineList({
                 requesterAgent={approval.requestedByAgentId ? agentMap?.get(approval.requestedByAgentId) ?? null : null}
                 onApprove={onApproveApproval ? () => void onApproveApproval(approval.id) : undefined}
                 onReject={onRejectApproval ? () => void onRejectApproval(approval.id) : undefined}
-                detailLink={`/approvals/${approval.id}`}
+                detailLink={`/reviews/${approval.id}`}
                 isPending={isPending}
                 pendingAction={isPending ? pendingApprovalAction?.action ?? null : null}
               />
