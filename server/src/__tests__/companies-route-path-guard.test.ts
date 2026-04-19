@@ -17,6 +17,12 @@ vi.mock("../services/index.js", () => ({
     canUser: vi.fn(),
     ensureMembership: vi.fn(),
   }),
+  agentService: () => ({
+    create: vi.fn(),
+  }),
+  agentInstructionsService: () => ({
+    materializeManagedBundle: vi.fn(),
+  }),
   ceremonyService: () => ({
     seedDefaults: vi.fn(),
   }),
@@ -27,6 +33,11 @@ vi.mock("../services/index.js", () => ({
     saveIssueVote: vi.fn(),
   }),
   logActivity: vi.fn(),
+}));
+
+vi.mock("../services/default-agent-instructions.js", () => ({
+  loadDefaultAgentInstructionsBundle: vi.fn().mockResolvedValue({}),
+  resolveDefaultAgentInstructionsBundleRole: (role: string) => role,
 }));
 
 describe("company routes malformed issue path guard", () => {
