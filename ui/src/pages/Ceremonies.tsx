@@ -2,7 +2,7 @@ import { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useSearchParams } from "@/lib/router";
 import { Check, ChevronDown, ChevronRight, Layers, MoreHorizontal, Plus, Repeat } from "lucide-react";
-import { routinesApi } from "../api/routines";
+import { routinesApi } from "../api/ceremonies";
 import { agentsApi } from "../api/agents";
 import { projectsApi } from "../api/projects";
 import { issuesApi } from "../api/issues";
@@ -173,7 +173,7 @@ export function buildRoutineGroups(
 }
 
 function buildRoutinesTabHref(tab: RoutinesTab) {
-  return tab === "runs" ? "/routines?tab=runs" : "/routines";
+  return tab === "runs" ? "/ceremonies?tab=runs" : "/ceremonies";
 }
 
 function RoutineListRow({
@@ -287,7 +287,7 @@ function RoutineListRow({
   );
 }
 
-export function Routines() {
+export function Ceremonies() {
   const { selectedCompanyId } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
   const queryClient = useQueryClient();
@@ -329,7 +329,7 @@ export function Routines() {
   const [routineViewState, setRoutineViewState] = useState<RoutineViewState>(() => getRoutineViewState(routineViewStateKey));
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "Routines" }]);
+    setBreadcrumbs([{ label: "Ceremonies" }]);
   }, [setBreadcrumbs]);
 
   useEffect(() => {
@@ -391,7 +391,7 @@ export function Routines() {
           : "Draft saved. Add a default agent before enabling automation.",
         tone: "success",
       });
-      navigate(`/routines/${routine.id}?tab=triggers`);
+      navigate(`/ceremonies/${routine.id}?tab=triggers`);
     },
   });
   const updateIssue = useMutation({
@@ -585,7 +585,7 @@ export function Routines() {
           value={activeTab}
           onValueChange={handleTabChange}
           items={[
-            { value: "routines", label: "Routines" },
+            { value: "routines", label: "Ceremonies" },
             { value: "runs", label: "Recent Runs" },
           ]}
         />
@@ -943,7 +943,7 @@ export function Routines() {
                         agentById={agentById}
                         runningRoutineId={runningRoutineId}
                         statusMutationRoutineId={statusMutationRoutineId}
-                        href={`/routines/${routine.id}`}
+                        href={`/ceremonies/${routine.id}`}
                         onRunNow={handleRunNow}
                         onToggleEnabled={handleToggleEnabled}
                         onToggleArchived={handleToggleArchived}

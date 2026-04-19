@@ -5,7 +5,7 @@ import { accessApi } from "../api/access";
 import { agentsApi } from "../api/agents";
 import { issuesApi } from "../api/issues";
 import { projectsApi } from "../api/projects";
-import { goalsApi } from "../api/goals";
+import { goalsApi } from "../api/roadmap-items";
 import { buildCompanyUserProfileMap } from "../lib/company-members";
 import { useCompany } from "../context/CompanyContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";

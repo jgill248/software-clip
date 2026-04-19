@@ -5,7 +5,7 @@ import { useLocation, useNavigate, useParams } from "@/lib/router";
 import { useDialog } from "../context/DialogContext";
 import { useCompany } from "../context/CompanyContext";
 import { companiesApi } from "../api/companies";
-import { goalsApi } from "../api/goals";
+import { goalsApi } from "../api/roadmap-items";
 import { agentsApi } from "../api/agents";
 import { issuesApi } from "../api/issues";
 import { projectsApi } from "../api/projects";

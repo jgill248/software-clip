@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { Goal } from "@paperclipai/shared";
 import { GOAL_STATUSES, GOAL_LEVELS } from "@paperclipai/shared";
 import { agentsApi } from "../api/agents";
-import { goalsApi } from "../api/goals";
+import { goalsApi } from "../api/roadmap-items";
 import { useCompany } from "../context/CompanyContext";
 import { queryKeys } from "../lib/queryKeys";
 import { StatusBadge } from "./StatusBadge";
@@ -138,9 +138,9 @@ export function GoalProperties({ goal, onUpdate }: GoalPropertiesProps) {
         </PropertyRow>
 
         {goal.parentId && (
-          <PropertyRow label="Parent Goal">
+          <PropertyRow label="Parent">
             <Link
-              to={`/goals/${goal.parentId}`}
+              to={`/roadmap/${goal.parentId}`}
               className="text-sm hover:underline"
             >
               {parentGoal?.title ?? goal.parentId.slice(0, 8)}

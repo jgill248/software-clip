@@ -93,8 +93,8 @@ export function Sidebar() {
         <SidebarSection label="Work">
           <SidebarNavItem to="/issues" label="Issues" icon={CircleDot} />
           <SidebarNavItem to="/sprints" label="Sprints" icon={CalendarRange} />
-          <SidebarNavItem to="/routines" label="Routines" icon={Repeat} />
-          <SidebarNavItem to="/goals" label="Goals" icon={Target} />
+          <SidebarNavItem to="/ceremonies" label="Ceremonies" icon={Repeat} />
+          <SidebarNavItem to="/roadmap" label="Roadmap" icon={Target} />
         </SidebarSection>
 
         <SidebarProjects />

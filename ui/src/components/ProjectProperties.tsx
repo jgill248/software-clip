@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Project } from "@paperclipai/shared";
 import { StatusBadge } from "./StatusBadge";
 import { cn, formatDate } from "../lib/utils";
-import { goalsApi } from "../api/goals";
+import { goalsApi } from "../api/roadmap-items";
 import { instanceSettingsApi } from "../api/instanceSettings";
 import { projectsApi } from "../api/projects";
 import { secretsApi } from "../api/secrets";
@@ -551,7 +551,7 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
                   key={goal.id}
                   className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs"
                 >
-                  <Link to={`/goals/${goal.id}`} className="hover:underline break-words min-w-0">
+                  <Link to={`/roadmap/${goal.id}`} className="hover:underline break-words min-w-0">
                     {goal.title}
                   </Link>
                   {(onUpdate || onFieldUpdate) && (

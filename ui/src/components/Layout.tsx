@@ -10,7 +10,7 @@ import { PropertiesPanel } from "./PropertiesPanel";
 import { CommandPalette } from "./CommandPalette";
 import { NewIssueDialog } from "./NewIssueDialog";
 import { NewProjectDialog } from "./NewProjectDialog";
-import { NewGoalDialog } from "./NewGoalDialog";
+import { NewGoalDialog } from "./NewRoadmapItemDialog";
 import { NewAgentDialog } from "./NewAgentDialog";
 import { KeyboardShortcutsCheatsheet } from "./KeyboardShortcutsCheatsheet";
 import { ToastViewport } from "./ToastViewport";

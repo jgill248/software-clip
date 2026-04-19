@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { GoalPropertiesToggleButton } from "./GoalDetail";
+import { GoalPropertiesToggleButton } from "./RoadmapItemDetail";
 
 describe("GoalPropertiesToggleButton", () => {
   it("shows the reopen control when the properties panel is hidden", () => {
