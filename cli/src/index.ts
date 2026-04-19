@@ -6,7 +6,7 @@ import { configure } from "./commands/configure.js";
 import { addAllowedHostname } from "./commands/allowed-hostname.js";
 import { heartbeatRun } from "./commands/heartbeat-run.js";
 import { runCommand } from "./commands/run.js";
-import { bootstrapCeoInvite } from "./commands/auth-bootstrap-ceo.js";
+import { bootstrapProductOwnerInvite } from "./commands/auth-bootstrap-product-owner.js";
 import { dbBackupCommand } from "./commands/db-backup.js";
 import { dbConnect } from "./commands/db-connect.js";
 import { dbDoctor } from "./commands/db-doctor.js";
@@ -190,14 +190,15 @@ registerPluginCommands(program);
 const auth = program.command("auth").description("Authentication and bootstrap utilities");
 
 auth
-  .command("bootstrap-ceo")
+  .command("bootstrap-product-owner")
+  .aliases(["bootstrap-ceo"])
   .description("Create a one-time bootstrap invite URL for first instance admin")
   .option("-c, --config <path>", "Path to config file")
   .option("-d, --data-dir <path>", DATA_DIR_OPTION_HELP)
   .option("--force", "Create new invite even if admin already exists", false)
   .option("--expires-hours <hours>", "Invite expiration window in hours", (value) => Number(value))
   .option("--base-url <url>", "Public base URL used to print invite link")
-  .action(bootstrapCeoInvite);
+  .action(bootstrapProductOwnerInvite);
 
 registerClientAuthCommands(auth);
 

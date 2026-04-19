@@ -36,7 +36,7 @@ import {
   resolveDefaultLogsDir,
   resolvePaperclipInstanceId,
 } from "../config/home.js";
-import { bootstrapCeoInvite } from "./auth-bootstrap-ceo.js";
+import { bootstrapProductOwnerInvite } from "./auth-bootstrap-product-owner.js";
 import { printPaperclipCliBanner } from "../utils/banner.js";
 import {
   getTelemetryClient,
@@ -656,8 +656,8 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
   );
 
   if (canCreateBootstrapInviteImmediately({ database, server })) {
-    p.log.step("Generating bootstrap CEO invite");
-    await bootstrapCeoInvite({ config: configPath });
+    p.log.step("Generating bootstrap Product Owner invite");
+    await bootstrapProductOwnerInvite({ config: configPath });
   }
 
   let shouldRunNow = opts.run === true || opts.yes === true;
@@ -681,9 +681,9 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
   if (server.deploymentMode === "authenticated" && database.mode === "embedded-postgres") {
     p.log.info(
       [
-        "Bootstrap CEO invite will be created after the server starts.",
+        "Bootstrap Product Owner invite will be created after the server starts.",
         `Next: ${pc.cyan("paperclipai run")}`,
-        `Then: ${pc.cyan("paperclipai auth bootstrap-ceo")}`,
+        `Then: ${pc.cyan("paperclipai auth bootstrap-product-owner")}`,
       ].join("\n"),
     );
   }

@@ -20,7 +20,7 @@ export interface CeremonyTemplate {
   slug: string;
   title: string;
   description: string;
-  priority: "low" | "medium" | "high" | "urgent";
+  priority: "low" | "medium" | "high" | "critical";
 }
 
 export const CEREMONY_TEMPLATES: readonly CeremonyTemplate[] = [
