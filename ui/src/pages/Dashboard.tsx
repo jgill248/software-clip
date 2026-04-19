@@ -1,6 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "@/lib/router";
+import { useEffect, useMemo } from "react";
+import { Link, useNavigate } from "@/lib/router";
 import { useQuery } from "@tanstack/react-query";
+import {
+  AlertTriangle,
+  Bot,
+  Calendar,
+  ChevronRight,
+  Columns3,
+  Eye,
+  GitPullRequest,
+  LayoutDashboard,
+  PenTool,
+  Plus,
+  Radio,
+  Sparkles,
+} from "lucide-react";
 import { dashboardApi } from "../api/dashboard";
 import { activityApi } from "../api/activity";
 import { accessApi } from "../api/access";
@@ -8,51 +22,110 @@ import { issuesApi } from "../api/issues";
 import { agentsApi } from "../api/agents";
 import { projectsApi } from "../api/projects";
 import { heartbeatsApi } from "../api/heartbeats";
+import { sprintsApi } from "../api/sprints";
+import { approvalsApi } from "../api/reviews";
 import { buildCompanyUserProfileMap } from "../lib/company-members";
 import { useCompany } from "../context/CompanyContext";
 import { useDialog } from "../context/DialogContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { queryKeys } from "../lib/queryKeys";
-import { MetricCard } from "../components/MetricCard";
 import { EmptyState } from "../components/EmptyState";
-import { StatusIcon } from "../components/StatusIcon";
-
 import { ActivityRow } from "../components/ActivityRow";
-import { Identity } from "../components/Identity";
 import { timeAgo } from "../lib/timeAgo";
 import { cn } from "../lib/utils";
-import { Bot, CircleDot, ShieldCheck, LayoutDashboard } from "lucide-react";
-import { ActiveAgentsPanel } from "../components/ActiveAgentsPanel";
-import { ChartCard, RunActivityChart, PriorityChart, IssueStatusChart, SuccessRateChart } from "../components/ActivityCharts";
 import { PageSkeleton } from "../components/PageSkeleton";
-import type { Agent, Issue } from "@softclipai/shared";
+import type { Agent, Approval, Issue } from "@softclipai/shared";
 import { PluginSlotOutlet } from "@/plugins/slots";
+import { Card, CardHeader, CardBody } from "@/components/softclip/Card";
+import { Chip } from "@/components/softclip/Chip";
+import { Kbd } from "@/components/softclip/Kbd";
+import { HealthBar } from "@/components/softclip/HealthBar";
+import { Burndown } from "@/components/softclip/Burndown";
+import { ListRow } from "@/components/softclip/ListRow";
+import { IssueRow } from "@/components/softclip/IssueRow";
+import { AgentAvatar } from "@/components/softclip/AgentAvatar";
+import { StatusDot } from "@/components/softclip/StatusDot";
+import { chipVariantForReviewKind } from "@/lib/softclip-design";
 
 const DASHBOARD_HEARTBEAT_RUN_LIMIT = 100;
 
+function reviewKindFromApprovalType(type: Approval["type"]): {
+  label: string;
+  icon: typeof GitPullRequest;
+} {
+  switch (type) {
+    case "approve_pr":
+      return { label: "code", icon: GitPullRequest };
+    case "approve_architecture":
+      return { label: "architecture", icon: Columns3 };
+    case "approve_design":
+      return { label: "design", icon: PenTool };
+    case "approve_plan":
+      return { label: "plan", icon: Columns3 };
+    default:
+      return { label: type.replace(/^approve_/, "").replace(/_/g, " "), icon: Sparkles };
+  }
+}
+
+function approvalTitle(approval: Approval): string {
+  const payload = approval.payload ?? {};
+  const maybe =
+    (payload as { title?: string }).title ??
+    (payload as { summary?: string }).summary ??
+    (payload as { description?: string }).description ??
+    null;
+  if (typeof maybe === "string" && maybe.trim()) return maybe.trim();
+  const { label } = reviewKindFromApprovalType(approval.type);
+  return `Pending ${label} review`;
+}
+
+function approvalIssueId(approval: Approval): string | null {
+  const payload = approval.payload ?? {};
+  const raw =
+    (payload as { issueId?: string }).issueId ??
+    (payload as { issue_id?: string }).issue_id ??
+    null;
+  return typeof raw === "string" ? raw : null;
+}
+
 function getRecentIssues(issues: Issue[]): Issue[] {
-  return [...issues]
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+  return [...issues].sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+  );
 }
 
 export function Dashboard() {
   const { selectedCompanyId, companies } = useCompany();
-  const { openOnboarding } = useDialog();
-  const { setBreadcrumbs } = useBreadcrumbs();
-  const [animatedActivityIds, setAnimatedActivityIds] = useState<Set<string>>(new Set());
-  const seenActivityIdsRef = useRef<Set<string>>(new Set());
-  const hydratedActivityRef = useRef(false);
-  const activityAnimationTimersRef = useRef<number[]>([]);
+  const { openOnboarding, openNewIssue } = useDialog();
+  const { setBreadcrumbs, setRightActions } = useBreadcrumbs();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setBreadcrumbs([{ label: "Dashboard" }]);
+  }, [setBreadcrumbs]);
+
+  useEffect(() => {
+    setRightActions(
+      <>
+        <button
+          type="button"
+          onClick={() => openNewIssue()}
+          className="sc-btn size-sm variant-outline"
+        >
+          <Plus size={12} />
+          New issue
+          <Kbd>C</Kbd>
+        </button>
+      </>,
+    );
+    return () => setRightActions(null);
+  }, [setRightActions, openNewIssue]);
 
   const { data: agents } = useQuery({
     queryKey: queryKeys.agents.list(selectedCompanyId!),
     queryFn: () => agentsApi.list(selectedCompanyId!),
     enabled: !!selectedCompanyId,
   });
-
-  useEffect(() => {
-    setBreadcrumbs([{ label: "Dashboard" }]);
-  }, [setBreadcrumbs]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: queryKeys.dashboard(selectedCompanyId!),
@@ -90,74 +163,41 @@ export function Dashboard() {
     enabled: !!selectedCompanyId,
   });
 
+  const { data: activeSprint } = useQuery({
+    queryKey: queryKeys.sprints.active(selectedCompanyId!),
+    queryFn: () => sprintsApi.getActive(selectedCompanyId!),
+    enabled: !!selectedCompanyId,
+    retry: false,
+  });
+
+  const { data: sprintSummary } = useQuery({
+    queryKey: queryKeys.sprints.summary(activeSprint?.id ?? ""),
+    queryFn: () => sprintsApi.summary(activeSprint!.id),
+    enabled: !!activeSprint?.id,
+  });
+
+  const { data: pendingApprovals } = useQuery({
+    queryKey: queryKeys.approvals.list(selectedCompanyId!, "pending"),
+    queryFn: () => approvalsApi.list(selectedCompanyId!, "pending"),
+    enabled: !!selectedCompanyId,
+  });
+
   const userProfileMap = useMemo(
     () => buildCompanyUserProfileMap(companyMembers?.users),
     [companyMembers?.users],
   );
-
-  const recentIssues = issues ? getRecentIssues(issues) : [];
-  const recentActivity = useMemo(() => (activity ?? []).slice(0, 10), [activity]);
-
-  useEffect(() => {
-    for (const timer of activityAnimationTimersRef.current) {
-      window.clearTimeout(timer);
-    }
-    activityAnimationTimersRef.current = [];
-    seenActivityIdsRef.current = new Set();
-    hydratedActivityRef.current = false;
-    setAnimatedActivityIds(new Set());
-  }, [selectedCompanyId]);
-
-  useEffect(() => {
-    if (recentActivity.length === 0) return;
-
-    const seen = seenActivityIdsRef.current;
-    const currentIds = recentActivity.map((event) => event.id);
-
-    if (!hydratedActivityRef.current) {
-      for (const id of currentIds) seen.add(id);
-      hydratedActivityRef.current = true;
-      return;
-    }
-
-    const newIds = currentIds.filter((id) => !seen.has(id));
-    if (newIds.length === 0) {
-      for (const id of currentIds) seen.add(id);
-      return;
-    }
-
-    setAnimatedActivityIds((prev) => {
-      const next = new Set(prev);
-      for (const id of newIds) next.add(id);
-      return next;
-    });
-
-    for (const id of newIds) seen.add(id);
-
-    const timer = window.setTimeout(() => {
-      setAnimatedActivityIds((prev) => {
-        const next = new Set(prev);
-        for (const id of newIds) next.delete(id);
-        return next;
-      });
-      activityAnimationTimersRef.current = activityAnimationTimersRef.current.filter((t) => t !== timer);
-    }, 980);
-    activityAnimationTimersRef.current.push(timer);
-  }, [recentActivity]);
-
-  useEffect(() => {
-    return () => {
-      for (const timer of activityAnimationTimersRef.current) {
-        window.clearTimeout(timer);
-      }
-    };
-  }, []);
 
   const agentMap = useMemo(() => {
     const map = new Map<string, Agent>();
     for (const a of agents ?? []) map.set(a.id, a);
     return map;
   }, [agents]);
+
+  const issueMap = useMemo(() => {
+    const map = new Map<string, Issue>();
+    for (const i of issues ?? []) map.set(i.id, i);
+    return map;
+  }, [issues]);
 
   const entityNameMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -173,10 +213,43 @@ export function Dashboard() {
     return map;
   }, [issues]);
 
-  const agentName = (id: string | null) => {
-    if (!id || !agents) return null;
-    return agents.find((a) => a.id === id)?.name ?? null;
-  };
+  const blockedIssues = useMemo(
+    () => (issues ?? []).filter((issue) => issue.status === "blocked").slice(0, 5),
+    [issues],
+  );
+
+  const runningAgents = useMemo(
+    () => (agents ?? []).filter((a) => a.status === "running"),
+    [agents],
+  );
+
+  const recentActivity = useMemo(() => (activity ?? []).slice(0, 8), [activity]);
+
+  const ciFailures = useMemo(
+    () =>
+      (runs ?? [])
+        .filter((run) => (run as { status?: string }).status === "failed" || (run as { status?: string }).status === "errored")
+        .slice(0, 5),
+    [runs],
+  );
+
+  const recentIssues = useMemo(
+    () => (issues ? getRecentIssues(issues) : []).slice(0, 6),
+    [issues],
+  );
+
+  const sprintDays = useMemo(() => {
+    if (!activeSprint?.startsAt || !activeSprint?.endsAt) return null;
+    const start = new Date(activeSprint.startsAt).getTime();
+    const end = new Date(activeSprint.endsAt).getTime();
+    const now = Date.now();
+    const totalDays = Math.max(Math.round((end - start) / (1000 * 60 * 60 * 24)), 1);
+    const daysRemaining = Math.max(
+      Math.round((end - now) / (1000 * 60 * 60 * 24)),
+      0,
+    );
+    return { totalDays, daysRemaining };
+  }, [activeSprint]);
 
   if (!selectedCompanyId) {
     if (companies.length === 0) {
@@ -201,179 +274,487 @@ export function Dashboard() {
   const hasNoAgents = agents !== undefined && agents.length === 0;
 
   return (
-    <div className="space-y-6">
-      {error && <p className="text-sm text-destructive">{error.message}</p>}
+    <div
+      className="grid gap-4"
+      style={{
+        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+        maxWidth: 1400,
+      }}
+    >
+      {error && (
+        <div
+          className="col-span-2 flex items-center gap-2 px-3 py-2 rounded-[5px] t-meta"
+          style={{
+            background: "var(--accent-red-wash)",
+            color: "var(--accent-red)",
+            border: "1px solid color-mix(in oklch, var(--accent-red) 40%, transparent)",
+          }}
+        >
+          <AlertTriangle size={12} />
+          {error.message}
+        </div>
+      )}
 
       {hasNoAgents && (
-        <div className="flex items-center justify-between gap-3 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 dark:border-amber-500/25 dark:bg-amber-950/60">
-          <div className="flex items-center gap-2.5">
-            <Bot className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
-            <p className="text-sm text-amber-900 dark:text-amber-100">
-              You have no agents.
-            </p>
+        <div
+          className="col-span-2 flex items-center justify-between gap-3 rounded-[5px] px-3 py-2 t-body"
+          style={{
+            background: "var(--accent-amber-wash)",
+            color: "var(--accent-amber)",
+            border: "1px solid color-mix(in oklch, var(--accent-amber) 40%, transparent)",
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <Bot className="h-4 w-4 shrink-0" />
+            <span>You have no agents yet.</span>
           </div>
           <button
-            onClick={() => openOnboarding({ initialStep: 2, productId: selectedCompanyId! })}
-            className="text-sm font-medium text-amber-700 hover:text-amber-900 dark:text-amber-300 dark:hover:text-amber-100 underline underline-offset-2 shrink-0"
+            onClick={() => openOnboarding({ initialStep: 2, productId: selectedCompanyId })}
+            className="sc-btn size-sm variant-ghost"
+            style={{ color: "inherit" }}
           >
-            Create one here
+            Create one
+            <ChevronRight size={12} />
           </button>
         </div>
       )}
 
-      <ActiveAgentsPanel productId={selectedCompanyId!} />
-
-      {data && (
-        <>
-          {/* Softclip pivot §6: dollar-budget governance is removed. The
-              "active budget incidents" banner and the linked /costs
-              destination have been deleted along with it. */}
-
-          <div className="grid grid-cols-2 xl:grid-cols-4 gap-1 sm:gap-2">
-            <MetricCard
-              icon={Bot}
-              value={data.agents.active + data.agents.running + data.agents.paused + data.agents.error}
-              label="Agents Enabled"
-              to="/agents"
-              description={
-                <span>
-                  {data.agents.running} running{", "}
-                  {data.agents.paused} paused{", "}
-                  {data.agents.error} errors
-                </span>
-              }
-            />
-            <MetricCard
-              icon={CircleDot}
-              value={data.tasks.inProgress}
-              label="Tasks In Progress"
-              to="/issues"
-              description={
-                <span>
-                  {data.tasks.open} open{", "}
-                  {data.tasks.blocked} blocked
-                </span>
-              }
-            />
-            {/* Softclip pivot §6: Month Spend metric card removed — dev
-                teams don't run on monthly dollar budgets. Cost telemetry
-                continues to be recorded on the backend for observability
-                but isn't surfaced as a headline metric any more. */}
-            <MetricCard
-              icon={ShieldCheck}
-              value={data.pendingApprovals + data.budgets.pendingApprovals}
-              label="Pending reviews"
-              to="/reviews"
-              description={
-                <span>
-                  {data.budgets.pendingApprovals > 0
-                    ? `${data.budgets.pendingApprovals} budget overrides awaiting board review`
-                    : "Awaiting board review"}
-                </span>
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <ChartCard title="Run Activity" subtitle="Last 14 days">
-              <RunActivityChart runs={runs ?? []} />
-            </ChartCard>
-            <ChartCard title="Issues by Priority" subtitle="Last 14 days">
-              <PriorityChart issues={issues ?? []} />
-            </ChartCard>
-            <ChartCard title="Issues by Status" subtitle="Last 14 days">
-              <IssueStatusChart issues={issues ?? []} />
-            </ChartCard>
-            <ChartCard title="Success Rate" subtitle="Last 14 days">
-              <SuccessRateChart runs={runs ?? []} />
-            </ChartCard>
-          </div>
-
-          <PluginSlotOutlet
-            slotTypes={["dashboardWidget"]}
-            context={{ productId: selectedCompanyId }}
-            className="grid gap-4 md:grid-cols-2"
-            itemClassName="rounded-lg border bg-card p-4 shadow-sm"
-          />
-
-          <div className="grid md:grid-cols-2 gap-4">
-            {/* Recent Activity */}
-            {recentActivity.length > 0 && (
-              <div className="min-w-0">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                  Recent Activity
-                </h3>
-                <div className="border border-border divide-y divide-border overflow-hidden">
-                  {recentActivity.map((event) => (
-                    <ActivityRow
-                      key={event.id}
-                      event={event}
-                      agentMap={agentMap}
-                      userProfileMap={userProfileMap}
-                      entityNameMap={entityNameMap}
-                      entityTitleMap={entityTitleMap}
-                      className={animatedActivityIds.has(event.id) ? "activity-row-enter" : undefined}
-                    />
-                  ))}
+      {/* Sprint health — spans both columns */}
+      <Card style={{ gridColumn: "span 2" }}>
+        <CardHeader
+          icon={<Calendar size={14} className="fg-muted" />}
+          title={
+            <>
+              {activeSprint
+                ? `Sprint — health`
+                : "No active sprint"}
+              {activeSprint && (
+                <Chip variant="blue" dot>
+                  Active
+                </Chip>
+              )}
+            </>
+          }
+          right={
+            activeSprint && (
+              <button
+                type="button"
+                className="sc-btn size-sm variant-ghost"
+                onClick={() => navigate(`/sprints/${activeSprint.id}`)}
+              >
+                Open sprint <ChevronRight size={12} />
+              </button>
+            )
+          }
+        />
+        <CardBody>
+          {activeSprint && sprintSummary ? (
+            <div
+              className="grid gap-5 items-center"
+              style={{ gridTemplateColumns: "1.5fr 1fr 1fr auto" }}
+            >
+              <div>
+                <div className="t-meta fg-muted upper mb-1.5">Goal</div>
+                <div className="t-body fg">
+                  {activeSprint.goal ?? activeSprint.name}
                 </div>
               </div>
-            )}
-
-            {/* Recent Tasks */}
-            <div className="min-w-0">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                Recent Tasks
-              </h3>
-              {recentIssues.length === 0 ? (
-                <div className="border border-border p-4">
-                  <p className="text-sm text-muted-foreground">No tasks yet.</p>
+              <div>
+                <div className="t-meta fg-muted upper mb-1.5">Days remaining</div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="t-head num">{sprintDays?.daysRemaining ?? "—"}</span>
+                  <span className="fg-muted t-body">
+                    / {sprintDays?.totalDays ?? "—"}
+                  </span>
                 </div>
-              ) : (
-                <div className="border border-border divide-y divide-border overflow-hidden">
-                  {recentIssues.slice(0, 10).map((issue) => (
-                    <Link
-                      key={issue.id}
-                      to={`/issues/${issue.identifier ?? issue.id}`}
-                      className="px-4 py-3 text-sm cursor-pointer hover:bg-accent/50 transition-colors no-underline text-inherit block"
-                    >
-                      <div className="flex items-start gap-2 sm:items-center sm:gap-3">
-                        {/* Status icon - left column on mobile */}
-                        <span className="shrink-0 sm:hidden">
-                          <StatusIcon status={issue.status} />
-                        </span>
-
-                        {/* Right column on mobile: title + metadata stacked */}
-                        <span className="flex min-w-0 flex-1 flex-col gap-1 sm:contents">
-                          <span className="line-clamp-2 text-sm sm:order-2 sm:flex-1 sm:min-w-0 sm:line-clamp-none sm:truncate">
-                            {issue.title}
-                          </span>
-                          <span className="flex items-center gap-2 sm:order-1 sm:shrink-0">
-                            <span className="hidden sm:inline-flex"><StatusIcon status={issue.status} /></span>
-                            <span className="text-xs font-mono text-muted-foreground">
-                              {issue.identifier ?? issue.id.slice(0, 8)}
-                            </span>
-                            {issue.assigneeAgentId && (() => {
-                              const name = agentName(issue.assigneeAgentId);
-                              return name
-                                ? <span className="hidden sm:inline-flex"><Identity name={name} size="sm" /></span>
-                                : null;
-                            })()}
-                            <span className="text-xs text-muted-foreground sm:hidden">&middot;</span>
-                            <span className="text-xs text-muted-foreground shrink-0 sm:order-last">
-                              {timeAgo(issue.updatedAt)}
-                            </span>
-                          </span>
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
+              </div>
+              <div>
+                <HealthBar
+                  done={sprintSummary.done}
+                  committed={sprintSummary.total}
+                />
+              </div>
+              <div className="flex flex-col justify-between self-stretch">
+                <div className="t-meta fg-muted upper">Burndown</div>
+                <BurndownFromSummary
+                  total={sprintSummary.total}
+                  remaining={sprintSummary.remaining}
+                  totalDays={sprintDays?.totalDays ?? 10}
+                  daysElapsed={
+                    sprintDays
+                      ? Math.max(sprintDays.totalDays - sprintDays.daysRemaining, 0)
+                      : 0
+                  }
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="t-body fg-muted">
+              Start a sprint to track goal, health, and burndown in one glance.
+              <div className="mt-3">
+                <Link to="/sprints" className="sc-btn size-sm variant-outline">
+                  Go to sprints <ChevronRight size={12} />
+                </Link>
+              </div>
+            </div>
+          )}
+        </CardBody>
+      </Card>
 
+      {/* Review queue */}
+      <Card>
+        <CardHeader
+          icon={<Eye size={14} className="fg-muted" />}
+          title={
+            <>
+              Review queue
+              <Chip variant="amber">
+                {pendingApprovals?.length ?? 0} waiting
+              </Chip>
+            </>
+          }
+          right={
+            <Link to="/inbox" className="sc-btn size-sm variant-ghost">
+              Inbox <Kbd>G N</Kbd>
+            </Link>
+          }
+        />
+        <div>
+          {pendingApprovals && pendingApprovals.length > 0 ? (
+            pendingApprovals.slice(0, 5).map((approval) => {
+              const kind = reviewKindFromApprovalType(approval.type);
+              const variant = chipVariantForReviewKind(kind.label);
+              const issueId = approvalIssueId(approval);
+              const issue = issueId ? issueMap.get(issueId) : null;
+              return (
+                <ListRow
+                  key={approval.id}
+                  onClick={() => navigate(`/reviews/${approval.id}`)}
+                  style={{ borderRadius: 0 }}
+                >
+                  <Chip
+                    variant={variant}
+                    square
+                    icon={<kind.icon size={11} />}
+                  >
+                    {kind.label}
+                  </Chip>
+                  {issue && (
+                    <span className="sc-issue-id t-mono">
+                      {issue.identifier ?? issue.id.slice(0, 8)}
+                    </span>
+                  )}
+                  <span className="sc-stretch sc-truncate">
+                    {approvalTitle(approval)}
+                  </span>
+                  <span className="fg-muted t-meta">
+                    {timeAgo(approval.createdAt)}
+                  </span>
+                  <button
+                    className="sc-btn size-sm variant-outline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/reviews/${approval.id}`);
+                    }}
+                  >
+                    Review <Kbd>R</Kbd>
+                  </button>
+                </ListRow>
+              );
+            })
+          ) : (
+            <CardBody className="t-body fg-muted">No reviews waiting on you.</CardBody>
+          )}
+        </div>
+      </Card>
+
+      {/* Blocked issues */}
+      <Card>
+        <CardHeader
+          icon={<AlertTriangle size={14} className="fg-muted" />}
+          title={
+            <>
+              Blocked
+              {blockedIssues.length > 0 && (
+                <Chip variant="amber">{blockedIssues.length}</Chip>
+              )}
+            </>
+          }
+          right={
+            <Link to="/issues" className="sc-btn size-sm variant-ghost">
+              All issues <ChevronRight size={12} />
+            </Link>
+          }
+        />
+        <div>
+          {blockedIssues.length > 0 ? (
+            blockedIssues.map((issue) => {
+              const agent = issue.assigneeAgentId ? agentMap.get(issue.assigneeAgentId) : null;
+              return (
+                <IssueRow
+                  key={issue.id}
+                  issue={issue}
+                  assigneeRole={agent?.role ?? null}
+                  assigneeName={agent?.name ?? null}
+                  onOpen={() => navigate(`/issues/${issue.identifier ?? issue.id}`)}
+                  className="rounded-none"
+                  dense
+                />
+              );
+            })
+          ) : (
+            <CardBody className="t-body fg-muted">Nothing blocked. Nice.</CardBody>
+          )}
+        </div>
+      </Card>
+
+      {/* CI failures */}
+      <Card>
+        <CardHeader
+          icon={<Radio size={14} className="fg-muted" />}
+          title={
+            <>
+              Recent run failures
+              {ciFailures.length > 0 && <Chip variant="red">{ciFailures.length}</Chip>}
+            </>
+          }
+        />
+        <div>
+          {ciFailures.length > 0 ? (
+            ciFailures.map((run) => {
+              const r = run as {
+                id: string;
+                agentId?: string | null;
+                issueId?: string | null;
+                status?: string;
+                finishedAt?: string | null;
+              };
+              const agent = r.agentId ? agentMap.get(r.agentId) : null;
+              const issue = r.issueId ? issueMap.get(r.issueId) : null;
+              return (
+                <ListRow
+                  key={r.id}
+                  onClick={() =>
+                    issue
+                      ? navigate(`/issues/${issue.identifier ?? issue.id}`)
+                      : navigate("/activity")
+                  }
+                  style={{ borderRadius: 0 }}
+                  dense
+                >
+                  <StatusDot state="fail" />
+                  <span className="sc-issue-id t-mono">
+                    {issue ? issue.identifier ?? issue.id.slice(0, 8) : "—"}
+                  </span>
+                  <span className="sc-stretch sc-truncate">
+                    {issue?.title ?? (agent ? `${agent.name} run failed` : "Run failed")}
+                  </span>
+                  {r.finishedAt && (
+                    <span className="fg-muted t-meta">{timeAgo(r.finishedAt)}</span>
+                  )}
+                </ListRow>
+              );
+            })
+          ) : (
+            <CardBody className="t-body fg-muted">No recent failures.</CardBody>
+          )}
+        </div>
+      </Card>
+
+      {/* Live agent strip — full width */}
+      <Card style={{ gridColumn: "span 2" }}>
+        <CardHeader
+          icon={<Bot size={14} className="fg-muted" />}
+          title={
+            <>
+              Live work
+              {runningAgents.length > 0 && (
+                <Chip variant="blue" dot>
+                  {runningAgents.length} running
+                </Chip>
+              )}
+            </>
+          }
+          right={
+            <Link to="/agents/all" className="sc-btn size-sm variant-ghost">
+              Agents <Kbd>G A</Kbd>
+            </Link>
+          }
+        />
+        <CardBody>
+          {runningAgents.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {runningAgents.map((a) => (
+                <div
+                  key={a.id}
+                  className="flex items-center gap-2 rounded-[5px] border px-2.5 py-1.5"
+                  style={{
+                    borderColor: "var(--border-subtle)",
+                    background: "var(--panel-2)",
+                  }}
+                >
+                  <AgentAvatar role={a.role} size={18} title={a.name} />
+                  <div className="flex flex-col">
+                    <span className="t-body fg">{a.name}</span>
+                    <span className="t-meta fg-muted">
+                      {a.title ?? a.role}
+                    </span>
+                  </div>
+                  <StatusDot state="running" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="t-body fg-muted">No agents are running right now.</div>
+          )}
+        </CardBody>
+      </Card>
+
+      {/* Metrics — summary counts, in the new Card style */}
+      {data && (
+        <Card style={{ gridColumn: "span 2" }}>
+          <CardHeader title={<span className="t-meta upper fg-muted">Summary</span>} />
+          <CardBody
+            className="grid gap-4"
+            style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}
+          >
+            <MetricTile
+              label="Agents online"
+              value={data.agents.active + data.agents.running}
+              sub={`${data.agents.running} running · ${data.agents.paused} paused · ${data.agents.error} errors`}
+              to="/agents/all"
+            />
+            <MetricTile
+              label="Tasks in progress"
+              value={data.tasks.inProgress}
+              sub={`${data.tasks.open} open · ${data.tasks.blocked} blocked`}
+              to="/issues"
+            />
+            <MetricTile
+              label="Pending reviews"
+              value={data.pendingApprovals + data.budgets.pendingApprovals}
+              sub="Awaiting your decision"
+              to="/reviews/pending"
+            />
+          </CardBody>
+        </Card>
+      )}
+
+      <PluginSlotOutlet
+        slotTypes={["dashboardWidget"]}
+        context={{ productId: selectedCompanyId }}
+        className="col-span-2 grid gap-3 md:grid-cols-2"
+        itemClassName="sc-card p-3"
+      />
+
+      {/* Recent activity + recent tasks */}
+      {(recentActivity.length > 0 || recentIssues.length > 0) && (
+        <>
+          {recentActivity.length > 0 && (
+            <Card>
+              <CardHeader title={<span className="t-meta upper fg-muted">Recent activity</span>} />
+              <div>
+                {recentActivity.map((event) => (
+                  <ActivityRow
+                    key={event.id}
+                    event={event}
+                    agentMap={agentMap}
+                    userProfileMap={userProfileMap}
+                    entityNameMap={entityNameMap}
+                    entityTitleMap={entityTitleMap}
+                  />
+                ))}
+              </div>
+            </Card>
+          )}
+          {recentIssues.length > 0 && (
+            <Card>
+              <CardHeader title={<span className="t-meta upper fg-muted">Recent tasks</span>} />
+              <div>
+                {recentIssues.map((issue) => {
+                  const agent = issue.assigneeAgentId
+                    ? agentMap.get(issue.assigneeAgentId)
+                    : null;
+                  return (
+                    <IssueRow
+                      key={issue.id}
+                      issue={issue}
+                      assigneeRole={agent?.role ?? null}
+                      assigneeName={agent?.name ?? null}
+                      onOpen={() => navigate(`/issues/${issue.identifier ?? issue.id}`)}
+                      className="rounded-none"
+                      dense
+                    />
+                  );
+                })}
+              </div>
+            </Card>
+          )}
         </>
       )}
     </div>
   );
+}
+
+function MetricTile({
+  label,
+  value,
+  sub,
+  to,
+}: {
+  label: string;
+  value: number;
+  sub?: string;
+  to?: string;
+}) {
+  const body = (
+    <div
+      className={cn(
+        "flex flex-col gap-1 rounded-[5px] px-3 py-2.5 border transition-colors",
+        to && "hover:bg-[color:var(--hover)] cursor-pointer",
+      )}
+      style={{ borderColor: "var(--border-subtle)", background: "var(--panel-2)" }}
+    >
+      <span className="t-meta fg-muted upper">{label}</span>
+      <span className="t-head num">{value}</span>
+      {sub && <span className="t-meta fg-muted">{sub}</span>}
+    </div>
+  );
+  return to ? (
+    <Link to={to} className="no-underline text-inherit">
+      {body}
+    </Link>
+  ) : (
+    body
+  );
+}
+
+function BurndownFromSummary({
+  total,
+  remaining,
+  totalDays,
+  daysElapsed,
+}: {
+  total: number;
+  remaining: number;
+  totalDays: number;
+  daysElapsed: number;
+}) {
+  const ideal: number[] = [];
+  const actual: number[] = [];
+  for (let i = 0; i <= totalDays; i += 1) {
+    const t = i / Math.max(totalDays, 1);
+    ideal.push(total * (1 - t));
+  }
+  // Simple linear approximation between "nothing done" at day 0 and current
+  // remaining at daysElapsed; tails off flat until the end of the sprint.
+  for (let i = 0; i <= totalDays; i += 1) {
+    if (i <= daysElapsed) {
+      const t = i / Math.max(daysElapsed, 1);
+      actual.push(total - (total - remaining) * t);
+    } else {
+      actual.push(remaining);
+    }
+  }
+  return <Burndown actual={actual} ideal={ideal} w={220} h={56} />;
 }
