@@ -38,13 +38,15 @@ export function SidebarNavItem({
       to={to}
       state={SIDEBAR_SCROLL_RESET_STATE}
       end={end}
-      onClick={() => { if (isMobile) setSidebarOpen(false); }}
+      onClick={() => {
+        if (isMobile) setSidebarOpen(false);
+      }}
       className={({ isActive }) =>
         cn(
-          "flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium transition-colors",
+          "relative flex items-center gap-2.5 px-3 py-1.5 text-[13px] font-medium rounded-[5px] transition-colors",
           isActive
-            ? "bg-accent text-foreground"
-            : "text-foreground/80 hover:bg-accent/50 hover:text-foreground",
+            ? "bg-[color:var(--selected)] text-foreground before:absolute before:left-0 before:top-[6px] before:bottom-[6px] before:w-0.5 before:rounded before:bg-foreground"
+            : "text-foreground/80 hover:bg-[color:var(--hover)] hover:text-foreground",
           className,
         )
       }
@@ -52,7 +54,13 @@ export function SidebarNavItem({
       <span className="relative shrink-0">
         <Icon className="h-4 w-4" />
         {alert && (
-          <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-red-500 shadow-[0_0_0_2px_hsl(var(--background))]" />
+          <span
+            className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full"
+            style={{
+              background: "var(--accent-red)",
+              boxShadow: "0 0 0 2px var(--bg)",
+            }}
+          />
         )}
       </span>
       <span className="flex-1 truncate">{label}</span>
@@ -61,7 +69,7 @@ export function SidebarNavItem({
           className={cn(
             "ml-auto rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-none",
             textBadgeTone === "amber"
-              ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+              ? "text-[color:var(--accent-amber)] bg-[color:var(--accent-amber-wash)]"
               : "bg-muted text-muted-foreground",
           )}
         >
@@ -71,10 +79,21 @@ export function SidebarNavItem({
       {liveCount != null && liveCount > 0 && (
         <span className="ml-auto flex items-center gap-1.5">
           <span className="relative flex h-2 w-2">
-            <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
+            <span
+              className="animate-pulse absolute inline-flex h-full w-full rounded-full opacity-75"
+              style={{ background: "var(--accent-blue)" }}
+            />
+            <span
+              className="relative inline-flex rounded-full h-2 w-2"
+              style={{ background: "var(--accent-blue)" }}
+            />
           </span>
-          <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400">{liveCount} live</span>
+          <span
+            className="text-[11px] font-medium"
+            style={{ color: "var(--accent-blue)" }}
+          >
+            {liveCount} live
+          </span>
         </span>
       )}
       {badge != null && badge > 0 && (
@@ -82,7 +101,7 @@ export function SidebarNavItem({
           className={cn(
             "ml-auto rounded-full px-1.5 py-0.5 text-xs leading-none",
             badgeTone === "danger"
-              ? "bg-red-600/90 text-red-50"
+              ? "text-[color:var(--accent-red)] bg-[color:var(--accent-red-wash)]"
               : "bg-primary text-primary-foreground",
           )}
         >
