@@ -17,8 +17,12 @@ import { relativeTime, cn, agentRouteRef, agentUrl } from "../lib/utils";
 import { PageTabBar } from "../components/PageTabBar";
 import { Tabs } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Bot, Plus, List, GitBranch, SlidersHorizontal } from "lucide-react";
+import { AlertTriangle, Bot, Minus, Pause, Play, Plus, List, GitBranch, SlidersHorizontal } from "lucide-react";
 import { AGENT_ROLE_LABELS, type Agent } from "@softclipai/shared";
+import { AgentAvatar } from "@/components/softclip/AgentAvatar";
+import { StatusDot } from "@/components/softclip/StatusDot";
+import { Chip } from "@/components/softclip/Chip";
+import { statusStateFromAgent } from "@/lib/softclip-design";
 
 import { getAdapterLabel } from "../adapters/adapter-display-registry";
 
@@ -279,9 +283,15 @@ export function Agents() {
 
       {/* Org chart view */}
       {effectiveView === "org" && filteredOrg.length > 0 && (
-        <div className="border border-border py-1">
-          {filteredOrg.map((node) => (
-            <OrgTreeNode key={node.id} node={node} depth={0} agentMap={agentMap} liveRunByAgent={liveRunByAgent} tab={tab} />
+        <div className="py-2">
+          {filteredOrg.map((root) => (
+            <OrgChartBranch
+              key={root.id}
+              root={root}
+              agentMap={agentMap}
+              liveRunByAgent={liveRunByAgent}
+              tab={tab}
+            />
           ))}
         </div>
       )}
@@ -301,83 +311,283 @@ export function Agents() {
   );
 }
 
-function OrgTreeNode({
-  node,
-  depth,
+const PER_ROW = 6;
+const CARD_WIDTH = 220;
+const CARD_GAP = 16;
+
+function OrgChartBranch({
+  root,
   agentMap,
   liveRunByAgent,
   tab,
 }: {
-  node: OrgNode;
-  depth: number;
+  root: OrgNode;
   agentMap: Map<string, Agent>;
   liveRunByAgent: Map<string, { runId: string; liveCount: number }>;
   tab: FilterTab;
 }) {
-  const agent = agentMap.get(node.id);
+  const [hoverId, setHoverId] = useState<string | null>(null);
+  const hovered = hoverId
+    ? (agentMap.get(hoverId) ??
+        findInTree(root, hoverId))
+    : null;
+  const hoveredNode = hoverId ? findNode(root, hoverId) : null;
 
-  const statusColor = agentStatusDot[node.status] ?? agentStatusDotDefault;
+  // Flatten reports into rows of PER_ROW.
+  const reports = root.reports ?? [];
+  const rows: OrgNode[][] = [];
+  for (let i = 0; i < reports.length; i += PER_ROW) {
+    rows.push(reports.slice(i, i + PER_ROW));
+  }
 
   return (
-    <div style={{ paddingLeft: depth * 24 }}>
-      <Link
-        to={agent ? agentUrl(agent) : `/agents/${node.id}`}
-        className={cn("flex items-center gap-3 px-3 py-2 hover:bg-accent/30 transition-colors w-full text-left no-underline text-inherit", agent?.pausedAt && tab !== "paused" && "opacity-50")}
-      >
-        <span className="relative flex h-2.5 w-2.5 shrink-0">
-          <span className={`absolute inline-flex h-full w-full rounded-full ${statusColor}`} />
-        </span>
-        <div className="flex-1 min-w-0">
-          <span className="text-sm font-medium">{node.name}</span>
-          <span className="text-xs text-muted-foreground ml-2">
-            {roleLabels[node.role] ?? node.role}
-            {agent?.title ? ` - ${agent.title}` : ""}
-          </span>
-        </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <span className="sm:hidden">
-            {liveRunByAgent.has(node.id) ? (
-              <LiveRunIndicator
-                agentRef={agent ? agentRouteRef(agent) : node.id}
-                runId={liveRunByAgent.get(node.id)!.runId}
-                liveCount={liveRunByAgent.get(node.id)!.liveCount}
-              />
-            ) : (
-              <StatusBadge status={node.status} />
-            )}
-          </span>
-          <div className="hidden sm:flex items-center gap-3">
-            {liveRunByAgent.has(node.id) && (
-              <LiveRunIndicator
-                agentRef={agent ? agentRouteRef(agent) : node.id}
-                runId={liveRunByAgent.get(node.id)!.runId}
-                liveCount={liveRunByAgent.get(node.id)!.liveCount}
-              />
-            )}
-            {agent && (
-              <>
-                <span className="text-xs text-muted-foreground font-mono w-14 text-right">
-                  {getAdapterLabel(agent.adapterType)}
-                </span>
-                <span className="text-xs text-muted-foreground w-16 text-right">
-                  {agent.lastHeartbeatAt ? relativeTime(agent.lastHeartbeatAt) : "—"}
-                </span>
-              </>
-            )}
-            <span className="w-20 flex justify-end">
-              <StatusBadge status={node.status} />
-            </span>
+    <div className="relative flex flex-col items-center gap-0 px-4 py-4">
+      {/* Root */}
+      <OrgAgentCard
+        node={root}
+        agent={agentMap.get(root.id)}
+        liveRun={liveRunByAgent.get(root.id) ?? null}
+        tab={tab}
+        onHover={setHoverId}
+      />
+
+      {rows.map((row, ri) => {
+        const n = row.length;
+        const rowMax = Math.min(n, PER_ROW) * (CARD_WIDTH + CARD_GAP);
+        return (
+          <div key={ri} className="w-full flex flex-col items-center">
+            {/* Connectors */}
+            <div
+              className="w-full flex justify-center"
+              style={{ maxWidth: rowMax }}
+            >
+              <svg width="100%" height="40" style={{ display: "block" }}>
+                <line
+                  x1="50%"
+                  y1="0"
+                  x2="50%"
+                  y2="16"
+                  stroke="var(--border)"
+                  strokeWidth="1"
+                />
+                {n > 1 && (
+                  <line
+                    x1={`${100 / n / 2}%`}
+                    y1="16"
+                    x2={`${100 - 100 / n / 2}%`}
+                    y2="16"
+                    stroke="var(--border)"
+                    strokeWidth="1"
+                  />
+                )}
+                {row.map((_, i) => {
+                  const x = n === 1 ? "50%" : `${(100 / n) * (i + 0.5)}%`;
+                  return (
+                    <line
+                      key={i}
+                      x1={x}
+                      y1="16"
+                      x2={x}
+                      y2="40"
+                      stroke="var(--border)"
+                      strokeWidth="1"
+                    />
+                  );
+                })}
+              </svg>
+            </div>
+
+            <div
+              className="grid w-full"
+              style={{
+                gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))`,
+                gap: CARD_GAP,
+                maxWidth: rowMax,
+                marginBottom: ri < rows.length - 1 ? 8 : 0,
+              }}
+            >
+              {row.map((child) => (
+                <div
+                  key={child.id}
+                  className="flex justify-center"
+                >
+                  <OrgAgentCard
+                    node={child}
+                    agent={agentMap.get(child.id)}
+                    liveRun={liveRunByAgent.get(child.id) ?? null}
+                    tab={tab}
+                    onHover={setHoverId}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </Link>
-      {node.reports && node.reports.length > 0 && (
-        <div className="border-l border-border/50 ml-4">
-          {node.reports.map((child) => (
-            <OrgTreeNode key={child.id} node={child} depth={depth + 1} agentMap={agentMap} liveRunByAgent={liveRunByAgent} tab={tab} />
-          ))}
+        );
+      })}
+
+      {/* Hover reveal popover */}
+      {hovered && hoveredNode && (
+        <div
+          className="fixed"
+          style={{
+            right: 24,
+            bottom: 24,
+            width: 340,
+            background: "var(--elevated)",
+            border: "1px solid var(--border)",
+            borderRadius: 8,
+            padding: 14,
+            boxShadow: "var(--shadow-lg)",
+            zIndex: 20,
+          }}
+        >
+          <div className="flex items-center gap-2.5 mb-2.5">
+            <AgentAvatar role={hoveredNode.role} size={32} />
+            <div className="flex flex-col flex-1 min-w-0">
+              <div className="fg truncate" style={{ fontWeight: 500 }}>
+                {hoveredNode.name}
+              </div>
+              <div className="fg-faint t-meta">
+                {roleLabels[hoveredNode.role] ?? hoveredNode.role}
+              </div>
+            </div>
+            <AgentStateChip status={hoveredNode.status} />
+          </div>
+          <div className="t-meta fg-muted upper mb-1">Last heartbeat</div>
+          <div className="t-body fg-2 mb-2.5">
+            {hovered.lastHeartbeatAt
+              ? relativeTime(hovered.lastHeartbeatAt)
+              : "—"}
+          </div>
+          <div className="t-meta fg-muted upper mb-1.5">Adapter</div>
+          <div className="t-body fg-2">{getAdapterLabel(hovered.adapterType)}</div>
         </div>
       )}
     </div>
+  );
+}
+
+function findNode(root: OrgNode, id: string): OrgNode | null {
+  if (root.id === id) return root;
+  for (const r of root.reports ?? []) {
+    const found = findNode(r, id);
+    if (found) return found;
+  }
+  return null;
+}
+
+function findInTree(root: OrgNode, id: string): Agent | null {
+  const node = findNode(root, id);
+  if (!node) return null;
+  // Return a minimal Agent-shaped object for hover popover fallback
+  return {
+    id: node.id,
+    name: node.name,
+    role: node.role,
+    status: node.status,
+    adapterType: "process",
+    lastHeartbeatAt: null,
+  } as unknown as Agent;
+}
+
+function AgentStateChip({ status }: { status: string }) {
+  if (status === "running")
+    return (
+      <Chip variant="blue" icon={<Play size={10} />}>
+        Running
+      </Chip>
+    );
+  if (status === "blocked" || status === "paused" || status === "pending_approval")
+    return (
+      <Chip variant="amber" icon={<AlertTriangle size={10} />}>
+        Blocked
+      </Chip>
+    );
+  if (status === "error" || status === "failed")
+    return (
+      <Chip variant="red" icon={<AlertTriangle size={10} />}>
+        Error
+      </Chip>
+    );
+  if (status === "offline" || status === "terminated")
+    return (
+      <Chip icon={<Minus size={10} />}>
+        Offline
+      </Chip>
+    );
+  return (
+    <Chip icon={<Pause size={10} />}>
+      Idle
+    </Chip>
+  );
+}
+
+function OrgAgentCard({
+  node,
+  agent,
+  liveRun,
+  tab,
+  onHover,
+}: {
+  node: OrgNode;
+  agent: Agent | undefined;
+  liveRun: { runId: string; liveCount: number } | null;
+  tab: FilterTab;
+  onHover: (id: string | null) => void;
+}) {
+  const dotState = statusStateFromAgent(
+    agent ?? ({ status: node.status } as Agent),
+  );
+  const dimmed = agent?.pausedAt && tab !== "paused";
+  return (
+    <Link
+      to={agent ? agentUrl(agent) : `/agents/${node.id}`}
+      onMouseEnter={() => onHover(node.id)}
+      onMouseLeave={() => onHover(null)}
+      className={cn(
+        "block no-underline text-inherit rounded-[8px] border transition-[transform,border-color] hover:border-[color:var(--border-strong)]",
+        dimmed && "opacity-65",
+      )}
+      style={{
+        width: CARD_WIDTH,
+        background: "var(--panel)",
+        borderColor: "var(--border)",
+        padding: 12,
+        opacity: node.status === "terminated" ? 0.65 : undefined,
+      }}
+    >
+      <div className="flex items-center gap-2.5 mb-2.5">
+        <AgentAvatar role={node.role} size={32} />
+        <div className="flex flex-col flex-1 min-w-0">
+          <div className="fg truncate" style={{ fontWeight: 500 }}>
+            {node.name}
+          </div>
+          <div className="fg-faint t-meta">
+            {roleLabels[node.role] ?? node.role}
+          </div>
+        </div>
+        <StatusDot state={dotState} />
+      </div>
+      <div className="t-meta fg-muted upper mb-1">Current</div>
+      <div
+        className="t-meta fg-2"
+        style={{ minHeight: 16, lineHeight: 1.4 }}
+      >
+        {liveRun
+          ? `Live run · ${liveRun.liveCount} active`
+          : agent?.title ?? "—"}
+      </div>
+      <div
+        className="sc-hr"
+        style={{ margin: "10px 0" }}
+      />
+      <div className="flex items-center justify-between">
+        <AgentStateChip status={node.status} />
+        <span className="fg-faint t-meta">
+          {agent?.lastHeartbeatAt ? relativeTime(agent.lastHeartbeatAt) : "—"}
+        </span>
+      </div>
+    </Link>
   );
 }
 
