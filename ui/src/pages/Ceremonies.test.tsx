@@ -5,7 +5,7 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { Issue, RoutineListItem } from "@paperclipai/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { Routines, buildRoutineGroups } from "./Routines";
+import { Ceremonies, buildRoutineGroups } from "./Ceremonies";
 
 let currentSearch = "";
 
@@ -34,7 +34,7 @@ vi.mock("../context/ToastContext", () => ({
   useToastActions: () => ({ pushToast: vi.fn() }),
 }));
 
-vi.mock("../api/routines", () => ({
+vi.mock("../api/ceremonies", () => ({
   routinesApi: {
     list: (companyId: string) => routinesListMock(companyId),
     create: vi.fn(),
@@ -296,7 +296,7 @@ async function flush() {
   await new Promise((resolve) => window.setTimeout(resolve, 0));
 }
 
-describe("Routines page", () => {
+describe("Ceremonies page", () => {
   let container: HTMLDivElement;
 
   beforeEach(() => {
@@ -355,7 +355,7 @@ describe("Routines page", () => {
     await act(async () => {
       root.render(
         <QueryClientProvider client={queryClient}>
-          <Routines />
+          <Ceremonies />
         </QueryClientProvider>,
       );
       await flush();

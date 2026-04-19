@@ -12,8 +12,8 @@ import { ProjectDetail } from "./pages/ProjectDetail";
 import { ProjectWorkspaceDetail } from "./pages/ProjectWorkspaceDetail";
 import { Issues } from "./pages/Issues";
 import { IssueDetail } from "./pages/IssueDetail";
-import { Routines } from "./pages/Routines";
-import { RoutineDetail } from "./pages/RoutineDetail";
+import { Ceremonies } from "./pages/Ceremonies";
+import { CeremonyDetail } from "./pages/CeremonyDetail";
 import { ExecutionWorkspaceDetail } from "./pages/ExecutionWorkspaceDetail";
 import { RoadmapItems } from "./pages/RoadmapItems";
 import { RoadmapItemDetail } from "./pages/RoadmapItemDetail";
@@ -60,6 +60,11 @@ function RoadmapItemRedirect() {
   return <Navigate to={`../roadmap/${goalId ?? ""}`} replace />;
 }
 
+function RoutineToCeremonyRedirect() {
+  const { routineId } = useParams<{ routineId: string }>();
+  return <Navigate to={`../ceremonies/${routineId ?? ""}`} replace />;
+}
+
 function boardRoutes() {
   return (
     <>
@@ -101,8 +106,10 @@ function boardRoutes() {
       <Route path="issues/done" element={<Navigate to="/issues" replace />} />
       <Route path="issues/recent" element={<Navigate to="/issues" replace />} />
       <Route path="issues/:issueId" element={<IssueDetail />} />
-      <Route path="routines" element={<Routines />} />
-      <Route path="routines/:routineId" element={<RoutineDetail />} />
+      <Route path="ceremonies" element={<Ceremonies />} />
+      <Route path="ceremonies/:routineId" element={<CeremonyDetail />} />
+      <Route path="routines" element={<Navigate to="../ceremonies" replace />} />
+      <Route path="routines/:routineId" element={<RoutineToCeremonyRedirect />} />
       <Route path="execution-workspaces/:workspaceId" element={<ExecutionWorkspaceDetail />} />
       <Route path="execution-workspaces/:workspaceId/configuration" element={<ExecutionWorkspaceDetail />} />
       <Route path="execution-workspaces/:workspaceId/runtime-logs" element={<ExecutionWorkspaceDetail />} />
