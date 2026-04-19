@@ -1,10 +1,7 @@
-import { Router, type Request } from "express";
+import { Router } from "express";
 import type { Db } from "@paperclipai/db";
 import {
   DEFAULT_FEEDBACK_DATA_SHARING_TERMS_VERSION,
-  companyPortabilityExportSchema,
-  companyPortabilityImportSchema,
-  companyPortabilityPreviewSchema,
   createCompanySchema,
   feedbackTargetTypeSchema,
   feedbackTraceStatusSchema,
@@ -16,21 +13,17 @@ import { badRequest, forbidden } from "../errors.js";
 import { validate } from "../middleware/validate.js";
 import {
   accessService,
-  agentService,
   ceremonyService,
-  companyPortabilityService,
   companyService,
   feedbackService,
   logActivity,
 } from "../services/index.js";
 import type { StorageService } from "../storage/types.js";
-import { assertBoard, assertCompanyAccess, assertInstanceAdmin, getActorInfo } from "./authz.js";
+import { assertBoard, assertCompanyAccess, getActorInfo } from "./authz.js";
 
-export function companyRoutes(db: Db, storage?: StorageService) {
+export function companyRoutes(db: Db, _storage?: StorageService) {
   const router = Router();
   const svc = companyService(db);
-  const agents = agentService(db);
-  const portability = companyPortabilityService(db, storage);
   const access = accessService(db);
   const feedback = feedbackService(db);
   const ceremonies = ceremonyService(db);
@@ -48,34 +41,6 @@ export function companyRoutes(db: Db, storage?: StorageService) {
     return parsed;
   }
 
-  function assertImportTargetAccess(
-    req: Request,
-    target: { mode: "new_company" } | { mode: "existing_company"; companyId: string },
-  ) {
-    if (target.mode === "new_company") {
-      assertInstanceAdmin(req);
-      return;
-    }
-    assertCompanyAccess(req, target.companyId);
-  }
-
-  // Softclip pivot §6: assertCanUpdateBranding removed along with the
-  // PATCH /branding endpoint.
-
-
-  async function assertCanManagePortability(req: Request, companyId: string, capability: "imports" | "exports") {
-    assertCompanyAccess(req, companyId);
-    if (req.actor.type === "board") return;
-    if (!req.actor.agentId) throw forbidden("Agent authentication required");
-
-    const actorAgent = await agents.getById(req.actor.agentId);
-    if (!actorAgent || actorAgent.companyId !== companyId) {
-      throw forbidden("Agent key cannot access another company");
-    }
-    if (actorAgent.role !== "ceo") {
-      throw forbidden(`Only CEO agents can manage company ${capability}`);
-    }
-  }
 
   router.get("/", async (req, res) => {
     assertBoard(req);
@@ -150,108 +115,6 @@ export function companyRoutes(db: Db, storage?: StorageService) {
       includePayload: parseBooleanQuery(req.query.includePayload),
     });
     res.json(traces);
-  });
-
-  router.post("/:companyId/export", validate(companyPortabilityExportSchema), async (req, res) => {
-    const companyId = req.params.companyId as string;
-    assertCompanyAccess(req, companyId);
-    const result = await portability.exportBundle(companyId, req.body);
-    res.json(result);
-  });
-
-  router.post("/import/preview", validate(companyPortabilityPreviewSchema), async (req, res) => {
-    assertBoard(req);
-    assertImportTargetAccess(req, req.body.target);
-    const preview = await portability.previewImport(req.body);
-    res.json(preview);
-  });
-
-  router.post("/import", validate(companyPortabilityImportSchema), async (req, res) => {
-    assertBoard(req);
-    assertImportTargetAccess(req, req.body.target);
-    const actor = getActorInfo(req);
-    const result = await portability.importBundle(req.body, req.actor.type === "board" ? req.actor.userId : null);
-    await logActivity(db, {
-      companyId: result.company.id,
-      actorType: actor.actorType,
-      actorId: actor.actorId,
-      action: "company.imported",
-      entityType: "company",
-      entityId: result.company.id,
-      agentId: actor.agentId,
-      runId: actor.runId,
-      details: {
-        include: req.body.include ?? null,
-        agentCount: result.agents.length,
-        warningCount: result.warnings.length,
-        companyAction: result.company.action,
-      },
-    });
-    res.json(result);
-  });
-
-  router.post("/:companyId/exports/preview", validate(companyPortabilityExportSchema), async (req, res) => {
-    const companyId = req.params.companyId as string;
-    await assertCanManagePortability(req, companyId, "exports");
-    const preview = await portability.previewExport(companyId, req.body);
-    res.json(preview);
-  });
-
-  router.post("/:companyId/exports", validate(companyPortabilityExportSchema), async (req, res) => {
-    const companyId = req.params.companyId as string;
-    await assertCanManagePortability(req, companyId, "exports");
-    const result = await portability.exportBundle(companyId, req.body);
-    res.json(result);
-  });
-
-  router.post("/:companyId/imports/preview", validate(companyPortabilityPreviewSchema), async (req, res) => {
-    const companyId = req.params.companyId as string;
-    await assertCanManagePortability(req, companyId, "imports");
-    if (req.body.target.mode === "existing_company" && req.body.target.companyId !== companyId) {
-      throw forbidden("Safe import route can only target the route company");
-    }
-    if (req.body.collisionStrategy === "replace") {
-      throw forbidden("Safe import route does not allow replace collision strategy");
-    }
-    const preview = await portability.previewImport(req.body, {
-      mode: "agent_safe",
-      sourceCompanyId: companyId,
-    });
-    res.json(preview);
-  });
-
-  router.post("/:companyId/imports/apply", validate(companyPortabilityImportSchema), async (req, res) => {
-    const companyId = req.params.companyId as string;
-    await assertCanManagePortability(req, companyId, "imports");
-    if (req.body.target.mode === "existing_company" && req.body.target.companyId !== companyId) {
-      throw forbidden("Safe import route can only target the route company");
-    }
-    if (req.body.collisionStrategy === "replace") {
-      throw forbidden("Safe import route does not allow replace collision strategy");
-    }
-    const actor = getActorInfo(req);
-    const result = await portability.importBundle(req.body, req.actor.type === "board" ? req.actor.userId : null, {
-      mode: "agent_safe",
-      sourceCompanyId: companyId,
-    });
-    await logActivity(db, {
-      companyId: result.company.id,
-      actorType: actor.actorType,
-      actorId: actor.actorId,
-      entityType: "company",
-      entityId: result.company.id,
-      agentId: actor.agentId,
-      runId: actor.runId,
-      action: "company.imported",
-      details: {
-        include: req.body.include ?? null,
-        agentCount: result.agents.length,
-        warningCount: result.warnings.length,
-        companyAction: result.company.action,
-        importMode: "agent_safe",
-      },
-    });
-    res.json(result);
   });
 
   router.post("/", validate(createCompanySchema), async (req, res) => {

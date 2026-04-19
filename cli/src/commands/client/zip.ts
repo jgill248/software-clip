@@ -1,6 +1,17 @@
 import { inflateRawSync } from "node:zlib";
 import path from "node:path";
-import type { CompanyPortabilityFileEntry } from "@paperclipai/shared";
+
+// Archive file entries are either a utf-8 string (for text files) or a
+// base64-encoded payload (for binary files). This is the same shape the
+// feedback bundle reader expects — the portability service that
+// originally defined it is gone.
+export type ZipArchiveFileEntry =
+  | string
+  | {
+      encoding: "base64";
+      data: string;
+      contentType?: string | null;
+    };
 
 const textDecoder = new TextDecoder();
 
@@ -46,7 +57,7 @@ function sharedArchiveRoot(paths: string[]) {
     : null;
 }
 
-function bytesToPortableFileEntry(pathValue: string, bytes: Uint8Array): CompanyPortabilityFileEntry {
+function bytesToPortableFileEntry(pathValue: string, bytes: Uint8Array): ZipArchiveFileEntry {
   const contentType = binaryContentTypeByExtension[path.extname(pathValue).toLowerCase()];
   if (!contentType) return textDecoder.decode(bytes);
   return {
@@ -66,10 +77,10 @@ async function inflateZipEntry(compressionMethod: number, bytes: Uint8Array) {
 
 export async function readZipArchive(source: ArrayBuffer | Uint8Array): Promise<{
   rootPath: string | null;
-  files: Record<string, CompanyPortabilityFileEntry>;
+  files: Record<string, ZipArchiveFileEntry>;
 }> {
   const bytes = source instanceof Uint8Array ? source : new Uint8Array(source);
-  const entries: Array<{ path: string; body: CompanyPortabilityFileEntry }> = [];
+  const entries: Array<{ path: string; body: ZipArchiveFileEntry }> = [];
   let offset = 0;
 
   while (offset + 4 <= bytes.length) {
@@ -115,7 +126,7 @@ export async function readZipArchive(source: ArrayBuffer | Uint8Array): Promise<
   }
 
   const rootPath = sharedArchiveRoot(entries.map((entry) => entry.path));
-  const files: Record<string, CompanyPortabilityFileEntry> = {};
+  const files: Record<string, ZipArchiveFileEntry> = {};
   for (const entry of entries) {
     const normalizedPath =
       rootPath && entry.path.startsWith(`${rootPath}/`)
