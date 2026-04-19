@@ -1,5 +1,5 @@
 import { boolean, index, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 import { issues } from "./issues.js";
 
 export const feedbackVotes = pgTable(

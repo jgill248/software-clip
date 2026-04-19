@@ -10,7 +10,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { agents } from "./agents.js";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 import { companySecrets } from "./company_secrets.js";
 import { issues } from "./issues.js";
 import { projects } from "./projects.js";

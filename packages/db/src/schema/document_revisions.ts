@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, integer, timestamp, index, uniqueIndex } from "drizzle-orm/pg-core";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 import { agents } from "./agents.js";
 import { documents } from "./documents.js";
 import { heartbeatRuns } from "./heartbeat_runs.js";

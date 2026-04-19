@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, timestamp, index, primaryKey } from "drizzle-orm/pg-core";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 import { issues } from "./issues.js";
 import { approvals } from "./approvals.js";
 import { agents } from "./agents.js";

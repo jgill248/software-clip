@@ -7,7 +7,7 @@ import {
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 
 export const companySkills = pgTable(
   "company_skills",

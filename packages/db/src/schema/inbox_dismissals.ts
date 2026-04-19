@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, timestamp, index, uniqueIndex } from "drizzle-orm/pg-core";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 
 export const inboxDismissals = pgTable(
   "inbox_dismissals",

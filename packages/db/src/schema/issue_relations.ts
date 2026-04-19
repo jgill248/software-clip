@@ -1,6 +1,6 @@
 import { index, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import { agents } from "./agents.js";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 import { issues } from "./issues.js";
 
 export const issueRelations = pgTable(

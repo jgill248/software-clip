@@ -1,6 +1,6 @@
 import { pgTable, uuid, text, timestamp, jsonb, bigint, index } from "drizzle-orm/pg-core";
 import { agents } from "./agents.js";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 
 export const agentRuntimeState = pgTable(
   "agent_runtime_state",

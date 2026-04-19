@@ -8,7 +8,7 @@ import {
   jsonb,
   index,
 } from "drizzle-orm/pg-core";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 
 export const agents = pgTable(
   "agents",

@@ -1,6 +1,6 @@
 import { pgTable, uuid, text, timestamp, date, index, jsonb } from "drizzle-orm/pg-core";
 import type { AgentEnvConfig } from "@softclipai/shared";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 import { goals } from "./goals.js";
 import { agents } from "./agents.js";
 

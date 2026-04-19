@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, timestamp, jsonb, uniqueIndex, index } from "drizzle-orm/pg-core";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 
 export const principalPermissionGrants = pgTable(
   "principal_permission_grants",

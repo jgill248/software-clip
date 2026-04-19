@@ -8,7 +8,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { agents } from "./agents.js";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 
 /**
  * A sprint is a time-bound iteration scoped to a product (company). Issues

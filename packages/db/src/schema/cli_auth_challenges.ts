@@ -1,6 +1,6 @@
 import { pgTable, uuid, text, timestamp, index } from "drizzle-orm/pg-core";
 import { authUsers } from "./auth.js";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 import { boardApiKeys } from "./board_api_keys.js";
 
 export const cliAuthChallenges = pgTable(

@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, timestamp, jsonb, uniqueIndex, index } from "drizzle-orm/pg-core";
-import { companies } from "./companies.js";
+import { companies } from "./products.js";
 
 export const companyUserSidebarPreferences = pgTable(
   "company_user_sidebar_preferences",
