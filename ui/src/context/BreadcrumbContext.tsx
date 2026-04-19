@@ -10,6 +10,8 @@ interface BreadcrumbContextValue {
   setBreadcrumbs: (crumbs: Breadcrumb[]) => void;
   mobileToolbar: ReactNode | null;
   setMobileToolbar: (node: ReactNode | null) => void;
+  rightActions: ReactNode | null;
+  setRightActions: (node: ReactNode | null) => void;
 }
 
 const BreadcrumbContext = createContext<BreadcrumbContextValue | null>(null);
@@ -28,6 +30,7 @@ function breadcrumbsEqual(left: Breadcrumb[], right: Breadcrumb[]) {
 export function BreadcrumbProvider({ children }: { children: ReactNode }) {
   const [breadcrumbs, setBreadcrumbsState] = useState<Breadcrumb[]>([]);
   const [mobileToolbar, setMobileToolbarState] = useState<ReactNode | null>(null);
+  const [rightActions, setRightActionsState] = useState<ReactNode | null>(null);
 
   const setBreadcrumbs = useCallback((crumbs: Breadcrumb[]) => {
     setBreadcrumbsState((current) => (breadcrumbsEqual(current, crumbs) ? current : crumbs));
@@ -35,6 +38,10 @@ export function BreadcrumbProvider({ children }: { children: ReactNode }) {
 
   const setMobileToolbar = useCallback((node: ReactNode | null) => {
     setMobileToolbarState(node);
+  }, []);
+
+  const setRightActions = useCallback((node: ReactNode | null) => {
+    setRightActionsState(node);
   }, []);
 
   useEffect(() => {
@@ -47,7 +54,16 @@ export function BreadcrumbProvider({ children }: { children: ReactNode }) {
   }, [breadcrumbs]);
 
   return (
-    <BreadcrumbContext.Provider value={{ breadcrumbs, setBreadcrumbs, mobileToolbar, setMobileToolbar }}>
+    <BreadcrumbContext.Provider
+      value={{
+        breadcrumbs,
+        setBreadcrumbs,
+        mobileToolbar,
+        setMobileToolbar,
+        rightActions,
+        setRightActions,
+      }}
+    >
       {children}
     </BreadcrumbContext.Provider>
   );

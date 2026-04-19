@@ -10,18 +10,26 @@ export function PropertiesPanel() {
 
   return (
     <aside
-      className="hidden md:flex border-l border-border bg-card flex-col shrink-0 overflow-hidden transition-[width,opacity] duration-200 ease-in-out h-full"
-      style={{ width: panelVisible ? 320 : 0, opacity: panelVisible ? 1 : 0 }}
+      className="hidden md:flex flex-col shrink-0 overflow-hidden transition-[width,opacity] duration-200 ease-in-out h-full border-l"
+      style={{
+        width: panelVisible ? 280 : 0,
+        opacity: panelVisible ? 1 : 0,
+        background: "var(--panel)",
+        borderColor: "var(--border-subtle)",
+      }}
     >
-      <div className="w-80 flex-1 flex flex-col min-w-[320px] min-h-0">
-        <div className="flex items-center justify-between px-4 py-2 border-b border-border">
-          <span className="text-sm font-medium">Properties</span>
+      <div className="flex-1 flex flex-col min-w-[280px] min-h-0">
+        <div
+          className="flex items-center justify-between px-3 h-11 border-b"
+          style={{ borderColor: "var(--border-subtle)" }}
+        >
+          <span className="t-meta upper fg-muted">Properties</span>
           <Button variant="ghost" size="icon-xs" onClick={() => setPanelVisible(false)}>
-            <X className="h-4 w-4" />
+            <X className="h-3.5 w-3.5" />
           </Button>
         </div>
         <ScrollArea className="flex-1">
-          <div className="p-4">{panelContent}</div>
+          <div className="p-3">{panelContent}</div>
         </ScrollArea>
       </div>
     </aside>

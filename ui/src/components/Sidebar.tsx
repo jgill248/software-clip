@@ -22,9 +22,9 @@ import { useCompany } from "../context/CompanyContext";
 import { heartbeatsApi } from "../api/heartbeats";
 import { queryKeys } from "../lib/queryKeys";
 import { useInboxBadge } from "../hooks/useInboxBadge";
-import { Button } from "@/components/ui/button";
 import { PluginSlotOutlet } from "@/plugins/slots";
 import { SidebarCompanyMenu } from "./SidebarCompanyMenu";
+import { Kbd } from "@/components/softclip/Kbd";
 
 export function Sidebar() {
   const { openNewIssue } = useDialog();
@@ -48,18 +48,38 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-60 h-full min-h-0 border-r border-border bg-background flex flex-col">
-      {/* Top bar: Company name (bold) + Search — aligned with top sections (no visible border) */}
-      <div className="flex items-center gap-1 px-3 h-12 shrink-0">
+    <aside
+      className="w-60 h-full min-h-0 border-r flex flex-col"
+      style={{
+        background: "var(--bg)",
+        borderColor: "var(--border-subtle)",
+      }}
+    >
+      {/* Product header: company menu (opens palette-style dropdown) */}
+      <div
+        className="flex items-center gap-1 px-2 h-11 shrink-0 border-b"
+        style={{ borderColor: "var(--border-subtle)" }}
+      >
         <SidebarCompanyMenu />
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="text-muted-foreground shrink-0"
+      </div>
+
+      {/* Search / jump pill — clicks into command palette */}
+      <div className="px-3 pt-2 pb-1 shrink-0">
+        <button
+          type="button"
           onClick={openSearch}
+          className="flex items-center gap-2 h-7 w-full px-2 rounded-[5px] border text-xs transition-colors"
+          style={{
+            background: "var(--panel)",
+            borderColor: "var(--border)",
+            color: "var(--fg-muted)",
+          }}
+          aria-label="Search or jump to"
         >
-          <Search className="h-4 w-4" />
-        </Button>
+          <Search className="h-3 w-3" />
+          <span className="flex-1 truncate text-left">Search or jump to…</span>
+          <Kbd>⌘K</Kbd>
+        </button>
       </div>
 
       <nav className="flex-1 min-h-0 overflow-y-auto scrollbar-auto-hide flex flex-col gap-4 px-3 py-2">
@@ -67,10 +87,11 @@ export function Sidebar() {
           {/* New Issue button aligned with nav items */}
           <button
             onClick={() => openNewIssue()}
-            className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-colors"
+            className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-colors rounded-[5px]"
           >
             <SquarePen className="h-4 w-4 shrink-0" />
             <span className="truncate">New Issue</span>
+            <span className="ml-auto"><Kbd>C</Kbd></span>
           </button>
           <SidebarNavItem to="/dashboard" label="Dashboard" icon={LayoutDashboard} liveCount={liveRunCount} />
           <SidebarNavItem

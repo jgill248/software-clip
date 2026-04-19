@@ -1,51 +1,42 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Link, useNavigate, useParams } from "@/lib/router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  ArrowLeft,
-  Play,
-  Square,
-  Trash2,
-  Circle,
-  CircleDot,
-  CircleCheck,
-} from "lucide-react";
+import { ArrowLeft, Play, Square, Trash2 } from "lucide-react";
 import { sprintsApi, type Sprint, type SprintState } from "../api/sprints";
 import { ApiError } from "../api/client";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { useToastActions } from "../context/ToastContext";
 import { queryKeys } from "../lib/queryKeys";
-import { cn, formatDate, issueUrl } from "../lib/utils";
+import { formatDate, issueUrl, cn } from "../lib/utils";
 import { PageSkeleton } from "../components/PageSkeleton";
-import { Button } from "@/components/ui/button";
-import { StatusIcon } from "../components/StatusIcon";
-import { PriorityIcon } from "../components/PriorityIcon";
-
-const STATE_META: Record<
-  SprintState,
-  { label: string; tone: string; icon: typeof Circle }
-> = {
-  planned: { label: "Planned", tone: "text-muted-foreground", icon: Circle },
-  active: {
-    label: "Active",
-    tone: "text-emerald-600 dark:text-emerald-400",
-    icon: CircleDot,
-  },
-  closed: { label: "Closed", tone: "text-muted-foreground", icon: CircleCheck },
-};
+import { Card, CardHeader, CardBody } from "@/components/softclip/Card";
+import { Chip } from "@/components/softclip/Chip";
+import { HealthBar } from "@/components/softclip/HealthBar";
+import { Burndown } from "@/components/softclip/Burndown";
+import { StatusIcon, STATUS_LABEL } from "@/components/softclip/StatusIcon";
+import { PriorityBars } from "@/components/softclip/PriorityBars";
+import type { IssuePriority, IssueStatus } from "@softclipai/shared";
 
 type SprintIssueRow = {
   id: string;
   productId: string;
   title: string;
-  status: string;
-  priority: string;
+  status: IssueStatus | string;
+  priority: IssuePriority;
   identifier: string | null;
+  isStretch: boolean;
 };
+
+const COLUMN_ORDER: Array<{ status: IssueStatus; label: string }> = [
+  { status: "todo", label: "Todo" },
+  { status: "in_progress", label: "In progress" },
+  { status: "in_review", label: "In review" },
+  { status: "done", label: "Done" },
+];
 
 export function SprintDetail() {
   const { sprintId } = useParams();
-  const { setBreadcrumbs } = useBreadcrumbs();
+  const { setBreadcrumbs, setRightActions } = useBreadcrumbs();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { pushToast } = useToastActions();
@@ -83,14 +74,37 @@ export function SprintDetail() {
       id: String(row.id),
       productId: String(row.productId ?? ""),
       title: String(row.title ?? "Untitled"),
-      status: String(row.status ?? "backlog"),
-      priority: String(row.priority ?? "medium"),
+      status: String(row.status ?? "backlog") as IssueStatus,
+      priority: (row.priority as IssuePriority) ?? "medium",
       identifier:
         typeof row.identifier === "string" && row.identifier.length > 0
           ? row.identifier
           : null,
+      isStretch: Boolean((row as { isStretch?: boolean }).isStretch),
     }));
   }, [issuesRaw]);
+
+  const issuesByStatus = useMemo(() => {
+    const grouped = new Map<IssueStatus, SprintIssueRow[]>();
+    for (const col of COLUMN_ORDER) grouped.set(col.status, []);
+    for (const issue of issues) {
+      const key = (grouped.has(issue.status as IssueStatus)
+        ? (issue.status as IssueStatus)
+        : "todo") as IssueStatus;
+      grouped.get(key)!.push(issue);
+    }
+    return grouped;
+  }, [issues]);
+
+  const sprintDays = useMemo(() => {
+    if (!sprint?.startsAt || !sprint?.endsAt) return null;
+    const start = new Date(sprint.startsAt).getTime();
+    const end = new Date(sprint.endsAt).getTime();
+    const now = Date.now();
+    const totalDays = Math.max(Math.round((end - start) / 86_400_000), 1);
+    const daysRemaining = Math.max(Math.round((end - now) / 86_400_000), 0);
+    return { totalDays, daysRemaining };
+  }, [sprint]);
 
   function invalidate() {
     if (!sprintId) return;
@@ -130,6 +144,26 @@ export function SprintDetail() {
     },
   });
 
+  const pending = transitionMutation.isPending || deleteMutation.isPending;
+
+  useEffect(() => {
+    if (!sprint) return;
+    setRightActions(
+      <StateControlsInline
+        sprint={sprint}
+        pending={pending}
+        onActivate={() => transitionMutation.mutate("active")}
+        onClose={() => transitionMutation.mutate("closed")}
+        onDelete={() => {
+          if (confirm(`Delete "${sprint.name}"? This can't be undone.`)) {
+            deleteMutation.mutate();
+          }
+        }}
+      />,
+    );
+    return () => setRightActions(null);
+  }, [sprint, pending, setRightActions, transitionMutation, deleteMutation]);
+
   if (isLoading || !sprint) {
     return <PageSkeleton variant="detail" />;
   }
@@ -142,11 +176,17 @@ export function SprintDetail() {
     );
   }
 
-  const meta = STATE_META[sprint.state];
-  const Icon = meta.icon;
+  const stateVariant: "blue" | "default" =
+    sprint.state === "active" ? "blue" : "default";
+  const stateLabel =
+    sprint.state === "active"
+      ? "Active"
+      : sprint.state === "closed"
+        ? "Closed"
+        : "Planned";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4" style={{ maxWidth: 1400 }}>
       <div>
         <Link
           to="/sprints"
@@ -157,94 +197,147 @@ export function SprintDetail() {
         </Link>
       </div>
 
-      <header className="space-y-2">
-        <div className="flex flex-wrap items-baseline gap-2">
-          <Icon className={cn("h-5 w-5 self-center", meta.tone)} />
-          <h1 className="text-xl font-semibold">{sprint.name}</h1>
-          <span className={cn("text-sm", meta.tone)}>{meta.label}</span>
-        </div>
-        {sprint.goal && (
-          <p className="max-w-2xl text-sm leading-6 text-foreground/80 whitespace-pre-wrap">
-            {sprint.goal}
-          </p>
-        )}
-        <dl className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
-          <div>
-            <dt className="inline font-medium">Starts: </dt>
-            <dd className="inline">
-              {sprint.startsAt ? formatDate(sprint.startsAt) : "—"}
-            </dd>
-          </div>
-          <div>
-            <dt className="inline font-medium">Ends: </dt>
-            <dd className="inline">
+      {/* Goal + metrics card */}
+      <Card>
+        <CardBody
+          className="grid gap-5 items-center"
+          style={{ gridTemplateColumns: "minmax(0, 2fr) repeat(3, minmax(0, 1fr)) auto" }}
+        >
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-1.5">
+              <Chip variant={stateVariant} dot={sprint.state === "active"}>
+                {stateLabel}
+              </Chip>
+              <span className="t-body fg-muted">{sprint.name}</span>
+            </div>
+            <div className="t-head" style={{ fontSize: 20 }}>
+              {sprint.goal ?? sprint.name}
+            </div>
+            <div className="t-meta fg-muted mt-1">
+              {sprint.startsAt ? formatDate(sprint.startsAt) : "—"} →{" "}
               {sprint.endsAt ? formatDate(sprint.endsAt) : "—"}
-            </dd>
+            </div>
           </div>
-          {sprint.activatedAt && (
-            <div>
-              <dt className="inline font-medium">Activated: </dt>
-              <dd className="inline">{formatDate(sprint.activatedAt)}</dd>
+          <div>
+            <div className="t-meta fg-muted upper mb-1.5">Committed</div>
+            <div className="t-head num">{summary?.total ?? "—"}</div>
+          </div>
+          <div>
+            <div className="t-meta fg-muted upper mb-1.5">Done</div>
+            <div className="t-head num">{summary?.done ?? "—"}</div>
+          </div>
+          <div>
+            <div className="t-meta fg-muted upper mb-1.5">Days remaining</div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="t-head num">{sprintDays?.daysRemaining ?? "—"}</span>
+              <span className="fg-muted t-body">
+                / {sprintDays?.totalDays ?? "—"}
+              </span>
             </div>
-          )}
-          {sprint.closedAt && (
-            <div>
-              <dt className="inline font-medium">Closed: </dt>
-              <dd className="inline">{formatDate(sprint.closedAt)}</dd>
-            </div>
-          )}
-        </dl>
-      </header>
-
-      <SprintStateControls
-        sprint={sprint}
-        pending={transitionMutation.isPending || deleteMutation.isPending}
-        onActivate={() => transitionMutation.mutate("active")}
-        onClose={() => transitionMutation.mutate("closed")}
-        onDelete={() => {
-          if (confirm(`Delete "${sprint.name}"? This can't be undone.`)) {
-            deleteMutation.mutate();
-          }
-        }}
-      />
-
-      {summary && <SprintBurndown summary={summary} />}
-
-      <section className="space-y-2">
-        <h2 className="text-sm font-semibold">Issues</h2>
-        {issues.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No issues committed to this sprint yet. Assign an issue by calling{" "}
-            <code className="text-xs">POST /api/issues/:id/sprint</code> or use the
-            sprint selector on the issue page (coming in a follow-up UI chunk).
-          </p>
-        ) : (
-          <ul className="space-y-1">
-            {issues.map((issue) => (
-              <li key={issue.id}>
-                <Link
-                  to={issueUrl(issue)}
-                  className="group flex items-center gap-2 rounded-md border border-border/60 bg-card/30 px-3 py-2 transition-colors hover:border-border hover:bg-card/60"
-                >
-                  <StatusIcon status={issue.status} />
-                  <PriorityIcon priority={issue.priority} />
-                  {issue.identifier && (
-                    <span className="font-mono text-[11px] text-muted-foreground">
-                      {issue.identifier}
-                    </span>
-                  )}
-                  <span className="flex-1 truncate text-sm">{issue.title}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          </div>
+          <div className="self-stretch flex flex-col justify-between">
+            <div className="t-meta fg-muted upper">Burndown</div>
+            {summary && (
+              <BurndownFromSummary
+                total={summary.total}
+                remaining={summary.remaining}
+                totalDays={sprintDays?.totalDays ?? 10}
+                daysElapsed={
+                  sprintDays
+                    ? Math.max(sprintDays.totalDays - sprintDays.daysRemaining, 0)
+                    : 0
+                }
+              />
+            )}
+          </div>
+        </CardBody>
+        {summary && (
+          <CardBody style={{ paddingTop: 0 }}>
+            <HealthBar done={summary.done} committed={summary.total} />
+          </CardBody>
         )}
-      </section>
+      </Card>
+
+      {/* Kanban columns */}
+      {issues.length === 0 ? (
+        <Card>
+          <CardBody className="t-body fg-muted">
+            No issues committed to this sprint yet. Assign issues via the issue
+            page's sprint selector or{" "}
+            <code className="t-mono t-meta">POST /api/issues/:id/sprint</code>.
+          </CardBody>
+        </Card>
+      ) : (
+        <div
+          className="grid gap-3"
+          style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}
+        >
+          {COLUMN_ORDER.map((col) => {
+            const colIssues = issuesByStatus.get(col.status) ?? [];
+            return (
+              <Card key={col.status} className="min-h-[200px]">
+                <CardHeader
+                  title={
+                    <span className="t-meta upper fg-muted">
+                      {col.label}{" "}
+                      <span className="fg-faint num">· {colIssues.length}</span>
+                    </span>
+                  }
+                />
+                <div className="flex flex-col gap-1.5 p-2">
+                  {colIssues.map((issue) => (
+                    <Link
+                      key={issue.id}
+                      to={issueUrl(issue)}
+                      className={cn(
+                        "no-underline text-inherit rounded-[5px] border px-2.5 py-2 transition-colors hover:bg-[color:var(--hover)]",
+                      )}
+                      style={{
+                        background: "var(--panel-2)",
+                        borderColor: issue.isStretch ? "transparent" : "var(--border-subtle)",
+                        borderStyle: issue.isStretch ? "dashed" : "solid",
+                        borderWidth: 1,
+                      }}
+                    >
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <PriorityBars priority={issue.priority} size={12} />
+                        <StatusIcon status={issue.status} size={12} />
+                        {issue.identifier && (
+                          <span className="sc-issue-id t-mono">
+                            {issue.identifier}
+                          </span>
+                        )}
+                        {issue.isStretch && (
+                          <Chip className="ml-auto" square>
+                            Stretch
+                          </Chip>
+                        )}
+                      </div>
+                      <div className="t-body fg line-clamp-2">{issue.title}</div>
+                      <div className="t-meta fg-muted mt-1">
+                        {STATUS_LABEL[issue.status] ?? issue.status}
+                      </div>
+                    </Link>
+                  ))}
+                  {colIssues.length === 0 && (
+                    <div
+                      className="t-meta fg-faint text-center py-4 rounded-[5px] border border-dashed"
+                      style={{ borderColor: "var(--border-subtle)" }}
+                    >
+                      None
+                    </div>
+                  )}
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
 
-function SprintStateControls({
+function StateControlsInline({
   sprint,
   pending,
   onActivate,
@@ -257,57 +350,70 @@ function SprintStateControls({
   onClose: () => void;
   onDelete: () => void;
 }) {
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      {sprint.state === "planned" && (
-        <>
-          <Button size="sm" onClick={onActivate} disabled={pending}>
-            <Play className="mr-1.5 h-3.5 w-3.5" />
-            Activate
-          </Button>
-          <Button size="sm" variant="ghost" onClick={onDelete} disabled={pending}>
-            <Trash2 className="mr-1.5 h-3.5 w-3.5" />
-            Delete
-          </Button>
-        </>
-      )}
-      {sprint.state === "active" && (
-        <Button size="sm" variant="outline" onClick={onClose} disabled={pending}>
-          <Square className="mr-1.5 h-3.5 w-3.5" />
-          Close sprint
-        </Button>
-      )}
-      {sprint.state === "closed" && (
-        <span className="text-xs text-muted-foreground">
-          This sprint is closed. Create a new one to plan the next iteration.
-        </span>
-      )}
-    </div>
-  );
+  if (sprint.state === "planned") {
+    return (
+      <>
+        <button
+          type="button"
+          className="sc-btn size-sm variant-ghost"
+          disabled={pending}
+          onClick={onDelete}
+        >
+          <Trash2 size={12} />
+          Delete
+        </button>
+        <button
+          type="button"
+          className="sc-btn size-sm variant-outline"
+          disabled={pending}
+          onClick={onActivate}
+        >
+          <Play size={12} />
+          Activate
+        </button>
+      </>
+    );
+  }
+  if (sprint.state === "active") {
+    return (
+      <button
+        type="button"
+        className="sc-btn size-sm variant-outline"
+        disabled={pending}
+        onClick={onClose}
+      >
+        <Square size={12} />
+        Close sprint
+      </button>
+    );
+  }
+  return null;
 }
 
-function SprintBurndown({
-  summary,
+function BurndownFromSummary({
+  total,
+  remaining,
+  totalDays,
+  daysElapsed,
 }: {
-  summary: { total: number; done: number; inProgress: number; remaining: number };
+  total: number;
+  remaining: number;
+  totalDays: number;
+  daysElapsed: number;
 }) {
-  const donePct =
-    summary.total > 0 ? Math.round((summary.done / summary.total) * 100) : 0;
-  return (
-    <section className="space-y-2">
-      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm">
-        <span className="font-semibold">Burndown</span>
-        <span className="text-muted-foreground">
-          {summary.done} done · {summary.inProgress} in progress ·{" "}
-          {summary.remaining} remaining of {summary.total}
-        </span>
-      </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-        <div
-          className="h-full bg-emerald-500/70 transition-all"
-          style={{ width: `${donePct}%` }}
-        />
-      </div>
-    </section>
-  );
+  const ideal: number[] = [];
+  const actual: number[] = [];
+  for (let i = 0; i <= totalDays; i += 1) {
+    const t = i / Math.max(totalDays, 1);
+    ideal.push(total * (1 - t));
+  }
+  for (let i = 0; i <= totalDays; i += 1) {
+    if (i <= daysElapsed) {
+      const t = i / Math.max(daysElapsed, 1);
+      actual.push(total - (total - remaining) * t);
+    } else {
+      actual.push(remaining);
+    }
+  }
+  return <Burndown actual={actual} ideal={ideal} w={220} h={56} />;
 }

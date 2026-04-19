@@ -62,6 +62,11 @@ function SortableCompanyItem({
     opacity: isDragging ? 0.8 : 1,
   };
 
+  const initials = (company.issuePrefix ?? company.name ?? "?")
+    .trim()
+    .slice(0, 2)
+    .toUpperCase();
+
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="overflow-visible">
       <Tooltip delayDuration={300}>
@@ -76,44 +81,47 @@ function SortableCompanyItem({
               e.preventDefault();
               onSelect();
             }}
-            className="relative flex items-center justify-center group overflow-visible"
+            className="relative flex items-center justify-center"
           >
-            {/* Selection indicator pill */}
-            <div
+            {/* Left-edge active indicator bar, per design */}
+            <span
+              aria-hidden
               className={cn(
-                "absolute left-[-14px] w-1 rounded-r-full bg-foreground transition-[height] duration-150",
-                isSelected
-                  ? "h-5"
-                  : "h-0 group-hover:h-2"
+                "pointer-events-none absolute -left-2 w-0.5 rounded bg-foreground transition-[height] duration-150",
+                isSelected ? "h-5" : "h-0",
               )}
             />
             <div
-              className={cn("relative overflow-visible transition-transform duration-150", isDragging && "scale-105")}
-            >
-              {/* Softclip pivot §6: CompanyPatternIcon removed along with
-                  company branding. A simple initial tile replaces it. */}
-              <div
-                className={cn(
-                  "flex h-11 w-11 items-center justify-center bg-muted text-sm font-semibold text-muted-foreground transition-all",
-                  isSelected
-                    ? "rounded-[14px]"
-                    : "rounded-[22px] group-hover:rounded-[14px]",
-                  isDragging && "shadow-lg",
-                )}
-                aria-label={company.name}
-              >
-                {(company.name ?? "?").trim().slice(0, 2).toUpperCase()}
-              </div>
-              {hasLiveAgents && (
-                <span className="pointer-events-none absolute -right-0.5 -top-0.5 z-10">
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className="absolute inline-flex h-full w-full animate-pulse rounded-full bg-blue-400 opacity-80" />
-                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-blue-500 ring-2 ring-background" />
-                  </span>
-                </span>
+              className={cn(
+                "relative flex h-9 w-9 items-center justify-center rounded-[8px] text-[12px] font-semibold tracking-wide transition-colors",
+                "border",
+                isSelected
+                  ? "border-border bg-[color:var(--elevated)] text-foreground"
+                  : "border-transparent bg-[color:var(--panel-2)] text-muted-foreground hover:bg-[color:var(--hover)] hover:text-foreground",
+                isDragging && "shadow-md",
               )}
-              {hasUnreadInbox && (
-                <span className="pointer-events-none absolute -bottom-0.5 -right-0.5 z-10 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-background" />
+              aria-label={company.name}
+            >
+              {initials}
+              {hasLiveAgents && (
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full"
+                  style={{
+                    background: "var(--accent-green)",
+                    boxShadow: "0 0 0 2px var(--bg-inset)",
+                  }}
+                />
+              )}
+              {!hasLiveAgents && hasUnreadInbox && (
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full"
+                  style={{
+                    background: "var(--accent-blue)",
+                    boxShadow: "0 0 0 2px var(--bg-inset)",
+                  }}
+                />
               )}
             </div>
           </a>
@@ -202,14 +210,20 @@ export function CompanyRail() {
   );
 
   return (
-    <div className="flex flex-col items-center w-[72px] shrink-0 h-full bg-background border-r border-border">
-      {/* Softclip icon - aligned with top sections (implied line, no visible border) */}
-      <div className="flex items-center justify-center h-12 w-full shrink-0">
-        <Paperclip className="h-5 w-5 text-foreground" />
+    <div
+      className="flex flex-col items-center w-14 shrink-0 h-full border-r"
+      style={{
+        background: "var(--bg-inset)",
+        borderColor: "var(--border-subtle)",
+      }}
+    >
+      {/* Softclip brand mark */}
+      <div className="flex items-center justify-center h-11 w-full shrink-0">
+        <Paperclip className="h-4 w-4 text-foreground" />
       </div>
 
       {/* Company list */}
-      <div className="flex-1 flex flex-col items-center gap-2 py-3 w-full overflow-y-auto overflow-x-hidden scrollbar-none">
+      <div className="flex-1 flex flex-col items-center gap-1.5 py-2 w-full overflow-y-auto overflow-x-hidden scrollbar-none">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -239,7 +253,10 @@ export function CompanyRail() {
       </div>
 
       {/* Separator before add button */}
-      <div className="w-8 h-px bg-border mx-auto shrink-0" />
+      <div
+        className="w-6 h-px mx-auto shrink-0 my-1"
+        style={{ background: "var(--border-subtle)" }}
+      />
 
       {/* Add company button */}
       <div className="flex items-center justify-center py-2 shrink-0">
@@ -247,10 +264,13 @@ export function CompanyRail() {
           <TooltipTrigger asChild>
             <button
               onClick={() => openOnboarding()}
-              className="flex items-center justify-center w-11 h-11 rounded-[22px] hover:rounded-[14px] border-2 border-dashed border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground transition-[border-color,color,border-radius] duration-150"
+              className={cn(
+                "flex items-center justify-center h-9 w-9 rounded-[8px] transition-colors",
+                "text-muted-foreground hover:text-foreground hover:bg-[color:var(--hover)]",
+              )}
               aria-label="Add company"
             >
-              <Plus className="h-5 w-5" />
+              <Plus className="h-4 w-4" />
             </button>
           </TooltipTrigger>
           <TooltipContent side="right" sideOffset={8}>
