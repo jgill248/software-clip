@@ -172,7 +172,7 @@ function makeDbStub(state: StubState) {
   } as any;
 }
 
-// The service imports `sprints` and `issues` from @paperclipai/db. Tests
+// The service imports `sprints` and `issues` from @softclipai/db. Tests
 // don't control those imports, but the stub's fromTargetFromFirstArg()
 // falls back to "sprints" for unknown tables. To make the stub route
 // correctly for issue queries we inject the tag via module mock in the

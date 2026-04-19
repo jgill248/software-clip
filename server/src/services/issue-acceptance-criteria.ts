@@ -1,10 +1,10 @@
 import { and, asc, eq, inArray } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import {
   issueAcceptanceCriteria,
   issues,
   type AcceptanceCriterionStatus,
-} from "@paperclipai/db";
+} from "@softclipai/db";
 import { badRequest, notFound, unprocessable } from "../errors.js";
 
 /**

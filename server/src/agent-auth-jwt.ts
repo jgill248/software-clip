@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { resolveSoftclipEnv } from "@paperclipai/shared";
+import { resolveSoftclipEnv } from "@softclipai/shared";
 
 interface JwtHeader {
   alg: string;

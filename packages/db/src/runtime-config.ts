@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { resolveSoftclipEnv } from "@paperclipai/shared";
+import { resolveSoftclipEnv } from "@softclipai/shared";
 
 const DEFAULT_INSTANCE_ID = "default";
 const CONFIG_BASENAME = "config.json";

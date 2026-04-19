@@ -5,7 +5,7 @@ import pc from "picocolors";
 import type {
   Company,
   FeedbackTrace,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import { ApiRequestError } from "../../client/http.js";
 import {
   addCommonClientOptions,

@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import { Router } from "express";
 import type { Request } from "express";
 import { and, desc, eq, gt, inArray, isNotNull, isNull, lte, sql } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import {
   assets,
   agentApiKeys,
@@ -21,7 +21,7 @@ import {
   invites,
   joinRequests,
   principalPermissionGrants,
-} from "@paperclipai/db";
+} from "@softclipai/db";
 import {
   acceptInviteSchema,
   createCliAuthChallengeSchema,
@@ -37,8 +37,8 @@ import {
   updateMemberPermissionsSchema,
   updateUserCompanyAccessSchema,
   PERMISSION_KEYS
-} from "@paperclipai/shared";
-import type { DeploymentExposure, DeploymentMode, PermissionKey } from "@paperclipai/shared";
+} from "@softclipai/shared";
+import type { DeploymentExposure, DeploymentMode, PermissionKey } from "@softclipai/shared";
 import {
   forbidden,
   conflict,

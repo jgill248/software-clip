@@ -1,6 +1,6 @@
 import { and, eq, gte, sql } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
-import { agents, approvals, companies, costEvents, issues } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
+import { agents, approvals, companies, costEvents, issues } from "@softclipai/db";
 import { notFound } from "../errors.js";
 
 // Softclip pivot §6: budgetService dependency removed. The `budgets`

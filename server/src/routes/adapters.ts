@@ -27,7 +27,7 @@ import {
   isOverridePaused,
   setOverridePaused,
 } from "../adapters/registry.js";
-import { getAdapterSessionManagement } from "@paperclipai/adapter-utils";
+import { getAdapterSessionManagement } from "@softclipai/adapter-utils";
 import {
   listAdapterPlugins,
   addAdapterPlugin,

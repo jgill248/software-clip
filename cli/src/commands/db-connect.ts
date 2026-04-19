@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import * as p from "@clack/prompts";
 import pc from "picocolors";
-import { createDb } from "@paperclipai/db";
+import { createDb } from "@softclipai/db";
 import { loadPaperclipEnvFile } from "../config/env.js";
 import { readConfig, resolveConfigPath, writeConfig } from "../config/store.js";
 import type { PaperclipConfig } from "../config/schema.js";
@@ -305,7 +305,7 @@ export async function dbConnect(opts: DbConnectOptions): Promise<void> {
   const migrateSpinner = p.spinner();
   migrateSpinner.start("Applying migrations");
   try {
-    const { applyPendingMigrations } = await import("@paperclipai/db");
+    const { applyPendingMigrations } = await import("@softclipai/db");
     await applyPendingMigrations(url);
     migrateSpinner.stop(pc.green("Migrations applied"));
     p.outro(`Done. Run ${pc.cyan("paperclipai db doctor")} to verify.`);

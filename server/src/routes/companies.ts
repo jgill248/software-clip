@@ -1,5 +1,5 @@
 import { Router } from "express";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import {
   DEFAULT_FEEDBACK_DATA_SHARING_TERMS_VERSION,
   createCompanySchema,
@@ -8,7 +8,7 @@ import {
   feedbackVoteValueSchema,
   // Softclip pivot §6: updateCompanyBrandingSchema removed.
   updateCompanySchema,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import { badRequest, forbidden } from "../errors.js";
 import { validate } from "../middleware/validate.js";
 import {

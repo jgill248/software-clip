@@ -1,5 +1,5 @@
 import { and, count, eq, gte, inArray, lt, sql } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import {
   companies,
   // Softclip pivot §6: companyLogos removed. `assets` is still needed
@@ -27,7 +27,7 @@ import {
   principalPermissionGrants,
   companyMemberships,
   companySkills,
-} from "@paperclipai/db";
+} from "@softclipai/db";
 import { notFound } from "../errors.js";
 
 export function companyService(db: Db) {

@@ -1,11 +1,11 @@
 import { Router, type Request } from "express";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import {
   assignIssueToSprintSchema,
   createSprintSchema,
   sprintStateSchema,
   updateSprintSchema,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import { validate } from "../middleware/validate.js";
 import { issueService, sprintService } from "../services/index.js";
 import { assertCompanyAccess, getActorInfo } from "./authz.js";

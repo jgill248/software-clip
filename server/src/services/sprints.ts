@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, sql } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
-import { issues, sprints, type SprintState } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
+import { issues, sprints, type SprintState } from "@softclipai/db";
 import { badRequest, conflict, notFound, unprocessable } from "../errors.js";
 
 /**

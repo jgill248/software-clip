@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
-import { routines } from "@paperclipai/db";
-import type { CreateRoutine } from "@paperclipai/shared";
+import type { Db } from "@softclipai/db";
+import { routines } from "@softclipai/db";
+import type { CreateRoutine } from "@softclipai/shared";
 import { routineService } from "./routines.js";
 import { notFound, unprocessable } from "../errors.js";
 

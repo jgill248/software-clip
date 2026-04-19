@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { resolveSoftclipEnv } from "@paperclipai/shared";
+import { resolveSoftclipEnv } from "@softclipai/shared";
 import { resolveDefaultConfigPath } from "./home-paths.js";
 
 const PAPERCLIP_CONFIG_BASENAME = "config.json";

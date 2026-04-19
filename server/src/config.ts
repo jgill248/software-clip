@@ -22,7 +22,7 @@ import {
   resolveRuntimeBind,
   resolveSoftclipEnv,
   validateConfiguredBindMode,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import {
   resolveDefaultBackupDir,
   resolveDefaultEmbeddedPostgresDir,

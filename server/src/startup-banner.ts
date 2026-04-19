@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolvePaperclipConfigPath, resolvePaperclipEnvPath } from "./paths.js";
-import { resolveSoftclipEnv, type BindMode, type DeploymentExposure, type DeploymentMode } from "@paperclipai/shared";
+import { resolveSoftclipEnv, type BindMode, type DeploymentExposure, type DeploymentMode } from "@softclipai/shared";
 
 import { parse as parseEnvFileContents } from "dotenv";
 

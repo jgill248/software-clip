@@ -1,5 +1,5 @@
 import type { Request, RequestHandler } from "express";
-import { resolveSoftclipEnv } from "@paperclipai/shared";
+import { resolveSoftclipEnv } from "@softclipai/shared";
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const DEFAULT_DEV_ORIGINS = [

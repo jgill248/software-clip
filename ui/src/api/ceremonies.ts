@@ -7,7 +7,7 @@ import type {
   RoutineRunSummary,
   RoutineTrigger,
   RoutineTriggerSecretMaterial,
-} from "@paperclipai/shared";
+} from "@softclipai/shared";
 import { activityApi } from "./activity";
 import { api } from "./client";
 

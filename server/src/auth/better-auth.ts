@@ -3,14 +3,14 @@ import type { IncomingHttpHeaders } from "node:http";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { toNodeHandler } from "better-auth/node";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@softclipai/db";
 import {
   authAccounts,
   authSessions,
   authUsers,
   authVerifications,
-} from "@paperclipai/db";
-import { resolveSoftclipEnv } from "@paperclipai/shared";
+} from "@softclipai/db";
+import { resolveSoftclipEnv } from "@softclipai/shared";
 import type { Config } from "../config.js";
 
 export type BetterAuthSessionUser = {

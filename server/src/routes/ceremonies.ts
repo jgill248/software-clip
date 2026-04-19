@@ -1,6 +1,6 @@
 import { Router, type Request } from "express";
-import type { Db } from "@paperclipai/db";
-import { seedCeremoniesSchema } from "@paperclipai/shared";
+import type { Db } from "@softclipai/db";
+import { seedCeremoniesSchema } from "@softclipai/shared";
 import { validate } from "../middleware/validate.js";
 import {
   ceremonyService,

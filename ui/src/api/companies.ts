@@ -1,4 +1,4 @@
-import type { Company } from "@paperclipai/shared";
+import type { Company } from "@softclipai/shared";
 import { api } from "./client";
 
 export type CompanyStats = Record<string, { agentCount: number; issueCount: number }>;
