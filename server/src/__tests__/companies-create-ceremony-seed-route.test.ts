@@ -6,8 +6,6 @@ const mockCompanyService = vi.hoisted(() => ({
   create: vi.fn(),
 }));
 
-const mockAgentService = vi.hoisted(() => ({}));
-
 const mockAccessService = vi.hoisted(() => ({
   ensureMembership: vi.fn(),
   hasPermission: vi.fn(),
@@ -18,14 +16,11 @@ const mockCeremonyService = vi.hoisted(() => ({
 }));
 
 const mockFeedbackService = vi.hoisted(() => ({}));
-const mockCompanyPortabilityService = vi.hoisted(() => ({}));
 const mockLogActivity = vi.hoisted(() => vi.fn());
 
 vi.mock("../services/index.js", () => ({
   accessService: () => mockAccessService,
-  agentService: () => mockAgentService,
   ceremonyService: () => mockCeremonyService,
-  companyPortabilityService: () => mockCompanyPortabilityService,
   companyService: () => mockCompanyService,
   feedbackService: () => mockFeedbackService,
   logActivity: mockLogActivity,
