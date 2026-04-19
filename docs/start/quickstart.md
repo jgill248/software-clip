@@ -46,17 +46,32 @@ pnpm paperclipai run
 
 This auto-onboards if config is missing, runs health checks with auto-repair, and starts the server.
 
+## Sharing a database with your team
+
+The embedded Postgres is per-laptop — fine for solo work, useless if
+you want teammates to see the same products, sprints, issues, and
+agents. Point Paperclip at a shared Postgres (a local Docker instance,
+a managed cloud Postgres, or a server on your network):
+
+```sh
+paperclipai db connect
+paperclipai db doctor
+```
+
+See [Team-shared PostgreSQL](./team-postgres.md) for the full walkthrough.
+
 ## What's Next
 
 Once Paperclip is running:
 
-1. Create your first company in the web UI
-2. Define a company goal
-3. Create a CEO agent and configure its adapter
-4. Build out the org chart with more agents
-5. Set budgets and assign initial tasks
-6. Hit go — agents start their heartbeats and the company runs
+1. Create your first **product** in the web UI — it lands with a Product Owner already hired and the five default ceremonies (standup, planning, review, retro, grooming) assigned to them.
+2. Write a **roadmap item** describing what you're trying to build.
+3. Break it into **issues** with acceptance criteria.
+4. Group issues into a **sprint** with a one-sentence goal.
+5. Hire an Engineer, configure its adapter, and hit go — it picks up an assigned issue on the next heartbeat.
+6. When the Engineer opens a PR, a code review lands in your inbox.
 
 <Card title="Core Concepts" href="/start/core-concepts">
   Learn the key concepts behind Paperclip
 </Card>
+
