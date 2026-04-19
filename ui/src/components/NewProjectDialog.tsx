@@ -5,7 +5,7 @@ import { useCompany } from "../context/CompanyContext";
 import { accessApi } from "../api/access";
 import { projectsApi } from "../api/projects";
 import { agentsApi } from "../api/agents";
-import { goalsApi } from "../api/goals";
+import { goalsApi } from "../api/roadmap-items";
 import { assetsApi } from "../api/assets";
 import { buildMarkdownMentionOptions } from "../lib/company-members";
 import { queryKeys } from "../lib/queryKeys";

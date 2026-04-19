@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useParams } from "@/lib/router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { goalsApi } from "../api/goals";
+import { goalsApi } from "../api/roadmap-items";
 import { projectsApi } from "../api/projects";
 import { assetsApi } from "../api/assets";
 import { usePanel } from "../context/PanelContext";
@@ -9,8 +9,8 @@ import { useCompany } from "../context/CompanyContext";
 import { useDialog } from "../context/DialogContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { queryKeys } from "../lib/queryKeys";
-import { GoalProperties } from "../components/GoalProperties";
-import { GoalTree } from "../components/GoalTree";
+import { GoalProperties } from "../components/RoadmapItemProperties";
+import { GoalTree } from "../components/RoadmapItemTree";
 import { StatusBadge } from "../components/StatusBadge";
 import { InlineEditor } from "../components/InlineEditor";
 import { EntityRow } from "../components/EntityRow";
@@ -46,7 +46,7 @@ export function GoalPropertiesToggleButton({
   );
 }
 
-export function GoalDetail() {
+export function RoadmapItemDetail() {
   const { goalId } = useParams<{ goalId: string }>();
   const { selectedCompanyId, setSelectedCompanyId } = useCompany();
   const { openNewGoal } = useDialog();
@@ -118,8 +118,8 @@ export function GoalDetail() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: "Goals", href: "/goals" },
-      { label: goal?.title ?? goalId ?? "Goal" }
+      { label: "Roadmap", href: "/roadmap" },
+      { label: goal?.title ?? goalId ?? "Roadmap item" }
     ]);
   }, [setBreadcrumbs, goal, goalId]);
 
@@ -200,7 +200,7 @@ export function GoalDetail() {
           {childGoals.length === 0 ? (
             <p className="text-sm text-muted-foreground">No sub-goals.</p>
           ) : (
-            <GoalTree goals={childGoals} goalLink={(g) => `/goals/${g.id}`} />
+            <GoalTree goals={childGoals} goalLink={(g) => `/roadmap/${g.id}`} />
           )}
         </TabsContent>
 
