@@ -38,7 +38,7 @@ function resolveBaseUrl(configPath?: string, explicitBaseUrl?: string) {
   return `http://${publicHost}:${port}`;
 }
 
-export async function bootstrapCeoInvite(opts: {
+export async function bootstrapProductOwnerInvite(opts: {
   config?: string;
   force?: boolean;
   expiresHours?: number;
@@ -54,7 +54,7 @@ export async function bootstrapCeoInvite(opts: {
   }
 
   if (config.server.deploymentMode !== "authenticated") {
-    p.log.info("Deployment mode is local_trusted. Bootstrap CEO invite is only required for authenticated mode.");
+    p.log.info("Deployment mode is local_trusted. Bootstrap Product Owner invite is only required for authenticated mode.");
     return;
   }
 
@@ -113,7 +113,7 @@ export async function bootstrapCeoInvite(opts: {
 
     const baseUrl = resolveBaseUrl(configPath, opts.baseUrl);
     const inviteUrl = `${baseUrl}/invite/${token}`;
-    p.log.success("Created bootstrap CEO invite.");
+    p.log.success("Created bootstrap Product Owner invite.");
     p.log.message(`Invite URL: ${pc.cyan(inviteUrl)}`);
     p.log.message(`Expires: ${pc.dim(created.expiresAt.toISOString())}`);
   } catch (err) {
