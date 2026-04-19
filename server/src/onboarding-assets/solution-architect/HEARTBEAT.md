@@ -3,8 +3,8 @@
 ## 1. Identity and context
 
 - `GET /api/agents/me`.
-- Check wake context: `PAPERCLIP_TASK_ID`, `PAPERCLIP_WAKE_REASON`,
-  `PAPERCLIP_APPROVAL_ID`.
+- Check wake context: `SOFTCLIP_TASK_ID`, `SOFTCLIP_WAKE_REASON`,
+  `SOFTCLIP_APPROVAL_ID`.
 
 ## 2. Integration health first
 
@@ -82,7 +82,7 @@ Leave structural review comments; approve or request changes.
 
 ## Rules
 
-- Always include `X-Paperclip-Run-Id` on mutating API calls.
+- Always include `X-Softclip-Run-Id` on mutating API calls.
 - Never ship an integration without a sequence diagram.
 - Never skip the failure-mode section. "It'll work" is not a
   design.

@@ -28,7 +28,7 @@ function trustedOriginsForRequest(req: Request) {
   // Behind some reverse proxies the Host / X-Forwarded-Host header may
   // not match the public URL (for example when TLS terminates at the
   // edge and the inbound Host is an internal service name). Trust the
-  // explicitly-configured SOFTCLIP_PUBLIC_URL (or legacy PAPERCLIP_PUBLIC_URL)
+  // explicitly-configured SOFTCLIP_PUBLIC_URL (or legacy SOFTCLIP_PUBLIC_URL)
   // when it's set.
   const publicUrl = parseOrigin(resolveSoftclipEnv("PUBLIC_URL")?.value.trim());
   if (publicUrl) origins.add(publicUrl);

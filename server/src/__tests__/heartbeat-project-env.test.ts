@@ -88,30 +88,30 @@ describe("applyRunScopedMentionedSkillKeys", () => {
   it("adds mentioned skills without mutating the original config", () => {
     const originalConfig = {
       command: "codex",
-      paperclipSkillSync: {
-        desiredSkills: ["paperclipai/paperclip/paperclip"],
+      softclipSkillSync: {
+        desiredSkills: ["softclipai/softclip/softclip"],
       },
     };
 
     const updatedConfig = applyRunScopedMentionedSkillKeys(originalConfig, [
       "company/company-1/release-changelog",
-      "paperclipai/paperclip/paperclip",
+      "softclipai/softclip/softclip",
       "company/company-1/release-changelog",
     ]);
 
     expect(updatedConfig).toEqual({
       command: "codex",
-      paperclipSkillSync: {
+      softclipSkillSync: {
         desiredSkills: [
-          "paperclipai/paperclip/paperclip",
+          "softclipai/softclip/softclip",
           "company/company-1/release-changelog",
         ],
       },
     });
     expect(originalConfig).toEqual({
       command: "codex",
-      paperclipSkillSync: {
-        desiredSkills: ["paperclipai/paperclip/paperclip"],
+      softclipSkillSync: {
+        desiredSkills: ["softclipai/softclip/softclip"],
       },
     });
   });

@@ -24,8 +24,8 @@ import {
   updateAgentSchema,
 } from "@softclipai/shared";
 import {
-  readPaperclipSkillSyncPreference,
-  writePaperclipSkillSyncPreference,
+  readSoftclipSkillSyncPreference,
+  writeSoftclipSkillSyncPreference,
 } from "@softclipai/adapter-utils/server-utils";
 import { trackAgentCreated } from "@softclipai/shared/telemetry";
 import { validate } from "../middleware/validate.js";
@@ -124,7 +124,7 @@ export function agentRoutes(db: Db) {
   const companySkills = companySkillService(db);
   const workspaceOperations = workspaceOperationService(db);
   const instanceSettings = instanceSettingsService(db);
-  const strictSecretsMode = process.env.PAPERCLIP_SECRETS_STRICT_MODE === "true";
+  const strictSecretsMode = process.env.SOFTCLIP_SECRETS_STRICT_MODE === "true";
 
   async function getCurrentUserRedactionOptions() {
     return {
@@ -719,7 +719,7 @@ export function agentRoutes(db: Db) {
     });
     return {
       ...config,
-      paperclipRuntimeSkills: runtimeSkillEntries,
+      softclipRuntimeSkills: runtimeSkillEntries,
     };
   }
 
@@ -750,7 +750,7 @@ export function agentRoutes(db: Db) {
     const desiredSkills = Array.from(new Set([...requiredSkills, ...resolvedRequestedSkills]));
 
     return {
-      adapterConfig: writePaperclipSkillSyncPreference(adapterConfig, desiredSkills),
+      adapterConfig: writeSoftclipSkillSyncPreference(adapterConfig, desiredSkills),
       desiredSkills,
       runtimeSkillEntries,
     };
@@ -897,7 +897,7 @@ export function agentRoutes(db: Db) {
 
     const adapter = findActiveServerAdapter(agent.adapterType);
     if (!adapter?.listSkills) {
-      const preference = readPaperclipSkillSyncPreference(
+      const preference = readSoftclipSkillSyncPreference(
         agent.adapterConfig as Record<string, unknown>,
       );
       const runtimeSkillEntries = await companySkills.listRuntimeSkillEntries(agent.productId, {
@@ -980,7 +980,7 @@ export function agentRoutes(db: Db) {
       );
       const runtimeSkillConfig = {
         ...runtimeConfig,
-        paperclipRuntimeSkills: runtimeSkillEntries,
+        softclipRuntimeSkills: runtimeSkillEntries,
       };
       const snapshot = adapter?.syncSkills
         ? await adapter.syncSkills({

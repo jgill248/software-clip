@@ -2,7 +2,7 @@ import { Command } from "commander";
 import type { Agent } from "@softclipai/shared";
 import {
   removeMaintainerOnlySkillSymlinks,
-  resolvePaperclipSkillsDir,
+  resolveSoftclipSkillsDir,
 } from "@softclipai/adapter-utils/server-utils";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -149,10 +149,10 @@ function buildAgentEnvExports(input: {
 }): string {
   const escaped = (value: string) => value.replace(/'/g, "'\"'\"'");
   return [
-    `export PAPERCLIP_API_URL='${escaped(input.apiBase)}'`,
-    `export PAPERCLIP_COMPANY_ID='${escaped(input.productId)}'`,
-    `export PAPERCLIP_AGENT_ID='${escaped(input.agentId)}'`,
-    `export PAPERCLIP_API_KEY='${escaped(input.apiKey)}'`,
+    `export SOFTCLIP_API_URL='${escaped(input.apiBase)}'`,
+    `export SOFTCLIP_COMPANY_ID='${escaped(input.productId)}'`,
+    `export SOFTCLIP_AGENT_ID='${escaped(input.agentId)}'`,
+    `export SOFTCLIP_API_KEY='${escaped(input.apiKey)}'`,
   ].join("\n");
 }
 
@@ -219,14 +219,14 @@ export function registerAgentCommands(program: Command): void {
     agent
       .command("local-cli")
       .description(
-        "Create an agent API key, install local Paperclip skills for Codex/Claude, and print shell exports",
+        "Create an agent API key, install local Softclip skills for Codex/Claude, and print shell exports",
       )
       .argument("<agentRef>", "Agent ID or shortname/url-key")
       .requiredOption("-C, --company-id <id>", "Company ID")
       .option("--key-name <name>", "API key label", "local-cli")
       .option(
         "--no-install-skills",
-        "Skip installing Paperclip skills into ~/.codex/skills and ~/.claude/skills",
+        "Skip installing Softclip skills into ~/.codex/skills and ~/.claude/skills",
       )
       .action(async (agentRef: string, opts: AgentLocalCliOptions) => {
         try {
@@ -248,10 +248,10 @@ export function registerAgentCommands(program: Command): void {
 
           const installSummaries: SkillsInstallSummary[] = [];
           if (opts.installSkills !== false) {
-            const skillsDir = await resolvePaperclipSkillsDir(__moduleDir, [path.resolve(process.cwd(), "skills")]);
+            const skillsDir = await resolveSoftclipSkillsDir(__moduleDir, [path.resolve(process.cwd(), "skills")]);
             if (!skillsDir) {
               throw new Error(
-                "Could not locate local Paperclip skills directory. Expected ./skills in the repo checkout.",
+                "Could not locate local Softclip skills directory. Expected ./skills in the repo checkout.",
               );
             }
 

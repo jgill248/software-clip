@@ -23,7 +23,7 @@ export type ResolvedDatabaseTarget =
   | {
       mode: "postgres";
       connectionString: string;
-      source: "DATABASE_URL" | "paperclip-env" | "config.database.connectionString";
+      source: "DATABASE_URL" | "softclip-env" | "config.database.connectionString";
       configPath: string;
       envPath: string;
     }
@@ -42,13 +42,13 @@ function expandHomePrefix(value: string): string {
   return value;
 }
 
-function resolvePaperclipHomeDir(): string {
+function resolveSoftclipHomeDir(): string {
   const envHome = resolveSoftclipEnv("HOME")?.value.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
-  return path.resolve(os.homedir(), ".paperclip");
+  return path.resolve(os.homedir(), ".softclip");
 }
 
-function resolvePaperclipInstanceId(): string {
+function resolveSoftclipInstanceId(): string {
   const resolved = resolveSoftclipEnv("INSTANCE_ID");
   const raw = resolved?.value.trim() || DEFAULT_INSTANCE_ID;
   if (!INSTANCE_ID_RE.test(raw)) {
@@ -59,15 +59,15 @@ function resolvePaperclipInstanceId(): string {
 
 function resolveDefaultConfigPath(): string {
   return path.resolve(
-    resolvePaperclipHomeDir(),
+    resolveSoftclipHomeDir(),
     "instances",
-    resolvePaperclipInstanceId(),
+    resolveSoftclipInstanceId(),
     CONFIG_BASENAME,
   );
 }
 
 function resolveDefaultEmbeddedPostgresDir(): string {
-  return path.resolve(resolvePaperclipHomeDir(), "instances", resolvePaperclipInstanceId(), "db");
+  return path.resolve(resolveSoftclipHomeDir(), "instances", resolveSoftclipInstanceId(), "db");
 }
 
 function resolveHomeAwarePath(value: string): string {
@@ -78,7 +78,7 @@ function findConfigFileFromAncestors(startDir: string): string | null {
   let currentDir = path.resolve(startDir);
 
   while (true) {
-    const candidate = path.resolve(currentDir, ".paperclip", CONFIG_BASENAME);
+    const candidate = path.resolve(currentDir, ".softclip", CONFIG_BASENAME);
     if (existsSync(candidate)) return candidate;
 
     const nextDir = path.resolve(currentDir, "..");
@@ -87,7 +87,7 @@ function findConfigFileFromAncestors(startDir: string): string | null {
   }
 }
 
-function resolvePaperclipConfigPath(): string {
+function resolveSoftclipConfigPath(): string {
   const configFromEnv = resolveSoftclipEnv("CONFIG")?.value.trim();
   if (configFromEnv) {
     return path.resolve(configFromEnv);
@@ -95,7 +95,7 @@ function resolvePaperclipConfigPath(): string {
   return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath();
 }
 
-function resolvePaperclipEnvPath(configPath: string): string {
+function resolveSoftclipEnvPath(configPath: string): string {
   return path.resolve(path.dirname(configPath), ENV_BASENAME);
 }
 
@@ -216,8 +216,8 @@ function readConfig(configPath: string): PartialConfig | null {
 }
 
 export function resolveDatabaseTarget(): ResolvedDatabaseTarget {
-  const configPath = resolvePaperclipConfigPath();
-  const envPath = resolvePaperclipEnvPath(configPath);
+  const configPath = resolveSoftclipConfigPath();
+  const envPath = resolveSoftclipEnvPath(configPath);
   const envEntries = readEnvEntries(envPath);
 
   const envUrl = process.env.DATABASE_URL?.trim();
@@ -236,7 +236,7 @@ export function resolveDatabaseTarget(): ResolvedDatabaseTarget {
     return {
       mode: "postgres",
       connectionString: fileEnvUrl,
-      source: "paperclip-env",
+      source: "softclip-env",
       configPath,
       envPath,
     };

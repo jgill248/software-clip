@@ -55,7 +55,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
   let tempDb: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
 
   beforeAll(async () => {
-    tempDb = await startEmbeddedPostgresTestDatabase("paperclip-issues-service-");
+    tempDb = await startEmbeddedPostgresTestDatabase("softclip-issues-service-");
     db = createDb(tempDb.connectionString);
     svc = issueService(db);
     await ensureIssueRelationsTable(db);
@@ -86,7 +86,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -202,7 +202,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -253,7 +253,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -303,7 +303,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -328,7 +328,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     await db.insert(issueComments).values({
       productId,
       issueId: commentMatchId,
-      body: "Reference: https://github.com/paperclipai/paperclip/pull/3303",
+      body: "Reference: https://github.com/jgill248/software-clip/pull/3303",
     });
 
     const result = await svc.list(productId, {
@@ -346,7 +346,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: "PAP",
     });
 
@@ -385,7 +385,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -460,7 +460,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -544,7 +544,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -611,7 +611,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -696,7 +696,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -728,7 +728,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
   let tempDb: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
 
   beforeAll(async () => {
-    tempDb = await startEmbeddedPostgresTestDatabase("paperclip-issues-create-");
+    tempDb = await startEmbeddedPostgresTestDatabase("softclip-issues-create-");
     db = createDb(tempDb.connectionString);
     svc = issueService(db);
     await ensureIssueRelationsTable(db);
@@ -761,7 +761,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
@@ -838,7 +838,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
@@ -934,7 +934,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
@@ -1002,7 +1002,7 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
   let tempDb: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
 
   beforeAll(async () => {
-    tempDb = await startEmbeddedPostgresTestDatabase("paperclip-issues-blockers-");
+    tempDb = await startEmbeddedPostgresTestDatabase("softclip-issues-blockers-");
     db = createDb(tempDb.connectionString);
     svc = issueService(db);
     await ensureIssueRelationsTable(db);
@@ -1030,7 +1030,7 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
     const productId = randomUUID();
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -1068,7 +1068,7 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
     const productId = randomUUID();
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -1091,7 +1091,7 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
     const assigneeAgentId = randomUUID();
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await db.insert(agents).values({
@@ -1142,7 +1142,7 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
     const assigneeAgentId = randomUUID();
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await db.insert(agents).values({
@@ -1205,7 +1205,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
   let tempDb: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
 
   beforeAll(async () => {
-    tempDb = await startEmbeddedPostgresTestDatabase("paperclip-issues-create-");
+    tempDb = await startEmbeddedPostgresTestDatabase("softclip-issues-create-");
     db = createDb(tempDb.connectionString);
     svc = issueService(db);
     await ensureIssueRelationsTable(db);
@@ -1238,7 +1238,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
@@ -1315,7 +1315,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
@@ -1411,7 +1411,7 @@ describeEmbeddedPostgres("issueService.create workspace inheritance", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
     await instanceSettingsService(db).updateExperimental({ enableIsolatedWorkspaces: true });
@@ -1479,7 +1479,7 @@ describeEmbeddedPostgres("issueService.findMentionedProjectIds", () => {
   let tempDb: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
 
   beforeAll(async () => {
-    tempDb = await startEmbeddedPostgresTestDatabase("paperclip-issues-mentioned-projects-");
+    tempDb = await startEmbeddedPostgresTestDatabase("softclip-issues-mentioned-projects-");
     db = createDb(tempDb.connectionString);
     svc = issueService(db);
     await ensureIssueRelationsTable(db);
@@ -1511,7 +1511,7 @@ describeEmbeddedPostgres("issueService.findMentionedProjectIds", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 

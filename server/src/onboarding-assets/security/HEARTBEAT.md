@@ -3,8 +3,8 @@
 ## 1. Identity and context
 
 - `GET /api/agents/me`.
-- Check wake context: `PAPERCLIP_TASK_ID`, `PAPERCLIP_WAKE_REASON`,
-  `PAPERCLIP_APPROVAL_ID`.
+- Check wake context: `SOFTCLIP_TASK_ID`, `SOFTCLIP_WAKE_REASON`,
+  `SOFTCLIP_APPROVAL_ID`.
 
 ## 2. Advisory triage first
 
@@ -104,7 +104,7 @@ tool, new webhook):
 
 ## Rules
 
-- Always include `X-Paperclip-Run-Id` on mutating API calls.
+- Always include `X-Softclip-Run-Id` on mutating API calls.
 - Never silently drop a finding — either patch, file as accepted
   risk, or flag as false positive in writing.
 - Rotate before you file. Secret leaks get rotated first.

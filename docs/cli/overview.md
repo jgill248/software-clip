@@ -3,7 +3,7 @@ title: CLI Overview
 summary: CLI installation and setup
 ---
 
-The Softclip CLI handles instance setup, diagnostics, and control-plane operations. It is also available under the legacy `paperclipai` name during the rename.
+The Softclip CLI handles instance setup, diagnostics, and control-plane operations. It is also available under the legacy `softclip` name during the rename.
 
 ## Usage
 
@@ -17,7 +17,7 @@ All commands support:
 
 | Flag | Description |
 |------|-------------|
-| `--data-dir <path>` | Local Paperclip data root (isolates from `~/.paperclip`) |
+| `--data-dir <path>` | Local Softclip data root (isolates from `~/.softclip`) |
 | `--api-base <url>` | API base URL |
 | `--api-key <token>` | API authentication token |
 | `--context <path>` | Context file path |
@@ -29,7 +29,7 @@ Company-scoped commands also accept `--company-id <id>`.
 For clean local instances, pass `--data-dir` on the command you run:
 
 ```sh
-pnpm softclip run --data-dir ./tmp/paperclip-dev
+pnpm softclip run --data-dir ./tmp/softclip-dev
 ```
 
 ## Context Profiles
@@ -53,11 +53,11 @@ pnpm softclip context use default
 To avoid storing secrets in context, use an env var:
 
 ```sh
-pnpm softclip context set --api-key-env-var-name PAPERCLIP_API_KEY
-export PAPERCLIP_API_KEY=...
+pnpm softclip context set --api-key-env-var-name SOFTCLIP_API_KEY
+export SOFTCLIP_API_KEY=...
 ```
 
-Context is stored at `~/.paperclip/context.json`.
+Context is stored at `~/.softclip/context.json`.
 
 ## Command Categories
 

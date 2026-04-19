@@ -30,7 +30,7 @@ notekit/
 │   └── sprint-planning/TASK.md
 ├── skills/
 │   └── release-checklist/SKILL.md
-└── .paperclip.yaml
+└── .softclip.yaml
 ```
 
 ## COMPANY.md
@@ -69,9 +69,9 @@ name: Product Owner
 title: Product Owner
 reportsTo: null
 skills:
-  - paperclip
+  - softclip
   - para-memory-files
-  - paperclip-create-agent
+  - softclip-create-agent
 ---
 
 _You are the Product Owner for notekit. You own what gets built and why._
@@ -93,7 +93,7 @@ name: Software Architect
 title: Software Architect
 reportsTo: product-owner
 skills:
-  - paperclip
+  - softclip
   - para-memory-files
 ---
 
@@ -116,7 +116,7 @@ name: Designer
 title: Designer
 reportsTo: product-owner
 skills:
-  - paperclip
+  - softclip
   - para-memory-files
   - design-guide
 ---
@@ -140,7 +140,7 @@ name: Engineer
 title: Engineer
 reportsTo: product-owner
 skills:
-  - paperclip
+  - softclip
   - release-checklist
   - para-memory-files
 ---
@@ -164,7 +164,7 @@ name: QA
 title: QA
 reportsTo: product-owner
 skills:
-  - paperclip
+  - softclip
   - para-memory-files
 ---
 
@@ -252,10 +252,10 @@ Run through, in order: typecheck, unit tests, e2e tests, manual smoke
 tag a release if any step fails.
 ```
 
-## .paperclip.yaml
+## .softclip.yaml
 
 ```yaml
-schema: paperclip/v1
+schema: softclip/v1
 agents:
   engineer:
     adapter:
@@ -271,5 +271,5 @@ agents:
 
 Only `engineer` appears because they're the only agent who needs
 `GH_TOKEN` or a specific adapter. PO, Software Architect, Designer,
-and QA use Paperclip's default adapter and have no env overrides, so
+and QA use Softclip's default adapter and have no env overrides, so
 they're omitted.

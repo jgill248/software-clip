@@ -5,7 +5,7 @@ obvious to reach for, it doesn't belong here; keep the list honest.
 
 ## Skills
 
-- **`paperclip`** — coordinate with the control plane. Use when creating,
+- **`softclip`** — coordinate with the control plane. Use when creating,
   updating, commenting on, or reassigning issues; fetching your queue;
   checking out tasks.
 - **`para-memory-files`** — manage durable memory. Use when you learn a

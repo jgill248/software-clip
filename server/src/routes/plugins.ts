@@ -29,7 +29,7 @@ import type { Db } from "@softclipai/db";
 import { products, pluginLogs, pluginWebhookDeliveries } from "@softclipai/db";
 import type {
   PluginStatus,
-  PaperclipPluginManifestV1,
+  SoftclipPluginManifestV1,
   PluginBridgeErrorCode,
   PluginLauncherRenderContextSnapshot,
 } from "@softclipai/shared";
@@ -52,9 +52,9 @@ import { assertBoardOrgAccess, assertCompanyAccess, assertInstanceAdmin, getActo
 import { validateInstanceConfig } from "../services/plugin-config-validator.js";
 
 /** UI slot declaration extracted from plugin manifest */
-type PluginUiSlotDeclaration = NonNullable<NonNullable<PaperclipPluginManifestV1["ui"]>["slots"]>[number];
+type PluginUiSlotDeclaration = NonNullable<NonNullable<SoftclipPluginManifestV1["ui"]>["slots"]>[number];
 /** Launcher declaration extracted from plugin manifest */
-type PluginLauncherDeclaration = NonNullable<PaperclipPluginManifestV1["launchers"]>[number];
+type PluginLauncherDeclaration = NonNullable<SoftclipPluginManifestV1["launchers"]>[number];
 
 /**
  * Normalized UI contribution for frontend slot host consumption.
@@ -78,7 +78,7 @@ type PluginUiContribution = {
 
 /** Request body for POST /api/plugins/install */
 interface PluginInstallRequest {
-  /** npm package name (e.g., @paperclip/plugin-linear) or local path */
+  /** npm package name (e.g., @softclip/plugin-linear) or local path */
   packageName: string;
   /** Target version for npm packages (optional, defaults to latest) */
   version?: string;
@@ -118,15 +118,15 @@ const REPO_ROOT = path.resolve(__dirname, "../../..");
 const BUNDLED_PLUGIN_EXAMPLES: AvailablePluginExample[] = [
   {
     packageName: "@softclipai/plugin-hello-world-example",
-    pluginKey: "paperclip.hello-world-example",
+    pluginKey: "softclip.hello-world-example",
     displayName: "Hello World Widget (Example)",
-    description: "Reference UI plugin that adds a simple Hello World widget to the Paperclip dashboard.",
+    description: "Reference UI plugin that adds a simple Hello World widget to the Softclip dashboard.",
     localPath: "packages/plugins/examples/plugin-hello-world-example",
     tag: "example",
   },
   {
     packageName: "@softclipai/plugin-file-browser-example",
-    pluginKey: "paperclip-file-browser-example",
+    pluginKey: "softclip-file-browser-example",
     displayName: "File Browser (Example)",
     description: "Example plugin that adds a Files link in project navigation plus a project detail file browser.",
     localPath: "packages/plugins/examples/plugin-file-browser-example",
@@ -134,9 +134,9 @@ const BUNDLED_PLUGIN_EXAMPLES: AvailablePluginExample[] = [
   },
   {
     packageName: "@softclipai/plugin-kitchen-sink-example",
-    pluginKey: "paperclip-kitchen-sink-example",
+    pluginKey: "softclip-kitchen-sink-example",
     displayName: "Kitchen Sink (Example)",
-    description: "Reference plugin that demonstrates the current Paperclip plugin API surface, bridge flows, UI extension surfaces, jobs, webhooks, tools, streams, and trusted local workspace/process demos.",
+    description: "Reference plugin that demonstrates the current Softclip plugin API surface, bridge flows, UI extension surfaces, jobs, webhooks, tools, streams, and trusted local workspace/process demos.",
     localPath: "packages/plugins/examples/plugin-kitchen-sink-example",
     tag: "example",
   },
@@ -420,7 +420,7 @@ export function pluginRoutes(
    * [
    *   {
    *     "pluginId": "plg_123",
-   *     "pluginKey": "paperclip.claude-usage",
+   *     "pluginKey": "softclip.claude-usage",
    *     "displayName": "Claude Usage",
    *     "version": "1.0.0",
    *     "uiEntryFile": "index.js",

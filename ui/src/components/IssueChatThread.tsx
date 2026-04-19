@@ -33,7 +33,7 @@ import type {
 } from "@softclipai/shared";
 import type { ActiveRunForIssue, LiveRunForIssue } from "../api/heartbeats";
 import { useLiveRunTranscripts } from "./transcript/useLiveRunTranscripts";
-import { usePaperclipIssueRuntime, type PaperclipIssueRuntimeReassignment } from "../hooks/usePaperclipIssueRuntime";
+import { useSoftclipIssueRuntime, type SoftclipIssueRuntimeReassignment } from "../hooks/useSoftclipIssueRuntime";
 import {
   buildIssueChatMessages,
   formatDurationWords,
@@ -430,7 +430,7 @@ function clearDraft(draftKey: string) {
   }
 }
 
-function parseReassignment(target: string): PaperclipIssueRuntimeReassignment | null {
+function parseReassignment(target: string): SoftclipIssueRuntimeReassignment | null {
   if (!target || target === "__none__") {
     return { assigneeAgentId: null, assigneeUserId: null };
   }
@@ -1472,7 +1472,7 @@ function IssueChatFeedbackButtons({
           <DialogHeader>
             <DialogTitle>Save your feedback sharing preference</DialogTitle>
             <DialogDescription>
-              Choose whether voted AI outputs can be shared with Paperclip Labs. This
+              Choose whether voted AI outputs can be shared with Softclip Labs. This
               answer becomes the default for future thumbs up and thumbs down votes.
             </DialogDescription>
           </DialogHeader>
@@ -2059,7 +2059,7 @@ export function IssueChatThread({
     return map;
   }, [feedbackVotes]);
 
-  const runtime = usePaperclipIssueRuntime({
+  const runtime = useSoftclipIssueRuntime({
     messages,
     isRunning,
     onSend: ({ body, reopen, reassignment }) => onAdd(body, reopen, reassignment),

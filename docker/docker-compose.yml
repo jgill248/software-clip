@@ -2,11 +2,11 @@ services:
   db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: paperclip
-      POSTGRES_PASSWORD: paperclip
-      POSTGRES_DB: paperclip
+      POSTGRES_USER: softclip
+      POSTGRES_PASSWORD: softclip
+      POSTGRES_DB: softclip
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U paperclip -d paperclip"]
+      test: ["CMD-SHELL", "pg_isready -U softclip -d softclip"]
       interval: 2s
       timeout: 5s
       retries: 30
@@ -22,19 +22,19 @@ services:
     ports:
       - "3100:3100"
     environment:
-      DATABASE_URL: postgres://paperclip:paperclip@db:5432/paperclip
+      DATABASE_URL: postgres://softclip:softclip@db:5432/softclip
       PORT: "3100"
       SERVE_UI: "true"
-      PAPERCLIP_DEPLOYMENT_MODE: "authenticated"
-      PAPERCLIP_DEPLOYMENT_EXPOSURE: "private"
-      PAPERCLIP_PUBLIC_URL: "${PAPERCLIP_PUBLIC_URL:-http://localhost:3100}"
+      SOFTCLIP_DEPLOYMENT_MODE: "authenticated"
+      SOFTCLIP_DEPLOYMENT_EXPOSURE: "private"
+      SOFTCLIP_PUBLIC_URL: "${SOFTCLIP_PUBLIC_URL:-http://localhost:3100}"
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set}"
     volumes:
-      - paperclip-data:/paperclip
+      - softclip-data:/softclip
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
   pgdata:
-  paperclip-data:
+  softclip-data:

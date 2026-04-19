@@ -6,7 +6,7 @@ import {
   inspectMigrations,
   type MigrationState,
 } from "@softclipai/db";
-import { loadPaperclipEnvFile } from "../config/env.js";
+import { loadSoftclipEnvFile } from "../config/env.js";
 import { resolveConfigPath } from "../config/store.js";
 import { resolveDbUrl } from "../config/db-url.js";
 
@@ -187,7 +187,7 @@ function exitCodeFor(report: DoctorReport): number {
 
 export async function dbDoctor(opts: DbDoctorOptions): Promise<void> {
   const configPath = resolveConfigPath(opts.config);
-  loadPaperclipEnvFile(configPath);
+  loadSoftclipEnvFile(configPath);
 
   const resolved = resolveDbUrl(configPath, opts.dbUrl);
   if (!resolved) {
@@ -196,12 +196,12 @@ export async function dbDoctor(opts: DbDoctorOptions): Promise<void> {
         JSON.stringify({
           ok: false,
           error:
-            "No database connection configured. Run `paperclipai db connect` first.",
+            "No database connection configured. Run `softclip db connect` first.",
         }),
       );
     } else {
       p.log.error(
-        `No database connection configured. Run ${pc.cyan("paperclipai db connect")} first.`,
+        `No database connection configured. Run ${pc.cyan("softclip db connect")} first.`,
       );
     }
     process.exitCode = 2;

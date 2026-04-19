@@ -206,7 +206,7 @@ function ProjectIssuesList({ projectId, productId }: { projectId: string; produc
       projects={projects}
       liveIssueIds={liveIssueIds}
       projectId={projectId}
-      viewStateKey="paperclip:project-issues-view"
+      viewStateKey="softclip:project-issues-view"
       onUpdateIssue={(id, data) => updateIssue.mutate({ id, data })}
     />
   );
@@ -566,7 +566,7 @@ export function ProjectDetail() {
   if (routeProjectRef && activeTab === null) {
     let cachedTab: string | null = null;
     if (project?.id) {
-      try { cachedTab = localStorage.getItem(`paperclip:project-tab:${project.id}`); } catch {}
+      try { cachedTab = localStorage.getItem(`softclip:project-tab:${project.id}`); } catch {}
     }
     if (cachedTab === "overview") {
       return <Navigate to={`/projects/${canonicalProjectRef}/overview`} replace />;
@@ -593,7 +593,7 @@ export function ProjectDetail() {
   const handleTabChange = (tab: ProjectTab) => {
     // Cache the active tab per project
     if (project?.id) {
-      try { localStorage.setItem(`paperclip:project-tab:${project.id}`, tab); } catch {}
+      try { localStorage.setItem(`softclip:project-tab:${project.id}`, tab); } catch {}
     }
     if (isProjectPluginTab(tab)) {
       navigate(`/projects/${canonicalProjectRef}?tab=${encodeURIComponent(tab)}`);

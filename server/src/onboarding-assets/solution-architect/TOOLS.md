@@ -2,7 +2,7 @@
 
 ## Skills
 
-- **`paperclip`** — control-plane coordination.
+- **`softclip`** — control-plane coordination.
 - **`para-memory-files`** — durable memory. Use for vendor evaluations,
   integration-incident notes, "we tried X and it flaked because Y"
   records.

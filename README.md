@@ -4,23 +4,23 @@
 
 <p align="center">
   <a href="#quickstart"><strong>Quickstart</strong></a> &middot;
-  <a href="https://paperclip.ing/docs"><strong>Docs</strong></a> &middot;
-  <a href="https://github.com/paperclipai/paperclip"><strong>GitHub</strong></a> &middot;
-  <a href="https://discord.gg/m4HZY7xNG3"><strong>Discord</strong></a>
+  <a href="https://github.com/jgill248/software-clip"><strong>GitHub</strong></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/paperclipai/paperclip/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
-  <a href="https://github.com/paperclipai/paperclip/stargazers"><img src="https://img.shields.io/github/stars/paperclipai/paperclip?style=flat" alt="Stars" /></a>
-  <a href="https://discord.gg/m4HZY7xNG3"><img src="https://img.shields.io/discord/000000000?label=discord" alt="Discord" /></a>
+  <a href="https://github.com/jgill248/software-clip/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
+  <a href="https://github.com/jgill248/software-clip/stargazers"><img src="https://img.shields.io/github/stars/jgill248/software-clip?style=flat" alt="Stars" /></a>
 </p>
 
 <br/>
 
-> **Softclip (formerly Paperclip).** This repo is being pivoted from a general-purpose
-> AI-company control plane into a software-development-team platform. The code-level
-> identifiers (`paperclipai` CLI, `@paperclipai/*` npm scope, URLs) still carry the
-> Paperclip name while the rename is in progress; the product you get is Softclip.
+> **Softclip.** A software-development-team platform: a Node.js server and React
+> UI that orchestrates AI agents through sprints, PR reviews, and Definition of
+> Done.
+>
+> Forked from [Paperclip AI](https://github.com/paperclipai/paperclip) and
+> pivoted from a general-purpose AI-company control plane into a
+> software-development-team platform.
 
 <br/>
 
@@ -199,8 +199,8 @@ npx softclip onboard --yes --bind tailnet
 If you already have Softclip configured, rerunning `onboard` keeps the existing config in place.
 Use `softclip configure` to edit settings.
 
-> The CLI is also available as `paperclipai` (the npm package name during the rename).
-> Both `softclip` and `paperclipai` point at the same binary; new docs use `softclip`.
+> The CLI is also available as `softclip` (the npm package name during the rename).
+> Both `softclip` and `softclip` point at the same binary; new docs use `softclip`.
 
 Point Softclip at a team-shared Postgres (see [docs/start/team-postgres.md](docs/start/team-postgres.md)):
 
@@ -212,8 +212,8 @@ softclip db doctor           # verify migrations, row counts, privileges
 Or manually:
 
 ```bash
-git clone https://github.com/paperclipai/paperclip.git
-cd paperclip
+git clone https://github.com/jgill248/software-clip.git
+cd softclip
 pnpm install
 pnpm dev
 ```
@@ -290,7 +290,7 @@ See [doc/DEVELOPING.md](doc/DEVELOPING.md) for the full development guide.
 - ✅ Team-shared Postgres (`softclip db connect` / `db doctor`)
 - ✅ UI for acceptance criteria, sprints, reviews
 - ✅ Drop budgets / finance / company governance (dev teams don't need dollar-budgets)
-- 🔄 Full Paperclip → Softclip code rename (package names, DB tables) — `softclip` CLI shipped; npm scope + DB rename in progress
+- ✅ Full Paperclip → Softclip code rename
 - ⚪ Cloud / Sandbox agents (e.g. Cursor / e2b agents)
 - ⚪ Artifacts & Work Products
 - ⚪ Memory / Knowledge
@@ -301,7 +301,7 @@ This is the short roadmap preview. See the full pivot plan in the branch commit 
 
 ## Community & Plugins
 
-Find Plugins and more at [awesome-paperclip](https://github.com/gsxdsm/awesome-paperclip)
+Find Plugins and more at [awesome-softclip](https://github.com/gsxdsm/awesome-softclip)
 
 ## Telemetry
 
@@ -313,7 +313,7 @@ Telemetry is **enabled by default** and can be disabled with any of the followin
 
 | Method               | How                                                     |
 | -------------------- | ------------------------------------------------------- |
-| Environment variable | `PAPERCLIP_TELEMETRY_DISABLED=1`                        |
+| Environment variable | `SOFTCLIP_TELEMETRY_DISABLED=1`                        |
 | Standard convention  | `DO_NOT_TRACK=1`                                        |
 | CI environments      | Automatically disabled when `CI=true`                   |
 | Config file          | Set `telemetry.enabled: false` in your Softclip config  |
@@ -327,8 +327,8 @@ We welcome contributions. See the [contributing guide](CONTRIBUTING.md) for deta
 ## Community
 
 - [Discord](https://discord.gg/m4HZY7xNG3) — Join the community
-- [GitHub Issues](https://github.com/paperclipai/paperclip/issues) — bugs and feature requests
-- [GitHub Discussions](https://github.com/paperclipai/paperclip/discussions) — ideas and RFC
+- [GitHub Issues](https://github.com/jgill248/software-clip/issues) — bugs and feature requests
+- [GitHub Discussions](https://github.com/jgill248/software-clip/discussions) — ideas and RFC
 
 <br/>
 
@@ -338,7 +338,7 @@ MIT &copy; 2026 Softclip contributors
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/image?repos=paperclipai/paperclip&type=date&legend=top-left)](https://www.star-history.com/?repos=paperclipai%2Fpaperclip&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/image?repos=jgill248/software-clip&type=date&legend=top-left)](https://www.star-history.com/?repos=softclip%2Fsoftclip&type=date&legend=top-left)
 
 <br/>
 

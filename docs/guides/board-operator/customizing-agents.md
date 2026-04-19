@@ -79,7 +79,7 @@ After editing a bundle:
 
 1. Run the structure validator:
    ```
-   pnpm --filter @paperclipai/server test -- onboarding-assets-structure
+   pnpm --filter @softclipai/server test -- onboarding-assets-structure
    ```
 2. Start a dev instance and hire a fresh agent in that role. Confirm
    the new instructions land in the agent's personal directory.

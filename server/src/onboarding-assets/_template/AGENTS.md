@@ -14,7 +14,7 @@ You MUST delegate work that isn't in your scope. Routing rules:
 - `<signal 1>` → `<target role>`. Example: `<concrete example>`.
 - `<signal 2>` → `<target role>`. Example: `<concrete example>`.
 - If the right role doesn't exist yet, ask the Product Owner to hire one
-  via the `paperclip-create-agent` skill.
+  via the `softclip-create-agent` skill.
 
 Create subtasks with `POST /api/companies/{companyId}/issues`. Always set
 `parentId` and (when applicable) `goalId`.

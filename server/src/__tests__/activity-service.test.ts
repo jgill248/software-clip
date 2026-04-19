@@ -21,7 +21,7 @@ describeEmbeddedPostgres("activity service", () => {
   let tempDb: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
 
   beforeAll(async () => {
-    tempDb = await startEmbeddedPostgresTestDatabase("paperclip-activity-service-");
+    tempDb = await startEmbeddedPostgresTestDatabase("softclip-activity-service-");
     db = createDb(tempDb.connectionString);
   }, 20_000);
 
@@ -43,7 +43,7 @@ describeEmbeddedPostgres("activity service", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 

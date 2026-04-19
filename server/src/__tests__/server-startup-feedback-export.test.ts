@@ -75,21 +75,21 @@ vi.mock("../config.js", () => ({
     authPublicBaseUrl: undefined,
     authDisableSignUp: false,
     databaseMode: "postgres",
-    databaseUrl: "postgres://paperclip:paperclip@127.0.0.1:5432/paperclip",
-    embeddedPostgresDataDir: "/tmp/paperclip-test-db",
+    databaseUrl: "postgres://softclip:softclip@127.0.0.1:5432/softclip",
+    embeddedPostgresDataDir: "/tmp/softclip-test-db",
     embeddedPostgresPort: 54329,
     databaseBackupEnabled: false,
     databaseBackupIntervalMinutes: 60,
     databaseBackupRetentionDays: 30,
-    databaseBackupDir: "/tmp/paperclip-test-backups",
+    databaseBackupDir: "/tmp/softclip-test-backups",
     serveUi: false,
     uiDevMiddleware: false,
     secretsProvider: "local_encrypted",
     secretsStrictMode: false,
-    secretsMasterKeyFilePath: "/tmp/paperclip-master.key",
+    secretsMasterKeyFilePath: "/tmp/softclip-master.key",
     storageProvider: "local_disk",
-    storageLocalDiskBaseDir: "/tmp/paperclip-storage",
-    storageS3Bucket: "paperclip-test",
+    storageLocalDiskBaseDir: "/tmp/softclip-storage",
+    storageS3Bucket: "softclip-test",
     storageS3Region: "us-east-1",
     storageS3Endpoint: undefined,
     storageS3Prefix: "",
@@ -181,26 +181,26 @@ describe("startServer feedback export wiring", () => {
   });
 });
 
-describe("startServer PAPERCLIP_API_URL handling", () => {
+describe("startServer SOFTCLIP_API_URL handling", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.BETTER_AUTH_SECRET = "test-secret";
-    delete process.env.PAPERCLIP_API_URL;
+    delete process.env.SOFTCLIP_API_URL;
   });
 
-  it("uses the externally set PAPERCLIP_API_URL when provided", async () => {
-    process.env.PAPERCLIP_API_URL = "http://custom-api:3100";
+  it("uses the externally set SOFTCLIP_API_URL when provided", async () => {
+    process.env.SOFTCLIP_API_URL = "http://custom-api:3100";
 
     const started = await startServer();
 
     expect(started.apiUrl).toBe("http://custom-api:3100");
-    expect(process.env.PAPERCLIP_API_URL).toBe("http://custom-api:3100");
+    expect(process.env.SOFTCLIP_API_URL).toBe("http://custom-api:3100");
   });
 
-  it("falls back to host-based URL when PAPERCLIP_API_URL is not set", async () => {
+  it("falls back to host-based URL when SOFTCLIP_API_URL is not set", async () => {
     const started = await startServer();
 
     expect(started.apiUrl).toBe("http://127.0.0.1:3210");
-    expect(process.env.PAPERCLIP_API_URL).toBe("http://127.0.0.1:3210");
+    expect(process.env.SOFTCLIP_API_URL).toBe("http://127.0.0.1:3210");
   });
 });

@@ -21,7 +21,7 @@ describeEmbeddedPostgres("heartbeat list", () => {
   let tempDb: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
 
   beforeAll(async () => {
-    tempDb = await startEmbeddedPostgresTestDatabase("paperclip-heartbeat-list-");
+    tempDb = await startEmbeddedPostgresTestDatabase("softclip-heartbeat-list-");
     db = createDb(tempDb.connectionString);
   }, 20_000);
 
@@ -42,7 +42,7 @@ describeEmbeddedPostgres("heartbeat list", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -95,7 +95,7 @@ describeEmbeddedPostgres("heartbeat list", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
@@ -144,7 +144,7 @@ describeEmbeddedPostgres("heartbeat list", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 

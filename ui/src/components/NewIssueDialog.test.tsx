@@ -17,7 +17,7 @@ const companyState = vi.hoisted(() => ({
   companies: [
     {
       id: "company-1",
-      name: "Paperclip",
+      name: "Softclip",
       status: "active",
       issuePrefix: "PAP",
     },
@@ -25,7 +25,7 @@ const companyState = vi.hoisted(() => ({
   selectedCompanyId: "company-1",
   selectedCompany: {
     id: "company-1",
-    name: "Paperclip",
+    name: "Softclip",
     status: "active",
     issuePrefix: "PAP",
   },

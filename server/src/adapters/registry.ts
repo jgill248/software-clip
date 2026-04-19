@@ -201,7 +201,7 @@ const piLocalAdapter: ServerAdapterModule = {
 };
 
 // hermes-paperclip-adapter is a published 3rd-party adapter built against
-// @paperclipai/adapter-utils, which exposes the pre-Stage-4d `companyId`
+// @softclipai/adapter-utils, which exposes the pre-Stage-4d `companyId`
 // field shape. Our workspace-local @softclipai/adapter-utils uses
 // `productId` after the §1 Stage 4d rename. Runtime behavior is
 // compatible (the server passes the object by reference and only
@@ -279,7 +279,7 @@ const externalAdaptersReady: Promise<void> = (async () => {
       const overriding = BUILTIN_ADAPTER_TYPES.has(externalAdapter.type);
       if (overriding) {
         console.log(
-          `[paperclip] External adapter "${externalAdapter.type}" overrides built-in adapter`,
+          `[softclip] External adapter "${externalAdapter.type}" overrides built-in adapter`,
         );
         // Save the original builtin for later restoration.
         const existing = adaptersByType.get(externalAdapter.type);
@@ -296,7 +296,7 @@ const externalAdaptersReady: Promise<void> = (async () => {
       );
     }
   } catch (err) {
-    console.error("[paperclip] Failed to load external adapters:", err);
+    console.error("[softclip] Failed to load external adapters:", err);
   }
 })();
 
@@ -412,12 +412,12 @@ export function setOverridePaused(type: string, paused: boolean): boolean {
   const wasPaused = pausedOverrides.has(type);
   if (paused && !wasPaused) {
     pausedOverrides.add(type);
-    console.log(`[paperclip] Override paused for "${type}" — builtin adapter restored`);
+    console.log(`[softclip] Override paused for "${type}" — builtin adapter restored`);
     return true;
   }
   if (!paused && wasPaused) {
     pausedOverrides.delete(type);
-    console.log(`[paperclip] Override resumed for "${type}" — external adapter active`);
+    console.log(`[softclip] Override resumed for "${type}" — external adapter active`);
     return true;
   }
   return false;

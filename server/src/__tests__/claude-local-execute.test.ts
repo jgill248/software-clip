@@ -14,7 +14,7 @@ const addDirIndex = argv.indexOf("--add-dir");
 const addDir = addDirIndex >= 0 ? argv[addDirIndex + 1] : null;
 const instructionsIndex = argv.indexOf("--append-system-prompt-file");
 const instructionsFilePath = instructionsIndex >= 0 ? argv[instructionsIndex + 1] : null;
-const capturePath = process.env.PAPERCLIP_TEST_CAPTURE_PATH;
+const capturePath = process.env.SOFTCLIP_TEST_CAPTURE_PATH;
 const payload = {
   argv,
   prompt: fs.readFileSync(0, "utf8"),
@@ -51,8 +51,8 @@ async function writeRetryThenSucceedClaudeCommand(commandPath: string): Promise<
   const script = `#!/usr/bin/env node
 const fs = require("node:fs");
 
-const capturePath = process.env.PAPERCLIP_TEST_CAPTURE_PATH;
-const statePath = process.env.PAPERCLIP_TEST_STATE_PATH;
+const capturePath = process.env.SOFTCLIP_TEST_CAPTURE_PATH;
+const statePath = process.env.SOFTCLIP_TEST_STATE_PATH;
 const promptFileFlagIndex = process.argv.indexOf("--append-system-prompt-file");
 const appendedSystemPromptFilePath = promptFileFlagIndex >= 0 ? process.argv[promptFileFlagIndex + 1] : null;
 const payload = {
@@ -117,14 +117,14 @@ async function setupExecuteEnv(
 
 describe("claude execute", () => {
   /**
-   * Regression tests for https://github.com/paperclipai/paperclip/issues/2848
+   * Regression tests for https://github.com/jgill248/software-clip/issues/2848
    *
    * --append-system-prompt-file should only be passed on fresh sessions.
    * On resumed sessions the instructions are already in the session cache;
    * re-injecting them wastes tokens and may be rejected by the CLI.
    */
   it("passes --append-system-prompt-file on a fresh session when instructionsFile is set", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-exec-fresh-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "softclip-claude-exec-fresh-"));
     const { workspace, commandPath, capturePath, restore } = await setupExecuteEnv(root);
     const instructionsFile = path.join(root, "instructions.md");
     await fs.writeFile(instructionsFile, "# Agent instructions", "utf-8");
@@ -136,7 +136,7 @@ describe("claude execute", () => {
         config: {
           command: commandPath,
           cwd: workspace,
-          env: { PAPERCLIP_TEST_CAPTURE_PATH: capturePath },
+          env: { SOFTCLIP_TEST_CAPTURE_PATH: capturePath },
           promptTemplate: "Do work.",
           instructionsFilePath: instructionsFile,
         },
@@ -154,7 +154,7 @@ describe("claude execute", () => {
   });
 
   it("omits --append-system-prompt-file on a resumed session even when instructionsFile is set", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-exec-resume-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "softclip-claude-exec-resume-"));
     const { workspace, commandPath, capturePath, restore } = await setupExecuteEnv(root);
     const instructionsFile = path.join(root, "instructions.md");
     await fs.writeFile(instructionsFile, "# Agent instructions", "utf-8");
@@ -166,7 +166,7 @@ describe("claude execute", () => {
         config: {
           command: commandPath,
           cwd: workspace,
-          env: { PAPERCLIP_TEST_CAPTURE_PATH: capturePath },
+          env: { SOFTCLIP_TEST_CAPTURE_PATH: capturePath },
           promptTemplate: "Do work.",
           instructionsFilePath: instructionsFile,
         },
@@ -191,7 +191,7 @@ describe("claude execute", () => {
    * was actually passed — i.e. on fresh sessions, not resumed ones.
    */
   it("commandNotes reports injection on a fresh session with instructionsFile", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-exec-notes-fresh-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "softclip-claude-exec-notes-fresh-"));
     const { workspace, commandPath, restore } = await setupExecuteEnv(root);
     const instructionsFile = path.join(root, "instructions.md");
     await fs.writeFile(instructionsFile, "# Agent instructions", "utf-8");
@@ -221,7 +221,7 @@ describe("claude execute", () => {
   });
 
   it("commandNotes is empty on a resumed session even when instructionsFile is set", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-exec-notes-resume-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "softclip-claude-exec-notes-resume-"));
     const { workspace, commandPath, restore } = await setupExecuteEnv(root);
     const instructionsFile = path.join(root, "instructions.md");
     await fs.writeFile(instructionsFile, "# Agent instructions", "utf-8");
@@ -251,7 +251,7 @@ describe("claude execute", () => {
   });
 
   it("rebuilds the combined instructions file when an unknown resumed session falls back to fresh", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-exec-resume-fallback-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "softclip-claude-exec-resume-fallback-"));
     const { workspace, commandPath, capturePath, statePath, restore } = await setupExecuteEnv(root, {
       commandWriter: writeRetryThenSucceedClaudeCommand,
     });
@@ -267,8 +267,8 @@ describe("claude execute", () => {
           command: commandPath,
           cwd: workspace,
           env: {
-            PAPERCLIP_TEST_CAPTURE_PATH: capturePath,
-            PAPERCLIP_TEST_STATE_PATH: statePath,
+            SOFTCLIP_TEST_CAPTURE_PATH: capturePath,
+            SOFTCLIP_TEST_STATE_PATH: statePath,
           },
           promptTemplate: "Do work.",
           instructionsFilePath: instructionsFile,
@@ -314,7 +314,7 @@ describe("claude execute", () => {
   });
 
   it("logs HOME, CLAUDE_CONFIG_DIR, and the resolved executable path in invocation metadata", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-execute-meta-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "softclip-claude-execute-meta-"));
     const workspace = path.join(root, "workspace");
     const binDir = path.join(root, "bin");
     const commandPath = path.join(binDir, "claude");
@@ -354,9 +354,9 @@ describe("claude execute", () => {
           command: "claude",
           cwd: workspace,
           env: {
-            PAPERCLIP_TEST_CAPTURE_PATH: capturePath,
+            SOFTCLIP_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the paperclip heartbeat.",
+          promptTemplate: "Follow the softclip heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -372,7 +372,7 @@ describe("claude execute", () => {
       expect(loggedCommand).toBe(commandPath);
       expect(loggedEnv.HOME).toBe(root);
       expect(loggedEnv.CLAUDE_CONFIG_DIR).toBe(claudeConfigDir);
-      expect(loggedEnv.PAPERCLIP_RESOLVED_COMMAND).toBe(commandPath);
+      expect(loggedEnv.SOFTCLIP_RESOLVED_COMMAND).toBe(commandPath);
     } finally {
       if (previousHome === undefined) delete process.env.HOME;
       else process.env.HOME = previousHome;
@@ -384,22 +384,22 @@ describe("claude execute", () => {
     }
   });
 
-  it("reuses a stable Paperclip-managed Claude prompt bundle across equivalent runs", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-execute-bundle-"));
+  it("reuses a stable Softclip-managed Claude prompt bundle across equivalent runs", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "softclip-claude-execute-bundle-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "claude");
     const capturePath1 = path.join(root, "capture-1.json");
     const capturePath2 = path.join(root, "capture-2.json");
     const instructionsPath = path.join(root, "AGENTS.md");
-    const paperclipHome = path.join(root, "paperclip-home");
+    const softclipHome = path.join(root, "softclip-home");
     await fs.mkdir(workspace, { recursive: true });
     await fs.writeFile(instructionsPath, "You are managed instructions.\n", "utf8");
     await writeFakeClaudeCommand(commandPath);
 
     const previousHome = process.env.HOME;
-    const previousPaperclipHome = process.env.PAPERCLIP_HOME;
+    const previousSoftclipHome = process.env.SOFTCLIP_HOME;
     process.env.HOME = root;
-    process.env.PAPERCLIP_HOME = paperclipHome;
+    process.env.SOFTCLIP_HOME = softclipHome;
 
     try {
       const first = await execute({
@@ -422,9 +422,9 @@ describe("claude execute", () => {
           cwd: workspace,
           instructionsFilePath: instructionsPath,
           env: {
-            PAPERCLIP_TEST_CAPTURE_PATH: capturePath1,
+            SOFTCLIP_TEST_CAPTURE_PATH: capturePath1,
           },
-          promptTemplate: "Follow the paperclip heartbeat.",
+          promptTemplate: "Follow the softclip heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -459,16 +459,16 @@ describe("claude execute", () => {
           cwd: workspace,
           instructionsFilePath: instructionsPath,
           env: {
-            PAPERCLIP_TEST_CAPTURE_PATH: capturePath2,
+            SOFTCLIP_TEST_CAPTURE_PATH: capturePath2,
           },
-          promptTemplate: "Follow the paperclip heartbeat.",
+          promptTemplate: "Follow the softclip heartbeat.",
         },
         context: {
           issueId: "issue-1",
           taskId: "issue-1",
           wakeReason: "issue_commented",
           wakeCommentId: "comment-2",
-          paperclipWake: {
+          softclipWake: {
             reason: "issue_commented",
             issue: {
               id: "issue-1",
@@ -508,7 +508,7 @@ describe("claude execute", () => {
       const capture1 = JSON.parse(await fs.readFile(capturePath1, "utf8")) as CapturePayload;
       const capture2 = JSON.parse(await fs.readFile(capturePath2, "utf8")) as CapturePayload;
       const expectedRoot = path.join(
-        paperclipHome,
+        softclipHome,
         "instances",
         "default",
         "companies",
@@ -524,37 +524,37 @@ describe("claude execute", () => {
       expect(capture1.instructionsFilePath?.startsWith(expectedRoot)).toBe(true);
       expect(capture1.instructionsContents).toContain("You are managed instructions.");
       expect(capture1.instructionsContents).toContain(`The above agent instructions were loaded from ${instructionsPath}.`);
-      expect(capture1.skillEntries).toContain("paperclip");
+      expect(capture1.skillEntries).toContain("softclip");
       expect(capture2.argv).toContain("--resume");
       expect(capture2.argv).toContain("claude-session-1");
-      expect(capture2.prompt).toContain("## Paperclip Resume Delta");
-      expect(capture2.prompt).not.toContain("Follow the paperclip heartbeat.");
+      expect(capture2.prompt).toContain("## Softclip Resume Delta");
+      expect(capture2.prompt).not.toContain("Follow the softclip heartbeat.");
     } finally {
       if (previousHome === undefined) delete process.env.HOME;
       else process.env.HOME = previousHome;
-      if (previousPaperclipHome === undefined) delete process.env.PAPERCLIP_HOME;
-      else process.env.PAPERCLIP_HOME = previousPaperclipHome;
+      if (previousSoftclipHome === undefined) delete process.env.SOFTCLIP_HOME;
+      else process.env.SOFTCLIP_HOME = previousSoftclipHome;
       await fs.rm(root, { recursive: true, force: true });
     }
   });
 
   it("starts a fresh Claude session when the stable prompt bundle changes", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-execute-reset-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "softclip-claude-execute-reset-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "claude");
     const capturePath1 = path.join(root, "capture-before.json");
     const capturePath2 = path.join(root, "capture-after.json");
     const instructionsPath = path.join(root, "AGENTS.md");
-    const paperclipHome = path.join(root, "paperclip-home");
+    const softclipHome = path.join(root, "softclip-home");
     const logs: string[] = [];
     await fs.mkdir(workspace, { recursive: true });
     await fs.writeFile(instructionsPath, "Version one instructions.\n", "utf8");
     await writeFakeClaudeCommand(commandPath);
 
     const previousHome = process.env.HOME;
-    const previousPaperclipHome = process.env.PAPERCLIP_HOME;
+    const previousSoftclipHome = process.env.SOFTCLIP_HOME;
     process.env.HOME = root;
-    process.env.PAPERCLIP_HOME = paperclipHome;
+    process.env.SOFTCLIP_HOME = softclipHome;
 
     try {
       const first = await execute({
@@ -577,9 +577,9 @@ describe("claude execute", () => {
           cwd: workspace,
           instructionsFilePath: instructionsPath,
           env: {
-            PAPERCLIP_TEST_CAPTURE_PATH: capturePath1,
+            SOFTCLIP_TEST_CAPTURE_PATH: capturePath1,
           },
-          promptTemplate: "Follow the paperclip heartbeat.",
+          promptTemplate: "Follow the softclip heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -608,9 +608,9 @@ describe("claude execute", () => {
           cwd: workspace,
           instructionsFilePath: instructionsPath,
           env: {
-            PAPERCLIP_TEST_CAPTURE_PATH: capturePath2,
+            SOFTCLIP_TEST_CAPTURE_PATH: capturePath2,
           },
-          promptTemplate: "Follow the paperclip heartbeat.",
+          promptTemplate: "Follow the softclip heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -628,13 +628,13 @@ describe("claude execute", () => {
 
       expect(before.instructionsFilePath).not.toBe(after.instructionsFilePath);
       expect(after.argv).not.toContain("--resume");
-      expect(after.prompt).toContain("Follow the paperclip heartbeat.");
+      expect(after.prompt).toContain("Follow the softclip heartbeat.");
       expect(logs.join("")).toContain("will not be resumed with");
     } finally {
       if (previousHome === undefined) delete process.env.HOME;
       else process.env.HOME = previousHome;
-      if (previousPaperclipHome === undefined) delete process.env.PAPERCLIP_HOME;
-      else process.env.PAPERCLIP_HOME = previousPaperclipHome;
+      if (previousSoftclipHome === undefined) delete process.env.SOFTCLIP_HOME;
+      else process.env.SOFTCLIP_HOME = previousSoftclipHome;
       await fs.rm(root, { recursive: true, force: true });
     }
   }, 15_000);

@@ -81,7 +81,7 @@ then:
 
 ## 5. Map adapter when obvious
 
-Only set an adapter in `.paperclip.yaml` when the repo signals one:
+Only set an adapter in `.softclip.yaml` when the repo signals one:
 
 - `.claude/` directory / `CLAUDE.md` → `claude_local`
 - `codex/` / `.codex/` config → `codex_local`
@@ -89,7 +89,7 @@ Only set an adapter in `.paperclip.yaml` when the repo signals one:
 - OpenClaw-specific skills → `openclaw_gateway`
 
 When the repo doesn't signal, **omit the adapter block** and let
-Paperclip pick the default. An unknown adapter type causes import
+Softclip pick the default. An unknown adapter type causes import
 errors.
 
 ## 6. Infer env inputs
@@ -127,7 +127,7 @@ during the interview.
 Include, in addition to the standard sections:
 
 - **Source attribution.** *"Generated from [owner/repo](url) with the
-  product-creator skill from [Softclip](https://github.com/paperclipai/paperclip)."*
+  product-creator skill from [Softclip](https://github.com/jgill248/software-clip)."*
 - **What the source repo does**, in one paragraph (drawn from the
   repo's README).
 - **What this package adds on top** — the dev team + its workflow.

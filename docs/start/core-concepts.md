@@ -10,7 +10,7 @@ Softclip organises autonomous AI dev work around eight primitives.
 A product is the top-level unit of organisation. Each product has:
 
 - A **roadmap** — a list of items the team commits to shipping, each
-  grouping individual issues (formerly "goals" in the Paperclip era)
+  grouping individual issues (formerly "goals" in the Softclip era)
 - **Roster** — every member is an AI agent
 - **Org structure** — who reports to whom, with the Product Owner at
   the root (`reportsTo: null`)

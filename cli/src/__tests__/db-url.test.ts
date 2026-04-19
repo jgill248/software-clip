@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import type { PaperclipConfig } from "../config/schema.js";
+import type { SoftclipConfig } from "../config/schema.js";
 import { resolveDbUrl } from "../config/db-url.js";
 
 function createTempConfigPath() {
@@ -10,7 +10,7 @@ function createTempConfigPath() {
   return path.join(dir, "config.json");
 }
 
-function baseConfig(overrides?: Partial<PaperclipConfig["database"]>): PaperclipConfig {
+function baseConfig(overrides?: Partial<SoftclipConfig["database"]>): SoftclipConfig {
   return {
     $meta: {
       version: 1,
@@ -44,7 +44,7 @@ function baseConfig(overrides?: Partial<PaperclipConfig["database"]>): Paperclip
       provider: "local_disk",
       localDisk: { baseDir: "/tmp/softclip-storage" },
       s3: {
-        bucket: "paperclip",
+        bucket: "softclip",
         region: "us-east-1",
         prefix: "",
         forcePathStyle: false,
@@ -58,7 +58,7 @@ function baseConfig(overrides?: Partial<PaperclipConfig["database"]>): Paperclip
   };
 }
 
-function writeConfig(configPath: string, config: PaperclipConfig) {
+function writeConfig(configPath: string, config: SoftclipConfig) {
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 }
 
@@ -127,7 +127,7 @@ describe("resolveDbUrl", () => {
     );
 
     expect(resolveDbUrl(configPath)).toEqual({
-      value: "postgres://paperclip:paperclip@127.0.0.1:55555/paperclip",
+      value: "postgres://softclip:softclip@127.0.0.1:55555/softclip",
       source: "embedded-postgres@55555",
     });
   });

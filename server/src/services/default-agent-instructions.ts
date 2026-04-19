@@ -12,7 +12,7 @@ const FULL_BUNDLE = ["AGENTS.md", "HEARTBEAT.md", "SOUL.md", "TOOLS.md"];
 
 const DEFAULT_AGENT_BUNDLE_FILES: Record<string, readonly string[]> = {
   default: ["AGENTS.md"],
-  // Legacy Paperclip CEO bundle — retained so existing installations keep
+  // Legacy Softclip CEO bundle — retained so existing installations keep
   // booting. Will be removed once the Softclip rename lands.
   ceo: FULL_BUNDLE,
   "product-owner": FULL_BUNDLE,

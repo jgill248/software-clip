@@ -52,7 +52,7 @@ Non-interactive defaults + immediate start (opens browser on server listen):
 pnpm softclip onboard --yes
 ```
 
-On an existing install, `--yes` now preserves the current config and just starts Paperclip with that setup.
+On an existing install, `--yes` now preserves the current config and just starts Softclip with that setup.
 
 ## `softclip doctor`
 
@@ -89,7 +89,7 @@ Show resolved environment configuration:
 pnpm softclip env
 ```
 
-This now includes bind-oriented deployment settings such as `PAPERCLIP_BIND` and `PAPERCLIP_BIND_HOST` when configured.
+This now includes bind-oriented deployment settings such as `SOFTCLIP_BIND` and `SOFTCLIP_BIND_HOST` when configured.
 
 ## `softclip allowed-hostname`
 
@@ -103,21 +103,21 @@ pnpm softclip allowed-hostname my-tailscale-host
 
 | Data | Default Path |
 |------|-------------|
-| Config | `~/.paperclip/instances/default/config.json` |
-| Database | `~/.paperclip/instances/default/db` |
-| Logs | `~/.paperclip/instances/default/logs` |
-| Storage | `~/.paperclip/instances/default/data/storage` |
-| Secrets key | `~/.paperclip/instances/default/secrets/master.key` |
+| Config | `~/.softclip/instances/default/config.json` |
+| Database | `~/.softclip/instances/default/db` |
+| Logs | `~/.softclip/instances/default/logs` |
+| Storage | `~/.softclip/instances/default/data/storage` |
+| Secrets key | `~/.softclip/instances/default/secrets/master.key` |
 
 Override with:
 
 ```sh
-PAPERCLIP_HOME=/custom/home PAPERCLIP_INSTANCE_ID=dev pnpm softclip run
+SOFTCLIP_HOME=/custom/home SOFTCLIP_INSTANCE_ID=dev pnpm softclip run
 ```
 
 Or pass `--data-dir` directly on any command:
 
 ```sh
-pnpm softclip run --data-dir ./tmp/paperclip-dev
-pnpm softclip doctor --data-dir ./tmp/paperclip-dev
+pnpm softclip run --data-dir ./tmp/softclip-dev
+pnpm softclip doctor --data-dir ./tmp/softclip-dev
 ```

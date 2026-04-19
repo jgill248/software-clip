@@ -3,8 +3,8 @@
 ## 1. Identity and context
 
 - `GET /api/agents/me`.
-- Check wake context: `PAPERCLIP_TASK_ID`, `PAPERCLIP_WAKE_REASON`,
-  `PAPERCLIP_APPROVAL_ID`.
+- Check wake context: `SOFTCLIP_TASK_ID`, `SOFTCLIP_WAKE_REASON`,
+  `SOFTCLIP_APPROVAL_ID`.
 
 ## 2. Review queue first
 
@@ -65,7 +65,7 @@ Leave review comments; request changes if a11y regresses.
 
 ## Rules
 
-- Always include `X-Paperclip-Run-Id` on mutating API calls.
+- Always include `X-Softclip-Run-Id` on mutating API calls.
 - Never hand off a design without final copy and all states specced.
 - Never approve a PR that regresses a11y.
 - Never drop into implementation — bounce it to Engineer.

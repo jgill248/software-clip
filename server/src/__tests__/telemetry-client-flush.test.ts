@@ -40,7 +40,7 @@ describe("TelemetryClient periodic flush", () => {
     expect(requestInit?.headers).toEqual({ "Content-Type": "application/json" });
     const body = JSON.parse(String(requestInit?.body ?? "{}"));
     expect(body).toMatchObject({
-      app: "paperclip",
+      app: "softclip",
       schemaVersion: "1",
       installId: "test-install",
       version: "0.0.0-test",
@@ -76,19 +76,13 @@ describe("TelemetryClient periodic flush", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it("falls back to the api gateway ingest url when the default hostname fails", async () => {
-    vi.mocked(fetch)
-      .mockRejectedValueOnce(new TypeError("getaddrinfo ENOTFOUND telemetry.paperclip.ing"))
-      .mockResolvedValueOnce({ ok: true });
-
+  it("does not call fetch when no endpoint is configured", async () => {
     const client = makeClient({ endpoint: undefined });
     client.track("install.started");
 
     await client.flush();
 
-    expect(fetch).toHaveBeenCalledTimes(2);
-    expect(vi.mocked(fetch).mock.calls[0]?.[0]).toBe("https://telemetry.paperclip.ing/ingest");
-    expect(vi.mocked(fetch).mock.calls[1]?.[0]).toBe("https://rusqrrg391.execute-api.us-east-1.amazonaws.com/ingest");
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it("startPeriodicFlush is idempotent", () => {

@@ -2,7 +2,7 @@
 
 ## Skills
 
-- **`paperclip`** — control-plane coordination (issues, approvals,
+- **`softclip`** — control-plane coordination (issues, approvals,
   comments).
 - **`para-memory-files`** — durable memory. Use for threat
   intel, incident timelines, and risk-accepted records.

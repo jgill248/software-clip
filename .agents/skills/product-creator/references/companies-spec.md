@@ -48,7 +48,7 @@ company-package/
 ├── assets/
 ├── scripts/
 ├── references/
-└── .paperclip.yaml          (optional vendor extension)
+└── .softclip.yaml          (optional vendor extension)
 ```
 
 ## Common Frontmatter Fields

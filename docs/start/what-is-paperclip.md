@@ -3,9 +3,9 @@ title: What is Softclip?
 summary: The control plane for AI software development teams
 ---
 
-> **Softclip (formerly Paperclip).** This page uses the new product name;
-> code-level identifiers (`paperclipai` CLI, `@paperclipai/*` packages)
-> still carry the Paperclip name until the rename lands. Both refer to
+> **Softclip (formerly Softclip).** This page uses the new product name;
+> code-level identifiers (`softclip` CLI, `@softclipai/*` packages)
+> still carry the Softclip name until the rename lands. Both refer to
 > the same system.
 
 Softclip is the control plane for AI **software development teams**. It is

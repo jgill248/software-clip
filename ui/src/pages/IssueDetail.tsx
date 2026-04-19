@@ -122,7 +122,7 @@ type IssueDetailComment = (IssueComment | OptimisticIssueComment) & {
   queueTargetRunId?: string | null;
 };
 
-const FEEDBACK_TERMS_URL = import.meta.env.VITE_FEEDBACK_TERMS_URL?.trim() || "https://paperclip.ing/tos";
+const FEEDBACK_TERMS_URL = import.meta.env.VITE_FEEDBACK_TERMS_URL?.trim() ?? "";
 const ISSUE_COMMENT_PAGE_SIZE = 50;
 
 function resolveRunningIssueRun(
@@ -2435,7 +2435,7 @@ export function IssueDetail() {
             agents={agents}
             projects={projects}
             projectId={issue.projectId ?? undefined}
-            viewStateKey={`paperclip:issue-detail:${issue.id}:subissues-view`}
+            viewStateKey={`softclip:issue-detail:${issue.id}:subissues-view`}
             issueLinkState={resolvedIssueDetailState ?? location.state}
             searchFilters={{ parentId: issue.id }}
             baseCreateIssueDefaults={buildSubIssueDefaultsForViewer(issue, currentUserId)}
@@ -2666,7 +2666,7 @@ export function IssueDetail() {
               currentUserId={currentUserId}
               userLabelMap={userLabelMap}
               userProfileMap={userProfileMap}
-              draftKey={`paperclip:issue-comment-draft:${issue.id}`}
+              draftKey={`softclip:issue-comment-draft:${issue.id}`}
               reassignOptions={commentReassignOptions}
               currentAssigneeValue={actualAssigneeValue}
               suggestedAssigneeValue={suggestedAssigneeValue}

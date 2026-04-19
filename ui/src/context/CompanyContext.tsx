@@ -31,7 +31,7 @@ interface CompanyContextValue {
   }) => Promise<Company>;
 }
 
-const STORAGE_KEY = "paperclip.selectedCompanyId";
+const STORAGE_KEY = "softclip.selectedCompanyId";
 
 const CompanyContext = createContext<CompanyContextValue | null>(null);
 

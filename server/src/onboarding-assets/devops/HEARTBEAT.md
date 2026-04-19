@@ -3,8 +3,8 @@
 ## 1. Identity and context
 
 - `GET /api/agents/me`.
-- Check wake context: `PAPERCLIP_TASK_ID`, `PAPERCLIP_WAKE_REASON`,
-  `PAPERCLIP_APPROVAL_ID`.
+- Check wake context: `SOFTCLIP_TASK_ID`, `SOFTCLIP_WAKE_REASON`,
+  `SOFTCLIP_APPROVAL_ID`.
 
 ## 2. CI health first
 
@@ -112,7 +112,7 @@ if a new alert was added:
 
 ## Rules
 
-- Always include `X-Paperclip-Run-Id` on mutating API calls.
+- Always include `X-Softclip-Run-Id` on mutating API calls.
 - Never silence an alert without a runbook update.
 - Revert first, debug later for red main.
 - Every infra PR has a rollback plan in the description.

@@ -35,7 +35,7 @@ export function projectRoutes(db: Db) {
   const svc = projectService(db);
   const secretsSvc = secretService(db);
   const workspaceOperations = workspaceOperationService(db);
-  const strictSecretsMode = process.env.PAPERCLIP_SECRETS_STRICT_MODE === "true";
+  const strictSecretsMode = process.env.SOFTCLIP_SECRETS_STRICT_MODE === "true";
 
   async function resolveCompanyIdForProjectReference(req: Request) {
     const productIdQuery = req.query.productId;
@@ -322,7 +322,7 @@ export function projectRoutes(db: Db) {
 
     const workspaceCwd = workspace.cwd;
     if (!workspaceCwd) {
-      res.status(422).json({ error: "Project workspace needs a local path before Paperclip can run workspace commands" });
+      res.status(422).json({ error: "Project workspace needs a local path before Softclip can run workspace commands" });
       return;
     }
 

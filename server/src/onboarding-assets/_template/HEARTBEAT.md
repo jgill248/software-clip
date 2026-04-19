@@ -6,15 +6,15 @@ numbered role-specific steps are the ones you customize per bundle.
 ## 1. Identity and context
 
 - `GET /api/agents/me` — confirm id, role, chainOfCommand.
-- Check wake context: `PAPERCLIP_TASK_ID`, `PAPERCLIP_WAKE_REASON`,
-  `PAPERCLIP_WAKE_COMMENT_ID`, `PAPERCLIP_APPROVAL_ID`.
+- Check wake context: `SOFTCLIP_TASK_ID`, `SOFTCLIP_WAKE_REASON`,
+  `SOFTCLIP_WAKE_COMMENT_ID`, `SOFTCLIP_APPROVAL_ID`.
 
 ## 2. Review your queue
 
 - `GET /api/companies/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress,in_review,blocked`.
 - Prioritize: `in_progress` → `in_review` (on wake) → `todo`. Skip `blocked`
   unless you can unblock it yourself.
-- If `PAPERCLIP_TASK_ID` is set and assigned to you, start there.
+- If `SOFTCLIP_TASK_ID` is set and assigned to you, start there.
 
 ## 3. Checkout and work
 
@@ -51,6 +51,6 @@ Replace these bullets with the concrete steps this role runs:
 
 ## Rules
 
-- Always include `X-Paperclip-Run-Id` on mutating API calls.
+- Always include `X-Softclip-Run-Id` on mutating API calls.
 - Self-assign via checkout only when explicitly @-mentioned.
 - Never cancel cross-team tasks — reassign with a comment instead.

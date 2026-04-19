@@ -2,7 +2,7 @@
 
 ## Skills
 
-- **`paperclip`** — control-plane coordination.
+- **`softclip`** — control-plane coordination.
 - **`para-memory-files`** — durable memory. Use for schema
   decisions, migration post-mortems, and "this index helped because
   X" records.

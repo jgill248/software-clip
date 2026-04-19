@@ -2,9 +2,9 @@ import { sql } from "drizzle-orm";
 import * as p from "@clack/prompts";
 import pc from "picocolors";
 import { createDb } from "@softclipai/db";
-import { loadPaperclipEnvFile } from "../config/env.js";
+import { loadSoftclipEnvFile } from "../config/env.js";
 import { readConfig, resolveConfigPath, writeConfig } from "../config/store.js";
-import type { PaperclipConfig } from "../config/schema.js";
+import type { SoftclipConfig } from "../config/schema.js";
 
 type DbConnectOptions = {
   config?: string;
@@ -95,7 +95,7 @@ export async function probeDatabase(url: string): Promise<ProbeResult> {
 }
 
 async function promptConnectionParts(
-  current?: PaperclipConfig,
+  current?: SoftclipConfig,
 ): Promise<string | null> {
   const currentUrl =
     current?.database.mode === "postgres" ? current.database.connectionString : undefined;
@@ -180,14 +180,14 @@ async function promptConnectionParts(
 }
 
 function mergePostgresMode(
-  current: PaperclipConfig | null,
+  current: SoftclipConfig | null,
   connectionString: string,
-): PaperclipConfig {
+): SoftclipConfig {
   // readConfig can return null (no file). In that case the caller should have
   // already bailed; this helper just re-types that narrowing for clarity.
   if (!current) {
     throw new Error(
-      "No config found. Run `paperclipai onboard` first, then rerun `db connect`.",
+      "No config found. Run `softclip onboard` first, then rerun `db connect`.",
     );
   }
   return {
@@ -202,11 +202,11 @@ function mergePostgresMode(
 
 export async function dbConnect(opts: DbConnectOptions): Promise<void> {
   const configPath = resolveConfigPath(opts.config);
-  loadPaperclipEnvFile(configPath);
+  loadSoftclipEnvFile(configPath);
   const current = readConfig(configPath);
   if (!current) {
     p.log.error(
-      `No config found at ${configPath}. Run ${pc.cyan("paperclipai onboard")} first.`,
+      `No config found at ${configPath}. Run ${pc.cyan("softclip onboard")} first.`,
     );
     process.exitCode = 1;
     return;
@@ -308,7 +308,7 @@ export async function dbConnect(opts: DbConnectOptions): Promise<void> {
     const { applyPendingMigrations } = await import("@softclipai/db");
     await applyPendingMigrations(url);
     migrateSpinner.stop(pc.green("Migrations applied"));
-    p.outro(`Done. Run ${pc.cyan("paperclipai db doctor")} to verify.`);
+    p.outro(`Done. Run ${pc.cyan("softclip db doctor")} to verify.`);
   } catch (err) {
     migrateSpinner.stop(pc.red("Migration failed"));
     p.log.error(err instanceof Error ? err.message : String(err));

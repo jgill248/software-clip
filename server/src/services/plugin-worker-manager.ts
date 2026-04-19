@@ -21,7 +21,7 @@
 import { fork, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { createInterface, type Interface as ReadlineInterface } from "node:readline";
-import type { PaperclipPluginManifestV1 } from "@softclipai/shared";
+import type { SoftclipPluginManifestV1 } from "@softclipai/shared";
 import {
   JSONRPC_VERSION,
   JSONRPC_ERROR_CODES,
@@ -156,7 +156,7 @@ export interface WorkerStartOptions {
   /** Absolute path to the plugin worker entrypoint (CJS bundle). */
   entrypointPath: string;
   /** Plugin manifest. */
-  manifest: PaperclipPluginManifestV1;
+  manifest: SoftclipPluginManifestV1;
   /** Resolved plugin configuration. */
   config: Record<string, unknown>;
   /** Host instance information for the initialize call. */
@@ -611,7 +611,7 @@ export function createPluginWorkerHandle(
       ...options.env,
       PATH: process.env.PATH ?? "",
       NODE_PATH: process.env.NODE_PATH ?? "",
-      PAPERCLIP_PLUGIN_ID: pluginId,
+      SOFTCLIP_PLUGIN_ID: pluginId,
       NODE_ENV: process.env.NODE_ENV ?? "production",
       TZ: process.env.TZ ?? "UTC",
     };

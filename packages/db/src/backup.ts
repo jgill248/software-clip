@@ -22,13 +22,13 @@ function expandHomePrefix(value: string): string {
   return value;
 }
 
-function resolvePaperclipHomeDir(): string {
+function resolveSoftclipHomeDir(): string {
   const envHome = resolveSoftclipEnv("HOME")?.value.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
-  return path.resolve(os.homedir(), ".paperclip");
+  return path.resolve(os.homedir(), ".softclip");
 }
 
-function resolvePaperclipInstanceId(): string {
+function resolveSoftclipInstanceId(): string {
   const resolved = resolveSoftclipEnv("INSTANCE_ID");
   const raw = resolved?.value.trim() || "default";
   if (!/^[a-zA-Z0-9_-]+$/.test(raw)) {
@@ -38,7 +38,7 @@ function resolvePaperclipInstanceId(): string {
 }
 
 function resolveDefaultConfigPath(): string {
-  return path.resolve(resolvePaperclipHomeDir(), "instances", resolvePaperclipInstanceId(), "config.json");
+  return path.resolve(resolveSoftclipHomeDir(), "instances", resolveSoftclipInstanceId(), "config.json");
 }
 
 function readConfig(configPath: string): PartialConfig | null {
@@ -71,11 +71,11 @@ function resolveConnectionString(config: PartialConfig | null): string {
   }
 
   const port = resolveEmbeddedPort(config);
-  return `postgres://paperclip:paperclip@127.0.0.1:${port}/paperclip`;
+  return `postgres://softclip:softclip@127.0.0.1:${port}/softclip`;
 }
 
 function resolveDefaultBackupDir(): string {
-  return path.resolve(resolvePaperclipHomeDir(), "instances", resolvePaperclipInstanceId(), "data", "backups");
+  return path.resolve(resolveSoftclipHomeDir(), "instances", resolveSoftclipInstanceId(), "data", "backups");
 }
 
 function resolveBackupDir(config: PartialConfig | null): string {
@@ -106,7 +106,7 @@ async function main() {
       connectionString,
       backupDir,
       retention: { dailyDays: retentionDays, weeklyWeeks: 4, monthlyMonths: 1 },
-      filenamePrefix: "paperclip",
+      filenamePrefix: "softclip",
     });
 
     console.log(`Backup saved: ${formatDatabaseBackupResult(result)}`);

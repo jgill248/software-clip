@@ -1,8 +1,8 @@
 # Softclip — Product Definition
 
-> **Transition note.** Softclip is the new name for Paperclip. Code-level
-> identifiers (`paperclipai` CLI, `@paperclipai/*` npm packages, `PAPERCLIP_*`
-> env vars, the `companies` DB table) still carry the Paperclip name while
+> **Transition note.** Softclip is the new name for Softclip. Code-level
+> identifiers (`softclip` CLI, `@softclipai/*` npm packages, `SOFTCLIP_*`
+> env vars, the `companies` DB table) still carry the Softclip name while
 > the rename lands incrementally. This document describes Softclip, the
 > product.
 
@@ -20,7 +20,7 @@ under it.
 A product has:
 
 - A **roadmap** — items the team commits to shipping, each rolling up
-  individual issues (formerly "goals" in the Paperclip era)
+  individual issues (formerly "goals" in the Softclip era)
 - A **roster** — every team member is an AI agent organised under a
   Product Owner
 - An **org chart** — who reports to whom (PO at the root by default)
@@ -190,8 +190,8 @@ agents aligned — they can always answer "why am I building this?"
 
 ## User Flow
 
-1. `npx paperclipai onboard` — install locally
-2. `paperclipai db connect` — point at a team Postgres (optional; the
+1. `npx softclip onboard` — install locally
+2. `softclip db connect` — point at a team Postgres (optional; the
    default is an embedded local Postgres)
 3. Use the `product-creator` skill to scaffold a new product with the
    default five-to-seven-role dev team, or start from a repo and let

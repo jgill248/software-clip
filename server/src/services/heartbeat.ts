@@ -73,8 +73,8 @@ import {
   type SessionCompactionPolicy,
 } from "@softclipai/adapter-utils";
 import {
-  readPaperclipSkillSyncPreference,
-  writePaperclipSkillSyncPreference,
+  readSoftclipSkillSyncPreference,
+  writeSoftclipSkillSyncPreference,
 } from "@softclipai/adapter-utils/server-utils";
 import { extractSkillMentionIds } from "@softclipai/shared";
 
@@ -82,13 +82,13 @@ const MAX_LIVE_LOG_CHUNK_BYTES = 8 * 1024;
 const MAX_PERSISTED_LOG_CHUNK_CHARS = 64 * 1024;
 const HEARTBEAT_MAX_CONCURRENT_RUNS_DEFAULT = 1;
 const HEARTBEAT_MAX_CONCURRENT_RUNS_MAX = 10;
-const DEFERRED_WAKE_CONTEXT_KEY = "_paperclipWakeContext";
+const DEFERRED_WAKE_CONTEXT_KEY = "_softclipWakeContext";
 const WAKE_COMMENT_IDS_KEY = "wakeCommentIds";
-const PAPERCLIP_WAKE_PAYLOAD_KEY = "paperclipWake";
-const PAPERCLIP_HARNESS_CHECKOUT_KEY = "paperclipHarnessCheckedOut";
+const SOFTCLIP_WAKE_PAYLOAD_KEY = "softclipWake";
+const SOFTCLIP_HARNESS_CHECKOUT_KEY = "softclipHarnessCheckedOut";
 const DETACHED_PROCESS_ERROR_CODE = "process_detached";
 const startLocksByAgent = new Map<string, Promise<void>>();
-const REPO_ONLY_CWD_SENTINEL = "/__paperclip_repo_only__";
+const REPO_ONLY_CWD_SENTINEL = "/__softclip_repo_only__";
 const MANAGED_WORKSPACE_GIT_CLONE_TIMEOUT_MS = 10 * 60 * 1000;
 const MAX_INLINE_WAKE_COMMENTS = 8;
 const MAX_INLINE_WAKE_COMMENT_BODY_CHARS = 4_000;
@@ -162,8 +162,8 @@ export function applyRunScopedMentionedSkillKeys(
   );
   if (normalizedSkillKeys.length === 0) return config;
 
-  const existingPreference = readPaperclipSkillSyncPreference(config);
-  return writePaperclipSkillSyncPreference(config, [
+  const existingPreference = readSoftclipSkillSyncPreference(config);
+  return writeSoftclipSkillSyncPreference(config, [
     ...existingPreference.desiredSkills,
     ...normalizedSkillKeys,
   ]);
@@ -511,7 +511,7 @@ export function compactRunLogChunk(chunk: string, maxChars = MAX_PERSISTED_LOG_C
   const headChars = Math.max(0, Math.floor(maxChars * 0.6));
   const tailChars = Math.max(0, Math.floor(maxChars * 0.25));
   const omittedChars = Math.max(0, normalized.length - headChars - tailChars);
-  const marker = `\n[paperclip truncated run log chunk: omitted ${omittedChars} chars]\n`;
+  const marker = `\n[softclip truncated run log chunk: omitted ${omittedChars} chars]\n`;
   return `${normalized.slice(0, headChars)}${marker}${normalized.slice(normalized.length - tailChars)}`;
 }
 
@@ -1018,7 +1018,7 @@ function shouldRequireIssueCommentForWake(
 export function formatRuntimeWorkspaceWarningLog(warning: string) {
   return {
     stream: "stdout" as const,
-    chunk: `[paperclip] ${warning}\n`,
+    chunk: `[softclip] ${warning}\n`,
   };
 }
 
@@ -1159,7 +1159,7 @@ function enrichWakeContextSnapshot(input: {
     contextSnapshot.wakeCommentId = latestCommentId;
     // Once comment ids are normalized into the snapshot, rebuild the structured
     // wake payload from those ids later instead of carrying forward stale data.
-    delete contextSnapshot[PAPERCLIP_WAKE_PAYLOAD_KEY];
+    delete contextSnapshot[SOFTCLIP_WAKE_PAYLOAD_KEY];
   } else if (!readNonEmptyString(contextSnapshot["wakeCommentId"]) && wakeCommentId) {
     contextSnapshot.wakeCommentId = wakeCommentId;
   }
@@ -1196,12 +1196,12 @@ export function mergeCoalescedContextSnapshot(
     merged.wakeCommentId = latestCommentId;
     // The merged context should carry canonical comment ids; the next wake will
     // regenerate any structured payload from those ids.
-    delete merged[PAPERCLIP_WAKE_PAYLOAD_KEY];
+    delete merged[SOFTCLIP_WAKE_PAYLOAD_KEY];
   }
   return merged;
 }
 
-async function buildPaperclipWakePayload(input: {
+async function buildSoftclipWakePayload(input: {
   db: Db;
   productId: string;
   contextSnapshot: Record<string, unknown>;
@@ -1310,7 +1310,7 @@ async function buildPaperclipWakePayload(input: {
           priority: issueSummary.priority,
         }
       : null,
-    checkedOutByHarness: input.contextSnapshot[PAPERCLIP_HARNESS_CHECKOUT_KEY] === true,
+    checkedOutByHarness: input.contextSnapshot[SOFTCLIP_HARNESS_CHECKOUT_KEY] === true,
     executionStage: Object.keys(executionStage).length > 0 ? executionStage : null,
     commentIds,
     latestCommentId: commentIds[commentIds.length - 1] ?? null,
@@ -1739,7 +1739,7 @@ export function heartbeatService(db: Db) {
       readNonEmptyString(latestRun.error);
 
     const handoffMarkdown = [
-      "Paperclip session handoff:",
+      "Softclip session handoff:",
       `- Previous session: ${sessionId}`,
       issueId ? `- Issue: ${issueId}` : "",
       `- Rotation reason: ${reason}`,
@@ -3044,7 +3044,7 @@ export function heartbeatService(db: Db) {
             previousStatus: "todo",
             latestRun,
             comment:
-              "Paperclip automatically retried dispatch for this assigned `todo` issue after a lost wake/run, " +
+              "Softclip automatically retried dispatch for this assigned `todo` issue after a lost wake/run, " +
               `but it still has no live execution path.${failureSummary ?? ""} ` +
               "Moving it to `blocked` so it is visible for intervention.",
           });
@@ -3081,7 +3081,7 @@ export function heartbeatService(db: Db) {
           previousStatus: "in_progress",
           latestRun,
           comment:
-            "Paperclip automatically retried continuation for this assigned `in_progress` issue after its live " +
+            "Softclip automatically retried continuation for this assigned `in_progress` issue after its live " +
             `execution disappeared, but it still has no live execution path.${failureSummary ?? ""} ` +
             "Moving it to `blocked` so it is visible for intervention.",
         });
@@ -3255,10 +3255,10 @@ export function heartbeatService(db: Db) {
     ) {
       try {
         await issuesSvc.checkout(issueId, agent.id, ["todo", "backlog", "blocked"], run.id);
-        context[PAPERCLIP_HARNESS_CHECKOUT_KEY] = true;
+        context[SOFTCLIP_HARNESS_CHECKOUT_KEY] = true;
       } catch (error) {
         if (!isCheckoutConflictError(error)) throw error;
-        context[PAPERCLIP_HARNESS_CHECKOUT_KEY] = false;
+        context[SOFTCLIP_HARNESS_CHECKOUT_KEY] = false;
       }
       issueContext = await getIssueExecutionContext(agent.productId, issueId);
     }
@@ -3331,7 +3331,7 @@ export function heartbeatService(db: Db) {
           executionWorkspacePreference: issueContext.executionWorkspacePreference,
         }
       : null;
-    const paperclipWakePayload = await buildPaperclipWakePayload({
+    const softclipWakePayload = await buildSoftclipWakePayload({
       db,
       productId: agent.productId,
       contextSnapshot: context,
@@ -3345,10 +3345,10 @@ export function heartbeatService(db: Db) {
           }
         : null,
     });
-    if (paperclipWakePayload) {
-      context[PAPERCLIP_WAKE_PAYLOAD_KEY] = paperclipWakePayload;
+    if (softclipWakePayload) {
+      context[SOFTCLIP_WAKE_PAYLOAD_KEY] = softclipWakePayload;
     } else {
-      delete context[PAPERCLIP_WAKE_PAYLOAD_KEY];
+      delete context[SOFTCLIP_WAKE_PAYLOAD_KEY];
     }
     const existingExecutionWorkspace =
       issueRef?.executionWorkspaceId ? await executionWorkspacesSvc.getById(issueRef.executionWorkspaceId) : null;
@@ -3402,7 +3402,7 @@ export function heartbeatService(db: Db) {
     const runtimeSkillEntries = await companySkills.listRuntimeSkillEntries(agent.productId);
     const runtimeConfig = {
       ...effectiveResolvedConfig,
-      paperclipRuntimeSkills: runtimeSkillEntries,
+      softclipRuntimeSkills: runtimeSkillEntries,
     };
     const workspaceOperationRecorder = workspaceOperationsSvc.createRecorder({
       productId: agent.productId,
@@ -3597,7 +3597,7 @@ export function heartbeatService(db: Db) {
           ]
         : []),
     ];
-    context.paperclipWorkspace = {
+    context.softclipWorkspace = {
       cwd: executionWorkspace.cwd,
       source: executionWorkspace.source,
       mode: effectiveExecutionWorkspaceMode,
@@ -3614,7 +3614,7 @@ export function heartbeatService(db: Db) {
         return home;
       })(),
     };
-    context.paperclipWorkspaces = resolvedWorkspace.workspaceHints;
+    context.softclipWorkspaces = resolvedWorkspace.workspaceHints;
     const runtimeServiceIntents = (() => {
       const runtimeConfig = parseObject(resolvedConfig.workspaceRuntime);
       return Array.isArray(runtimeConfig.services)
@@ -3624,9 +3624,9 @@ export function heartbeatService(db: Db) {
         : [];
     })();
     if (runtimeServiceIntents.length > 0) {
-      context.paperclipRuntimeServiceIntents = runtimeServiceIntents;
+      context.softclipRuntimeServiceIntents = runtimeServiceIntents;
     } else {
-      delete context.paperclipRuntimeServiceIntents;
+      delete context.softclipRuntimeServiceIntents;
     }
     if (executionWorkspace.projectId && !readNonEmptyString(context.projectId)) {
       context.projectId = executionWorkspace.projectId;
@@ -3649,9 +3649,9 @@ export function heartbeatService(db: Db) {
       issueId,
     });
     if (sessionCompaction.rotate) {
-      context.paperclipSessionHandoffMarkdown = sessionCompaction.handoffMarkdown;
-      context.paperclipSessionRotationReason = sessionCompaction.reason;
-      context.paperclipPreviousSessionId = previousSessionDisplayId ?? runtimeSessionIdForAdapter;
+      context.softclipSessionHandoffMarkdown = sessionCompaction.handoffMarkdown;
+      context.softclipSessionRotationReason = sessionCompaction.reason;
+      context.softclipPreviousSessionId = previousSessionDisplayId ?? runtimeSessionIdForAdapter;
       runtimeSessionIdForAdapter = null;
       runtimeSessionParamsForAdapter = null;
       previousSessionDisplayId = null;
@@ -3661,9 +3661,9 @@ export function heartbeatService(db: Db) {
         );
       }
     } else {
-      delete context.paperclipSessionHandoffMarkdown;
-      delete context.paperclipSessionRotationReason;
-      delete context.paperclipPreviousSessionId;
+      delete context.softclipSessionHandoffMarkdown;
+      delete context.softclipSessionRotationReason;
+      delete context.softclipPreviousSessionId;
     }
 
     const runtimeForAdapter = {
@@ -3772,7 +3772,7 @@ export function heartbeatService(db: Db) {
       if (runScopedMentionedSkillKeys.length > 0) {
         await onLog(
           "stdout",
-          `[paperclip] Enabled run-scoped skills from issue mentions: ${runScopedMentionedSkillKeys.join(", ")}\n`,
+          `[softclip] Enabled run-scoped skills from issue mentions: ${runScopedMentionedSkillKeys.join(", ")}\n`,
         );
       }
       for (const warning of runtimeWorkspaceWarnings) {
@@ -3800,8 +3800,8 @@ export function heartbeatService(db: Db) {
         onLog,
       });
       if (runtimeServices.length > 0) {
-        context.paperclipRuntimeServices = runtimeServices;
-        context.paperclipRuntimePrimaryUrl =
+        context.softclipRuntimeServices = runtimeServices;
+        context.softclipRuntimePrimaryUrl =
           runtimeServices.find((service) => readNonEmptyString(service.url))?.url ?? null;
         await db
           .update(heartbeatRuns)
@@ -3824,7 +3824,7 @@ export function heartbeatService(db: Db) {
         } catch (err) {
           await onLog(
             "stderr",
-            `[paperclip] Failed to post workspace-ready comment: ${err instanceof Error ? err.message : String(err)}\n`,
+            `[softclip] Failed to post workspace-ready comment: ${err instanceof Error ? err.message : String(err)}\n`,
           );
         }
       }
@@ -3855,7 +3855,7 @@ export function heartbeatService(db: Db) {
             runId: run.id,
             adapterType: agent.adapterType,
           },
-          "local agent jwt secret missing or invalid; running without injected PAPERCLIP_API_KEY",
+          "local agent jwt secret missing or invalid; running without injected SOFTCLIP_API_KEY",
         );
       }
       const adapterResult = await adapter.execute({
@@ -3898,8 +3898,8 @@ export function heartbeatService(db: Db) {
           ...runtimeServices,
           ...adapterManagedRuntimeServices,
         ];
-        context.paperclipRuntimeServices = combinedRuntimeServices;
-        context.paperclipRuntimePrimaryUrl =
+        context.softclipRuntimeServices = combinedRuntimeServices;
+        context.softclipRuntimePrimaryUrl =
           combinedRuntimeServices.find((service) => readNonEmptyString(service.url))?.url ?? null;
         await db
           .update(heartbeatRuns)
@@ -3921,7 +3921,7 @@ export function heartbeatService(db: Db) {
           } catch (err) {
             await onLog(
               "stderr",
-              `[paperclip] Failed to post adapter-managed runtime comment: ${err instanceof Error ? err.message : String(err)}\n`,
+              `[softclip] Failed to post adapter-managed runtime comment: ${err instanceof Error ? err.message : String(err)}\n`,
             );
           }
         }
@@ -4057,7 +4057,7 @@ export function heartbeatService(db: Db) {
           } catch (err) {
             await onLog(
               "stderr",
-              `[paperclip] Failed to post run summary comment: ${err instanceof Error ? err.message : String(err)}\n`,
+              `[softclip] Failed to post run summary comment: ${err instanceof Error ? err.message : String(err)}\n`,
             );
           }
         }

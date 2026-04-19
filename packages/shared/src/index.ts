@@ -357,7 +357,7 @@ export type {
   PluginLauncherDeclaration,
   PluginMinimumHostVersion,
   PluginUiDeclaration,
-  PaperclipPluginManifestV1,
+  SoftclipPluginManifestV1,
   PluginRecord,
   PluginStateRecord,
   PluginConfig,
@@ -679,10 +679,7 @@ export {
 
 export {
   resolveSoftclipEnv,
-  resetSoftclipEnvWarnings,
-  setSoftclipEnvWarnSink,
   type ResolvedSoftclipEnv,
-  type SoftclipEnvSource,
 } from "./env/resolveSoftclipEnv.js";
 
 export { API_PREFIX, API } from "./api.js";
@@ -723,7 +720,7 @@ export {
 } from "./routine-variables.js";
 
 export {
-  paperclipConfigSchema,
+  softclipConfigSchema,
   configMetaSchema,
   llmConfigSchema,
   databaseBackupConfigSchema,
@@ -738,7 +735,7 @@ export {
   secretsLocalEncryptedConfigSchema,
   telemetryConfigSchema,
   type TelemetryConfig,
-  type PaperclipConfig,
+  type SoftclipConfig,
   type LlmConfig,
   type DatabaseBackupConfig,
   type DatabaseConfig,

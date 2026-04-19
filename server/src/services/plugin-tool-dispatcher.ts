@@ -24,7 +24,7 @@
 
 import type { Db } from "@softclipai/db";
 import type {
-  PaperclipPluginManifestV1,
+  SoftclipPluginManifestV1,
   PluginRecord,
 } from "@softclipai/shared";
 import type { ToolRunContext, ToolResult } from "@softclipai/plugin-sdk";
@@ -155,7 +155,7 @@ export interface PluginToolDispatcher {
    */
   registerPluginTools(
     pluginId: string,
-    manifest: PaperclipPluginManifestV1,
+    manifest: SoftclipPluginManifestV1,
   ): void;
 
   /**
@@ -428,7 +428,7 @@ export function createPluginToolDispatcher(
 
     registerPluginTools(
       pluginId: string,
-      manifest: PaperclipPluginManifestV1,
+      manifest: SoftclipPluginManifestV1,
     ): void {
       registry.registerPlugin(pluginId, manifest);
     },

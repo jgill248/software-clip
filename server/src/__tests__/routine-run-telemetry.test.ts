@@ -46,7 +46,7 @@ describeEmbeddedPostgres("routine run telemetry", () => {
   let tempDb: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
 
   beforeAll(async () => {
-    tempDb = await startEmbeddedPostgresTestDatabase("paperclip-routine-telemetry-");
+    tempDb = await startEmbeddedPostgresTestDatabase("softclip-routine-telemetry-");
     db = createDb(tempDb.connectionString);
   }, 20_000);
 
@@ -75,7 +75,7 @@ describeEmbeddedPostgres("routine run telemetry", () => {
 
     await db.insert(products).values({
       id: productId,
-      name: "Paperclip",
+      name: "Softclip",
       issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 

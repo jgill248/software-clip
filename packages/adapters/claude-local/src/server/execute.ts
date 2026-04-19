@@ -10,8 +10,8 @@ import {
   asStringArray,
   parseObject,
   parseJson,
-  buildPaperclipEnv,
-  readPaperclipRuntimeSkillEntries,
+  buildSoftclipEnv,
+  readSoftclipRuntimeSkillEntries,
   joinPromptSections,
   buildInvocationEnvForLogs,
   ensureAbsoluteDirectory,
@@ -19,8 +19,8 @@ import {
   ensurePathInEnv,
   resolveCommandForLogs,
   renderTemplate,
-  renderPaperclipWakePrompt,
-  stringifyPaperclipWakePayload,
+  renderSoftclipWakePrompt,
+  stringifySoftclipWakePayload,
   runChildProcess,
 } from "@softclipai/adapter-utils/server-utils";
 import {
@@ -94,7 +94,7 @@ async function buildClaudeRuntimeConfig(input: ClaudeExecutionInput): Promise<Cl
   const { runId, agent, config, context, authToken } = input;
 
   const command = asString(config.command, "claude");
-  const workspaceContext = parseObject(context.paperclipWorkspace);
+  const workspaceContext = parseObject(context.softclipWorkspace);
   const workspaceCwd = asString(workspaceContext.cwd, "");
   const workspaceSource = asString(workspaceContext.source, "");
   const workspaceStrategy = asString(workspaceContext.strategy, "");
@@ -104,22 +104,22 @@ async function buildClaudeRuntimeConfig(input: ClaudeExecutionInput): Promise<Cl
   const workspaceBranch = asString(workspaceContext.branchName, "") || null;
   const workspaceWorktreePath = asString(workspaceContext.worktreePath, "") || null;
   const agentHome = asString(workspaceContext.agentHome, "") || null;
-  const workspaceHints = Array.isArray(context.paperclipWorkspaces)
-    ? context.paperclipWorkspaces.filter(
+  const workspaceHints = Array.isArray(context.softclipWorkspaces)
+    ? context.softclipWorkspaces.filter(
         (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
       )
     : [];
-  const runtimeServiceIntents = Array.isArray(context.paperclipRuntimeServiceIntents)
-    ? context.paperclipRuntimeServiceIntents.filter(
+  const runtimeServiceIntents = Array.isArray(context.softclipRuntimeServiceIntents)
+    ? context.softclipRuntimeServiceIntents.filter(
         (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
       )
     : [];
-  const runtimeServices = Array.isArray(context.paperclipRuntimeServices)
-    ? context.paperclipRuntimeServices.filter(
+  const runtimeServices = Array.isArray(context.softclipRuntimeServices)
+    ? context.softclipRuntimeServices.filter(
         (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
       )
     : [];
-  const runtimePrimaryUrl = asString(context.paperclipRuntimePrimaryUrl, "");
+  const runtimePrimaryUrl = asString(context.softclipRuntimePrimaryUrl, "");
   const configuredCwd = asString(config.cwd, "");
   const useConfiguredInsteadOfAgentHome = workspaceSource === "agent_home" && configuredCwd.length > 0;
   const effectiveWorkspaceCwd = useConfiguredInsteadOfAgentHome ? "" : workspaceCwd;
@@ -128,9 +128,9 @@ async function buildClaudeRuntimeConfig(input: ClaudeExecutionInput): Promise<Cl
 
   const envConfig = parseObject(config.env);
   const hasExplicitApiKey =
-    typeof envConfig.PAPERCLIP_API_KEY === "string" && envConfig.PAPERCLIP_API_KEY.trim().length > 0;
-  const env: Record<string, string> = { ...buildPaperclipEnv(agent) };
-  env.PAPERCLIP_RUN_ID = runId;
+    typeof envConfig.SOFTCLIP_API_KEY === "string" && envConfig.SOFTCLIP_API_KEY.trim().length > 0;
+  const env: Record<string, string> = { ...buildSoftclipEnv(agent) };
+  env.SOFTCLIP_RUN_ID = runId;
 
   const wakeTaskId =
     (typeof context.taskId === "string" && context.taskId.trim().length > 0 && context.taskId.trim()) ||
@@ -155,67 +155,67 @@ async function buildClaudeRuntimeConfig(input: ClaudeExecutionInput): Promise<Cl
   const linkedIssueIds = Array.isArray(context.issueIds)
     ? context.issueIds.filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     : [];
-  const wakePayloadJson = stringifyPaperclipWakePayload(context.paperclipWake);
+  const wakePayloadJson = stringifySoftclipWakePayload(context.softclipWake);
 
   if (wakeTaskId) {
-    env.PAPERCLIP_TASK_ID = wakeTaskId;
+    env.SOFTCLIP_TASK_ID = wakeTaskId;
   }
   if (wakeReason) {
-    env.PAPERCLIP_WAKE_REASON = wakeReason;
+    env.SOFTCLIP_WAKE_REASON = wakeReason;
   }
   if (wakeCommentId) {
-    env.PAPERCLIP_WAKE_COMMENT_ID = wakeCommentId;
+    env.SOFTCLIP_WAKE_COMMENT_ID = wakeCommentId;
   }
   if (approvalId) {
-    env.PAPERCLIP_APPROVAL_ID = approvalId;
+    env.SOFTCLIP_APPROVAL_ID = approvalId;
   }
   if (approvalStatus) {
-    env.PAPERCLIP_APPROVAL_STATUS = approvalStatus;
+    env.SOFTCLIP_APPROVAL_STATUS = approvalStatus;
   }
   if (linkedIssueIds.length > 0) {
-    env.PAPERCLIP_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
+    env.SOFTCLIP_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
   }
   if (wakePayloadJson) {
-    env.PAPERCLIP_WAKE_PAYLOAD_JSON = wakePayloadJson;
+    env.SOFTCLIP_WAKE_PAYLOAD_JSON = wakePayloadJson;
   }
   if (effectiveWorkspaceCwd) {
-    env.PAPERCLIP_WORKSPACE_CWD = effectiveWorkspaceCwd;
+    env.SOFTCLIP_WORKSPACE_CWD = effectiveWorkspaceCwd;
   }
   if (workspaceSource) {
-    env.PAPERCLIP_WORKSPACE_SOURCE = workspaceSource;
+    env.SOFTCLIP_WORKSPACE_SOURCE = workspaceSource;
   }
   if (workspaceStrategy) {
-    env.PAPERCLIP_WORKSPACE_STRATEGY = workspaceStrategy;
+    env.SOFTCLIP_WORKSPACE_STRATEGY = workspaceStrategy;
   }
   if (workspaceId) {
-    env.PAPERCLIP_WORKSPACE_ID = workspaceId;
+    env.SOFTCLIP_WORKSPACE_ID = workspaceId;
   }
   if (workspaceRepoUrl) {
-    env.PAPERCLIP_WORKSPACE_REPO_URL = workspaceRepoUrl;
+    env.SOFTCLIP_WORKSPACE_REPO_URL = workspaceRepoUrl;
   }
   if (workspaceRepoRef) {
-    env.PAPERCLIP_WORKSPACE_REPO_REF = workspaceRepoRef;
+    env.SOFTCLIP_WORKSPACE_REPO_REF = workspaceRepoRef;
   }
   if (workspaceBranch) {
-    env.PAPERCLIP_WORKSPACE_BRANCH = workspaceBranch;
+    env.SOFTCLIP_WORKSPACE_BRANCH = workspaceBranch;
   }
   if (workspaceWorktreePath) {
-    env.PAPERCLIP_WORKSPACE_WORKTREE_PATH = workspaceWorktreePath;
+    env.SOFTCLIP_WORKSPACE_WORKTREE_PATH = workspaceWorktreePath;
   }
   if (agentHome) {
     env.AGENT_HOME = agentHome;
   }
   if (workspaceHints.length > 0) {
-    env.PAPERCLIP_WORKSPACES_JSON = JSON.stringify(workspaceHints);
+    env.SOFTCLIP_WORKSPACES_JSON = JSON.stringify(workspaceHints);
   }
   if (runtimeServiceIntents.length > 0) {
-    env.PAPERCLIP_RUNTIME_SERVICE_INTENTS_JSON = JSON.stringify(runtimeServiceIntents);
+    env.SOFTCLIP_RUNTIME_SERVICE_INTENTS_JSON = JSON.stringify(runtimeServiceIntents);
   }
   if (runtimeServices.length > 0) {
-    env.PAPERCLIP_RUNTIME_SERVICES_JSON = JSON.stringify(runtimeServices);
+    env.SOFTCLIP_RUNTIME_SERVICES_JSON = JSON.stringify(runtimeServices);
   }
   if (runtimePrimaryUrl) {
-    env.PAPERCLIP_RUNTIME_PRIMARY_URL = runtimePrimaryUrl;
+    env.SOFTCLIP_RUNTIME_PRIMARY_URL = runtimePrimaryUrl;
   }
 
   for (const [key, value] of Object.entries(envConfig)) {
@@ -223,7 +223,7 @@ async function buildClaudeRuntimeConfig(input: ClaudeExecutionInput): Promise<Cl
   }
 
   if (!hasExplicitApiKey && authToken) {
-    env.PAPERCLIP_API_KEY = authToken;
+    env.SOFTCLIP_API_KEY = authToken;
   }
 
   const runtimeEnv = ensurePathInEnv({ ...process.env, ...env });
@@ -300,7 +300,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const promptTemplate = asString(
     config.promptTemplate,
-    "You are agent {{agent.id}} ({{agent.name}}). Continue your Paperclip work.",
+    "You are agent {{agent.id}} ({{agent.name}}). Continue your Softclip work.",
   );
   const model = asString(config.model, "");
   const effort = asString(config.effort, "");
@@ -335,7 +335,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     ),
   );
   const billingType = resolveClaudeBillingType(effectiveEnv);
-  const claudeSkillEntries = await readPaperclipRuntimeSkillEntries(config, __moduleDir);
+  const claudeSkillEntries = await readSoftclipRuntimeSkillEntries(config, __moduleDir);
   const desiredSkillNames = new Set(resolveClaudeDesiredSkillNames(config, claudeSkillEntries));
   // When instructionsFilePath is configured, build a stable content-addressed
   // file that includes both the file content and the path directive, so we only
@@ -354,7 +354,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
       const reason = err instanceof Error ? err.message : String(err);
       await onLog(
         "stderr",
-        `[paperclip] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
+        `[softclip] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
       );
     }
   }
@@ -384,13 +384,13 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   ) {
     await onLog(
       "stdout",
-      `[paperclip] Claude session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
+      `[softclip] Claude session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
     );
   }
   if (runtimeSessionId && runtimePromptBundleKey.length > 0 && runtimePromptBundleKey !== promptBundle.bundleKey) {
     await onLog(
       "stdout",
-      `[paperclip] Claude session "${runtimeSessionId}" was saved for prompt bundle "${runtimePromptBundleKey}" and will not be resumed with "${promptBundle.bundleKey}".\n`,
+      `[softclip] Claude session "${runtimeSessionId}" was saved for prompt bundle "${runtimePromptBundleKey}" and will not be resumed with "${promptBundle.bundleKey}".\n`,
     );
   }
   const bootstrapPromptTemplate = asString(config.bootstrapPromptTemplate, "");
@@ -407,10 +407,10 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     !sessionId && bootstrapPromptTemplate.trim().length > 0
       ? renderTemplate(bootstrapPromptTemplate, templateData).trim()
       : "";
-  const wakePrompt = renderPaperclipWakePrompt(context.paperclipWake, { resumedSession: Boolean(sessionId) });
+  const wakePrompt = renderSoftclipWakePrompt(context.softclipWake, { resumedSession: Boolean(sessionId) });
   const shouldUseResumeDeltaPrompt = Boolean(sessionId) && wakePrompt.length > 0;
   const renderedPrompt = shouldUseResumeDeltaPrompt ? "" : renderTemplate(promptTemplate, templateData);
-  const sessionHandoffNote = asString(context.paperclipSessionHandoffMarkdown, "").trim();
+  const sessionHandoffNote = asString(context.softclipSessionHandoffMarkdown, "").trim();
   const prompt = joinPromptSections([
     renderedBootstrapPrompt,
     wakePrompt,
@@ -619,7 +619,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   ) {
     await onLog(
       "stdout",
-      `[paperclip] Claude resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
+      `[softclip] Claude resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
     );
     const retry = await runAttempt(null);
     return toAdapterResult(retry, { fallbackSessionId: null, clearSessionOnMissingSession: true });

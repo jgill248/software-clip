@@ -63,7 +63,7 @@ describeEmbeddedPostgres("issueService.create — plan-approval gate", () => {
 
   beforeAll(async () => {
     tempDb = await startEmbeddedPostgresTestDatabase(
-      "paperclip-plan-gate-",
+      "softclip-plan-gate-",
     );
     db = createDb(tempDb.connectionString);
     svc = issueService(db);

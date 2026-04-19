@@ -8,19 +8,19 @@ import {
   asNumber,
   asStringArray,
   parseObject,
-  buildPaperclipEnv,
+  buildSoftclipEnv,
   buildInvocationEnvForLogs,
   ensureAbsoluteDirectory,
   ensureCommandResolvable,
-  ensurePaperclipSkillSymlink,
+  ensureSoftclipSkillSymlink,
   ensurePathInEnv,
-  readPaperclipRuntimeSkillEntries,
+  readSoftclipRuntimeSkillEntries,
   resolveCommandForLogs,
-  resolvePaperclipDesiredSkillNames,
+  resolveSoftclipDesiredSkillNames,
   removeMaintainerOnlySkillSymlinks,
   renderTemplate,
-  renderPaperclipWakePrompt,
-  stringifyPaperclipWakePayload,
+  renderSoftclipWakePrompt,
+  stringifySoftclipWakePayload,
   joinPromptSections,
   runChildProcess,
 } from "@softclipai/adapter-utils/server-utils";
@@ -78,14 +78,14 @@ function normalizeMode(rawMode: string): "plan" | "ask" | null {
   return null;
 }
 
-function renderPaperclipEnvNote(env: Record<string, string>): string {
-  const paperclipKeys = Object.keys(env)
-    .filter((key) => key.startsWith("PAPERCLIP_"))
+function renderSoftclipEnvNote(env: Record<string, string>): string {
+  const softclipKeys = Object.keys(env)
+    .filter((key) => key.startsWith("SOFTCLIP_"))
     .sort();
-  if (paperclipKeys.length === 0) return "";
+  if (softclipKeys.length === 0) return "";
   return [
-    "Paperclip runtime note:",
-    `The following PAPERCLIP_* environment variables are available in this run: ${paperclipKeys.join(", ")}`,
+    "Softclip runtime note:",
+    `The following SOFTCLIP_* environment variables are available in this run: ${softclipKeys.join(", ")}`,
     "Do not assume these variables are missing without checking your shell environment.",
     "",
     "",
@@ -116,7 +116,7 @@ export async function ensureCursorSkillsInjected(
             runtimeName: entry.name,
             source: path.join(options.skillsDir!, entry.name),
           }))
-      : await readPaperclipRuntimeSkillEntries({}, __moduleDir));
+      : await readSoftclipRuntimeSkillEntries({}, __moduleDir));
   if (skillsEntries.length === 0) return;
 
   const skillsHome = options.skillsHome ?? cursorSkillsHome();
@@ -125,7 +125,7 @@ export async function ensureCursorSkillsInjected(
   } catch (err) {
     await onLog(
       "stderr",
-      `[paperclip] Failed to prepare Cursor skills directory ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
+      `[softclip] Failed to prepare Cursor skills directory ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
     );
     return;
   }
@@ -136,24 +136,24 @@ export async function ensureCursorSkillsInjected(
   for (const skillName of removedSkills) {
     await onLog(
       "stderr",
-      `[paperclip] Removed maintainer-only Cursor skill "${skillName}" from ${skillsHome}\n`,
+      `[softclip] Removed maintainer-only Cursor skill "${skillName}" from ${skillsHome}\n`,
     );
   }
   const linkSkill = options.linkSkill ?? ((source: string, target: string) => fs.symlink(source, target));
   for (const entry of skillsEntries) {
     const target = path.join(skillsHome, entry.runtimeName);
     try {
-      const result = await ensurePaperclipSkillSymlink(entry.source, target, linkSkill);
+      const result = await ensureSoftclipSkillSymlink(entry.source, target, linkSkill);
       if (result === "skipped") continue;
 
       await onLog(
         "stderr",
-        `[paperclip] ${result === "repaired" ? "Repaired" : "Injected"} Cursor skill "${entry.key}" into ${skillsHome}\n`,
+        `[softclip] ${result === "repaired" ? "Repaired" : "Injected"} Cursor skill "${entry.key}" into ${skillsHome}\n`,
       );
     } catch (err) {
       await onLog(
         "stderr",
-        `[paperclip] Failed to inject Cursor skill "${entry.key}" into ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
+        `[softclip] Failed to inject Cursor skill "${entry.key}" into ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
       );
     }
   }
@@ -164,21 +164,21 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const promptTemplate = asString(
     config.promptTemplate,
-    "You are agent {{agent.id}} ({{agent.name}}). Continue your Paperclip work.",
+    "You are agent {{agent.id}} ({{agent.name}}). Continue your Softclip work.",
   );
   const command = asString(config.command, "agent");
   const model = asString(config.model, DEFAULT_CURSOR_LOCAL_MODEL).trim();
   const mode = normalizeMode(asString(config.mode, ""));
 
-  const workspaceContext = parseObject(context.paperclipWorkspace);
+  const workspaceContext = parseObject(context.softclipWorkspace);
   const workspaceCwd = asString(workspaceContext.cwd, "");
   const workspaceSource = asString(workspaceContext.source, "");
   const workspaceId = asString(workspaceContext.workspaceId, "");
   const workspaceRepoUrl = asString(workspaceContext.repoUrl, "");
   const workspaceRepoRef = asString(workspaceContext.repoRef, "");
   const agentHome = asString(workspaceContext.agentHome, "");
-  const workspaceHints = Array.isArray(context.paperclipWorkspaces)
-    ? context.paperclipWorkspaces.filter(
+  const workspaceHints = Array.isArray(context.softclipWorkspaces)
+    ? context.softclipWorkspaces.filter(
         (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
       )
     : [];
@@ -187,17 +187,17 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const effectiveWorkspaceCwd = useConfiguredInsteadOfAgentHome ? "" : workspaceCwd;
   const cwd = effectiveWorkspaceCwd || configuredCwd || process.cwd();
   await ensureAbsoluteDirectory(cwd, { createIfMissing: true });
-  const cursorSkillEntries = await readPaperclipRuntimeSkillEntries(config, __moduleDir);
-  const desiredCursorSkillNames = resolvePaperclipDesiredSkillNames(config, cursorSkillEntries);
+  const cursorSkillEntries = await readSoftclipRuntimeSkillEntries(config, __moduleDir);
+  const desiredCursorSkillNames = resolveSoftclipDesiredSkillNames(config, cursorSkillEntries);
   await ensureCursorSkillsInjected(onLog, {
     skillsEntries: cursorSkillEntries.filter((entry) => desiredCursorSkillNames.includes(entry.key)),
   });
 
   const envConfig = parseObject(config.env);
   const hasExplicitApiKey =
-    typeof envConfig.PAPERCLIP_API_KEY === "string" && envConfig.PAPERCLIP_API_KEY.trim().length > 0;
-  const env: Record<string, string> = { ...buildPaperclipEnv(agent) };
-  env.PAPERCLIP_RUN_ID = runId;
+    typeof envConfig.SOFTCLIP_API_KEY === "string" && envConfig.SOFTCLIP_API_KEY.trim().length > 0;
+  const env: Record<string, string> = { ...buildSoftclipEnv(agent) };
+  env.SOFTCLIP_RUN_ID = runId;
   const wakeTaskId =
     (typeof context.taskId === "string" && context.taskId.trim().length > 0 && context.taskId.trim()) ||
     (typeof context.issueId === "string" && context.issueId.trim().length > 0 && context.issueId.trim()) ||
@@ -221,54 +221,54 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const linkedIssueIds = Array.isArray(context.issueIds)
     ? context.issueIds.filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     : [];
-  const wakePayloadJson = stringifyPaperclipWakePayload(context.paperclipWake);
+  const wakePayloadJson = stringifySoftclipWakePayload(context.softclipWake);
   if (wakeTaskId) {
-    env.PAPERCLIP_TASK_ID = wakeTaskId;
+    env.SOFTCLIP_TASK_ID = wakeTaskId;
   }
   if (wakeReason) {
-    env.PAPERCLIP_WAKE_REASON = wakeReason;
+    env.SOFTCLIP_WAKE_REASON = wakeReason;
   }
   if (wakeCommentId) {
-    env.PAPERCLIP_WAKE_COMMENT_ID = wakeCommentId;
+    env.SOFTCLIP_WAKE_COMMENT_ID = wakeCommentId;
   }
   if (approvalId) {
-    env.PAPERCLIP_APPROVAL_ID = approvalId;
+    env.SOFTCLIP_APPROVAL_ID = approvalId;
   }
   if (approvalStatus) {
-    env.PAPERCLIP_APPROVAL_STATUS = approvalStatus;
+    env.SOFTCLIP_APPROVAL_STATUS = approvalStatus;
   }
   if (linkedIssueIds.length > 0) {
-    env.PAPERCLIP_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
+    env.SOFTCLIP_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
   }
   if (wakePayloadJson) {
-    env.PAPERCLIP_WAKE_PAYLOAD_JSON = wakePayloadJson;
+    env.SOFTCLIP_WAKE_PAYLOAD_JSON = wakePayloadJson;
   }
   if (effectiveWorkspaceCwd) {
-    env.PAPERCLIP_WORKSPACE_CWD = effectiveWorkspaceCwd;
+    env.SOFTCLIP_WORKSPACE_CWD = effectiveWorkspaceCwd;
   }
   if (workspaceSource) {
-    env.PAPERCLIP_WORKSPACE_SOURCE = workspaceSource;
+    env.SOFTCLIP_WORKSPACE_SOURCE = workspaceSource;
   }
   if (workspaceId) {
-    env.PAPERCLIP_WORKSPACE_ID = workspaceId;
+    env.SOFTCLIP_WORKSPACE_ID = workspaceId;
   }
   if (workspaceRepoUrl) {
-    env.PAPERCLIP_WORKSPACE_REPO_URL = workspaceRepoUrl;
+    env.SOFTCLIP_WORKSPACE_REPO_URL = workspaceRepoUrl;
   }
   if (workspaceRepoRef) {
-    env.PAPERCLIP_WORKSPACE_REPO_REF = workspaceRepoRef;
+    env.SOFTCLIP_WORKSPACE_REPO_REF = workspaceRepoRef;
   }
   if (agentHome) {
     env.AGENT_HOME = agentHome;
   }
   if (workspaceHints.length > 0) {
-    env.PAPERCLIP_WORKSPACES_JSON = JSON.stringify(workspaceHints);
+    env.SOFTCLIP_WORKSPACES_JSON = JSON.stringify(workspaceHints);
   }
   for (const [k, v] of Object.entries(envConfig)) {
     if (typeof v === "string") env[k] = v;
   }
   if (!hasExplicitApiKey && authToken) {
-    env.PAPERCLIP_API_KEY = authToken;
+    env.SOFTCLIP_API_KEY = authToken;
   }
   const effectiveEnv = Object.fromEntries(
     Object.entries({ ...process.env, ...env }).filter(
@@ -304,7 +304,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   if (runtimeSessionId && !canResumeSession) {
     await onLog(
       "stdout",
-      `[paperclip] Cursor session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
+      `[softclip] Cursor session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
     );
   }
 
@@ -324,7 +324,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
       const reason = err instanceof Error ? err.message : String(err);
       await onLog(
         "stdout",
-        `[paperclip] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
+        `[softclip] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
       );
     }
   }
@@ -362,17 +362,17 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     !sessionId && bootstrapPromptTemplate.trim().length > 0
       ? renderTemplate(bootstrapPromptTemplate, templateData).trim()
       : "";
-  const wakePrompt = renderPaperclipWakePrompt(context.paperclipWake, { resumedSession: Boolean(sessionId) });
+  const wakePrompt = renderSoftclipWakePrompt(context.softclipWake, { resumedSession: Boolean(sessionId) });
   const shouldUseResumeDeltaPrompt = Boolean(sessionId) && wakePrompt.length > 0;
   const renderedPrompt = shouldUseResumeDeltaPrompt ? "" : renderTemplate(promptTemplate, templateData);
-  const sessionHandoffNote = asString(context.paperclipSessionHandoffMarkdown, "").trim();
-  const paperclipEnvNote = renderPaperclipEnvNote(env);
+  const sessionHandoffNote = asString(context.softclipSessionHandoffMarkdown, "").trim();
+  const softclipEnvNote = renderSoftclipEnvNote(env);
   const prompt = joinPromptSections([
     instructionsPrefix,
     renderedBootstrapPrompt,
     wakePrompt,
     sessionHandoffNote,
-    paperclipEnvNote,
+    softclipEnvNote,
     renderedPrompt,
   ]);
   const promptMetrics = {
@@ -381,7 +381,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     bootstrapPromptChars: renderedBootstrapPrompt.length,
     wakePromptChars: wakePrompt.length,
     sessionHandoffChars: sessionHandoffNote.length,
-    runtimeNoteChars: paperclipEnvNote.length,
+    runtimeNoteChars: softclipEnvNote.length,
     heartbeatPromptChars: renderedPrompt.length,
   };
 
@@ -535,7 +535,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   ) {
     await onLog(
       "stdout",
-      `[paperclip] Cursor resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
+      `[softclip] Cursor resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
     );
     const retry = await runAttempt(null);
     return toResult(retry, true);
