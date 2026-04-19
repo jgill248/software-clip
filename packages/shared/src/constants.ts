@@ -224,6 +224,7 @@ export const APPROVAL_TYPES = [
   "approve_pr",
   "approve_design",
   "approve_architecture",
+  "approve_plan",
   "budget_override_required",
   "request_board_approval",
 ] as const;
@@ -239,6 +240,26 @@ export const CODE_REVIEW_APPROVAL_TYPES = [
   "approve_architecture",
 ] as const;
 export type CodeReviewApprovalType = (typeof CODE_REVIEW_APPROVAL_TYPES)[number];
+
+/**
+ * Roles the proposed stories inside an `approve_plan` payload may declare.
+ * Matches the seeded dev-team personas under
+ * `server/src/onboarding-assets/<role>/`. Kept as a separate constant from
+ * AGENT_ROLES because plans speak in product-facing personas rather than
+ * the generic adapter-level role taxonomy.
+ */
+export const PLAN_STORY_ROLES = [
+  "product_owner",
+  "solution_architect",
+  "software_architect",
+  "data_architect",
+  "designer",
+  "engineer",
+  "qa",
+  "security",
+  "devops",
+] as const;
+export type PlanStoryRole = (typeof PLAN_STORY_ROLES)[number];
 
 export const APPROVAL_STATUSES = [
   "pending",

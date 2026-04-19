@@ -205,8 +205,13 @@ export {
   approvePrPayloadSchema,
   approveDesignPayloadSchema,
   approveArchitecturePayloadSchema,
+  approvePlanPayloadSchema,
+  planArchitectSectionSchema,
+  planProposedStorySchema,
   requestIssueReviewSchema,
+  requestIssuePlanSchema,
   reviewPayloadSchemaByType,
+  materializePlanSchema,
   type CreateApproval,
   type ResolveApproval,
   type RequestApprovalRevision,
@@ -215,7 +220,12 @@ export {
   type ApprovePrPayload,
   type ApproveDesignPayload,
   type ApproveArchitecturePayload,
+  type ApprovePlanPayload,
+  type PlanArchitectSection,
+  type PlanProposedStory,
   type RequestIssueReview,
+  type RequestIssuePlan,
+  type MaterializePlan,
 } from "./approval.js";
 
 export {

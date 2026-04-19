@@ -43,7 +43,12 @@ If something is degraded, file an issue with label
      the flow is probably too coupled.
   4. Enumerate failure modes. "What happens at 3am when the vendor
      is down?"
-  5. File the implementation subtask(s) with acceptance criteria.
+  5. **Contribute to the plan, don't file subtasks yet.** Fill the
+     `solutionArchitect` section on the parent's `approve_plan`
+     approval (resubmit when drafting, or open one via
+     `POST /api/issues/{parentId}/plans` if none exists). Stories
+     are created via `POST /api/approvals/{id}/materialize` after
+     the operator approves the full plan.
   6. Request `approve_architecture` from the PO if it's a new
      vendor or one-way door.
 

@@ -141,6 +141,23 @@ export function ReviewDetail() {
     onError: (err) => setError(err instanceof Error ? err.message : "Delete failed"),
   });
 
+  const materializeMutation = useMutation({
+    mutationFn: () => approvalsApi.materializePlan(approvalId!),
+    onSuccess: (result) => {
+      setError(null);
+      refresh();
+      if (result.createdIssueIds.length > 0 && !result.alreadyMaterialised) {
+        // Surface the created story count in the approved banner; the
+        // linked-issues pane will repopulate on refresh.
+        navigate(
+          `/reviews/${approvalId}?resolved=approved&materialized=${result.createdIssueIds.length}`,
+          { replace: true },
+        );
+      }
+    },
+    onError: (err) => setError(err instanceof Error ? err.message : "Materialize failed"),
+  });
+
   if (isLoading) return <PageSkeleton variant="detail" />;
   if (!approval) return <p className="text-sm text-muted-foreground">Review not found.</p>;
 
@@ -321,6 +338,18 @@ export function ReviewDetail() {
               Delete disapproved agent
             </Button>
           )}
+          {approval.status === "approved" &&
+            approval.type === "approve_plan" &&
+            // Only show "Materialize" until a child has been linked.
+            (linkedIssues?.length ?? 0) <= 1 && (
+              <Button
+                size="sm"
+                onClick={() => materializeMutation.mutate()}
+                disabled={materializeMutation.isPending}
+              >
+                {materializeMutation.isPending ? "Creating stories…" : "Materialize stories"}
+              </Button>
+            )}
         </div>
       </div>
 
