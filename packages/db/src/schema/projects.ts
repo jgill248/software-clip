@@ -8,7 +8,7 @@ export const projects = pgTable(
   "projects",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => companies.id),
     goalId: uuid("goal_id").references(() => goals.id),
     name: text("name").notNull(),
     description: text("description"),
@@ -25,6 +25,6 @@ export const projects = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyIdx: index("projects_company_idx").on(table.companyId),
+    companyIdx: index("projects_product_idx").on(table.companyId),
   }),
 );

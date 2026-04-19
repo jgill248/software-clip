@@ -7,7 +7,7 @@ export const agentTaskSessions = pgTable(
   "agent_task_sessions",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => companies.id),
     agentId: uuid("agent_id").notNull().references(() => agents.id),
     adapterType: text("adapter_type").notNull(),
     taskKey: text("task_key").notNull(),
@@ -19,18 +19,18 @@ export const agentTaskSessions = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyAgentTaskUniqueIdx: uniqueIndex("agent_task_sessions_company_agent_adapter_task_uniq").on(
+    companyAgentTaskUniqueIdx: uniqueIndex("agent_task_sessions_product_agent_adapter_task_uniq").on(
       table.companyId,
       table.agentId,
       table.adapterType,
       table.taskKey,
     ),
-    companyAgentUpdatedIdx: index("agent_task_sessions_company_agent_updated_idx").on(
+    companyAgentUpdatedIdx: index("agent_task_sessions_product_agent_updated_idx").on(
       table.companyId,
       table.agentId,
       table.updatedAt,
     ),
-    companyTaskUpdatedIdx: index("agent_task_sessions_company_task_updated_idx").on(
+    companyTaskUpdatedIdx: index("agent_task_sessions_product_task_updated_idx").on(
       table.companyId,
       table.taskKey,
       table.updatedAt,

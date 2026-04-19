@@ -6,7 +6,7 @@ export const agentWakeupRequests = pgTable(
   "agent_wakeup_requests",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => companies.id),
     agentId: uuid("agent_id").notNull().references(() => agents.id),
     source: text("source").notNull(),
     triggerDetail: text("trigger_detail"),
@@ -26,12 +26,12 @@ export const agentWakeupRequests = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyAgentStatusIdx: index("agent_wakeup_requests_company_agent_status_idx").on(
+    companyAgentStatusIdx: index("agent_wakeup_requests_product_agent_status_idx").on(
       table.companyId,
       table.agentId,
       table.status,
     ),
-    companyRequestedIdx: index("agent_wakeup_requests_company_requested_idx").on(
+    companyRequestedIdx: index("agent_wakeup_requests_product_requested_idx").on(
       table.companyId,
       table.requestedAt,
     ),

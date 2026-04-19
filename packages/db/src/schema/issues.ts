@@ -24,7 +24,7 @@ export const issues = pgTable(
   "issues",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => companies.id),
     projectId: uuid("project_id").references(() => projects.id),
     projectWorkspaceId: uuid("project_workspace_id").references(() => projectWorkspaces.id, { onDelete: "set null" }),
     goalId: uuid("goal_id").references(() => goals.id),
@@ -66,23 +66,23 @@ export const issues = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyStatusIdx: index("issues_company_status_idx").on(table.companyId, table.status),
-    assigneeStatusIdx: index("issues_company_assignee_status_idx").on(
+    companyStatusIdx: index("issues_product_status_idx").on(table.companyId, table.status),
+    assigneeStatusIdx: index("issues_product_assignee_status_idx").on(
       table.companyId,
       table.assigneeAgentId,
       table.status,
     ),
-    assigneeUserStatusIdx: index("issues_company_assignee_user_status_idx").on(
+    assigneeUserStatusIdx: index("issues_product_assignee_user_status_idx").on(
       table.companyId,
       table.assigneeUserId,
       table.status,
     ),
-    parentIdx: index("issues_company_parent_idx").on(table.companyId, table.parentId),
-    projectIdx: index("issues_company_project_idx").on(table.companyId, table.projectId),
-    originIdx: index("issues_company_origin_idx").on(table.companyId, table.originKind, table.originId),
-    projectWorkspaceIdx: index("issues_company_project_workspace_idx").on(table.companyId, table.projectWorkspaceId),
-    executionWorkspaceIdx: index("issues_company_execution_workspace_idx").on(table.companyId, table.executionWorkspaceId),
-    sprintIdx: index("issues_company_sprint_idx").on(table.companyId, table.sprintId),
+    parentIdx: index("issues_product_parent_idx").on(table.companyId, table.parentId),
+    projectIdx: index("issues_product_project_idx").on(table.companyId, table.projectId),
+    originIdx: index("issues_product_origin_idx").on(table.companyId, table.originKind, table.originId),
+    projectWorkspaceIdx: index("issues_product_project_workspace_idx").on(table.companyId, table.projectWorkspaceId),
+    executionWorkspaceIdx: index("issues_product_execution_workspace_idx").on(table.companyId, table.executionWorkspaceId),
+    sprintIdx: index("issues_product_sprint_idx").on(table.companyId, table.sprintId),
     identifierIdx: uniqueIndex("issues_identifier_idx").on(table.identifier),
     titleSearchIdx: index("issues_title_search_idx").using("gin", table.title.op("gin_trgm_ops")),
     identifierSearchIdx: index("issues_identifier_search_idx").using("gin", table.identifier.op("gin_trgm_ops")),

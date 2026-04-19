@@ -9,7 +9,7 @@ export const joinRequests = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     inviteId: uuid("invite_id").notNull().references(() => invites.id),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => companies.id),
     requestType: text("request_type").notNull(),
     status: text("status").notNull().default("pending_approval"),
     requestIp: text("request_ip").notNull(),
@@ -32,7 +32,7 @@ export const joinRequests = pgTable(
   },
   (table) => ({
     inviteUniqueIdx: uniqueIndex("join_requests_invite_unique_idx").on(table.inviteId),
-    companyStatusTypeCreatedIdx: index("join_requests_company_status_type_created_idx").on(
+    companyStatusTypeCreatedIdx: index("join_requests_product_status_type_created_idx").on(
       table.companyId,
       table.status,
       table.requestType,

@@ -16,7 +16,7 @@ export const executionWorkspaces = pgTable(
   "execution_workspaces",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => companies.id),
     projectId: uuid("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
     projectWorkspaceId: uuid("project_workspace_id").references(() => projectWorkspaces.id, { onDelete: "set null" }),
     sourceIssueId: uuid("source_issue_id").references((): AnyPgColumn => issues.id, { onDelete: "set null" }),
@@ -42,25 +42,25 @@ export const executionWorkspaces = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyProjectStatusIdx: index("execution_workspaces_company_project_status_idx").on(
+    companyProjectStatusIdx: index("execution_workspaces_product_project_status_idx").on(
       table.companyId,
       table.projectId,
       table.status,
     ),
-    companyProjectWorkspaceStatusIdx: index("execution_workspaces_company_project_workspace_status_idx").on(
+    companyProjectWorkspaceStatusIdx: index("execution_workspaces_product_project_workspace_status_idx").on(
       table.companyId,
       table.projectWorkspaceId,
       table.status,
     ),
-    companySourceIssueIdx: index("execution_workspaces_company_source_issue_idx").on(
+    companySourceIssueIdx: index("execution_workspaces_product_source_issue_idx").on(
       table.companyId,
       table.sourceIssueId,
     ),
-    companyLastUsedIdx: index("execution_workspaces_company_last_used_idx").on(
+    companyLastUsedIdx: index("execution_workspaces_product_last_used_idx").on(
       table.companyId,
       table.lastUsedAt,
     ),
-    companyBranchIdx: index("execution_workspaces_company_branch_idx").on(
+    companyBranchIdx: index("execution_workspaces_product_branch_idx").on(
       table.companyId,
       table.branchName,
     ),

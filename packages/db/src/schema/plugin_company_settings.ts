@@ -18,7 +18,7 @@ export const pluginCompanySettings = pgTable(
   "plugin_company_settings",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id")
+    companyId: uuid("product_id")
       .notNull()
       .references(() => companies.id, { onDelete: "cascade" }),
     pluginId: uuid("plugin_id")
@@ -31,9 +31,9 @@ export const pluginCompanySettings = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyIdx: index("plugin_company_settings_company_idx").on(table.companyId),
+    companyIdx: index("plugin_company_settings_product_idx").on(table.companyId),
     pluginIdx: index("plugin_company_settings_plugin_idx").on(table.pluginId),
-    companyPluginUq: uniqueIndex("plugin_company_settings_company_plugin_uq").on(
+    companyPluginUq: uniqueIndex("plugin_company_settings_product_plugin_uq").on(
       table.companyId,
       table.pluginId,
     ),

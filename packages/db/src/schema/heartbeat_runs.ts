@@ -7,7 +7,7 @@ export const heartbeatRuns = pgTable(
   "heartbeat_runs",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => companies.id),
     agentId: uuid("agent_id").notNull().references(() => agents.id),
     invocationSource: text("invocation_source").notNull().default("on_demand"),
     triggerDetail: text("trigger_detail"),
@@ -46,7 +46,7 @@ export const heartbeatRuns = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyAgentStartedIdx: index("heartbeat_runs_company_agent_started_idx").on(
+    companyAgentStartedIdx: index("heartbeat_runs_product_agent_started_idx").on(
       table.companyId,
       table.agentId,
       table.startedAt,

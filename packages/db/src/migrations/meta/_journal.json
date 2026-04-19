@@ -449,6 +449,13 @@
       "when": 1776988800000,
       "tag": "0063_rename_companies_to_products",
       "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1777075200000,
+      "tag": "0064_rename_company_id_columns_and_indexes",
+      "breakpoints": true
     }
   ]
 }

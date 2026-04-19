@@ -6,7 +6,7 @@ export const issueInboxArchives = pgTable(
   "issue_inbox_archives",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => companies.id),
     issueId: uuid("issue_id").notNull().references(() => issues.id),
     userId: text("user_id").notNull(),
     archivedAt: timestamp("archived_at", { withTimezone: true }).notNull().defaultNow(),
@@ -14,9 +14,9 @@ export const issueInboxArchives = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyIssueIdx: index("issue_inbox_archives_company_issue_idx").on(table.companyId, table.issueId),
-    companyUserIdx: index("issue_inbox_archives_company_user_idx").on(table.companyId, table.userId),
-    companyIssueUserUnique: uniqueIndex("issue_inbox_archives_company_issue_user_idx").on(
+    companyIssueIdx: index("issue_inbox_archives_product_issue_idx").on(table.companyId, table.issueId),
+    companyUserIdx: index("issue_inbox_archives_product_user_idx").on(table.companyId, table.userId),
+    companyIssueUserUnique: uniqueIndex("issue_inbox_archives_product_issue_user_idx").on(
       table.companyId,
       table.issueId,
       table.userId,

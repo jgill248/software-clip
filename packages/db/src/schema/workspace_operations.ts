@@ -17,7 +17,7 @@ export const workspaceOperations = pgTable(
   "workspace_operations",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => companies.id),
     executionWorkspaceId: uuid("execution_workspace_id").references(() => executionWorkspaces.id, {
       onDelete: "set null",
     }),
@@ -43,12 +43,12 @@ export const workspaceOperations = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyRunStartedIdx: index("workspace_operations_company_run_started_idx").on(
+    companyRunStartedIdx: index("workspace_operations_product_run_started_idx").on(
       table.companyId,
       table.heartbeatRunId,
       table.startedAt,
     ),
-    companyWorkspaceStartedIdx: index("workspace_operations_company_workspace_started_idx").on(
+    companyWorkspaceStartedIdx: index("workspace_operations_product_workspace_started_idx").on(
       table.companyId,
       table.executionWorkspaceId,
       table.startedAt,

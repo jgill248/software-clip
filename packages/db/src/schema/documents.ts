@@ -6,7 +6,7 @@ export const documents = pgTable(
   "documents",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => companies.id),
     title: text("title"),
     format: text("format").notNull().default("markdown"),
     latestBody: text("latest_body").notNull(),
@@ -20,7 +20,7 @@ export const documents = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyUpdatedIdx: index("documents_company_updated_idx").on(table.companyId, table.updatedAt),
-    companyCreatedIdx: index("documents_company_created_idx").on(table.companyId, table.createdAt),
+    companyUpdatedIdx: index("documents_product_updated_idx").on(table.companyId, table.updatedAt),
+    companyCreatedIdx: index("documents_product_created_idx").on(table.companyId, table.createdAt),
   }),
 );

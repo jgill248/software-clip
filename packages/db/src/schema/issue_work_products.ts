@@ -18,7 +18,7 @@ export const issueWorkProducts = pgTable(
   "issue_work_products",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => companies.id),
     projectId: uuid("project_id").references(() => projects.id, { onDelete: "set null" }),
     issueId: uuid("issue_id").notNull().references(() => issues.id, { onDelete: "cascade" }),
     executionWorkspaceId: uuid("execution_workspace_id")
@@ -41,22 +41,22 @@ export const issueWorkProducts = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyIssueTypeIdx: index("issue_work_products_company_issue_type_idx").on(
+    companyIssueTypeIdx: index("issue_work_products_product_issue_type_idx").on(
       table.companyId,
       table.issueId,
       table.type,
     ),
-    companyExecutionWorkspaceTypeIdx: index("issue_work_products_company_execution_workspace_type_idx").on(
+    companyExecutionWorkspaceTypeIdx: index("issue_work_products_product_execution_workspace_type_idx").on(
       table.companyId,
       table.executionWorkspaceId,
       table.type,
     ),
-    companyProviderExternalIdIdx: index("issue_work_products_company_provider_external_id_idx").on(
+    companyProviderExternalIdIdx: index("issue_work_products_product_provider_external_id_idx").on(
       table.companyId,
       table.provider,
       table.externalId,
     ),
-    companyUpdatedIdx: index("issue_work_products_company_updated_idx").on(
+    companyUpdatedIdx: index("issue_work_products_product_updated_idx").on(
       table.companyId,
       table.updatedAt,
     ),

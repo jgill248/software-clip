@@ -14,7 +14,7 @@ export const agents = pgTable(
   "agents",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").notNull().references(() => companies.id),
+    companyId: uuid("product_id").notNull().references(() => companies.id),
     name: text("name").notNull(),
     role: text("role").notNull().default("general"),
     title: text("title"),
@@ -36,7 +36,7 @@ export const agents = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyStatusIdx: index("agents_company_status_idx").on(table.companyId, table.status),
-    companyReportsToIdx: index("agents_company_reports_to_idx").on(table.companyId, table.reportsTo),
+    companyStatusIdx: index("agents_product_status_idx").on(table.companyId, table.status),
+    companyReportsToIdx: index("agents_product_reports_to_idx").on(table.companyId, table.reportsTo),
   }),
 );

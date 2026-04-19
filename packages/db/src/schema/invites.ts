@@ -5,7 +5,7 @@ export const invites = pgTable(
   "invites",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("company_id").references(() => companies.id),
+    companyId: uuid("product_id").references(() => companies.id),
     inviteType: text("invite_type").notNull().default("company_join"),
     tokenHash: text("token_hash").notNull(),
     allowedJoinTypes: text("allowed_join_types").notNull().default("both"),
@@ -19,7 +19,7 @@ export const invites = pgTable(
   },
   (table) => ({
     tokenHashUniqueIdx: uniqueIndex("invites_token_hash_unique_idx").on(table.tokenHash),
-    companyInviteStateIdx: index("invites_company_invite_state_idx").on(
+    companyInviteStateIdx: index("invites_product_invite_state_idx").on(
       table.companyId,
       table.inviteType,
       table.revokedAt,
