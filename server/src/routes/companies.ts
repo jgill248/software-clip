@@ -13,11 +13,17 @@ import { badRequest, forbidden } from "../errors.js";
 import { validate } from "../middleware/validate.js";
 import {
   accessService,
+  agentInstructionsService,
+  agentService,
   ceremonyService,
   companyService,
   feedbackService,
   logActivity,
 } from "../services/index.js";
+import {
+  loadDefaultAgentInstructionsBundle,
+  resolveDefaultAgentInstructionsBundleRole,
+} from "../services/default-agent-instructions.js";
 import type { StorageService } from "../storage/types.js";
 import { assertBoard, assertCompanyAccess, getActorInfo } from "./authz.js";
 
@@ -27,6 +33,8 @@ export function companyRoutes(db: Db, _storage?: StorageService) {
   const access = accessService(db);
   const feedback = feedbackService(db);
   const ceremonies = ceremonyService(db);
+  const agents = agentService(db);
+  const instructions = agentInstructionsService();
 
   function parseBooleanQuery(value: unknown) {
     return value === true || value === "true" || value === "1";
@@ -134,12 +142,39 @@ export function companyRoutes(db: Db, _storage?: StorageService) {
       details: { name: company.name },
     });
 
-    // Softclip pivot §10: every new product lands with the five default
-    // dev-team ceremonies (standup, planning, review, retro, grooming)
-    // already in the list. They seed as drafts with no assignee; the PO
-    // activates them once they're hired. Seeding is best-effort — if the
-    // ceremony service fails, the product is still usable and the user
-    // can re-run via POST /companies/:id/ceremonies/seed.
+    // Softclip pivot §10: every new product lands with a Product Owner
+    // already hired and the five default ceremonies assigned to them.
+    // The PO is the root agent (reportsTo: null) and ships with the full
+    // product-owner instruction bundle. If either step fails, log and
+    // move on — the product is still usable; the user can hire the PO
+    // and seed ceremonies manually.
+    let productOwnerAgentId: string | null = null;
+    try {
+      const productOwner = await agents.create(company.id, {
+        name: "Product Owner",
+        role: "product-owner",
+        title: "Product Owner",
+        reportsTo: null,
+        adapterType: "process",
+        adapterConfig: {},
+      });
+      productOwnerAgentId = productOwner.id;
+
+      const bundleFiles = await loadDefaultAgentInstructionsBundle(
+        resolveDefaultAgentInstructionsBundleRole("product-owner"),
+      );
+      await instructions.materializeManagedBundle(
+        productOwner,
+        bundleFiles,
+        { entryFile: "AGENTS.md", replaceExisting: false },
+      );
+    } catch (err) {
+      console.error("[softclip] product-owner seed failed on product create", {
+        companyId: company.id,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+
     try {
       await ceremonies.seedDefaults(
         company.id,
@@ -147,6 +182,7 @@ export function companyRoutes(db: Db, _storage?: StorageService) {
           agentId: null,
           userId: req.actor.userId ?? null,
         },
+        productOwnerAgentId ? { assigneeAgentId: productOwnerAgentId } : undefined,
       );
     } catch (err) {
       console.error("[softclip] ceremony seed failed on product create", {
