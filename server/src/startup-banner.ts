@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolvePaperclipConfigPath, resolvePaperclipEnvPath } from "./paths.js";
-import type { BindMode, DeploymentExposure, DeploymentMode } from "@paperclipai/shared";
+import { resolveSoftclipEnv, type BindMode, type DeploymentExposure, type DeploymentMode } from "@paperclipai/shared";
 
 import { parse as parseEnvFileContents } from "dotenv";
 
@@ -72,7 +72,7 @@ function resolveAgentJwtSecretStatus(
   status: "pass" | "warn";
   message: string;
 } {
-  const envValue = process.env.PAPERCLIP_AGENT_JWT_SECRET?.trim();
+  const envValue = resolveSoftclipEnv("AGENT_JWT_SECRET")?.value.trim();
   if (envValue) {
     return {
       status: "pass",
@@ -82,7 +82,15 @@ function resolveAgentJwtSecretStatus(
 
   if (existsSync(envFilePath)) {
     const parsed = parseEnvFileContents(readFileSync(envFilePath, "utf-8"));
-    const fileValue = typeof parsed.PAPERCLIP_AGENT_JWT_SECRET === "string" ? parsed.PAPERCLIP_AGENT_JWT_SECRET.trim() : "";
+    const fileSoftclip =
+      typeof parsed.SOFTCLIP_AGENT_JWT_SECRET === "string"
+        ? parsed.SOFTCLIP_AGENT_JWT_SECRET.trim()
+        : "";
+    const filePaperclip =
+      typeof parsed.PAPERCLIP_AGENT_JWT_SECRET === "string"
+        ? parsed.PAPERCLIP_AGENT_JWT_SECRET.trim()
+        : "";
+    const fileValue = fileSoftclip || filePaperclip;
     if (fileValue) {
       return {
         status: "warn",

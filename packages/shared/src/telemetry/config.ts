@@ -1,3 +1,4 @@
+import { resolveSoftclipEnv } from "../env/resolveSoftclipEnv.js";
 import type { TelemetryConfig } from "./types.js";
 
 const CI_ENV_VARS = ["CI", "CONTINUOUS_INTEGRATION", "BUILD_NUMBER", "GITHUB_ACTIONS", "GITLAB_CI"];
@@ -7,7 +8,7 @@ function isCI(): boolean {
 }
 
 export function resolveTelemetryConfig(fileConfig?: { enabled?: boolean }): TelemetryConfig {
-  if (process.env.PAPERCLIP_TELEMETRY_DISABLED === "1") {
+  if (resolveSoftclipEnv("TELEMETRY_DISABLED")?.value === "1") {
     return { enabled: false };
   }
   if (process.env.DO_NOT_TRACK === "1") {
@@ -20,6 +21,6 @@ export function resolveTelemetryConfig(fileConfig?: { enabled?: boolean }): Tele
     return { enabled: false };
   }
 
-  const endpoint = process.env.PAPERCLIP_TELEMETRY_ENDPOINT || undefined;
+  const endpoint = resolveSoftclipEnv("TELEMETRY_ENDPOINT")?.value || undefined;
   return { enabled: true, endpoint };
 }

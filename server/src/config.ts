@@ -20,6 +20,7 @@ import {
   type StorageProvider,
   inferBindModeFromHost,
   resolveRuntimeBind,
+  resolveSoftclipEnv,
   validateConfiguredBindMode,
 } from "@paperclipai/shared";
 import {
@@ -125,7 +126,7 @@ export function loadConfig(): Config {
       ? strictModeFromEnv === "true"
       : (fileSecrets?.strictMode ?? false);
 
-  const providerFromEnvRaw = process.env.PAPERCLIP_SECRETS_PROVIDER;
+  const providerFromEnvRaw = resolveSoftclipEnv("SECRETS_PROVIDER")?.value;
   const providerFromEnv =
     providerFromEnvRaw && SECRET_PROVIDERS.includes(providerFromEnvRaw as SecretProvider)
       ? (providerFromEnvRaw as SecretProvider)
@@ -133,7 +134,7 @@ export function loadConfig(): Config {
   const providerFromFile = fileSecrets?.provider;
   const secretsProvider: SecretProvider = providerFromEnv ?? providerFromFile ?? "local_encrypted";
 
-  const storageProviderFromEnvRaw = process.env.PAPERCLIP_STORAGE_PROVIDER;
+  const storageProviderFromEnvRaw = resolveSoftclipEnv("STORAGE_PROVIDER")?.value;
   const storageProviderFromEnv =
     storageProviderFromEnvRaw && STORAGE_PROVIDERS.includes(storageProviderFromEnvRaw as StorageProvider)
       ? (storageProviderFromEnvRaw as StorageProvider)
@@ -161,13 +162,13 @@ export function loadConfig(): Config {
     process.env.PAPERCLIP_TELEMETRY_BACKEND_TOKEN?.trim() ||
     undefined;
 
-  const deploymentModeFromEnvRaw = process.env.PAPERCLIP_DEPLOYMENT_MODE;
+  const deploymentModeFromEnvRaw = resolveSoftclipEnv("DEPLOYMENT_MODE")?.value;
   const deploymentModeFromEnv =
     deploymentModeFromEnvRaw && DEPLOYMENT_MODES.includes(deploymentModeFromEnvRaw as DeploymentMode)
       ? (deploymentModeFromEnvRaw as DeploymentMode)
       : null;
   const deploymentMode: DeploymentMode = deploymentModeFromEnv ?? fileConfig?.server.deploymentMode ?? "local_trusted";
-  const deploymentExposureFromEnvRaw = process.env.PAPERCLIP_DEPLOYMENT_EXPOSURE;
+  const deploymentExposureFromEnvRaw = resolveSoftclipEnv("DEPLOYMENT_EXPOSURE")?.value;
   const deploymentExposureFromEnv =
     deploymentExposureFromEnvRaw &&
     DEPLOYMENT_EXPOSURES.includes(deploymentExposureFromEnvRaw as DeploymentExposure)
@@ -195,7 +196,7 @@ export function loadConfig(): Config {
     AUTH_BASE_URL_MODES.includes(authBaseUrlModeFromEnvRaw as AuthBaseUrlMode)
       ? (authBaseUrlModeFromEnvRaw as AuthBaseUrlMode)
       : null;
-  const publicUrlFromEnv = process.env.PAPERCLIP_PUBLIC_URL;
+  const publicUrlFromEnv = resolveSoftclipEnv("PUBLIC_URL")?.value;
   const authPublicBaseUrlRaw =
     process.env.PAPERCLIP_AUTH_PUBLIC_BASE_URL ??
     process.env.BETTER_AUTH_URL ??
@@ -207,12 +208,12 @@ export function loadConfig(): Config {
     authBaseUrlModeFromEnv ??
     fileConfig?.auth?.baseUrlMode ??
     (authPublicBaseUrl ? "explicit" : "auto");
-  const disableSignUpFromEnv = process.env.PAPERCLIP_AUTH_DISABLE_SIGN_UP;
+  const disableSignUpFromEnv = resolveSoftclipEnv("AUTH_DISABLE_SIGN_UP")?.value;
   const authDisableSignUp: boolean =
     disableSignUpFromEnv !== undefined
       ? disableSignUpFromEnv === "true"
       : (fileConfig?.auth?.disableSignUp ?? false);
-  const allowedHostnamesFromEnvRaw = process.env.PAPERCLIP_ALLOWED_HOSTNAMES;
+  const allowedHostnamesFromEnvRaw = resolveSoftclipEnv("ALLOWED_HOSTNAMES")?.value;
   const allowedHostnamesFromEnv = allowedHostnamesFromEnvRaw
     ? allowedHostnamesFromEnvRaw
       .split(",")
@@ -243,9 +244,10 @@ export function loadConfig(): Config {
     companyDeletionEnvRaw !== undefined
       ? companyDeletionEnvRaw === "true"
       : deploymentMode === "local_trusted";
+  const dbBackupEnabledFromEnv = resolveSoftclipEnv("DB_BACKUP_ENABLED")?.value;
   const databaseBackupEnabled =
-    process.env.PAPERCLIP_DB_BACKUP_ENABLED !== undefined
-      ? process.env.PAPERCLIP_DB_BACKUP_ENABLED === "true"
+    dbBackupEnabledFromEnv !== undefined
+      ? dbBackupEnabledFromEnv === "true"
       : (fileDatabaseBackup?.enabled ?? true);
   const databaseBackupIntervalMinutes = Math.max(
     1,

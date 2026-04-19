@@ -245,7 +245,8 @@ export function EnvVarEditor({
       })}
       {sealError && <p className="text-[11px] text-destructive">{sealError}</p>}
       <p className="text-[11px] text-muted-foreground/60">
-        PAPERCLIP_* variables are injected automatically at runtime.
+        SOFTCLIP_* variables are injected automatically at runtime
+        (legacy PAPERCLIP_* names are still honored during the rename).
       </p>
     </div>
   );

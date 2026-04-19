@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { resolveSoftclipEnv } from "@paperclipai/shared";
 
 interface JwtHeader {
   alg: string;
@@ -26,7 +27,9 @@ function parseNumber(value: string | undefined, fallback: number) {
 }
 
 function jwtConfig() {
-  const secret = process.env.PAPERCLIP_AGENT_JWT_SECRET?.trim() || process.env.BETTER_AUTH_SECRET?.trim();
+  const secret =
+    resolveSoftclipEnv("AGENT_JWT_SECRET")?.value.trim() ||
+    process.env.BETTER_AUTH_SECRET?.trim();
   if (!secret) return null;
 
   return {
