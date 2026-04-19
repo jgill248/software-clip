@@ -1,12 +1,12 @@
 ---
 title: Team-shared PostgreSQL
-summary: Point Paperclip at a Postgres instance your whole team uses
+summary: Point Softclip at a Postgres instance your whole team uses
 ---
 
-By default, Paperclip runs an embedded PostgreSQL on your laptop — great
+By default, Softclip runs an embedded PostgreSQL on your laptop — great
 for solo use, useless for coordinating with teammates. If your dev team
 already has a shared Postgres (a local Docker instance, a managed cloud
-Postgres, or a server on your network), you can point Paperclip at it
+Postgres, or a server on your network), you can point Softclip at it
 so every teammate's CLI sees the same products, sprints, issues, and
 agents.
 
@@ -21,7 +21,7 @@ agents.
 ## One-step connect
 
 ```bash
-paperclipai db connect
+softclip db connect
 ```
 
 You'll be prompted for either a full connection string or the parts
@@ -31,7 +31,7 @@ You'll be prompted for either a full connection string or the parts
 2. Verifies the connected user has `CREATE` privilege.
 3. Warns if the target database already has tables (in case you picked
    the wrong database).
-4. Writes the URL into your Paperclip config.
+4. Writes the URL into your Softclip config.
 5. Offers to run migrations immediately.
 
 ### Non-interactive
@@ -39,7 +39,7 @@ You'll be prompted for either a full connection string or the parts
 For scripts and CI:
 
 ```bash
-paperclipai db connect \
+softclip db connect \
   --url 'postgres://softclip:secret@db.team.internal:5432/softclip' \
   --yes
 ```
@@ -47,7 +47,7 @@ paperclipai db connect \
 or with explicit parts:
 
 ```bash
-paperclipai db connect \
+softclip db connect \
   --host db.team.internal \
   --port 5432 \
   --database softclip \
@@ -65,7 +65,7 @@ band.
 After connecting, run:
 
 ```bash
-paperclipai db doctor
+softclip db doctor
 ```
 
 You'll see:
@@ -91,7 +91,7 @@ Rows
 - the configured user lacks `CREATE` privilege (exit code `1`),
 - the connection fails (exit code `2`).
 
-That makes it safe to gate a CI job on `paperclipai db doctor --json`.
+That makes it safe to gate a CI job on `softclip db doctor --json`.
 
 ## What to share across your team
 
@@ -99,7 +99,7 @@ Everyone on the team needs:
 
 - The same **connection string** (or the same host + credentials for their
   own role).
-- The same Paperclip version — different versions may expect different
+- The same Softclip version — different versions may expect different
   migrations.
 
 Everyone keeps **separate local config** otherwise (their own instance
@@ -118,7 +118,7 @@ docker run --name softclip-pg \
   -p 5432:5432 \
   -d postgres:16
 
-paperclipai db connect \
+softclip db connect \
   --url 'postgres://softclip:softclip@localhost:5432/softclip' \
   --yes
 ```
@@ -131,7 +131,7 @@ If you want to revert to the built-in embedded Postgres, run the
 configuration wizard and pick `embedded-postgres` mode:
 
 ```bash
-paperclipai configure --section database
+softclip configure --section database
 ```
 
 ## Troubleshooting
@@ -144,7 +144,7 @@ paperclipai configure --section database
   privileges Drizzle migrations need. Grant `CREATE` on the database or
   use the database owner.
 - **`db doctor` reports `needs migrations`** — run `pnpm db:migrate`
-  (development) or `paperclipai db connect --yes` (re-runs the migrator).
+  (development) or `softclip db connect --yes` (re-runs the migrator).
 - **Two teammates see different data** — double-check both point at the
-  same `connectionString`; run `paperclipai db doctor` on each to
+  same `connectionString`; run `softclip db doctor` on each to
   compare the `source` line.

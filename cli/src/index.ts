@@ -26,14 +26,22 @@ import { registerWorktreeCommands } from "./commands/worktree.js";
 import { registerPluginCommands } from "./commands/client/plugin.js";
 import { registerClientAuthCommands } from "./commands/client/auth.js";
 import { cliVersion } from "./version.js";
+import path from "node:path";
 
 const program = new Command();
 const DATA_DIR_OPTION_HELP =
-  "Paperclip data directory root (isolates state from ~/.paperclip)";
+  "Softclip data directory root (isolates state from ~/.paperclip)";
+
+const invokedAs = (() => {
+  const argv1 = process.argv[1];
+  if (!argv1) return "softclip";
+  const base = path.basename(argv1);
+  return base === "paperclipai" ? "paperclipai" : "softclip";
+})();
 
 program
-  .name("paperclipai")
-  .description("Paperclip CLI — setup, diagnose, and configure your instance")
+  .name(invokedAs)
+  .description("Softclip CLI — setup, diagnose, and configure your instance")
   .version(cliVersion);
 
 program.hook("preAction", (_thisCommand, actionCommand) => {
