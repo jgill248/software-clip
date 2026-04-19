@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "@/lib/router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { approvalsApi } from "../api/approvals";
+import { approvalsApi } from "../api/reviews";
 import { agentsApi } from "../api/agents";
 import { useCompany } from "../context/CompanyContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { queryKeys } from "../lib/queryKeys";
 import { StatusBadge } from "../components/StatusBadge";
 import { Identity } from "../components/Identity";
-import { approvalLabel, typeIcon, defaultTypeIcon, ApprovalPayloadRenderer } from "../components/ApprovalPayload";
+import { approvalLabel, typeIcon, defaultTypeIcon, ApprovalPayloadRenderer } from "../components/ReviewPayload";
 import { PageSkeleton } from "../components/PageSkeleton";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,7 +16,7 @@ import { CheckCircle2, ChevronRight, Sparkles } from "lucide-react";
 import type { ApprovalComment } from "@paperclipai/shared";
 import { MarkdownBody } from "../components/MarkdownBody";
 
-export function ApprovalDetail() {
+export function ReviewDetail() {
   const { approvalId } = useParams<{ approvalId: string }>();
   const { selectedCompanyId, setSelectedCompanyId } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
@@ -65,8 +65,8 @@ export function ApprovalDetail() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: "Approvals", href: "/approvals" },
-      { label: approval?.id?.slice(0, 8) ?? approvalId ?? "Approval" },
+      { label: "Reviews", href: "/reviews" },
+      { label: approval?.id?.slice(0, 8) ?? approvalId ?? "Review" },
     ]);
   }, [setBreadcrumbs, approval, approvalId]);
 
@@ -89,7 +89,7 @@ export function ApprovalDetail() {
     onSuccess: () => {
       setError(null);
       refresh();
-      navigate(`/approvals/${approvalId}?resolved=approved`, { replace: true });
+      navigate(`/reviews/${approvalId}?resolved=approved`, { replace: true });
     },
     onError: (err) => setError(err instanceof Error ? err.message : "Approve failed"),
   });
@@ -136,13 +136,13 @@ export function ApprovalDetail() {
     onSuccess: () => {
       setError(null);
       refresh();
-      navigate("/approvals");
+      navigate("/reviews");
     },
     onError: (err) => setError(err instanceof Error ? err.message : "Delete failed"),
   });
 
   if (isLoading) return <PageSkeleton variant="detail" />;
-  if (!approval) return <p className="text-sm text-muted-foreground">Approval not found.</p>;
+  if (!approval) return <p className="text-sm text-muted-foreground">Review not found.</p>;
 
   const payload = approval.payload as Record<string, unknown>;
   const linkedAgentId = typeof payload.agentId === "string" ? payload.agentId : null;
@@ -169,7 +169,7 @@ export function ApprovalDetail() {
           }
         : {
             label: "Back to approvals",
-            to: "/approvals",
+            to: "/reviews",
           };
 
   return (
@@ -183,7 +183,7 @@ export function ApprovalDetail() {
                 <Sparkles className="h-3 w-3 text-green-500 dark:text-green-200 absolute -right-2 -top-1 animate-pulse" />
               </div>
               <div>
-                <p className="text-sm text-green-800 dark:text-green-100 font-medium">Approval confirmed</p>
+                <p className="text-sm text-green-800 dark:text-green-100 font-medium">Review confirmed</p>
                 <p className="text-xs text-green-700 dark:text-green-200/90">
                   Requesting agent was notified to review this approval and linked issues.
                 </p>

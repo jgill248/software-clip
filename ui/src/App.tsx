@@ -19,8 +19,8 @@ import { RoadmapItems } from "./pages/RoadmapItems";
 import { RoadmapItemDetail } from "./pages/RoadmapItemDetail";
 import { Sprints } from "./pages/Sprints";
 import { SprintDetail } from "./pages/SprintDetail";
-import { Approvals } from "./pages/Approvals";
-import { ApprovalDetail } from "./pages/ApprovalDetail";
+import { Reviews } from "./pages/Reviews";
+import { ReviewDetail } from "./pages/ReviewDetail";
 import { Activity } from "./pages/Activity";
 import { Inbox } from "./pages/Inbox";
 import { CompanySettings } from "./pages/CompanySettings";
@@ -63,6 +63,11 @@ function RoadmapItemRedirect() {
 function RoutineToCeremonyRedirect() {
   const { routineId } = useParams<{ routineId: string }>();
   return <Navigate to={`../ceremonies/${routineId ?? ""}`} replace />;
+}
+
+function ApprovalToReviewRedirect() {
+  const { approvalId } = useParams<{ approvalId: string }>();
+  return <Navigate to={`../reviews/${approvalId ?? ""}`} replace />;
 }
 
 function boardRoutes() {
@@ -120,10 +125,14 @@ function boardRoutes() {
       <Route path="goals/:goalId" element={<RoadmapItemRedirect />} />
       <Route path="sprints" element={<Sprints />} />
       <Route path="sprints/:sprintId" element={<SprintDetail />} />
-      <Route path="approvals" element={<Navigate to="/approvals/pending" replace />} />
-      <Route path="approvals/pending" element={<Approvals />} />
-      <Route path="approvals/all" element={<Approvals />} />
-      <Route path="approvals/:approvalId" element={<ApprovalDetail />} />
+      <Route path="reviews" element={<Navigate to="/reviews/pending" replace />} />
+      <Route path="reviews/pending" element={<Reviews />} />
+      <Route path="reviews/all" element={<Reviews />} />
+      <Route path="reviews/:approvalId" element={<ReviewDetail />} />
+      <Route path="approvals" element={<Navigate to="/reviews" replace />} />
+      <Route path="approvals/pending" element={<Navigate to="/reviews/pending" replace />} />
+      <Route path="approvals/all" element={<Navigate to="/reviews/all" replace />} />
+      <Route path="approvals/:approvalId" element={<ApprovalToReviewRedirect />} />
       <Route path="activity" element={<Activity />} />
       <Route path="inbox" element={<InboxRootRedirect />} />
       <Route path="inbox/mine" element={<Inbox />} />

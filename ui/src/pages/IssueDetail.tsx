@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate, useNavigationType, useParams } from "@/
 import { useInfiniteQuery, useQuery, useMutation, useQueryClient, type InfiniteData, type QueryClient } from "@tanstack/react-query";
 import { issuesApi } from "../api/issues";
 import { ApiError } from "../api/client";
-import { approvalsApi } from "../api/approvals";
+import { approvalsApi } from "../api/reviews";
 import { activityApi, type RunForIssue } from "../api/activity";
 import { heartbeatsApi, type ActiveRunForIssue, type LiveRunForIssue } from "../api/heartbeats";
 import { instanceSettingsApi } from "../api/instanceSettings";
@@ -57,7 +57,7 @@ import {
 import { removeLiveRunById, upsertInterruptedRun } from "../lib/optimistic-issue-runs";
 import { useProjectOrder } from "../hooks/useProjectOrder";
 import { relativeTime, cn, formatTokens, visibleRunCostUsd } from "../lib/utils";
-import { ApprovalCard } from "../components/ApprovalCard";
+import { ApprovalCard } from "../components/ReviewCard";
 import { InlineEditor } from "../components/InlineEditor";
 import { IssueChatThread, type IssueChatComposerHandle } from "../components/IssueChatThread";
 import { IssueDocumentsSection } from "../components/IssueDocumentsSection";
