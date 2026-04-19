@@ -155,12 +155,12 @@ export function CompanySettings() {
 
   const archiveMutation = useMutation({
     mutationFn: ({
-      companyId,
+      productId,
       nextCompanyId
     }: {
-      companyId: string;
+      productId: string;
       nextCompanyId: string | null;
-    }) => companiesApi.archive(companyId).then(() => ({ nextCompanyId })),
+    }) => companiesApi.archive(productId).then(() => ({ nextCompanyId })),
     onSuccess: async ({ nextCompanyId }) => {
       if (nextCompanyId) {
         setSelectedCompanyId(nextCompanyId);
@@ -441,7 +441,7 @@ export function CompanySettings() {
                       company.status !== "archived"
                   )?.id ?? null;
                 archiveMutation.mutate({
-                  companyId: selectedCompanyId,
+                  productId: selectedCompanyId,
                   nextCompanyId
                 });
               }}

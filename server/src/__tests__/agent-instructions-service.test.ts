@@ -6,7 +6,7 @@ import { agentInstructionsService } from "../services/agent-instructions.js";
 
 type TestAgent = {
   id: string;
-  companyId: string;
+  productId: string;
   name: string;
   adapterConfig: Record<string, unknown>;
 };
@@ -18,7 +18,7 @@ async function makeTempDir(prefix: string) {
 function makeAgent(adapterConfig: Record<string, unknown>): TestAgent {
   return {
     id: "agent-1",
-    companyId: "company-1",
+    productId: "company-1",
     name: "Agent 1",
     adapterConfig,
   };

@@ -26,7 +26,7 @@ vi.mock("./CopyText", () => ({
 function createIssue(overrides: Partial<Issue> = {}): Issue {
   return {
     id: overrides.id ?? "issue-1",
-    companyId: overrides.companyId ?? "company-1",
+    productId: overrides.productId ?? "company-1",
     projectId: overrides.projectId ?? "project-1",
     projectWorkspaceId: overrides.projectWorkspaceId ?? null,
     goalId: overrides.goalId ?? null,

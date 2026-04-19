@@ -34,7 +34,7 @@ describe("resolveCommandContext", () => {
         profiles: {
           ops: {
             apiBase: "http://127.0.0.1:9999",
-            companyId: "company-profile",
+            productId: "company-profile",
             apiKeyEnvVarName: "AGENT_KEY",
           },
         },
@@ -45,7 +45,7 @@ describe("resolveCommandContext", () => {
 
     const resolved = resolveCommandContext({ context: contextPath }, { requireCompany: true });
     expect(resolved.api.apiBase).toBe("http://127.0.0.1:9999");
-    expect(resolved.companyId).toBe("company-profile");
+    expect(resolved.productId).toBe("company-profile");
     expect(resolved.api.apiKey).toBe("key-from-env");
   });
 
@@ -58,7 +58,7 @@ describe("resolveCommandContext", () => {
         profiles: {
           default: {
             apiBase: "http://profile:3100",
-            companyId: "company-profile",
+            productId: "company-profile",
           },
         },
       },
@@ -70,13 +70,13 @@ describe("resolveCommandContext", () => {
         context: contextPath,
         apiBase: "http://override:3200",
         apiKey: "direct-token",
-        companyId: "company-override",
+        productId: "company-override",
       },
       { requireCompany: true },
     );
 
     expect(resolved.api.apiBase).toBe("http://override:3200");
-    expect(resolved.companyId).toBe("company-override");
+    expect(resolved.productId).toBe("company-override");
     expect(resolved.api.apiKey).toBe("direct-token");
   });
 

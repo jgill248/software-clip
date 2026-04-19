@@ -25,7 +25,7 @@ import { badRequest, notFound } from "../errors.js";
  * Under the hood this wraps the generic approvals API: creates an approval
  * with the matching type, validates the payload against a per-type schema,
  * links the approval to the issue, logs the activity. Equivalent to calling
- * POST /api/companies/:companyId/approvals with the right type + issueIds,
+ * POST /api/companies/:productId/approvals with the right type + issueIds,
  * but saves the caller from having to know the full approval contract.
  */
 export function issueReviewRoutes(db: Db) {
@@ -49,7 +49,7 @@ export function issueReviewRoutes(db: Db) {
       const issueId = req.params.issueId as string;
       const issue = await issues.getById(issueId);
       if (!issue) throw notFound("Issue not found");
-      assertCompanyAccess(req, issue.companyId);
+      assertCompanyAccess(req, issue.productId);
 
       const body = req.body as {
         reviewType: CodeReviewApprovalType;
@@ -69,7 +69,7 @@ export function issueReviewRoutes(db: Db) {
 
       const actor = getActorInfo(req);
 
-      const approval = await approvals.create(issue.companyId, {
+      const approval = await approvals.create(issue.productId, {
         type: body.reviewType,
         payload: payloadParsed.data as Record<string, unknown>,
         requestedByUserId: actor.actorType === "user" ? actor.actorId : null,
@@ -86,7 +86,7 @@ export function issueReviewRoutes(db: Db) {
       await issueApprovals.linkManyForApproval(approval.id, [issueId], actorRef(req));
 
       await logActivity(db, {
-        companyId: issue.companyId,
+        productId: issue.productId,
         actorType: actor.actorType,
         actorId: actor.actorId,
         agentId: actor.agentId,

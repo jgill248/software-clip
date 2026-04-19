@@ -53,7 +53,7 @@ describe("actorMiddleware authenticated session profile", () => {
       userName: "User One",
       userEmail: "user@example.com",
       source: "session",
-      companyIds: [],
+      productIds: [],
       memberships: [],
       isInstanceAdmin: false,
     });

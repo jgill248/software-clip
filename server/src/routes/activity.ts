@@ -30,12 +30,12 @@ export function activityRoutes(db: Db) {
     return issueSvc.getById(rawId);
   }
 
-  router.get("/companies/:companyId/activity", async (req, res) => {
-    const companyId = req.params.companyId as string;
-    assertCompanyAccess(req, companyId);
+  router.get("/companies/:productId/activity", async (req, res) => {
+    const productId = req.params.productId as string;
+    assertCompanyAccess(req, productId);
 
     const filters = {
-      companyId,
+      productId,
       agentId: req.query.agentId as string | undefined,
       entityType: req.query.entityType as string | undefined,
       entityId: req.query.entityId as string | undefined,
@@ -44,12 +44,12 @@ export function activityRoutes(db: Db) {
     res.json(result);
   });
 
-  router.post("/companies/:companyId/activity", validate(createActivitySchema), async (req, res) => {
+  router.post("/companies/:productId/activity", validate(createActivitySchema), async (req, res) => {
     assertBoard(req);
-    const companyId = req.params.companyId as string;
-    assertCompanyAccess(req, companyId);
+    const productId = req.params.productId as string;
+    assertCompanyAccess(req, productId);
     const event = await svc.create({
-      companyId,
+      productId,
       ...req.body,
       details: req.body.details ? sanitizeRecord(req.body.details) : null,
     });
@@ -63,7 +63,7 @@ export function activityRoutes(db: Db) {
       res.status(404).json({ error: "Issue not found" });
       return;
     }
-    assertCompanyAccess(req, issue.companyId);
+    assertCompanyAccess(req, issue.productId);
     const result = await svc.forIssue(issue.id);
     res.json(result);
   });
@@ -75,8 +75,8 @@ export function activityRoutes(db: Db) {
       res.status(404).json({ error: "Issue not found" });
       return;
     }
-    assertCompanyAccess(req, issue.companyId);
-    const result = await svc.runsForIssue(issue.companyId, issue.id);
+    assertCompanyAccess(req, issue.productId);
+    const result = await svc.runsForIssue(issue.productId, issue.id);
     res.json(result);
   });
 
@@ -88,7 +88,7 @@ export function activityRoutes(db: Db) {
       res.json([]);
       return;
     }
-    assertCompanyAccess(req, run.companyId);
+    assertCompanyAccess(req, run.productId);
     const result = await svc.issuesForRun(runId);
     res.json(result);
   });

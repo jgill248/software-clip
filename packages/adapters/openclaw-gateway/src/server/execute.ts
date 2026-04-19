@@ -19,7 +19,7 @@ type SessionKeyStrategy = "fixed" | "issue" | "run";
 type WakePayload = {
   runId: string;
   agentId: string;
-  companyId: string;
+  productId: string;
   taskId: string | null;
   issueId: string | null;
   wakeReason: string | null;
@@ -303,7 +303,7 @@ function buildWakePayload(ctx: AdapterExecutionContext): WakePayload {
   return {
     runId,
     agentId: agent.id,
-    companyId: agent.companyId,
+    productId: agent.productId,
     taskId: nonEmpty(context.taskId) ?? nonEmpty(context.issueId),
     issueId: nonEmpty(context.issueId),
     wakeReason: nonEmpty(context.wakeReason),
@@ -430,7 +430,7 @@ function buildWakeText(
     "Useful endpoints for issue work:",
     "- POST /api/issues/{issueId}/comments",
     "- PATCH /api/issues/{issueId}",
-    "- POST /api/companies/{companyId}/issues (when asked to create a new issue)",
+    "- POST /api/companies/{productId}/issues (when asked to create a new issue)",
     ...(structuredWakePrompt
       ? [
           "",
@@ -479,7 +479,7 @@ function buildStandardPaperclipPayload(
 
   const standardPaperclip: Record<string, unknown> = {
     runId: ctx.runId,
-    companyId: ctx.agent.companyId,
+    productId: ctx.agent.productId,
     agentId: ctx.agent.id,
     agentName: ctx.agent.name,
     taskId: wakePayload.taskId,

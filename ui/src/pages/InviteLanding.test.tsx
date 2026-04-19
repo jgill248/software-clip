@@ -91,7 +91,7 @@ describe("InviteLandingPage", () => {
 
     getInviteMock.mockResolvedValue({
       id: "invite-1",
-      companyId: "company-1",
+      productId: "company-1",
       companyName: "Acme Robotics",
       inviteType: "company_join",
       allowedJoinTypes: "both",
@@ -291,7 +291,7 @@ describe("InviteLandingPage", () => {
     });
     acceptInviteMock.mockResolvedValue({
       id: "join-1",
-      companyId: "company-1",
+      productId: "company-1",
       requestType: "human",
       status: "approved",
     });
@@ -362,7 +362,7 @@ describe("InviteLandingPage", () => {
   it("shows the pending approval page with the company icon and linked access instructions", async () => {
     acceptInviteMock.mockResolvedValue({
       id: "join-1",
-      companyId: "company-1",
+      productId: "company-1",
       requestType: "human",
       status: "pending_approval",
     });
@@ -423,7 +423,7 @@ describe("InviteLandingPage", () => {
   it("keeps the waiting-for-approval state on refresh for an accepted invite", async () => {
     getInviteMock.mockResolvedValue({
       id: "invite-1",
-      companyId: "company-1",
+      productId: "company-1",
       companyName: "Acme Robotics",
       inviteType: "company_join",
       allowedJoinTypes: "both",
@@ -594,7 +594,7 @@ describe("InviteLandingPage", () => {
     let resolveCompanies: ((value: Array<{ id: string; name: string }>) => void) | null = null;
     acceptInviteMock.mockResolvedValue({
       id: "join-1",
-      companyId: "company-1",
+      productId: "company-1",
       requestType: "human",
       status: "pending_approval",
     });

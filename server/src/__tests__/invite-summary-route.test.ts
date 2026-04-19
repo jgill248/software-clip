@@ -77,7 +77,7 @@ describe("GET /invites/:token", () => {
   it("returns company branding in the invite summary response", async () => {
     const invite = {
       id: "invite-1",
-      companyId: "company-1",
+      productId: "company-1",
       inviteType: "company_join",
       allowedJoinTypes: "human",
       tokenHash: "hash",
@@ -99,7 +99,7 @@ describe("GET /invites/:token", () => {
         ],
         [
           {
-            companyId: "company-1",
+            productId: "company-1",
             objectKey: "company-1/assets/companies/logo-1",
             contentType: "image/png",
             byteSize: 3,
@@ -112,7 +112,7 @@ describe("GET /invites/:token", () => {
     const res = await request(app).get("/api/invites/pcp_invite_test");
 
     expect(res.status).toBe(200);
-    expect(res.body.companyId).toBe("company-1");
+    expect(res.body.productId).toBe("company-1");
     expect(res.body.companyName).toBe("Acme Robotics");
     expect(res.body.inviteType).toBe("company_join");
   });
@@ -122,7 +122,7 @@ describe("GET /invites/:token", () => {
   it("returns pending join-request status for an already-accepted invite", async () => {
     const invite = {
       id: "invite-1",
-      companyId: "company-1",
+      productId: "company-1",
       inviteType: "company_join",
       allowedJoinTypes: "human",
       tokenHash: "hash",
@@ -145,7 +145,7 @@ describe("GET /invites/:token", () => {
         ],
         [
           {
-            companyId: "company-1",
+            productId: "company-1",
             objectKey: "company-1/assets/companies/logo-1",
             contentType: "image/png",
             byteSize: 3,
@@ -166,7 +166,7 @@ describe("GET /invites/:token", () => {
   it("falls back to a reusable human join request when the accepted invite reused an existing queue entry", async () => {
     const invite = {
       id: "invite-2",
-      companyId: "company-1",
+      productId: "company-1",
       inviteType: "company_join",
       allowedJoinTypes: "human",
       tokenHash: "hash",
@@ -199,7 +199,7 @@ describe("GET /invites/:token", () => {
         ],
         [
           {
-            companyId: "company-1",
+            productId: "company-1",
             objectKey: "company-1/assets/companies/logo-1",
             contentType: "image/png",
             byteSize: 3,

@@ -36,20 +36,20 @@ describeEmbeddedPostgres("activity service", () => {
   });
 
   it("returns compact usage and result summaries for issue runs", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const issueId = randomUUID();
     const runId = randomUUID();
 
     await db.insert(products).values({
-      id: companyId,
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(agents).values({
       id: agentId,
-      companyId,
+      productId,
       name: "CodexCoder",
       role: "engineer",
       status: "running",
@@ -61,7 +61,7 @@ describeEmbeddedPostgres("activity service", () => {
 
     await db.insert(heartbeatRuns).values({
       id: runId,
-      companyId,
+      productId,
       agentId,
       invocationSource: "assignment",
       status: "succeeded",
@@ -82,7 +82,7 @@ describeEmbeddedPostgres("activity service", () => {
       },
     });
 
-    const runs = await activityService(db).runsForIssue(companyId, issueId);
+    const runs = await activityService(db).runsForIssue(productId, issueId);
 
     expect(runs).toHaveLength(1);
     expect(runs[0]).toMatchObject({

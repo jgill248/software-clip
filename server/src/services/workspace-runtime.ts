@@ -56,7 +56,7 @@ export interface ExecutionWorkspaceIssueRef {
 export interface ExecutionWorkspaceAgentRef {
   id: string | null;
   name: string;
-  companyId: string;
+  productId: string;
 }
 
 export interface RealizedExecutionWorkspace extends ExecutionWorkspaceInput {
@@ -70,7 +70,7 @@ export interface RealizedExecutionWorkspace extends ExecutionWorkspaceInput {
 
 export interface RuntimeServiceRef {
   id: string;
-  companyId: string;
+  productId: string;
   projectId: string | null;
   projectWorkspaceId: string | null;
   executionWorkspaceId: string | null;
@@ -321,7 +321,7 @@ function stableRuntimeServiceId(input: {
 function toRuntimeServiceRef(record: RuntimeServiceRecord, overrides?: Partial<RuntimeServiceRef>): RuntimeServiceRef {
   return {
     id: record.id,
-    companyId: record.companyId,
+    productId: record.productId,
     projectId: record.projectId,
     projectWorkspaceId: record.projectWorkspaceId,
     executionWorkspaceId: record.executionWorkspaceId,
@@ -702,7 +702,7 @@ function buildWorkspaceCommandEnv(input: {
   env.PAPERCLIP_PROJECT_WORKSPACE_ID = input.base.workspaceId ?? "";
   env.PAPERCLIP_AGENT_ID = input.agent.id ?? "";
   env.PAPERCLIP_AGENT_NAME = input.agent.name;
-  env.PAPERCLIP_COMPANY_ID = input.agent.companyId;
+  env.PAPERCLIP_COMPANY_ID = input.agent.productId;
   env.PAPERCLIP_ISSUE_ID = input.issue?.id ?? "";
   env.PAPERCLIP_ISSUE_IDENTIFIER = input.issue?.identifier ?? "";
   env.PAPERCLIP_ISSUE_TITLE = input.issue?.title ?? "";
@@ -1749,7 +1749,7 @@ async function isRuntimeServiceUrlHealthy(url: string | null) {
 function toPersistedWorkspaceRuntimeService(record: RuntimeServiceRecord): typeof workspaceRuntimeServices.$inferInsert {
   return {
     id: record.id,
-    companyId: record.companyId,
+    productId: record.productId,
     projectId: record.projectId,
     projectWorkspaceId: record.projectWorkspaceId,
     executionWorkspaceId: record.executionWorkspaceId,
@@ -1860,7 +1860,7 @@ export function normalizeAdapterManagedRuntimeServices(input: {
         providerRef: report.providerRef ?? null,
         reuseKey: report.reuseKey ?? null,
       }),
-      companyId: input.agent.companyId,
+      productId: input.agent.productId,
       projectId: report.projectId ?? input.workspace.projectId,
       projectWorkspaceId: report.projectWorkspaceId ?? input.workspace.workspaceId,
       executionWorkspaceId: input.executionWorkspaceId ?? null,
@@ -1986,7 +1986,7 @@ async function startLocalRuntimeService(input: {
   if (adoptedRecord) {
     return {
       id: adoptedRecord.runtimeServiceId ?? randomUUID(),
-      companyId: input.agent.companyId,
+      productId: input.agent.productId,
       projectId: input.workspace.projectId,
       projectWorkspaceId: input.workspace.workspaceId,
       executionWorkspaceId: input.executionWorkspaceId ?? null,
@@ -2073,7 +2073,7 @@ async function startLocalRuntimeService(input: {
 
   const record: RuntimeServiceRecord = {
     id: randomUUID(),
-    companyId: input.agent.companyId,
+    productId: input.agent.productId,
     projectId: input.workspace.projectId,
     projectWorkspaceId: input.workspace.workspaceId,
     executionWorkspaceId: input.executionWorkspaceId ?? null,
@@ -2575,7 +2575,7 @@ export async function stopRuntimeServicesForProjectWorkspace(input: {
 
 export async function listWorkspaceRuntimeServicesForProjectWorkspaces(
   db: Db,
-  companyId: string,
+  productId: string,
   projectWorkspaceIds: string[],
 ) {
   if (projectWorkspaceIds.length === 0) return new Map<string, typeof workspaceRuntimeServices.$inferSelect[]>();
@@ -2584,7 +2584,7 @@ export async function listWorkspaceRuntimeServicesForProjectWorkspaces(
     .from(workspaceRuntimeServices)
     .where(
       and(
-        eq(workspaceRuntimeServices.companyId, companyId),
+        eq(workspaceRuntimeServices.productId, productId),
         inArray(workspaceRuntimeServices.projectWorkspaceId, projectWorkspaceIds),
         eq(workspaceRuntimeServices.scopeType, "project_workspace"),
       ),
@@ -2628,7 +2628,7 @@ export async function reconcilePersistedRuntimeServicesOnStartup(db: Db) {
       } else {
         const record: RuntimeServiceRecord = {
           id: row.id,
-          companyId: row.companyId,
+          productId: row.productId,
           projectId: row.projectId ?? null,
           projectWorkspaceId: row.projectWorkspaceId ?? null,
           executionWorkspaceId: row.executionWorkspaceId ?? null,
@@ -2713,7 +2713,7 @@ export async function restartDesiredRuntimeServicesOnStartup(db: Db) {
     try {
       const refs = await startRuntimeServicesForWorkspaceControl({
         db,
-        actor: { id: null, name: "Paperclip", companyId: row.companyId },
+        actor: { id: null, name: "Paperclip", productId: row.productId },
         issue: null,
         workspace: {
           baseCwd: row.cwd,
@@ -2761,7 +2761,7 @@ export async function restartDesiredRuntimeServicesOnStartup(db: Db) {
     try {
       const refs = await startRuntimeServicesForWorkspaceControl({
         db,
-        actor: { id: null, name: "Paperclip", companyId: row.companyId },
+        actor: { id: null, name: "Paperclip", productId: row.productId },
         issue: row.sourceIssueId
           ? {
               id: row.sourceIssueId,
@@ -2828,7 +2828,7 @@ export async function persistAdapterManagedRuntimeServices(input: {
       .insert(workspaceRuntimeServices)
       .values({
         id: ref.id,
-        companyId: ref.companyId,
+        productId: ref.productId,
         projectId: ref.projectId,
         projectWorkspaceId: ref.projectWorkspaceId,
         executionWorkspaceId: ref.executionWorkspaceId,

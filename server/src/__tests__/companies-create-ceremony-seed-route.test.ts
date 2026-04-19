@@ -71,7 +71,7 @@ describe("POST /api/companies bootstraps a Product Owner + ceremonies (§10)", (
       id: "agent-po",
       name: "Product Owner",
       role: "product-owner",
-      companyId: "company-new",
+      productId: "company-new",
       adapterType: "process",
       adapterConfig: {},
     });

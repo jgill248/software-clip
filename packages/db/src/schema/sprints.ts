@@ -23,7 +23,7 @@ export const sprints = pgTable(
   "sprints",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id")
+    productId: uuid("product_id")
       .notNull()
       .references(() => products.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
@@ -50,15 +50,15 @@ export const sprints = pgTable(
   },
   (table) => ({
     companyStateIdx: index("sprints_product_state_idx").on(
-      table.companyId,
+      table.productId,
       table.state,
     ),
     companyEndsAtIdx: index("sprints_product_ends_at_idx").on(
-      table.companyId,
+      table.productId,
       table.endsAt,
     ),
     companyActiveUq: uniqueIndex("sprints_product_active_uq")
-      .on(table.companyId)
+      .on(table.productId)
       .where(sql`${table.state} = 'active'`),
   }),
 );

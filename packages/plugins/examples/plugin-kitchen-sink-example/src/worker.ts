@@ -109,11 +109,11 @@ async function readInstanceState<T = unknown>(ctx: PluginContext, stateKey: stri
 
 async function resolveWorkspace(
   ctx: PluginContext,
-  companyId: string,
+  productId: string,
   projectId: string,
   workspaceId?: string,
 ): Promise<PluginWorkspace> {
-  const workspaces = await ctx.projects.listWorkspaces(projectId, companyId);
+  const workspaces = await ctx.projects.listWorkspaces(projectId, productId);
   if (workspaces.length === 0) {
     throw new Error("No workspaces configured for this project");
   }
@@ -158,7 +158,7 @@ function parseScopeKey(params: Record<string, unknown>): ScopeKey {
 async function runCuratedCommand(
   ctx: PluginContext,
   config: KitchenSinkConfig,
-  companyId: string,
+  productId: string,
   projectId: string,
   workspaceId: string | undefined,
   commandKey: string,
@@ -174,7 +174,7 @@ async function runCuratedCommand(
   if (!definition) {
     throw new Error(`Unknown curated command "${commandKey}"`);
   }
-  const workspace = await resolveWorkspace(ctx, companyId, projectId, workspaceId);
+  const workspace = await resolveWorkspace(ctx, productId, projectId, workspaceId);
   const cwd = workspace.path;
   const startedAt = new Date().toISOString();
   const child = spawn(definition.command, definition.args, {
@@ -218,11 +218,11 @@ async function runCuratedCommand(
 }
 
 function getCurrentCompanyId(params: Record<string, unknown>): string {
-  const companyId = typeof params.companyId === "string" ? params.companyId : "";
-  if (!companyId) {
-    throw new Error("companyId is required");
+  const productId = typeof params.productId === "string" ? params.productId : "";
+  if (!productId) {
+    throw new Error("productId is required");
   }
-  return companyId;
+  return productId;
 }
 
 function getListLimit(params: Record<string, unknown>, fallback = 50): number {
@@ -231,12 +231,12 @@ function getListLimit(params: Record<string, unknown>, fallback = 50): number {
   return Math.max(1, Math.min(200, Math.floor(value)));
 }
 
-async function listIssuesForCompany(ctx: PluginContext, companyId: string, limit = 50): Promise<Issue[]> {
-  return await ctx.issues.list({ companyId, limit, offset: 0 });
+async function listIssuesForCompany(ctx: PluginContext, productId: string, limit = 50): Promise<Issue[]> {
+  return await ctx.issues.list({ productId, limit, offset: 0 });
 }
 
-async function listGoalsForCompany(ctx: PluginContext, companyId: string, limit = 50): Promise<Goal[]> {
-  return await ctx.goals.list({ companyId, limit, offset: 0 });
+async function listGoalsForCompany(ctx: PluginContext, productId: string, limit = 50): Promise<Goal[]> {
+  return await ctx.goals.list({ productId, limit, offset: 0 });
 }
 
 function recentRecordsSnapshot(): DemoRecord[] {
@@ -253,13 +253,13 @@ async function registerDataHandlers(ctx: PluginContext): Promise<void> {
   });
 
   ctx.data.register("overview", async (params) => {
-    const companyId = typeof params.companyId === "string" ? params.companyId : "";
+    const productId = typeof params.productId === "string" ? params.productId : "";
     const config = await getConfig(ctx);
     const companies = await ctx.companies.list({ limit: 200, offset: 0 });
-    const projects = companyId ? await ctx.projects.list({ companyId, limit: 200, offset: 0 }) : [];
-    const issues = companyId ? await listIssuesForCompany(ctx, companyId, 200) : [];
-    const goals = companyId ? await listGoalsForCompany(ctx, companyId, 200) : [];
-    const agents = companyId ? await ctx.agents.list({ companyId, limit: 200, offset: 0 }) : [];
+    const projects = productId ? await ctx.projects.list({ productId, limit: 200, offset: 0 }) : [];
+    const issues = productId ? await listIssuesForCompany(ctx, productId, 200) : [];
+    const goals = productId ? await listGoalsForCompany(ctx, productId, 200) : [];
+    const agents = productId ? await ctx.agents.list({ productId, limit: 200, offset: 0 }) : [];
     const lastJob = await readInstanceState(ctx, "last-job-run");
     const lastWebhook = await readInstanceState(ctx, "last-webhook");
     const entityRecords = await ctx.entities.list({ limit: 10 } satisfies PluginEntityQuery);
@@ -296,30 +296,30 @@ async function registerDataHandlers(ctx: PluginContext): Promise<void> {
   });
 
   ctx.data.register("projects", async (params) => {
-    const companyId = getCurrentCompanyId(params);
-    return await ctx.projects.list({ companyId, limit: getListLimit(params), offset: 0 });
+    const productId = getCurrentCompanyId(params);
+    return await ctx.projects.list({ productId, limit: getListLimit(params), offset: 0 });
   });
 
   ctx.data.register("issues", async (params) => {
-    const companyId = getCurrentCompanyId(params);
-    return await listIssuesForCompany(ctx, companyId, getListLimit(params));
+    const productId = getCurrentCompanyId(params);
+    return await listIssuesForCompany(ctx, productId, getListLimit(params));
   });
 
   ctx.data.register("goals", async (params) => {
-    const companyId = getCurrentCompanyId(params);
-    return await listGoalsForCompany(ctx, companyId, getListLimit(params));
+    const productId = getCurrentCompanyId(params);
+    return await listGoalsForCompany(ctx, productId, getListLimit(params));
   });
 
   ctx.data.register("agents", async (params) => {
-    const companyId = getCurrentCompanyId(params);
-    return await ctx.agents.list({ companyId, limit: getListLimit(params), offset: 0 });
+    const productId = getCurrentCompanyId(params);
+    return await ctx.agents.list({ productId, limit: getListLimit(params), offset: 0 });
   });
 
   ctx.data.register("workspaces", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const projectId = typeof params.projectId === "string" ? params.projectId : "";
     if (!projectId) return [];
-    return await ctx.projects.listWorkspaces(projectId, companyId);
+    return await ctx.projects.listWorkspaces(projectId, productId);
   });
 
   ctx.data.register("state-value", async (params) => {
@@ -343,11 +343,11 @@ async function registerDataHandlers(ctx: PluginContext): Promise<void> {
   });
 
   ctx.data.register("comment-context", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const issueId = typeof params.issueId === "string" ? params.issueId : "";
     const commentId = typeof params.commentId === "string" ? params.commentId : "";
     if (!issueId || !commentId) return null;
-    const comments = await ctx.issues.listComments(issueId, companyId);
+    const comments = await ctx.issues.listComments(issueId, productId);
     const comment = comments.find((entry) => entry.id === commentId) ?? null;
     if (!comment) return null;
     return {
@@ -366,34 +366,34 @@ async function registerDataHandlers(ctx: PluginContext): Promise<void> {
   });
 
   ctx.data.register("entity-context", async (params) => {
-    const companyId = typeof params.companyId === "string" ? params.companyId : "";
+    const productId = typeof params.productId === "string" ? params.productId : "";
     const entityId = typeof params.entityId === "string" ? params.entityId : "";
     const entityType = typeof params.entityType === "string" ? params.entityType : "";
-    if (!companyId || !entityId || !entityType) return null;
+    if (!productId || !entityId || !entityType) return null;
 
     if (entityType === "project") {
-      return await ctx.projects.get(entityId, companyId);
+      return await ctx.projects.get(entityId, productId);
     }
     if (entityType === "issue") {
-      return await ctx.issues.get(entityId, companyId);
+      return await ctx.issues.get(entityId, productId);
     }
     if (entityType === "goal") {
-      return await ctx.goals.get(entityId, companyId);
+      return await ctx.goals.get(entityId, productId);
     }
     if (entityType === "agent") {
-      return await ctx.agents.get(entityId, companyId);
+      return await ctx.agents.get(entityId, productId);
     }
-    return { entityId, entityType, companyId };
+    return { entityId, entityType, productId };
   });
 }
 
 async function registerActionHandlers(ctx: PluginContext): Promise<void> {
   ctx.actions.register("emit-demo-event", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const message = typeof params.message === "string" && params.message.trim().length > 0
       ? params.message.trim()
       : "Kitchen Sink demo event";
-    await ctx.events.emit("demo-event", companyId, {
+    await ctx.events.emit("demo-event", productId, {
       message,
       source: "kitchen-sink",
       emittedAt: new Date().toISOString(),
@@ -402,18 +402,18 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
       level: "info",
       source: "events.emit",
       message,
-      data: { companyId },
+      data: { productId },
     });
     await ctx.metrics.write("demo.events.emitted", 1, { source: "manual" });
     await ctx.telemetry.track("demo_event", {
       source: "manual",
-      has_company: Boolean(companyId),
+      has_company: Boolean(productId),
     });
     pushRecord({
       level: "info",
       source: "telemetry",
       message: "Tracked plugin telemetry event demo_event",
-      data: { companyId },
+      data: { productId },
     });
     return { ok: true, message };
   });
@@ -475,13 +475,13 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
   });
 
   ctx.actions.register("create-issue", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const title = typeof params.title === "string" && params.title.trim().length > 0
       ? params.title.trim()
       : "Kitchen Sink demo issue";
     const description = typeof params.description === "string" ? params.description : undefined;
     const projectId = typeof params.projectId === "string" && params.projectId.length > 0 ? params.projectId : undefined;
-    const issue = await ctx.issues.create({ companyId, projectId, title, description });
+    const issue = await ctx.issues.create({ productId, projectId, title, description });
     pushRecord({
       level: "info",
       source: "issues.create",
@@ -489,7 +489,7 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
       data: { issueId: issue.id },
     });
     await ctx.activity.log({
-      companyId,
+      productId,
       entityType: "issue",
       entityId: issue.id,
       message: `Kitchen Sink created issue "${issue.title}"`,
@@ -499,13 +499,13 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
   });
 
   ctx.actions.register("advance-issue-status", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const issueId = typeof params.issueId === "string" ? params.issueId : "";
     const status = typeof params.status === "string" ? params.status : "";
     if (!issueId || !status) {
       throw new Error("issueId and status are required");
     }
-    const issue = await ctx.issues.update(issueId, { status: status as Issue["status"] }, companyId);
+    const issue = await ctx.issues.update(issueId, { status: status as Issue["status"] }, productId);
     pushRecord({
       level: "info",
       source: "issues.update",
@@ -515,12 +515,12 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
   });
 
   ctx.actions.register("create-goal", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const title = typeof params.title === "string" && params.title.trim().length > 0
       ? params.title.trim()
       : "Kitchen Sink demo goal";
     const description = typeof params.description === "string" ? params.description : undefined;
-    const goal = await ctx.goals.create({ companyId, title, description, level: "team", status: "planned" });
+    const goal = await ctx.goals.create({ productId, title, description, level: "team", status: "planned" });
     pushRecord({
       level: "info",
       source: "goals.create",
@@ -531,13 +531,13 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
   });
 
   ctx.actions.register("advance-goal-status", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const goalId = typeof params.goalId === "string" ? params.goalId : "";
     const status = typeof params.status === "string" ? params.status : "";
     if (!goalId || !status) {
       throw new Error("goalId and status are required");
     }
-    const goal = await ctx.goals.update(goalId, { status: status as Goal["status"] }, companyId);
+    const goal = await ctx.goals.update(goalId, { status: status as Goal["status"] }, productId);
     pushRecord({
       level: "info",
       source: "goals.update",
@@ -547,14 +547,14 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
   });
 
   ctx.actions.register("write-activity", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const entityType = typeof params.entityType === "string" ? params.entityType : undefined;
     const entityId = typeof params.entityId === "string" ? params.entityId : undefined;
     const message = typeof params.message === "string" && params.message.length > 0
       ? params.message
       : "Kitchen Sink wrote an activity entry";
     await ctx.activity.log({
-      companyId,
+      productId,
       entityType,
       entityId,
       message,
@@ -629,12 +629,12 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
 
   ctx.actions.register("run-process", async (params) => {
     const config = await getConfig(ctx);
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const projectId = typeof params.projectId === "string" ? params.projectId : "";
     const workspaceId = typeof params.workspaceId === "string" && params.workspaceId.length > 0 ? params.workspaceId : undefined;
     const commandKey = typeof params.commandKey === "string" ? params.commandKey : "pwd";
     if (!projectId) throw new Error("projectId is required");
-    return await runCuratedCommand(ctx, config, companyId, projectId, workspaceId, commandKey);
+    return await runCuratedCommand(ctx, config, productId, projectId, workspaceId, commandKey);
   });
 
   ctx.actions.register("read-workspace-file", async (params) => {
@@ -642,14 +642,14 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
     if (!config.enableWorkspaceDemos) {
       throw new Error("Workspace demos are disabled in plugin settings");
     }
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const projectId = typeof params.projectId === "string" ? params.projectId : "";
     const workspaceId = typeof params.workspaceId === "string" && params.workspaceId.length > 0 ? params.workspaceId : undefined;
     const relativePath = typeof params.relativePath === "string" && params.relativePath.length > 0
       ? params.relativePath
       : config.workspaceScratchFile || DEFAULT_CONFIG.workspaceScratchFile;
     if (!projectId) throw new Error("projectId is required");
-    const workspace = await resolveWorkspace(ctx, companyId, projectId, workspaceId);
+    const workspace = await resolveWorkspace(ctx, productId, projectId, workspaceId);
     const fullPath = ensureInsideWorkspace(workspace.path, relativePath);
     const content = await fs.readFile(fullPath, "utf8");
     return {
@@ -664,7 +664,7 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
     if (!config.enableWorkspaceDemos) {
       throw new Error("Workspace demos are disabled in plugin settings");
     }
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const projectId = typeof params.projectId === "string" ? params.projectId : "";
     const workspaceId = typeof params.workspaceId === "string" && params.workspaceId.length > 0 ? params.workspaceId : undefined;
     const relativePath = typeof params.relativePath === "string" && params.relativePath.length > 0
@@ -672,7 +672,7 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
       : config.workspaceScratchFile || DEFAULT_CONFIG.workspaceScratchFile;
     const content = typeof params.content === "string" ? params.content : "Kitchen Sink workspace demo";
     if (!projectId) throw new Error("projectId is required");
-    const workspace = await resolveWorkspace(ctx, companyId, projectId, workspaceId);
+    const workspace = await resolveWorkspace(ctx, productId, projectId, workspaceId);
     const fullPath = ensureInsideWorkspace(workspace.path, relativePath);
     await fs.writeFile(fullPath, content, "utf8");
     pushRecord({
@@ -689,10 +689,10 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
   });
 
   ctx.actions.register("start-progress-stream", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const steps = typeof params.steps === "number" ? params.steps : 5;
     void (async () => {
-      ctx.streams.open(STREAM_CHANNELS.progress, companyId);
+      ctx.streams.open(STREAM_CHANNELS.progress, productId);
       try {
         for (let index = 1; index <= steps; index += 1) {
           ctx.streams.emit(STREAM_CHANNELS.progress, {
@@ -710,13 +710,13 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
   });
 
   ctx.actions.register("invoke-agent", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const agentId = typeof params.agentId === "string" ? params.agentId : "";
     const prompt = typeof params.prompt === "string" && params.prompt.length > 0
       ? params.prompt
       : "Kitchen Sink test invocation";
     if (!agentId) throw new Error("agentId is required");
-    const result = await ctx.agents.invoke(agentId, companyId, { prompt, reason: "Kitchen Sink plugin demo" });
+    const result = await ctx.agents.invoke(agentId, productId, { prompt, reason: "Kitchen Sink plugin demo" });
     pushRecord({
       level: "info",
       source: "agents.invoke",
@@ -727,33 +727,33 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
   });
 
   ctx.actions.register("pause-agent", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const agentId = typeof params.agentId === "string" ? params.agentId : "";
     if (!agentId) throw new Error("agentId is required");
-    return await ctx.agents.pause(agentId, companyId);
+    return await ctx.agents.pause(agentId, productId);
   });
 
   ctx.actions.register("resume-agent", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const agentId = typeof params.agentId === "string" ? params.agentId : "";
     if (!agentId) throw new Error("agentId is required");
-    return await ctx.agents.resume(agentId, companyId);
+    return await ctx.agents.resume(agentId, productId);
   });
 
   ctx.actions.register("ask-agent", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const agentId = typeof params.agentId === "string" ? params.agentId : "";
     const prompt = typeof params.prompt === "string" && params.prompt.length > 0
       ? params.prompt
       : "Say hello from the Kitchen Sink plugin.";
     if (!agentId) throw new Error("agentId is required");
 
-    ctx.streams.open(STREAM_CHANNELS.agentChat, companyId);
-    const session = await ctx.agents.sessions.create(agentId, companyId, {
+    ctx.streams.open(STREAM_CHANNELS.agentChat, productId);
+    const session = await ctx.agents.sessions.create(agentId, productId, {
       reason: "Kitchen Sink plugin chat demo",
     });
 
-    await ctx.agents.sessions.sendMessage(session.sessionId, companyId, {
+    await ctx.agents.sessions.sendMessage(session.sessionId, productId, {
       prompt,
       reason: "Kitchen Sink demo",
       onEvent: (event) => {
@@ -779,13 +779,13 @@ async function registerActionHandlers(ctx: PluginContext): Promise<void> {
   });
 
   ctx.actions.register("copy-comment-context", async (params) => {
-    const companyId = getCurrentCompanyId(params);
+    const productId = getCurrentCompanyId(params);
     const issueId = typeof params.issueId === "string" ? params.issueId : "";
     const commentId = typeof params.commentId === "string" ? params.commentId : "";
     if (!issueId || !commentId) {
       throw new Error("issueId and commentId are required");
     }
-    const comments = await ctx.issues.listComments(issueId, companyId);
+    const comments = await ctx.issues.listComments(issueId, productId);
     const comment = comments.find((entry) => entry.id === commentId);
     if (!comment) {
       throw new Error("Comment not found");
@@ -847,14 +847,14 @@ async function registerToolHandlers(ctx: PluginContext): Promise<void> {
       parametersSchema: { type: "object", properties: {} },
     },
     async (_params, runCtx): Promise<ToolResult> => {
-      const projects = await ctx.projects.list({ companyId: runCtx.companyId, limit: 50, offset: 0 });
-      const issues = await ctx.issues.list({ companyId: runCtx.companyId, limit: 50, offset: 0 });
-      const goals = await ctx.goals.list({ companyId: runCtx.companyId, limit: 50, offset: 0 });
-      const agents = await ctx.agents.list({ companyId: runCtx.companyId, limit: 50, offset: 0 });
+      const projects = await ctx.projects.list({ productId: runCtx.productId, limit: 50, offset: 0 });
+      const issues = await ctx.issues.list({ productId: runCtx.productId, limit: 50, offset: 0 });
+      const goals = await ctx.goals.list({ productId: runCtx.productId, limit: 50, offset: 0 });
+      const agents = await ctx.agents.list({ productId: runCtx.productId, limit: 50, offset: 0 });
       return {
         content: `Company has ${projects.length} projects, ${issues.length} issues, ${goals.length} goals, and ${agents.length} agents.`,
         data: {
-          companyId: runCtx.companyId,
+          productId: runCtx.productId,
           projects: projects.length,
           issues: issues.length,
           goals: goals.length,
@@ -884,7 +884,7 @@ async function registerToolHandlers(ctx: PluginContext): Promise<void> {
         return { error: "title is required" };
       }
       const issue = await ctx.issues.create({
-        companyId: runCtx.companyId,
+        productId: runCtx.productId,
         projectId: runCtx.projectId,
         title: payload.title,
         description: payload.description,

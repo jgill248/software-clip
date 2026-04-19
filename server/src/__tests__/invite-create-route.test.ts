@@ -29,7 +29,7 @@ vi.mock("../services/index.js", () => ({
 function createDbStub() {
   const createdInvite = {
     id: "invite-1",
-    companyId: "company-1",
+    productId: "company-1",
     inviteType: "company_join",
     allowedJoinTypes: "human",
     tokenHash: "hash",
@@ -82,7 +82,7 @@ function createApp() {
       type: "board",
       source: "local_implicit",
       userId: null,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
     };
     next();
   });
@@ -99,7 +99,7 @@ function createApp() {
   return app;
 }
 
-describe("POST /companies/:companyId/invites", () => {
+describe("POST /companies/:productId/invites", () => {
   beforeEach(() => {
     logActivityMock.mockReset();
   });

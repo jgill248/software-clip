@@ -72,8 +72,8 @@ export function Companies() {
     setBreadcrumbs([{ label: "Companies" }]);
   }, [setBreadcrumbs]);
 
-  function startEdit(companyId: string, currentName: string) {
-    setEditingId(companyId);
+  function startEdit(productId: string, currentName: string) {
+    setEditingId(productId);
     setEditName(currentName);
   }
 

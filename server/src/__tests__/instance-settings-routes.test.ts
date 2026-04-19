@@ -163,7 +163,7 @@ describe("instance settings routes", () => {
       userId: "user-1",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
     });
 
     const res = await request(app).get("/api/instance/settings/general");
@@ -182,7 +182,7 @@ describe("instance settings routes", () => {
       userId: "user-2",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: [],
+      productIds: [],
       memberships: [],
     });
 
@@ -198,7 +198,7 @@ describe("instance settings routes", () => {
       userId: "user-1",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
     });
 
     const res = await request(app)
@@ -213,7 +213,7 @@ describe("instance settings routes", () => {
     const app = await createApp({
       type: "agent",
       agentId: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       source: "agent_key",
     });
 

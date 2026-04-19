@@ -31,7 +31,7 @@ export function issueAcceptanceCriteriaRoutes(db: Db) {
   async function requireIssueAccess(req: Request, issueId: string) {
     const issue = await issues.getById(issueId);
     if (!issue) throw notFound("Issue not found");
-    assertCompanyAccess(req, issue.companyId);
+    assertCompanyAccess(req, issue.productId);
     return issue;
   }
 

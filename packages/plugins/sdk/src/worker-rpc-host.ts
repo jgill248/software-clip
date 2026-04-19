@@ -399,8 +399,8 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
           };
         },
 
-        async emit(name: string, companyId: string, payload: unknown): Promise<void> {
-          await callHost("events.emit", { name, companyId, payload });
+        async emit(name: string, productId: string, payload: unknown): Promise<void> {
+          await callHost("events.emit", { name, productId, payload });
         },
       },
 
@@ -465,7 +465,7 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
       activity: {
         async log(entry): Promise<void> {
           await callHost("activity.log", {
-            companyId: entry.companyId,
+            productId: entry.productId,
             message: entry.message,
             entityType: entry.entityType,
             entityId: entry.entityId,
@@ -532,26 +532,26 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
       projects: {
         async list(input) {
           return callHost("projects.list", {
-            companyId: input.companyId,
+            productId: input.productId,
             limit: input.limit,
             offset: input.offset,
           });
         },
 
-        async get(projectId: string, companyId: string) {
-          return callHost("projects.get", { projectId, companyId });
+        async get(projectId: string, productId: string) {
+          return callHost("projects.get", { projectId, productId });
         },
 
-        async listWorkspaces(projectId: string, companyId: string) {
-          return callHost("projects.listWorkspaces", { projectId, companyId });
+        async listWorkspaces(projectId: string, productId: string) {
+          return callHost("projects.listWorkspaces", { projectId, productId });
         },
 
-        async getPrimaryWorkspace(projectId: string, companyId: string) {
-          return callHost("projects.getPrimaryWorkspace", { projectId, companyId });
+        async getPrimaryWorkspace(projectId: string, productId: string) {
+          return callHost("projects.getPrimaryWorkspace", { projectId, productId });
         },
 
-        async getWorkspaceForIssue(issueId: string, companyId: string) {
-          return callHost("projects.getWorkspaceForIssue", { issueId, companyId });
+        async getWorkspaceForIssue(issueId: string, productId: string) {
+          return callHost("projects.getWorkspaceForIssue", { issueId, productId });
         },
       },
 
@@ -563,15 +563,15 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
           });
         },
 
-        async get(companyId: string) {
-          return callHost("companies.get", { companyId });
+        async get(productId: string) {
+          return callHost("companies.get", { productId });
         },
       },
 
       issues: {
         async list(input) {
           return callHost("issues.list", {
-            companyId: input.companyId,
+            productId: input.productId,
             projectId: input.projectId,
             assigneeAgentId: input.assigneeAgentId,
             status: input.status,
@@ -580,13 +580,13 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
           });
         },
 
-        async get(issueId: string, companyId: string) {
-          return callHost("issues.get", { issueId, companyId });
+        async get(issueId: string, productId: string) {
+          return callHost("issues.get", { issueId, productId });
         },
 
         async create(input) {
           return callHost("issues.create", {
-            companyId: input.companyId,
+            productId: input.productId,
             projectId: input.projectId,
             goalId: input.goalId,
             parentId: input.parentId,
@@ -598,29 +598,29 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
           });
         },
 
-        async update(issueId: string, patch, companyId: string) {
+        async update(issueId: string, patch, productId: string) {
           return callHost("issues.update", {
             issueId,
             patch: patch as Record<string, unknown>,
-            companyId,
+            productId,
           });
         },
 
-        async listComments(issueId: string, companyId: string) {
-          return callHost("issues.listComments", { issueId, companyId });
+        async listComments(issueId: string, productId: string) {
+          return callHost("issues.listComments", { issueId, productId });
         },
 
-        async createComment(issueId: string, body: string, companyId: string, options?: { authorAgentId?: string }) {
-          return callHost("issues.createComment", { issueId, body, companyId, authorAgentId: options?.authorAgentId });
+        async createComment(issueId: string, body: string, productId: string, options?: { authorAgentId?: string }) {
+          return callHost("issues.createComment", { issueId, body, productId, authorAgentId: options?.authorAgentId });
         },
 
         documents: {
-          async list(issueId: string, companyId: string) {
-            return callHost("issues.documents.list", { issueId, companyId });
+          async list(issueId: string, productId: string) {
+            return callHost("issues.documents.list", { issueId, productId });
           },
 
-          async get(issueId: string, key: string, companyId: string) {
-            return callHost("issues.documents.get", { issueId, key, companyId });
+          async get(issueId: string, key: string, productId: string) {
+            return callHost("issues.documents.get", { issueId, key, productId });
           },
 
           async upsert(input) {
@@ -628,15 +628,15 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
               issueId: input.issueId,
               key: input.key,
               body: input.body,
-              companyId: input.companyId,
+              productId: input.productId,
               title: input.title,
               format: input.format,
               changeSummary: input.changeSummary,
             });
           },
 
-          async delete(issueId: string, key: string, companyId: string) {
-            return callHost("issues.documents.delete", { issueId, key, companyId });
+          async delete(issueId: string, key: string, productId: string) {
+            return callHost("issues.documents.delete", { issueId, key, productId });
           },
         },
       },
@@ -644,44 +644,44 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
       agents: {
         async list(input) {
           return callHost("agents.list", {
-            companyId: input.companyId,
+            productId: input.productId,
             status: input.status,
             limit: input.limit,
             offset: input.offset,
           });
         },
 
-        async get(agentId: string, companyId: string) {
-          return callHost("agents.get", { agentId, companyId });
+        async get(agentId: string, productId: string) {
+          return callHost("agents.get", { agentId, productId });
         },
 
-        async pause(agentId: string, companyId: string) {
-          return callHost("agents.pause", { agentId, companyId });
+        async pause(agentId: string, productId: string) {
+          return callHost("agents.pause", { agentId, productId });
         },
 
-        async resume(agentId: string, companyId: string) {
-          return callHost("agents.resume", { agentId, companyId });
+        async resume(agentId: string, productId: string) {
+          return callHost("agents.resume", { agentId, productId });
         },
 
-        async invoke(agentId: string, companyId: string, opts: { prompt: string; reason?: string }) {
-          return callHost("agents.invoke", { agentId, companyId, prompt: opts.prompt, reason: opts.reason });
+        async invoke(agentId: string, productId: string, opts: { prompt: string; reason?: string }) {
+          return callHost("agents.invoke", { agentId, productId, prompt: opts.prompt, reason: opts.reason });
         },
 
         sessions: {
-          async create(agentId: string, companyId: string, opts?: { taskKey?: string; reason?: string }) {
+          async create(agentId: string, productId: string, opts?: { taskKey?: string; reason?: string }) {
             return callHost("agents.sessions.create", {
               agentId,
-              companyId,
+              productId,
               taskKey: opts?.taskKey,
               reason: opts?.reason,
             });
           },
 
-          async list(agentId: string, companyId: string) {
-            return callHost("agents.sessions.list", { agentId, companyId });
+          async list(agentId: string, productId: string) {
+            return callHost("agents.sessions.list", { agentId, productId });
           },
 
-          async sendMessage(sessionId: string, companyId: string, opts: {
+          async sendMessage(sessionId: string, productId: string, opts: {
             prompt: string;
             reason?: string;
             onEvent?: (event: AgentSessionEvent) => void;
@@ -692,7 +692,7 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
             try {
               return await callHost("agents.sessions.sendMessage", {
                 sessionId,
-                companyId,
+                productId,
                 prompt: opts.prompt,
                 reason: opts.reason,
               });
@@ -702,9 +702,9 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
             }
           },
 
-          async close(sessionId: string, companyId: string) {
+          async close(sessionId: string, productId: string) {
             sessionEventCallbacks.delete(sessionId);
-            await callHost("agents.sessions.close", { sessionId, companyId });
+            await callHost("agents.sessions.close", { sessionId, productId });
           },
         },
       },
@@ -712,7 +712,7 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
       goals: {
         async list(input) {
           return callHost("goals.list", {
-            companyId: input.companyId,
+            productId: input.productId,
             level: input.level,
             status: input.status,
             limit: input.limit,
@@ -720,13 +720,13 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
           });
         },
 
-        async get(goalId: string, companyId: string) {
-          return callHost("goals.get", { goalId, companyId });
+        async get(goalId: string, productId: string) {
+          return callHost("goals.get", { goalId, productId });
         },
 
         async create(input) {
           return callHost("goals.create", {
-            companyId: input.companyId,
+            productId: input.productId,
             title: input.title,
             description: input.description,
             level: input.level,
@@ -736,11 +736,11 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
           });
         },
 
-        async update(goalId: string, patch, companyId: string) {
+        async update(goalId: string, patch, productId: string) {
           return callHost("goals.update", {
             goalId,
             patch: patch as Record<string, unknown>,
-            companyId,
+            productId,
           });
         },
       },
@@ -758,21 +758,21 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
       },
 
       streams: (() => {
-        // Track channel → companyId so emit/close don't require companyId
+        // Track channel → productId so emit/close don't require productId
         const channelCompanyMap = new Map<string, string>();
         return {
-          open(channel: string, companyId: string): void {
-            channelCompanyMap.set(channel, companyId);
-            notifyHost("streams.open", { channel, companyId });
+          open(channel: string, productId: string): void {
+            channelCompanyMap.set(channel, productId);
+            notifyHost("streams.open", { channel, productId });
           },
           emit(channel: string, event: unknown): void {
-            const companyId = channelCompanyMap.get(channel) ?? "";
-            notifyHost("streams.emit", { channel, companyId, event });
+            const productId = channelCompanyMap.get(channel) ?? "";
+            notifyHost("streams.emit", { channel, productId, event });
           },
           close(channel: string): void {
-            const companyId = channelCompanyMap.get(channel) ?? "";
+            const productId = channelCompanyMap.get(channel) ?? "";
             channelCompanyMap.delete(channel);
-            notifyHost("streams.close", { channel, companyId });
+            notifyHost("streams.close", { channel, productId });
           },
         };
       })(),
@@ -1059,9 +1059,9 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
   function allowsEvent(filter: EventFilter, event: PluginEvent): boolean {
     const payload = event.payload as Record<string, unknown> | undefined;
 
-    if (filter.companyId !== undefined) {
-      const companyId = event.companyId ?? String(payload?.companyId ?? "");
-      if (companyId !== filter.companyId) return false;
+    if (filter.productId !== undefined) {
+      const productId = event.productId ?? String(payload?.productId ?? "");
+      if (productId !== filter.productId) return false;
     }
 
     if (filter.projectId !== undefined) {

@@ -20,9 +20,9 @@ function getCompanyPaths(): Record<string, string> {
   return {};
 }
 
-function saveCompanyPath(companyId: string, path: string) {
+function saveCompanyPath(productId: string, path: string) {
   const paths = getCompanyPaths();
-  paths[companyId] = path;
+  paths[productId] = path;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(paths));
 }
 
@@ -50,10 +50,10 @@ export function useCompanyPageMemory() {
   // during the render where selectedCompanyId has already changed.
   const fullPath = location.pathname + location.search;
   useEffect(() => {
-    const companyId = rememberedPathOwnerCompanyId;
+    const productId = rememberedPathOwnerCompanyId;
     const relativePath = toCompanyRelativePath(fullPath);
-    if (companyId && isRememberableCompanyPath(relativePath)) {
-      saveCompanyPath(companyId, relativePath);
+    if (productId && isRememberableCompanyPath(relativePath)) {
+      saveCompanyPath(productId, relativePath);
     }
   }, [fullPath, rememberedPathOwnerCompanyId]);
 

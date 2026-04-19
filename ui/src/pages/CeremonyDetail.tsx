@@ -1052,7 +1052,7 @@ export function CeremonyDetail() {
 
         <TabsContent value="runs" className="space-y-4">
           {hasLiveRun && activeIssueId && routine && (
-            <LiveRunWidget issueId={activeIssueId} companyId={routine.companyId} />
+            <LiveRunWidget issueId={activeIssueId} productId={routine.productId} />
           )}
           {(routineRuns ?? []).length === 0 ? (
             <p className="text-xs text-muted-foreground">No runs yet.</p>
@@ -1113,7 +1113,7 @@ export function CeremonyDetail() {
       <RoutineRunVariablesDialog
         open={runVariablesOpen}
         onOpenChange={setRunVariablesOpen}
-        companyId={routine.companyId}
+        productId={routine.productId}
         routineName={routine.title}
         agents={agents ?? []}
         projects={projects ?? []}

@@ -18,7 +18,7 @@ interface ContextOptions {
 
 interface ContextSetOptions extends ContextOptions {
   apiBase?: string;
-  companyId?: string;
+  productId?: string;
   apiKeyEnvVarName?: string;
   use?: boolean;
 }
@@ -59,7 +59,7 @@ export function registerContextCommands(program: Command): void {
         name,
         current: name === store.currentProfile,
         apiBase: profile.apiBase ?? null,
-        companyId: profile.companyId ?? null,
+        productId: profile.productId ?? null,
         apiKeyEnvVarName: profile.apiKeyEnvVarName ?? null,
       }));
       printOutput(rows, { json: opts.json });
@@ -95,7 +95,7 @@ export function registerContextCommands(program: Command): void {
         targetProfile,
         {
           apiBase: opts.apiBase,
-          companyId: opts.companyId,
+          productId: opts.productId,
           apiKeyEnvVarName: opts.apiKeyEnvVarName,
         },
         opts.context,

@@ -30,34 +30,34 @@ export function sidebarPreferenceRoutes(db: Db) {
     res.json(await svc.upsertCompanyOrder(userId, req.body.orderedIds));
   });
 
-  router.get("/companies/:companyId/sidebar-preferences/me", async (req, res) => {
-    const companyId = req.params.companyId as string;
-    assertCompanyAccess(req, companyId);
+  router.get("/companies/:productId/sidebar-preferences/me", async (req, res) => {
+    const productId = req.params.productId as string;
+    assertCompanyAccess(req, productId);
     const userId = requireBoardUserId(req, res);
     if (!userId) return;
-    res.json(await svc.getProjectOrder(companyId, userId));
+    res.json(await svc.getProjectOrder(productId, userId));
   });
 
   router.put(
-    "/companies/:companyId/sidebar-preferences/me",
+    "/companies/:productId/sidebar-preferences/me",
     validate(upsertSidebarOrderPreferenceSchema),
     async (req, res) => {
-      const companyId = req.params.companyId as string;
-      assertCompanyAccess(req, companyId);
+      const productId = req.params.productId as string;
+      assertCompanyAccess(req, productId);
       const userId = requireBoardUserId(req, res);
       if (!userId) return;
 
-      const result = await svc.upsertProjectOrder(companyId, userId, req.body.orderedIds);
+      const result = await svc.upsertProjectOrder(productId, userId, req.body.orderedIds);
       const actor = getActorInfo(req);
       await logActivity(db, {
-        companyId,
+        productId,
         actorType: actor.actorType,
         actorId: actor.actorId,
         agentId: actor.agentId,
         runId: actor.runId,
         action: "sidebar_preferences.project_order_updated",
         entityType: "company",
-        entityId: companyId,
+        entityId: productId,
         details: {
           userId,
           orderedIds: result.orderedIds,

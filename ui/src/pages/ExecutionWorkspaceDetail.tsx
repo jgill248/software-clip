@@ -239,14 +239,14 @@ function WorkspaceLink({
 }
 
 function ExecutionWorkspaceIssuesList({
-  companyId,
+  productId,
   workspaceId,
   issues,
   isLoading,
   error,
   project,
 }: {
-  companyId: string;
+  productId: string;
   workspaceId: string;
   issues: Issue[];
   isLoading: boolean;
@@ -256,15 +256,15 @@ function ExecutionWorkspaceIssuesList({
   const queryClient = useQueryClient();
 
   const { data: agents } = useQuery({
-    queryKey: queryKeys.agents.list(companyId),
-    queryFn: () => agentsApi.list(companyId),
-    enabled: !!companyId,
+    queryKey: queryKeys.agents.list(productId),
+    queryFn: () => agentsApi.list(productId),
+    enabled: !!productId,
   });
 
   const { data: liveRuns } = useQuery({
-    queryKey: queryKeys.liveRuns(companyId),
-    queryFn: () => heartbeatsApi.liveRunsForCompany(companyId),
-    enabled: !!companyId,
+    queryKey: queryKeys.liveRuns(productId),
+    queryFn: () => heartbeatsApi.liveRunsForCompany(productId),
+    enabled: !!productId,
     refetchInterval: 5000,
   });
 
@@ -279,10 +279,10 @@ function ExecutionWorkspaceIssuesList({
   const updateIssue = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => issuesApi.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.issues.listByExecutionWorkspace(companyId, workspaceId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.issues.list(companyId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.issues.listByExecutionWorkspace(productId, workspaceId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.issues.list(productId) });
       if (project?.id) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.issues.listByProject(companyId, project.id) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.issues.listByProject(productId, project.id) });
       }
     },
   });
@@ -329,8 +329,8 @@ export function ExecutionWorkspaceDetail() {
   const workspace = workspaceQuery.data ?? null;
 
   const projectQuery = useQuery({
-    queryKey: workspace ? [...queryKeys.projects.detail(workspace.projectId), workspace.companyId] : ["projects", "detail", "__pending__"],
-    queryFn: () => projectsApi.get(workspace!.projectId, workspace!.companyId),
+    queryKey: workspace ? [...queryKeys.projects.detail(workspace.projectId), workspace.productId] : ["projects", "detail", "__pending__"],
+    queryFn: () => projectsApi.get(workspace!.projectId, workspace!.productId),
     enabled: Boolean(workspace?.projectId),
   });
   const project = projectQuery.data ?? null;
@@ -352,10 +352,10 @@ export function ExecutionWorkspaceDetail() {
   const derivedWorkspace = derivedWorkspaceQuery.data ?? null;
   const linkedIssuesQuery = useQuery({
     queryKey: workspace
-      ? queryKeys.issues.listByExecutionWorkspace(workspace.companyId, workspace.id)
+      ? queryKeys.issues.listByExecutionWorkspace(workspace.productId, workspace.id)
       : ["issues", "__execution-workspace__", "__none__"],
-    queryFn: () => issuesApi.list(workspace!.companyId, { executionWorkspaceId: workspace!.id }),
-    enabled: Boolean(workspace?.companyId),
+    queryFn: () => issuesApi.list(workspace!.productId, { executionWorkspaceId: workspace!.id }),
+    enabled: Boolean(workspace?.productId),
   });
   const linkedIssues = linkedIssuesQuery.data ?? [];
 
@@ -377,9 +377,9 @@ export function ExecutionWorkspaceDetail() {
   const projectRef = project ? projectRouteRef(project) : workspace?.projectId ?? "";
 
   useEffect(() => {
-    if (!workspace?.companyId || workspace.companyId === selectedCompanyId) return;
-    setSelectedCompanyId(workspace.companyId, { source: "route_sync" });
-  }, [workspace?.companyId, selectedCompanyId, setSelectedCompanyId]);
+    if (!workspace?.productId || workspace.productId === selectedCompanyId) return;
+    setSelectedCompanyId(workspace.productId, { source: "route_sync" });
+  }, [workspace?.productId, selectedCompanyId, setSelectedCompanyId]);
 
   useEffect(() => {
     if (!workspace) return;
@@ -912,7 +912,7 @@ export function ExecutionWorkspaceDetail() {
           </div>
         ) : (
           <ExecutionWorkspaceIssuesList
-            companyId={workspace.companyId}
+            productId={workspace.productId}
             workspaceId={workspace.id}
             issues={linkedIssues}
             isLoading={linkedIssuesQuery.isLoading}
@@ -933,7 +933,7 @@ export function ExecutionWorkspaceDetail() {
           queryClient.invalidateQueries({ queryKey: queryKeys.executionWorkspaces.workspaceOperations(nextWorkspace.id) });
           if (project) {
             queryClient.invalidateQueries({ queryKey: queryKeys.projects.detail(project.id) });
-            queryClient.invalidateQueries({ queryKey: queryKeys.executionWorkspaces.list(project.companyId, { projectId: project.id }) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.executionWorkspaces.list(project.productId, { projectId: project.id }) });
           }
           if (sourceIssue) {
             queryClient.invalidateQueries({ queryKey: queryKeys.issues.detail(sourceIssue.id) });

@@ -109,7 +109,7 @@ export async function createApp(
     storageService: StorageService;
     feedbackExportService?: {
       flushPendingFeedbackTraces(input?: {
-        companyId?: string;
+        productId?: string;
         traceId?: string;
         limit?: number;
         now?: Date;

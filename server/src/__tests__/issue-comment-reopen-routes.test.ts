@@ -126,7 +126,7 @@ async function installActor(app: express.Express, actor?: Record<string, unknown
     (req as any).actor = actor ?? {
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     };
@@ -151,7 +151,7 @@ async function normalizePolicy(input: {
 function makeIssue(status: "todo" | "done" | "blocked") {
   return {
     id: "11111111-1111-4111-8111-111111111111",
-    companyId: "company-1",
+    productId: "company-1",
     status,
     assigneeAgentId: "22222222-2222-4222-8222-222222222222",
     assigneeUserId: null,
@@ -221,7 +221,7 @@ describe("issue comment reopen routes", () => {
     mockIssueService.addComment.mockResolvedValue({
       id: "comment-1",
       issueId: "11111111-1111-4111-8111-111111111111",
-      companyId: "company-1",
+      productId: "company-1",
       body: "hello",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -470,13 +470,13 @@ describe("issue comment reopen routes", () => {
     }));
     mockHeartbeatService.getRun.mockResolvedValue({
       id: "run-1",
-      companyId: "company-1",
+      productId: "company-1",
       agentId: "22222222-2222-4222-8222-222222222222",
       status: "running",
     });
     mockHeartbeatService.cancelRun.mockResolvedValue({
       id: "run-1",
-      companyId: "company-1",
+      productId: "company-1",
       agentId: "22222222-2222-4222-8222-222222222222",
       status: "cancelled",
     });
@@ -596,7 +596,7 @@ describe("issue comment reopen routes", () => {
       await installActor(createApp(), {
         type: "agent",
         agentId: "22222222-2222-4222-8222-222222222222",
-        companyId: "company-1",
+        productId: "company-1",
         runId: "run-1",
       }),
     )
@@ -682,7 +682,7 @@ describe("issue comment reopen routes", () => {
       await installActor(createApp(), {
         type: "agent",
         agentId: "33333333-3333-4333-8333-333333333333",
-        companyId: "company-1",
+        productId: "company-1",
         runId: "run-2",
       }),
     )

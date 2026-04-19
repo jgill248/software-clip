@@ -77,7 +77,7 @@ describe("CloudAccessGate", () => {
       user: { id: "user-1", email: "user@example.com", name: "User", image: null },
       userId: "user-1",
       isInstanceAdmin: false,
-      companyIds: [],
+      productIds: [],
       source: "session",
       keyId: null,
     });
@@ -115,7 +115,7 @@ describe("CloudAccessGate", () => {
       user: { id: "user-1", email: "user@example.com", name: "User", image: null },
       userId: "user-1",
       isInstanceAdmin: false,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "session",
       keyId: null,
     });

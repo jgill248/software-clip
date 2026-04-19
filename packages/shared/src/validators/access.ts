@@ -117,7 +117,7 @@ export const updateCompanyMemberWithPermissionsSchema = z.object({
 export type UpdateCompanyMemberWithPermissions = z.infer<typeof updateCompanyMemberWithPermissionsSchema>;
 
 export const updateUserCompanyAccessSchema = z.object({
-  companyIds: z.array(z.string().uuid()).default([]),
+  productIds: z.array(z.string().uuid()).default([]),
 });
 
 export type UpdateUserCompanyAccess = z.infer<typeof updateUserCompanyAccessSchema>;

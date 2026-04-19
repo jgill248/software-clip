@@ -20,7 +20,7 @@ export function hasBoardOrgAccess(req: Request) {
   if (req.actor.source === "local_implicit" || req.actor.isInstanceAdmin) {
     return true;
   }
-  return Array.isArray(req.actor.companyIds) && req.actor.companyIds.length > 0;
+  return Array.isArray(req.actor.productIds) && req.actor.productIds.length > 0;
 }
 
 export function assertBoardOrgAccess(req: Request) {
@@ -39,20 +39,20 @@ export function assertInstanceAdmin(req: Request) {
   throw forbidden("Instance admin access required");
 }
 
-export function assertCompanyAccess(req: Request, companyId: string) {
+export function assertCompanyAccess(req: Request, productId: string) {
   assertAuthenticated(req);
-  if (req.actor.type === "agent" && req.actor.companyId !== companyId) {
+  if (req.actor.type === "agent" && req.actor.productId !== productId) {
     throw forbidden("Agent key cannot access another company");
   }
   if (req.actor.type === "board" && req.actor.source !== "local_implicit") {
-    const allowedCompanies = req.actor.companyIds ?? [];
-    if (!allowedCompanies.includes(companyId)) {
+    const allowedCompanies = req.actor.productIds ?? [];
+    if (!allowedCompanies.includes(productId)) {
       throw forbidden("User does not have access to this company");
     }
     const method = typeof req.method === "string" ? req.method.toUpperCase() : "GET";
     const isSafeMethod = ["GET", "HEAD", "OPTIONS"].includes(method);
     if (!isSafeMethod && !req.actor.isInstanceAdmin && Array.isArray(req.actor.memberships)) {
-      const membership = req.actor.memberships.find((item) => item.companyId === companyId);
+      const membership = req.actor.memberships.find((item) => item.productId === productId);
       if (!membership || membership.status !== "active") {
         throw forbidden("User does not have active company access");
       }

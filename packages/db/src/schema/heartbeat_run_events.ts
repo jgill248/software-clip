@@ -7,7 +7,7 @@ export const heartbeatRunEvents = pgTable(
   "heartbeat_run_events",
   {
     id: bigserial("id", { mode: "number" }).primaryKey(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     runId: uuid("run_id").notNull().references(() => heartbeatRuns.id),
     agentId: uuid("agent_id").notNull().references(() => agents.id),
     seq: integer("seq").notNull(),
@@ -21,8 +21,8 @@ export const heartbeatRunEvents = pgTable(
   },
   (table) => ({
     runSeqIdx: index("heartbeat_run_events_run_seq_idx").on(table.runId, table.seq),
-    companyRunIdx: index("heartbeat_run_events_product_run_idx").on(table.companyId, table.runId),
-    companyCreatedIdx: index("heartbeat_run_events_product_created_idx").on(table.companyId, table.createdAt),
+    companyRunIdx: index("heartbeat_run_events_product_run_idx").on(table.productId, table.runId),
+    companyCreatedIdx: index("heartbeat_run_events_product_created_idx").on(table.productId, table.createdAt),
   }),
 );
 

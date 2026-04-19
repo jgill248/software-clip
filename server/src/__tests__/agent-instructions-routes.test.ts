@@ -86,7 +86,7 @@ async function createApp() {
     (req as any).actor = {
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     };
@@ -100,7 +100,7 @@ async function createApp() {
 function makeAgent() {
   return {
     id: "11111111-1111-4111-8111-111111111111",
-    companyId: "company-1",
+    productId: "company-1",
     name: "Agent",
     role: "engineer",
     title: "Engineer",
@@ -132,7 +132,7 @@ describe("agent instructions bundle routes", () => {
     }));
     mockAgentInstructionsService.getBundle.mockResolvedValue({
       agentId: "11111111-1111-4111-8111-111111111111",
-      companyId: "company-1",
+      productId: "company-1",
       mode: "managed",
       rootPath: "/tmp/agent-1",
       managedRootPath: "/tmp/agent-1",
@@ -188,7 +188,7 @@ describe("agent instructions bundle routes", () => {
 
   it("returns bundle metadata", async () => {
     const res = await request(await createApp())
-      .get("/api/agents/11111111-1111-4111-8111-111111111111/instructions-bundle?companyId=company-1");
+      .get("/api/agents/11111111-1111-4111-8111-111111111111/instructions-bundle?productId=company-1");
 
     expect(res.status, JSON.stringify(res.body)).toBe(200);
     expect(res.body).toMatchObject({
@@ -202,7 +202,7 @@ describe("agent instructions bundle routes", () => {
 
   it("writes a bundle file and persists compatibility config", async () => {
     const res = await request(await createApp())
-      .put("/api/agents/11111111-1111-4111-8111-111111111111/instructions-bundle/file?companyId=company-1")
+      .put("/api/agents/11111111-1111-4111-8111-111111111111/instructions-bundle/file?productId=company-1")
       .send({
         path: "AGENTS.md",
         content: "# Updated Agent\n",
@@ -244,7 +244,7 @@ describe("agent instructions bundle routes", () => {
     });
 
     const res = await request(await createApp())
-      .patch("/api/agents/11111111-1111-4111-8111-111111111111?companyId=company-1")
+      .patch("/api/agents/11111111-1111-4111-8111-111111111111?productId=company-1")
       .send({
         adapterType: "claude_local",
         adapterConfig: {
@@ -283,7 +283,7 @@ describe("agent instructions bundle routes", () => {
     });
 
     const res = await request(await createApp())
-      .patch("/api/agents/11111111-1111-4111-8111-111111111111?companyId=company-1")
+      .patch("/api/agents/11111111-1111-4111-8111-111111111111?productId=company-1")
       .send({
         adapterConfig: {
           command: "codex --profile engineer",
@@ -321,7 +321,7 @@ describe("agent instructions bundle routes", () => {
     });
 
     const res = await request(await createApp())
-      .patch("/api/agents/11111111-1111-4111-8111-111111111111?companyId=company-1")
+      .patch("/api/agents/11111111-1111-4111-8111-111111111111?productId=company-1")
       .send({
         replaceAdapterConfig: true,
         adapterConfig: {

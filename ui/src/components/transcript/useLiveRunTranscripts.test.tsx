@@ -84,7 +84,7 @@ describe("useLiveRunTranscripts", () => {
   it("waits for a connecting socket to open before closing it during cleanup", async () => {
     function Harness() {
       useLiveRunTranscripts({
-        companyId: "company-1",
+        productId: "company-1",
         runs: [{ id: "run-1", status: "running", adapterType: "codex_local" }],
       });
       return null;
@@ -122,7 +122,7 @@ describe("useLiveRunTranscripts", () => {
 
     function Harness() {
       const { hasOutputForRun } = useLiveRunTranscripts({
-        companyId: "company-1",
+        productId: "company-1",
         runs: [{ id: "run-1", status: "succeeded", adapterType: "codex_local", hasStoredOutput: true }],
       });
       latestHasOutput = hasOutputForRun("run-1");
@@ -159,7 +159,7 @@ describe("useLiveRunTranscripts", () => {
 
     function Harness() {
       const { isInitialHydrating } = useLiveRunTranscripts({
-        companyId: "company-1",
+        productId: "company-1",
         runs: [{ id: "run-1", status: "succeeded", adapterType: "codex_local" }],
       });
       latestIsInitialHydrating = isInitialHydrating;
@@ -196,7 +196,7 @@ describe("useLiveRunTranscripts", () => {
 
     function Harness() {
       useLiveRunTranscripts({
-        companyId: "company-1",
+        productId: "company-1",
         runs: [{ id: "run-404", status: "failed", adapterType: "codex_local" }],
       });
       return null;

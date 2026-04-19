@@ -27,7 +27,7 @@ type CriterionRow = {
 };
 
 interface StubState {
-  issue: { id: string; companyId: string; status: string } | null;
+  issue: { id: string; productId: string; status: string } | null;
   criteria: CriterionRow[];
 }
 
@@ -54,13 +54,13 @@ function makeCriterion(
 /**
  * Minimal drizzle-shaped stub. We discriminate "is this an issues
  * query?" by inspecting the fields passed to `select()` — the issues
- * query explicitly selects companyId, while every criteria query
+ * query explicitly selects productId, while every criteria query
  * either passes no fields (full row) or selects id/status.
  */
 function makeDbStub(state: StubState, pendingFilter: "all" | "pending-only" = "all") {
   function isIssuesQuery(fields: unknown): boolean {
     if (!fields || typeof fields !== "object") return false;
-    return "companyId" in fields;
+    return "productId" in fields;
   }
 
   const selectBuilder = (fields?: unknown) => {
@@ -136,7 +136,7 @@ describe("issueAcceptanceCriteriaService", () => {
 
   beforeEach(() => {
     state = {
-      issue: { id: "issue-1", companyId: "co-1", status: "in_progress" },
+      issue: { id: "issue-1", productId: "co-1", status: "in_progress" },
       criteria: [],
     };
   });

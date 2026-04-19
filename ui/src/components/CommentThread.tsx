@@ -57,7 +57,7 @@ interface CommentThreadProps {
   feedbackTermsUrl?: string | null;
   linkedRuns?: LinkedRunItem[];
   timelineEvents?: IssueTimelineEvent[];
-  companyId?: string | null;
+  productId?: string | null;
   projectId?: string | null;
   onApproveApproval?: (approvalId: string) => Promise<void>;
   onRejectApproval?: (approvalId: string) => Promise<void>;
@@ -287,7 +287,7 @@ function CopyMarkdownButton({ text }: { text: string }) {
 function CommentCard({
   comment,
   agentMap,
-  companyId,
+  productId,
   projectId,
   feedbackVote = null,
   feedbackDataSharingPreference = "prompt",
@@ -299,7 +299,7 @@ function CommentCard({
 }: {
   comment: CommentWithRunMeta;
   agentMap?: Map<string, Agent>;
-  companyId?: string | null;
+  productId?: string | null;
   projectId?: string | null;
   feedbackVote?: FeedbackVoteValue | null;
   feedbackDataSharingPreference?: FeedbackDataSharingPreference;
@@ -345,12 +345,12 @@ function CommentCard({
               Queued
             </span>
           ) : null}
-          {companyId && !isPending ? (
+          {productId && !isPending ? (
             <PluginSlotOutlet
               slotTypes={["commentContextMenuItem"]}
               entityType="comment"
               context={{
-                companyId,
+                productId,
                 projectId: projectId ?? null,
                 entityId: comment.id,
                 entityType: "comment",
@@ -375,13 +375,13 @@ function CommentCard({
         </span>
       </div>
       <MarkdownBody className="text-sm" softBreaks>{comment.body}</MarkdownBody>
-      {companyId && !isPending ? (
+      {productId && !isPending ? (
         <div className="mt-2 space-y-2">
           <PluginSlotOutlet
             slotTypes={["commentAnnotation"]}
             entityType="comment"
             context={{
-              companyId,
+              productId,
               projectId: projectId ?? null,
               entityId: comment.id,
               entityType: "comment",
@@ -509,7 +509,7 @@ const TimelineList = memo(function TimelineList({
   timeline,
   agentMap,
   currentUserId,
-  companyId,
+  productId,
   projectId,
   onApproveApproval,
   onRejectApproval,
@@ -524,7 +524,7 @@ const TimelineList = memo(function TimelineList({
   timeline: TimelineItem[];
   agentMap?: Map<string, Agent>;
   currentUserId?: string | null;
-  companyId?: string | null;
+  productId?: string | null;
   projectId?: string | null;
   onApproveApproval?: (approvalId: string) => Promise<void>;
   onRejectApproval?: (approvalId: string) => Promise<void>;
@@ -621,7 +621,7 @@ const TimelineList = memo(function TimelineList({
             key={comment.id}
             comment={comment}
             agentMap={agentMap}
-            companyId={companyId}
+            productId={productId}
             projectId={projectId}
             feedbackVote={feedbackVoteByTargetId?.get(comment.id) ?? null}
             feedbackDataSharingPreference={feedbackDataSharingPreference}
@@ -645,7 +645,7 @@ export function CommentThread({
   feedbackTermsUrl = null,
   linkedRuns = [],
   timelineEvents = [],
-  companyId,
+  productId,
   projectId,
   onApproveApproval,
   onRejectApproval,
@@ -857,7 +857,7 @@ export function CommentThread({
         timeline={timeline}
         agentMap={agentMap}
         currentUserId={currentUserId}
-        companyId={companyId}
+        productId={productId}
         projectId={projectId}
         onApproveApproval={onApproveApproval}
         onRejectApproval={onRejectApproval}
@@ -896,7 +896,7 @@ export function CommentThread({
                 key={comment.id}
                 comment={comment}
                 agentMap={agentMap}
-                companyId={companyId}
+                productId={productId}
                 projectId={projectId}
                 highlightCommentId={highlightCommentId}
                 queued

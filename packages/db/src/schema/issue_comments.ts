@@ -8,7 +8,7 @@ export const issueComments = pgTable(
   "issue_comments",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     issueId: uuid("issue_id").notNull().references(() => issues.id),
     authorAgentId: uuid("author_agent_id").references(() => agents.id),
     authorUserId: text("author_user_id"),
@@ -19,14 +19,14 @@ export const issueComments = pgTable(
   },
   (table) => ({
     issueIdx: index("issue_comments_issue_idx").on(table.issueId),
-    companyIdx: index("issue_comments_product_idx").on(table.companyId),
+    companyIdx: index("issue_comments_product_idx").on(table.productId),
     companyIssueCreatedAtIdx: index("issue_comments_product_issue_created_at_idx").on(
-      table.companyId,
+      table.productId,
       table.issueId,
       table.createdAt,
     ),
     companyAuthorIssueCreatedAtIdx: index("issue_comments_product_author_issue_created_at_idx").on(
-      table.companyId,
+      table.productId,
       table.authorUserId,
       table.issueId,
       table.createdAt,

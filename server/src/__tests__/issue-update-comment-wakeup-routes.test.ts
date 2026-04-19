@@ -115,7 +115,7 @@ async function createApp() {
     (req as any).actor = {
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     };
@@ -129,7 +129,7 @@ async function createApp() {
 function makeIssue(overrides: Record<string, unknown> = {}) {
   return {
     id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-    companyId: "company-1",
+    productId: "company-1",
     status: "todo",
     priority: "medium",
     projectId: null,
@@ -172,7 +172,7 @@ describe("issue update comment wakeups", () => {
     mockIssueService.addComment.mockResolvedValue({
       id: "comment-1",
       issueId: existing.id,
-      companyId: existing.companyId,
+      productId: existing.productId,
       body: "write the whole thing",
     });
 
@@ -219,7 +219,7 @@ describe("issue update comment wakeups", () => {
     mockIssueService.addComment.mockResolvedValue({
       id: "comment-2",
       issueId: existing.id,
-      companyId: existing.companyId,
+      productId: existing.productId,
       body: "please revise this",
     });
 

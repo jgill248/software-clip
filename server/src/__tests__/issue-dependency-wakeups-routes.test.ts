@@ -69,7 +69,7 @@ async function createApp() {
     (req as any).actor = {
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     };
@@ -102,7 +102,7 @@ describe("issue dependency wakeups in issue routes", () => {
   it("wakes dependents when the final blocker transitions to done", async () => {
     mockIssueService.getById.mockResolvedValue({
       id: "issue-1",
-      companyId: "company-1",
+      productId: "company-1",
       identifier: "PAP-100",
       title: "Finish blocker",
       description: null,
@@ -119,7 +119,7 @@ describe("issue dependency wakeups in issue routes", () => {
     });
     mockIssueService.update.mockResolvedValue({
       id: "issue-1",
-      companyId: "company-1",
+      productId: "company-1",
       identifier: "PAP-100",
       title: "Finish blocker",
       description: null,
@@ -161,7 +161,7 @@ describe("issue dependency wakeups in issue routes", () => {
   it("wakes the parent when all direct children become terminal", async () => {
     mockIssueService.getById.mockResolvedValue({
       id: "child-1",
-      companyId: "company-1",
+      productId: "company-1",
       identifier: "PAP-101",
       title: "Last child",
       description: null,
@@ -178,7 +178,7 @@ describe("issue dependency wakeups in issue routes", () => {
     });
     mockIssueService.update.mockResolvedValue({
       id: "child-1",
-      companyId: "company-1",
+      productId: "company-1",
       identifier: "PAP-101",
       title: "Last child",
       description: null,

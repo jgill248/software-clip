@@ -6,7 +6,7 @@ export const agentConfigRevisions = pgTable(
   "agent_config_revisions",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     agentId: uuid("agent_id").notNull().references(() => agents.id, { onDelete: "cascade" }),
     createdByAgentId: uuid("created_by_agent_id").references(() => agents.id, { onDelete: "set null" }),
     createdByUserId: text("created_by_user_id"),
@@ -19,7 +19,7 @@ export const agentConfigRevisions = pgTable(
   },
   (table) => ({
     companyAgentCreatedIdx: index("agent_config_revisions_product_agent_created_idx").on(
-      table.companyId,
+      table.productId,
       table.agentId,
       table.createdAt,
     ),

@@ -13,14 +13,14 @@ const WORKSPACE_RUNTIME_ELIGIBLE_ISSUE_STATUSES: string[] = [
   "blocked",
 ];
 
-async function listReportingSubtreeAgentIds(db: Db, companyId: string, actorAgentId: string) {
+async function listReportingSubtreeAgentIds(db: Db, productId: string, actorAgentId: string) {
   const companyAgents = await db
     .select({
       id: agents.id,
       reportsTo: agents.reportsTo,
     })
     .from(agents)
-    .where(and(eq(agents.companyId, companyId), ne(agents.status, "terminated")));
+    .where(and(eq(agents.productId, productId), ne(agents.status, "terminated")));
 
   const reportsByManager = new Map<string, string[]>();
   for (const agent of companyAgents) {
@@ -50,7 +50,7 @@ async function assertAgentCanManageRuntimeServicesForWorkspace(
   db: Db,
   req: Request,
   input: {
-    companyId: string;
+    productId: string;
     projectWorkspaceId?: string | null;
     executionWorkspaceId?: string | null;
     sourceIssueId?: string | null;
@@ -63,14 +63,14 @@ async function assertAgentCanManageRuntimeServicesForWorkspace(
   const actorAgent = await db
     .select({
       id: agents.id,
-      companyId: agents.companyId,
+      productId: agents.productId,
       role: agents.role,
     })
     .from(agents)
     .where(eq(agents.id, req.actor.agentId))
     .then((rows) => rows[0] ?? null);
 
-  if (!actorAgent || actorAgent.companyId !== input.companyId) {
+  if (!actorAgent || actorAgent.productId !== input.productId) {
     throw forbidden("Agent key cannot access another company");
   }
 
@@ -78,7 +78,7 @@ async function assertAgentCanManageRuntimeServicesForWorkspace(
     return;
   }
 
-  const eligibleAgentIds = await listReportingSubtreeAgentIds(db, input.companyId, actorAgent.id);
+  const eligibleAgentIds = await listReportingSubtreeAgentIds(db, input.productId, actorAgent.id);
   const workspaceScopeConditions = [
     input.projectWorkspaceId ? eq(issues.projectWorkspaceId, input.projectWorkspaceId) : null,
     input.executionWorkspaceId ? eq(issues.executionWorkspaceId, input.executionWorkspaceId) : null,
@@ -93,7 +93,7 @@ async function assertAgentCanManageRuntimeServicesForWorkspace(
     .select({ id: issues.id })
     .from(issues)
     .where(and(
-      eq(issues.companyId, input.companyId),
+      eq(issues.productId, input.productId),
       isNull(issues.hiddenAt),
       inArray(issues.status, WORKSPACE_RUNTIME_ELIGIBLE_ISSUE_STATUSES),
       inArray(issues.assigneeAgentId, eligibleAgentIds),
@@ -114,11 +114,11 @@ export async function assertCanManageProjectWorkspaceRuntimeServices(
   db: Db,
   req: Request,
   input: {
-    companyId: string;
+    productId: string;
     projectWorkspaceId: string;
   },
 ) {
-  assertCompanyAccess(req, input.companyId);
+  assertCompanyAccess(req, input.productId);
   if (req.actor.type === "board") return;
   await assertAgentCanManageRuntimeServicesForWorkspace(db, req, input);
 }
@@ -127,12 +127,12 @@ export async function assertCanManageExecutionWorkspaceRuntimeServices(
   db: Db,
   req: Request,
   input: {
-    companyId: string;
+    productId: string;
     executionWorkspaceId: string;
     sourceIssueId?: string | null;
   },
 ) {
-  assertCompanyAccess(req, input.companyId);
+  assertCompanyAccess(req, input.productId);
   if (req.actor.type === "board") return;
   await assertAgentCanManageRuntimeServicesForWorkspace(db, req, input);
 }

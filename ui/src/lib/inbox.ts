@@ -152,20 +152,20 @@ function normalizeInboxApprovalFilter(value: unknown): InboxApprovalFilter {
   return value === "actionable" || value === "resolved" ? value : "all";
 }
 
-function getInboxFilterPreferencesStorageKey(companyId: string | null | undefined): string | null {
-  if (!companyId) return null;
-  return `${INBOX_FILTER_PREFERENCES_KEY_PREFIX}:${companyId}`;
+function getInboxFilterPreferencesStorageKey(productId: string | null | undefined): string | null {
+  if (!productId) return null;
+  return `${INBOX_FILTER_PREFERENCES_KEY_PREFIX}:${productId}`;
 }
 
-function getInboxCollapsedGroupsStorageKey(companyId: string | null | undefined): string | null {
-  if (!companyId) return null;
-  return `${INBOX_COLLAPSED_GROUPS_KEY_PREFIX}:${companyId}`;
+function getInboxCollapsedGroupsStorageKey(productId: string | null | undefined): string | null {
+  if (!productId) return null;
+  return `${INBOX_COLLAPSED_GROUPS_KEY_PREFIX}:${productId}`;
 }
 
 export function loadInboxFilterPreferences(
-  companyId: string | null | undefined,
+  productId: string | null | undefined,
 ): InboxFilterPreferences {
-  const storageKey = getInboxFilterPreferencesStorageKey(companyId);
+  const storageKey = getInboxFilterPreferencesStorageKey(productId);
   if (!storageKey) {
     return {
       ...defaultInboxFilterPreferences,
@@ -196,10 +196,10 @@ export function loadInboxFilterPreferences(
 }
 
 export function saveInboxFilterPreferences(
-  companyId: string | null | undefined,
+  productId: string | null | undefined,
   preferences: InboxFilterPreferences,
 ) {
-  const storageKey = getInboxFilterPreferencesStorageKey(companyId);
+  const storageKey = getInboxFilterPreferencesStorageKey(productId);
   if (!storageKey) return;
 
   try {
@@ -217,9 +217,9 @@ export function saveInboxFilterPreferences(
 }
 
 export function loadCollapsedInboxGroupKeys(
-  companyId: string | null | undefined,
+  productId: string | null | undefined,
 ): Set<string> {
-  const storageKey = getInboxCollapsedGroupsStorageKey(companyId);
+  const storageKey = getInboxCollapsedGroupsStorageKey(productId);
   if (!storageKey) return new Set();
 
   try {
@@ -233,10 +233,10 @@ export function loadCollapsedInboxGroupKeys(
 }
 
 export function saveCollapsedInboxGroupKeys(
-  companyId: string | null | undefined,
+  productId: string | null | undefined,
   groupKeys: ReadonlySet<string>,
 ) {
-  const storageKey = getInboxCollapsedGroupsStorageKey(companyId);
+  const storageKey = getInboxCollapsedGroupsStorageKey(productId);
   if (!storageKey) return;
 
   try {

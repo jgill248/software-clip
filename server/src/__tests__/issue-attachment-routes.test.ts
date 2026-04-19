@@ -69,7 +69,7 @@ function registerRouteMocks() {
 type TestStorageService = StorageService & {
   __calls: {
     putFile?: {
-      companyId: string;
+      productId: string;
       namespace: string;
       originalFilename?: string;
       contentType: string;
@@ -113,7 +113,7 @@ async function createApp(storage: StorageService) {
     (req as any).actor = {
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     };
@@ -128,7 +128,7 @@ function makeAttachment(contentType: string, originalFilename: string) {
   const now = new Date("2026-01-01T00:00:00.000Z");
   return {
     id: "attachment-1",
-    companyId: "company-1",
+    productId: "company-1",
     issueId: "11111111-1111-4111-8111-111111111111",
     issueCommentId: null,
     assetId: "asset-1",
@@ -157,7 +157,7 @@ describe("issue attachment routes", () => {
     const storage = createStorageService();
     mockIssueService.getById.mockResolvedValue({
       id: "11111111-1111-4111-8111-111111111111",
-      companyId: "company-1",
+      productId: "company-1",
       identifier: "PAP-1",
     });
     mockIssueService.createAttachment.mockResolvedValue(makeAttachment("application/zip", "bundle.zip"));
@@ -170,7 +170,7 @@ describe("issue attachment routes", () => {
     expect([200, 201]).toContain(res.status);
     const putFileCall = storage.__calls.putFile;
     expect(putFileCall).toMatchObject({
-      companyId: "company-1",
+      productId: "company-1",
       namespace: "issues/11111111-1111-4111-8111-111111111111",
       originalFilename: "bundle.zip",
       contentType: "application/zip",

@@ -36,7 +36,7 @@ const STATE_META: Record<
 
 type SprintIssueRow = {
   id: string;
-  companyId: string;
+  productId: string;
   title: string;
   status: string;
   priority: string;
@@ -81,7 +81,7 @@ export function SprintDetail() {
     if (!Array.isArray(issuesRaw)) return [];
     return issuesRaw.map((row) => ({
       id: String(row.id),
-      companyId: String(row.companyId ?? ""),
+      productId: String(row.productId ?? ""),
       title: String(row.title ?? "Untitled"),
       status: String(row.status ?? "backlog"),
       priority: String(row.priority ?? "medium"),
@@ -95,9 +95,9 @@ export function SprintDetail() {
   function invalidate() {
     if (!sprintId) return;
     queryClient.invalidateQueries({ queryKey: queryKeys.sprints.detail(sprintId) });
-    if (sprint?.companyId) {
+    if (sprint?.productId) {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.sprints.list(sprint.companyId),
+        queryKey: queryKeys.sprints.list(sprint.productId),
       });
     }
   }

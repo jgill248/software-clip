@@ -372,7 +372,7 @@ export function NewIssueDialog() {
   );
   const { orderedProjects } = useProjectOrder({
     projects: activeProjects,
-    companyId: effectiveCompanyId,
+    productId: effectiveCompanyId,
     userId: currentUserId,
   });
 
@@ -403,11 +403,11 @@ export function NewIssueDialog() {
 
   const createIssue = useMutation({
     mutationFn: async ({
-      companyId,
+      productId,
       stagedFiles: pendingStagedFiles,
       ...data
-    }: { companyId: string; stagedFiles: StagedIssueFile[] } & Record<string, unknown>) => {
-      const issue = await issuesApi.create(companyId, data);
+    }: { productId: string; stagedFiles: StagedIssueFile[] } & Record<string, unknown>) => {
+      const issue = await issuesApi.create(productId, data);
       const failures: string[] = [];
 
       for (const stagedFile of pendingStagedFiles) {
@@ -421,24 +421,24 @@ export function NewIssueDialog() {
               baseRevisionId: null,
             });
           } else {
-            await issuesApi.uploadAttachment(companyId, issue.id, stagedFile.file);
+            await issuesApi.uploadAttachment(productId, issue.id, stagedFile.file);
           }
         } catch {
           failures.push(stagedFile.file.name);
         }
       }
 
-      return { issue, companyId, failures };
+      return { issue, productId, failures };
     },
-    onSuccess: ({ issue, companyId, failures }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.issues.list(companyId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.issues.listMineByMe(companyId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.issues.listTouchedByMe(companyId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.issues.listUnreadTouchedByMe(companyId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.sidebarBadges(companyId) });
+    onSuccess: ({ issue, productId, failures }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.issues.list(productId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.issues.listMineByMe(productId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.issues.listTouchedByMe(productId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.issues.listUnreadTouchedByMe(productId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.sidebarBadges(productId) });
       if (draftTimer.current) clearTimeout(draftTimer.current);
       if (failures.length > 0) {
-        const prefix = (companies.find((company) => company.id === companyId)?.issuePrefix ?? "").trim();
+        const prefix = (companies.find((company) => company.id === productId)?.issuePrefix ?? "").trim();
         const issueRef = issue.identifier ?? issue.id;
         pushToast({
           title: `Created ${issueRef} with upload warnings`,
@@ -660,10 +660,10 @@ export function NewIssueDialog() {
     executionWorkspaceDefaultProjectId.current = null;
   }
 
-  function handleCompanyChange(companyId: string) {
+  function handleCompanyChange(productId: string) {
     if (isSubIssueMode) return;
-    if (companyId === effectiveCompanyId) return;
-    setDialogCompanyId(companyId);
+    if (productId === effectiveCompanyId) return;
+    setDialogCompanyId(productId);
     setAssigneeValue("");
     setReviewerValue("");
     setApproverValue("");
@@ -712,7 +712,7 @@ export function NewIssueDialog() {
       approverValues: approverValue ? [approverValue] : [],
     });
     createIssue.mutate({
-      companyId: effectiveCompanyId,
+      productId: effectiveCompanyId,
       stagedFiles,
       title: title.trim(),
       description: description.trim() || undefined,

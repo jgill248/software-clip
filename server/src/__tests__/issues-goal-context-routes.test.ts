@@ -78,7 +78,7 @@ async function createApp() {
     (req as any).actor = {
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     };
@@ -91,7 +91,7 @@ async function createApp() {
 
 const legacyProjectLinkedIssue = {
   id: "11111111-1111-4111-8111-111111111111",
-  companyId: "company-1",
+  productId: "company-1",
   identifier: "PAP-581",
   title: "Legacy onboarding task",
   description: "Seed the first CEO task",
@@ -110,7 +110,7 @@ const legacyProjectLinkedIssue = {
 
 const projectGoal = {
   id: "44444444-4444-4444-8444-444444444444",
-  companyId: "company-1",
+  productId: "company-1",
   title: "Launch the company",
   description: null,
   level: "company",
@@ -141,7 +141,7 @@ describe("issue goal context routes", () => {
     mockIssueService.listAttachments.mockResolvedValue([]);
     mockProjectService.getById.mockResolvedValue({
       id: legacyProjectLinkedIssue.projectId,
-      companyId: "company-1",
+      productId: "company-1",
       urlKey: "onboarding",
       goalId: projectGoal.id,
       goalIds: [projectGoal.id],

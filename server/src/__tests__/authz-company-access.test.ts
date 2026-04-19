@@ -19,9 +19,9 @@ describe("assertCompanyAccess", () => {
         type: "board",
         userId: "user-1",
         source: "session",
-        companyIds: ["company-1"],
+        productIds: ["company-1"],
         memberships: [
-          { companyId: "company-1", membershipRole: "viewer", status: "active" },
+          { productId: "company-1", membershipRole: "viewer", status: "active" },
         ],
       },
     });
@@ -36,9 +36,9 @@ describe("assertCompanyAccess", () => {
         type: "board",
         userId: "user-1",
         source: "session",
-        companyIds: ["company-1"],
+        productIds: ["company-1"],
         memberships: [
-          { companyId: "company-1", membershipRole: "viewer", status: "active" },
+          { productId: "company-1", membershipRole: "viewer", status: "active" },
         ],
       },
     });
@@ -53,7 +53,7 @@ describe("assertCompanyAccess", () => {
         type: "board",
         userId: "user-1",
         source: "session",
-        companyIds: ["company-1"],
+        productIds: ["company-1"],
         memberships: [],
       },
     });
@@ -68,7 +68,7 @@ describe("assertCompanyAccess", () => {
         type: "board",
         userId: "user-1",
         source: "session",
-        companyIds: ["company-1"],
+        productIds: ["company-1"],
       },
     });
 
@@ -83,7 +83,7 @@ describe("assertCompanyAccess", () => {
         userId: "admin-1",
         source: "session",
         isInstanceAdmin: true,
-        companyIds: [],
+        productIds: [],
         memberships: [],
       },
     });
@@ -113,8 +113,8 @@ describe("assertBoardOrgAccess", () => {
         type: "board",
         userId: "user-1",
         source: "session",
-        companyIds: ["company-1"],
-        memberships: [{ companyId: "company-1", membershipRole: "operator", status: "active" }],
+        productIds: ["company-1"],
+        memberships: [{ productId: "company-1", membershipRole: "operator", status: "active" }],
         isInstanceAdmin: false,
       },
     });
@@ -129,7 +129,7 @@ describe("assertBoardOrgAccess", () => {
         type: "board",
         userId: "admin-1",
         source: "session",
-        companyIds: [],
+        productIds: [],
         memberships: [],
         isInstanceAdmin: true,
       },
@@ -145,7 +145,7 @@ describe("assertBoardOrgAccess", () => {
         type: "board",
         userId: "outsider-1",
         source: "session",
-        companyIds: [],
+        productIds: [],
         memberships: [],
         isInstanceAdmin: false,
       },

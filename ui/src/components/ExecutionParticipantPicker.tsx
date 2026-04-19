@@ -39,9 +39,9 @@ export function ExecutionParticipantPicker({
   const approverValues = stageParticipantValues(issue.executionPolicy, "approval");
   const values = stageType === "review" ? reviewerValues : approverValues;
   const { data: companyMembers } = useQuery({
-    queryKey: queryKeys.access.companyUserDirectory(issue.companyId),
-    queryFn: () => accessApi.listUserDirectory(issue.companyId),
-    enabled: !!issue.companyId,
+    queryKey: queryKeys.access.companyUserDirectory(issue.productId),
+    queryFn: () => accessApi.listUserDirectory(issue.productId),
+    enabled: !!issue.productId,
   });
 
   const sortedAgents = sortAgentsByRecency(

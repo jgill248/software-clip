@@ -75,7 +75,7 @@ test.describe("Onboarding wizard", () => {
       expect(ceoAgentAfterCreate).toBeTruthy();
 
       const disableWakeRes = await page.request.patch(
-        `${baseUrl}/api/agents/${ceoAgentAfterCreate.id}?companyId=${encodeURIComponent(companyAfterAgent.id)}`,
+        `${baseUrl}/api/agents/${ceoAgentAfterCreate.id}?productId=${encodeURIComponent(companyAfterAgent.id)}`,
         {
           data: {
             runtimeConfig: {
@@ -134,7 +134,7 @@ test.describe("Onboarding wizard", () => {
     expect(ceoAgent.adapterType).not.toBe("process");
 
     const instructionsBundleRes = await page.request.get(
-      `${baseUrl}/api/agents/${ceoAgent.id}/instructions-bundle?companyId=${company.id}`
+      `${baseUrl}/api/agents/${ceoAgent.id}/instructions-bundle?productId=${company.id}`
     );
     expect(instructionsBundleRes.ok()).toBe(true);
     const instructionsBundle = await instructionsBundleRes.json();

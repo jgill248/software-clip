@@ -5,7 +5,7 @@ export const companyMemberships = pgTable(
   "company_memberships",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     principalType: text("principal_type").notNull(),
     principalId: text("principal_id").notNull(),
     status: text("status").notNull().default("active"),
@@ -15,7 +15,7 @@ export const companyMemberships = pgTable(
   },
   (table) => ({
     companyPrincipalUniqueIdx: uniqueIndex("company_memberships_product_principal_unique_idx").on(
-      table.companyId,
+      table.productId,
       table.principalType,
       table.principalId,
     ),
@@ -24,6 +24,6 @@ export const companyMemberships = pgTable(
       table.principalId,
       table.status,
     ),
-    companyStatusIdx: index("company_memberships_product_status_idx").on(table.companyId, table.status),
+    companyStatusIdx: index("company_memberships_product_status_idx").on(table.productId, table.status),
   }),
 );

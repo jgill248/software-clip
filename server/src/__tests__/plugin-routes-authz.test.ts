@@ -66,7 +66,7 @@ describe("plugin install and upgrade authz", () => {
       userId: "user-1",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
     });
 
     const res = await request(app)
@@ -106,7 +106,7 @@ describe("plugin install and upgrade authz", () => {
         userId: "admin-1",
         source: "session",
         isInstanceAdmin: true,
-        companyIds: [],
+        productIds: [],
       },
       { installPlugin: vi.fn().mockResolvedValue(discovered) },
     );
@@ -130,7 +130,7 @@ describe("plugin install and upgrade authz", () => {
       userId: "user-1",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
     });
 
     const res = await request(app)
@@ -153,7 +153,7 @@ describe("plugin install and upgrade authz", () => {
       userId: "user-1",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
     });
 
     const req = method === "delete" ? request(app).delete(path) : request(app).post(path).send(body);
@@ -184,7 +184,7 @@ describe("plugin install and upgrade authz", () => {
       userId: "admin-1",
       source: "session",
       isInstanceAdmin: true,
-      companyIds: [],
+      productIds: [],
     });
 
     const res = await request(app)

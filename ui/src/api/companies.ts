@@ -5,7 +5,7 @@ export type CompanyStats = Record<string, { agentCount: number; issueCount: numb
 
 export const companiesApi = {
   list: () => api.get<Company[]>("/companies"),
-  get: (companyId: string) => api.get<Company>(`/companies/${companyId}`),
+  get: (productId: string) => api.get<Company>(`/companies/${productId}`),
   stats: () => api.get<CompanyStats>("/companies/stats"),
   create: (data: {
     name: string;
@@ -14,7 +14,7 @@ export const companiesApi = {
   }) =>
     api.post<Company>("/companies", data),
   update: (
-    companyId: string,
+    productId: string,
     data: Partial<
       Pick<
         Company,
@@ -25,7 +25,7 @@ export const companiesApi = {
         | "feedbackDataSharingEnabled"
       >
     >,
-  ) => api.patch<Company>(`/companies/${companyId}`, data),
-  archive: (companyId: string) => api.post<Company>(`/companies/${companyId}/archive`, {}),
-  remove: (companyId: string) => api.delete<{ ok: true }>(`/companies/${companyId}`),
+  ) => api.patch<Company>(`/companies/${productId}`, data),
+  archive: (productId: string) => api.post<Company>(`/companies/${productId}/archive`, {}),
+  remove: (productId: string) => api.delete<{ ok: true }>(`/companies/${productId}`),
 };

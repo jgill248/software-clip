@@ -83,7 +83,7 @@ export function PluginPage() {
 
   const context = useMemo(
     () => ({
-      companyId: resolvedCompanyId ?? null,
+      productId: resolvedCompanyId ?? null,
       companyPrefix,
     }),
     [resolvedCompanyId, companyPrefix],

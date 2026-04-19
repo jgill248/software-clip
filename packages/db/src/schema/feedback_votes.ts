@@ -6,7 +6,7 @@ export const feedbackVotes = pgTable(
   "feedback_votes",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     issueId: uuid("issue_id").notNull().references(() => issues.id),
     targetType: text("target_type").notNull(),
     targetId: text("target_id").notNull(),
@@ -21,11 +21,11 @@ export const feedbackVotes = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyIssueIdx: index("feedback_votes_product_issue_idx").on(table.companyId, table.issueId),
+    companyIssueIdx: index("feedback_votes_product_issue_idx").on(table.productId, table.issueId),
     issueTargetIdx: index("feedback_votes_issue_target_idx").on(table.issueId, table.targetType, table.targetId),
     authorIdx: index("feedback_votes_author_idx").on(table.authorUserId, table.createdAt),
     companyTargetAuthorUniqueIdx: uniqueIndex("feedback_votes_product_target_author_idx").on(
-      table.companyId,
+      table.productId,
       table.targetType,
       table.targetId,
       table.authorUserId,

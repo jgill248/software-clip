@@ -19,7 +19,7 @@ export const workspaceRuntimeServices = pgTable(
   "workspace_runtime_services",
   {
     id: uuid("id").primaryKey(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     projectId: uuid("project_id").references(() => projects.id, { onDelete: "set null" }),
     projectWorkspaceId: uuid("project_workspace_id").references(() => projectWorkspaces.id, { onDelete: "set null" }),
     executionWorkspaceId: uuid("execution_workspace_id").references(() => executionWorkspaces.id, { onDelete: "set null" }),
@@ -48,23 +48,23 @@ export const workspaceRuntimeServices = pgTable(
   },
   (table) => ({
     companyWorkspaceStatusIdx: index("workspace_runtime_services_product_workspace_status_idx").on(
-      table.companyId,
+      table.productId,
       table.projectWorkspaceId,
       table.status,
     ),
     companyExecutionWorkspaceStatusIdx: index("workspace_runtime_services_product_execution_workspace_status_idx").on(
-      table.companyId,
+      table.productId,
       table.executionWorkspaceId,
       table.status,
     ),
     companyProjectStatusIdx: index("workspace_runtime_services_product_project_status_idx").on(
-      table.companyId,
+      table.productId,
       table.projectId,
       table.status,
     ),
     runIdx: index("workspace_runtime_services_run_idx").on(table.startedByRunId),
     companyUpdatedIdx: index("workspace_runtime_services_product_updated_idx").on(
-      table.companyId,
+      table.productId,
       table.updatedAt,
     ),
   }),

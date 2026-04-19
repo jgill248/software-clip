@@ -63,7 +63,7 @@ export function RoadmapItemDetail() {
     queryFn: () => goalsApi.get(goalId!),
     enabled: !!goalId
   });
-  const resolvedCompanyId = goal?.companyId ?? selectedCompanyId;
+  const resolvedCompanyId = goal?.productId ?? selectedCompanyId;
 
   const { data: allGoals } = useQuery({
     queryKey: queryKeys.goals.list(resolvedCompanyId!),
@@ -78,9 +78,9 @@ export function RoadmapItemDetail() {
   });
 
   useEffect(() => {
-    if (!goal?.companyId || goal.companyId === selectedCompanyId) return;
-    setSelectedCompanyId(goal.companyId, { source: "route_sync" });
-  }, [goal?.companyId, selectedCompanyId, setSelectedCompanyId]);
+    if (!goal?.productId || goal.productId === selectedCompanyId) return;
+    setSelectedCompanyId(goal.productId, { source: "route_sync" });
+  }, [goal?.productId, selectedCompanyId, setSelectedCompanyId]);
 
   const updateGoal = useMutation({
     mutationFn: (data: Record<string, unknown>) =>

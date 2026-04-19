@@ -28,7 +28,7 @@ describe("local disk storage provider", () => {
     const service = createStorageService(createLocalDiskStorageProvider(root));
     const content = Buffer.from("hello image bytes", "utf8");
     const stored = await service.putFile({
-      companyId: "company-1",
+      productId: "company-1",
       namespace: "issues/issue-1",
       originalFilename: "demo.png",
       contentType: "image/png",
@@ -48,7 +48,7 @@ describe("local disk storage provider", () => {
 
     const service = createStorageService(createLocalDiskStorageProvider(root));
     const stored = await service.putFile({
-      companyId: "company-a",
+      productId: "company-a",
       namespace: "issues/issue-1",
       originalFilename: "demo.png",
       contentType: "image/png",
@@ -64,7 +64,7 @@ describe("local disk storage provider", () => {
 
     const service = createStorageService(createLocalDiskStorageProvider(root));
     const stored = await service.putFile({
-      companyId: "company-1",
+      productId: "company-1",
       namespace: "issues/issue-1",
       originalFilename: "demo.png",
       contentType: "image/png",

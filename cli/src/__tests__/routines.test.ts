@@ -115,7 +115,7 @@ describeEmbeddedPostgres("disableAllRoutinesInConfig", () => {
   });
 
   it("pauses only non-archived routines for the selected company", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const otherCompanyId = randomUUID();
     const projectId = randomUUID();
     const otherProjectId = randomUUID();
@@ -128,9 +128,9 @@ describeEmbeddedPostgres("disableAllRoutinesInConfig", () => {
 
     await db.insert(products).values([
       {
-        id: companyId,
+        id: productId,
         name: "Paperclip",
-        issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+        issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
       },
       {
         id: otherCompanyId,
@@ -142,7 +142,7 @@ describeEmbeddedPostgres("disableAllRoutinesInConfig", () => {
     await db.insert(agents).values([
       {
         id: agentId,
-        companyId,
+        productId,
         name: "Coder",
         adapterType: "process",
         adapterConfig: {},
@@ -151,7 +151,7 @@ describeEmbeddedPostgres("disableAllRoutinesInConfig", () => {
       },
       {
         id: otherAgentId,
-        companyId: otherCompanyId,
+        productId: otherCompanyId,
         name: "Other coder",
         adapterType: "process",
         adapterConfig: {},
@@ -163,13 +163,13 @@ describeEmbeddedPostgres("disableAllRoutinesInConfig", () => {
     await db.insert(projects).values([
       {
         id: projectId,
-        companyId,
+        productId,
         name: "Project",
         status: "in_progress",
       },
       {
         id: otherProjectId,
-        companyId: otherCompanyId,
+        productId: otherCompanyId,
         name: "Other project",
         status: "in_progress",
       },
@@ -178,7 +178,7 @@ describeEmbeddedPostgres("disableAllRoutinesInConfig", () => {
     await db.insert(routines).values([
       {
         id: activeRoutineId,
-        companyId,
+        productId,
         projectId,
         assigneeAgentId: agentId,
         title: "Active routine",
@@ -186,7 +186,7 @@ describeEmbeddedPostgres("disableAllRoutinesInConfig", () => {
       },
       {
         id: pausedRoutineId,
-        companyId,
+        productId,
         projectId,
         assigneeAgentId: agentId,
         title: "Paused routine",
@@ -194,7 +194,7 @@ describeEmbeddedPostgres("disableAllRoutinesInConfig", () => {
       },
       {
         id: archivedRoutineId,
-        companyId,
+        productId,
         projectId,
         assigneeAgentId: agentId,
         title: "Archived routine",
@@ -202,7 +202,7 @@ describeEmbeddedPostgres("disableAllRoutinesInConfig", () => {
       },
       {
         id: otherCompanyRoutineId,
-        companyId: otherCompanyId,
+        productId: otherCompanyId,
         projectId: otherProjectId,
         assigneeAgentId: otherAgentId,
         title: "Other company routine",
@@ -212,11 +212,11 @@ describeEmbeddedPostgres("disableAllRoutinesInConfig", () => {
 
     const result = await disableAllRoutinesInConfig({
       config: configPath,
-      companyId,
+      productId,
     });
 
     expect(result).toMatchObject({
-      companyId,
+      productId,
       totalRoutines: 3,
       pausedCount: 1,
       alreadyPausedCount: 1,
@@ -229,7 +229,7 @@ describeEmbeddedPostgres("disableAllRoutinesInConfig", () => {
         status: routines.status,
       })
       .from(routines)
-      .where(eq(routines.companyId, companyId));
+      .where(eq(routines.productId, productId));
     const statusById = new Map(companyRoutines.map((routine) => [routine.id, routine.status]));
 
     expect(statusById.get(activeRoutineId)).toBe("paused");

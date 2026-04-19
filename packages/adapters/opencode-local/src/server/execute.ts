@@ -267,9 +267,9 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     const bootstrapPromptTemplate = asString(config.bootstrapPromptTemplate, "");
     const templateData = {
       agentId: agent.id,
-      companyId: agent.companyId,
+      productId: agent.productId,
       runId,
-      company: { id: agent.companyId },
+      company: { id: agent.productId },
       agent,
       run: { id: runId, source: "on_demand" },
       context,

@@ -22,7 +22,7 @@ interface CompanyContextValue {
   selectionSource: CompanySelectionSource;
   loading: boolean;
   error: Error | null;
-  setSelectedCompanyId: (companyId: string, options?: CompanySelectionOptions) => void;
+  setSelectedCompanyId: (productId: string, options?: CompanySelectionOptions) => void;
   reloadCompanies: () => Promise<void>;
   createCompany: (data: {
     name: string;
@@ -74,10 +74,10 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, next);
   }, [companies, selectedCompanyId, sidebarCompanies]);
 
-  const setSelectedCompanyId = useCallback((companyId: string, options?: CompanySelectionOptions) => {
-    setSelectedCompanyIdState(companyId);
+  const setSelectedCompanyId = useCallback((productId: string, options?: CompanySelectionOptions) => {
+    setSelectedCompanyIdState(productId);
     setSelectionSource(options?.source ?? "manual");
-    localStorage.setItem(STORAGE_KEY, companyId);
+    localStorage.setItem(STORAGE_KEY, productId);
   }, []);
 
   const reloadCompanies = useCallback(async () => {

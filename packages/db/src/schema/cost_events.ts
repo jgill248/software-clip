@@ -10,7 +10,7 @@ export const costEvents = pgTable(
   "cost_events",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     agentId: uuid("agent_id").notNull().references(() => agents.id),
     issueId: uuid("issue_id").references(() => issues.id),
     projectId: uuid("project_id").references(() => projects.id),
@@ -29,24 +29,24 @@ export const costEvents = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyOccurredIdx: index("cost_events_product_occurred_idx").on(table.companyId, table.occurredAt),
+    companyOccurredIdx: index("cost_events_product_occurred_idx").on(table.productId, table.occurredAt),
     companyAgentOccurredIdx: index("cost_events_product_agent_occurred_idx").on(
-      table.companyId,
+      table.productId,
       table.agentId,
       table.occurredAt,
     ),
     companyProviderOccurredIdx: index("cost_events_product_provider_occurred_idx").on(
-      table.companyId,
+      table.productId,
       table.provider,
       table.occurredAt,
     ),
     companyBillerOccurredIdx: index("cost_events_product_biller_occurred_idx").on(
-      table.companyId,
+      table.productId,
       table.biller,
       table.occurredAt,
     ),
     companyHeartbeatRunIdx: index("cost_events_product_heartbeat_run_idx").on(
-      table.companyId,
+      table.productId,
       table.heartbeatRunId,
     ),
   }),

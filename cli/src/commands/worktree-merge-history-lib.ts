@@ -75,7 +75,7 @@ export type PlannedCommentSkip = {
 
 export type IssueDocumentRow = {
   id: IssueDocumentLinkRow["id"];
-  companyId: IssueDocumentLinkRow["companyId"];
+  productId: IssueDocumentLinkRow["productId"];
   issueId: IssueDocumentLinkRow["issueId"];
   documentId: IssueDocumentLinkRow["documentId"];
   key: IssueDocumentLinkRow["key"];
@@ -96,7 +96,7 @@ export type IssueDocumentRow = {
 
 export type DocumentRevisionRow = {
   id: DocumentRevisionTableRow["id"];
-  companyId: DocumentRevisionTableRow["companyId"];
+  productId: DocumentRevisionTableRow["productId"];
   documentId: DocumentRevisionTableRow["documentId"];
   revisionNumber: DocumentRevisionTableRow["revisionNumber"];
   body: DocumentRevisionTableRow["body"];
@@ -108,7 +108,7 @@ export type DocumentRevisionRow = {
 
 export type IssueAttachmentRow = {
   id: IssueAttachmentTableRow["id"];
-  companyId: IssueAttachmentTableRow["companyId"];
+  productId: IssueAttachmentTableRow["productId"];
   issueId: IssueAttachmentTableRow["issueId"];
   issueCommentId: IssueAttachmentTableRow["issueCommentId"];
   assetId: IssueAttachmentTableRow["assetId"];
@@ -181,7 +181,7 @@ export type PlannedProjectImport = {
 };
 
 export type WorktreeMergePlan = {
-  companyId: string;
+  productId: string;
   companyName: string;
   issuePrefix: string;
   previewIssueCounterStart: number;
@@ -338,7 +338,7 @@ export function parseWorktreeMergeScopes(rawValue: string | undefined): Worktree
 }
 
 export function buildWorktreeMergePlan(input: {
-  companyId: string;
+  productId: string;
   companyName: string;
   issuePrefix: string;
   previewIssueCounterStart: number;
@@ -748,7 +748,7 @@ export function buildWorktreeMergePlan(input: {
   };
 
   return {
-    companyId: input.companyId,
+    productId: input.productId,
     companyName: input.companyName,
     issuePrefix: input.issuePrefix,
     previewIssueCounterStart: input.previewIssueCounterStart,

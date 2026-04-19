@@ -24,7 +24,7 @@ interface NewGoalDefaults {
 
 interface OnboardingOptions {
   initialStep?: 1 | 2 | 3 | 4;
-  companyId?: string;
+  productId?: string;
 }
 
 interface DialogContextValue {

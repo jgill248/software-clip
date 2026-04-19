@@ -161,7 +161,7 @@ export function IssueProperties({
 }: IssuePropertiesProps) {
   const { selectedCompanyId } = useCompany();
   const queryClient = useQueryClient();
-  const companyId = issue.companyId ?? selectedCompanyId;
+  const productId = issue.productId ?? selectedCompanyId;
   const [assigneeOpen, setAssigneeOpen] = useState(false);
   const [assigneeSearch, setAssigneeSearch] = useState("");
   const [projectOpen, setProjectOpen] = useState(false);
@@ -187,20 +187,20 @@ export function IssueProperties({
   const currentUserId = session?.user?.id ?? session?.session?.userId;
 
   const { data: agents } = useQuery({
-    queryKey: queryKeys.agents.list(companyId!),
-    queryFn: () => agentsApi.list(companyId!),
-    enabled: !!companyId,
+    queryKey: queryKeys.agents.list(productId!),
+    queryFn: () => agentsApi.list(productId!),
+    enabled: !!productId,
   });
   const { data: companyMembers } = useQuery({
-    queryKey: queryKeys.access.companyUserDirectory(companyId!),
-    queryFn: () => accessApi.listUserDirectory(companyId!),
-    enabled: !!companyId,
+    queryKey: queryKeys.access.companyUserDirectory(productId!),
+    queryFn: () => accessApi.listUserDirectory(productId!),
+    enabled: !!productId,
   });
 
   const { data: projects } = useQuery({
-    queryKey: queryKeys.projects.list(companyId!),
-    queryFn: () => projectsApi.list(companyId!),
-    enabled: !!companyId,
+    queryKey: queryKeys.projects.list(productId!),
+    queryFn: () => projectsApi.list(productId!),
+    enabled: !!productId,
   });
   const activeProjects = useMemo(
     () => (projects ?? []).filter((p) => !p.archivedAt || p.id === issue.projectId),
@@ -208,14 +208,14 @@ export function IssueProperties({
   );
   const { orderedProjects } = useProjectOrder({
     projects: activeProjects,
-    companyId,
+    productId,
     userId: currentUserId,
   });
 
   const { data: labels } = useQuery({
-    queryKey: queryKeys.issues.labels(companyId!),
-    queryFn: () => issuesApi.listLabels(companyId!),
-    enabled: !!companyId,
+    queryKey: queryKeys.issues.labels(productId!),
+    queryFn: () => issuesApi.listLabels(productId!),
+    enabled: !!productId,
   });
 
   // Softclip pivot §5: sprints list for the Sprint picker. We fetch lazily
@@ -224,9 +224,9 @@ export function IssueProperties({
   // include closed sprints too so reassigning away from a closed sprint
   // is possible.
   const { data: allSprints } = useQuery({
-    queryKey: queryKeys.sprints.list(companyId!),
-    queryFn: () => sprintsApi.list(companyId!),
-    enabled: !!companyId && sprintOpen,
+    queryKey: queryKeys.sprints.list(productId!),
+    queryFn: () => sprintsApi.list(productId!),
+    enabled: !!productId && sprintOpen,
   });
   const currentSprint = useMemo(
     () => allSprints?.find((s) => s.id === issue.sprintId) ?? null,
@@ -242,8 +242,8 @@ export function IssueProperties({
           queryKey: queryKeys.issues.detail(issue.identifier),
         });
       }
-      if (companyId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.sprints.list(companyId) });
+      if (productId) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.sprints.list(productId) });
       }
       if (issue.sprintId) {
         queryClient.invalidateQueries({
@@ -257,15 +257,15 @@ export function IssueProperties({
   });
 
   const { data: allIssues } = useQuery({
-    queryKey: queryKeys.issues.list(companyId!),
-    queryFn: () => issuesApi.list(companyId!),
-    enabled: !!companyId && (blockedByOpen || parentOpen),
+    queryKey: queryKeys.issues.list(productId!),
+    queryFn: () => issuesApi.list(productId!),
+    enabled: !!productId && (blockedByOpen || parentOpen),
   });
 
   const createLabel = useMutation({
-    mutationFn: (data: { name: string; color: string }) => issuesApi.createLabel(companyId!, data),
+    mutationFn: (data: { name: string; color: string }) => issuesApi.createLabel(productId!, data),
     onSuccess: async (created) => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.issues.labels(companyId!) });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.issues.labels(productId!) });
       onUpdate({ labelIds: [...(issue.labelIds ?? []), created.id] });
       setNewLabelName("");
     },

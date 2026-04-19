@@ -18,12 +18,12 @@ import { readConfig, resolveConfigPath } from "../config/store.js";
 type RoutinesDisableAllOptions = {
   config?: string;
   dataDir?: string;
-  companyId?: string;
+  productId?: string;
   json?: boolean;
 };
 
 type DisableAllRoutinesResult = {
-  companyId: string;
+  productId: string;
   totalRoutines: number;
   pausedCount: number;
   alreadyPausedCount: number;
@@ -231,15 +231,15 @@ async function openConfiguredDb(configPath: string): Promise<{
 }
 
 export async function disableAllRoutinesInConfig(
-  options: Pick<RoutinesDisableAllOptions, "config" | "companyId">,
+  options: Pick<RoutinesDisableAllOptions, "config" | "productId">,
 ): Promise<DisableAllRoutinesResult> {
   const configPath = resolveConfigPath(options.config);
   loadPaperclipEnvFile(configPath);
-  const companyId =
-    nonEmpty(options.companyId)
+  const productId =
+    nonEmpty(options.productId)
     ?? nonEmpty(process.env.PAPERCLIP_COMPANY_ID)
     ?? null;
-  if (!companyId) {
+  if (!productId) {
     throw new Error("Company ID is required. Pass --company-id or set PAPERCLIP_COMPANY_ID.");
   }
 
@@ -276,7 +276,7 @@ export async function disableAllRoutinesInConfig(
         status: routines.status,
       })
       .from(routines)
-      .where(eq(routines.companyId, companyId));
+      .where(eq(routines.productId, productId));
 
     const alreadyPausedCount = existing.filter((routine) => routine.status === "paused").length;
     const archivedCount = existing.filter((routine) => routine.status === "archived").length;
@@ -295,7 +295,7 @@ export async function disableAllRoutinesInConfig(
     }
 
     return {
-      companyId,
+      productId,
       totalRoutines: existing.length,
       pausedCount: idsToPause.length,
       alreadyPausedCount,
@@ -320,12 +320,12 @@ export async function disableAllRoutinesCommand(options: RoutinesDisableAllOptio
   }
 
   if (result.totalRoutines === 0) {
-    console.log(pc.dim(`No routines found for company ${result.companyId}.`));
+    console.log(pc.dim(`No routines found for company ${result.productId}.`));
     return;
   }
 
   console.log(
-    `Paused ${result.pausedCount} routine(s) for company ${result.companyId} ` +
+    `Paused ${result.pausedCount} routine(s) for company ${result.productId} ` +
       `(${result.alreadyPausedCount} already paused, ${result.archivedCount} archived).`,
   );
 }

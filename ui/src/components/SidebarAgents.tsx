@@ -61,7 +61,7 @@ export function SidebarAgents() {
   const currentUserId = session?.user?.id ?? session?.session?.userId ?? null;
   const { orderedAgents } = useAgentOrder({
     agents: visibleAgents,
-    companyId: selectedCompanyId,
+    productId: selectedCompanyId,
     userId: currentUserId,
   });
 

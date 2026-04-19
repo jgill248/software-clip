@@ -33,7 +33,7 @@ interface AgentAuth {
 }
 
 interface TestContext {
-  companyId: string;
+  productId: string;
   companyPrefix: string;
   executor: AgentAuth;
   reviewer: AgentAuth;
@@ -160,12 +160,12 @@ async function setupCompany(boardRequest: APIRequestContext): Promise<TestContex
     throw new Error(`POST /api/companies → ${companyRes.status()}: ${errBody}`);
   }
   const company = await companyRes.json();
-  const companyId = company.id;
+  const productId = company.id;
   const companyPrefix = company.issuePrefix ?? company.prefix ?? company.urlKey ?? "E2E";
 
   // Helper: create agent + API key + request context
   async function createAgent(name: string, role: string, title: string): Promise<AgentAuth> {
-    const agentRes = await boardRequest.post(`${BASE_URL}/api/companies/${companyId}/agents`, {
+    const agentRes = await boardRequest.post(`${BASE_URL}/api/companies/${productId}/agents`, {
       data: {
         name,
         role,
@@ -199,7 +199,7 @@ async function setupCompany(boardRequest: APIRequestContext): Promise<TestContex
   const approver = await createAgent("Approver", "cto", "CTO");
 
   return {
-    companyId,
+    productId,
     companyPrefix,
     executor,
     reviewer,
@@ -214,7 +214,7 @@ async function createIssueWithPolicy(ctx: TestContext, title: string, stages?: u
     { type: "review", participants: [{ type: "agent", agentId: ctx.reviewer.agentId }] },
     { type: "approval", participants: [{ type: "agent", agentId: ctx.approver.agentId }] },
   ];
-  const res = await ctx.boardRequest.post(`${BASE_URL}/api/companies/${ctx.companyId}/issues`, {
+  const res = await ctx.boardRequest.post(`${BASE_URL}/api/companies/${ctx.productId}/issues`, {
     data: {
       title,
       status: "in_progress",
@@ -255,7 +255,7 @@ test.describe("Signoff execution policy", () => {
       await board.delete(`${BASE_URL}/api/agents/${agent.agentId}/keys/${agent.keyId}`).catch(() => {});
       await board.delete(`${BASE_URL}/api/agents/${agent.agentId}`).catch(() => {});
     }
-    await board.delete(`${BASE_URL}/api/companies/${ctx.companyId}`).catch(() => {});
+    await board.delete(`${BASE_URL}/api/companies/${ctx.productId}`).catch(() => {});
     await board.dispose();
   });
 

@@ -34,7 +34,7 @@ type ProjectSidebarSlot = ReturnType<typeof usePluginSlots>["slots"][number];
 
 function SortableProjectItem({
   activeProjectRef,
-  companyId,
+  productId,
   companyPrefix,
   isMobile,
   project,
@@ -42,7 +42,7 @@ function SortableProjectItem({
   setSidebarOpen,
 }: {
   activeProjectRef: string | null;
-  companyId: string | null;
+  productId: string | null;
   companyPrefix: string | null;
   isMobile: boolean;
   project: Project;
@@ -104,7 +104,7 @@ function SortableProjectItem({
                 key={`${project.id}:${slot.pluginKey}:${slot.id}`}
                 slot={slot}
                 context={{
-                  companyId,
+                  productId,
                   companyPrefix,
                   projectId: project.id,
                   projectRef: routeRef,
@@ -140,7 +140,7 @@ export function SidebarProjects() {
   const { slots: projectSidebarSlots } = usePluginSlots({
     slotTypes: ["projectSidebarItem"],
     entityType: "project",
-    companyId: selectedCompanyId,
+    productId: selectedCompanyId,
     enabled: !!selectedCompanyId,
   });
 
@@ -152,7 +152,7 @@ export function SidebarProjects() {
   );
   const { orderedProjects, persistOrder } = useProjectOrder({
     projects: visibleProjects,
-    companyId: selectedCompanyId,
+    productId: selectedCompanyId,
     userId: currentUserId,
   });
 
@@ -223,7 +223,7 @@ export function SidebarProjects() {
                 <SortableProjectItem
                   key={project.id}
                   activeProjectRef={activeProjectRef}
-                  companyId={selectedCompanyId}
+                  productId={selectedCompanyId}
                   companyPrefix={selectedCompany?.issuePrefix ?? null}
                   isMobile={isMobile}
                   project={project}

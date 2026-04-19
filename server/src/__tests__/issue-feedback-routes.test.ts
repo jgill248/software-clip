@@ -130,7 +130,7 @@ describe("issue feedback trace routes", () => {
     const targetId = "11111111-1111-4111-8111-111111111111";
     mockIssueService.getById.mockResolvedValue({
       id: "issue-1",
-      companyId: "company-1",
+      productId: "company-1",
       identifier: "PAP-1",
     });
     mockFeedbackService.saveIssueVote.mockResolvedValue({
@@ -150,7 +150,7 @@ describe("issue feedback trace routes", () => {
       userId: "user-1",
       source: "session",
       isInstanceAdmin: true,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
     });
 
     const res = await request(app)
@@ -164,7 +164,7 @@ describe("issue feedback trace routes", () => {
 
     expect([200, 201]).toContain(res.status);
     expect(mockFeedbackExportService.flushPendingFeedbackTraces).toHaveBeenCalledWith({
-      companyId: "company-1",
+      productId: "company-1",
       traceId: "trace-1",
       limit: 1,
     });
@@ -174,7 +174,7 @@ describe("issue feedback trace routes", () => {
     const app = await createApp({
       type: "agent",
       agentId: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       source: "agent_key",
       runId: "run-1",
     });
@@ -187,14 +187,14 @@ describe("issue feedback trace routes", () => {
   it("returns 404 when a board user lacks access to the trace company", async () => {
     mockFeedbackService.getFeedbackTraceById.mockResolvedValue({
       id: "trace-1",
-      companyId: "company-2",
+      productId: "company-2",
     });
     const app = await createApp({
       type: "board",
       userId: "user-1",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
     });
 
     const res = await request(app).get("/api/feedback-traces/trace-1");
@@ -205,7 +205,7 @@ describe("issue feedback trace routes", () => {
   it("returns 404 for bundle fetches when a board user lacks access to the trace company", async () => {
     mockFeedbackService.getFeedbackTraceBundle.mockResolvedValue({
       id: "trace-1",
-      companyId: "company-2",
+      productId: "company-2",
       issueId: "issue-1",
       files: [],
     });
@@ -214,7 +214,7 @@ describe("issue feedback trace routes", () => {
       userId: "user-1",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
     });
 
     const res = await request(app).get("/api/feedback-traces/trace-1/bundle");

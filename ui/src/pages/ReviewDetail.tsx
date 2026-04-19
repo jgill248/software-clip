@@ -32,7 +32,7 @@ export function ReviewDetail() {
     queryFn: () => approvalsApi.get(approvalId!),
     enabled: !!approvalId,
   });
-  const resolvedCompanyId = approval?.companyId ?? selectedCompanyId;
+  const resolvedCompanyId = approval?.productId ?? selectedCompanyId;
 
   const { data: comments } = useQuery({
     queryKey: queryKeys.approvals.comments(approvalId!),
@@ -53,9 +53,9 @@ export function ReviewDetail() {
   });
 
   useEffect(() => {
-    if (!approval?.companyId || approval.companyId === selectedCompanyId) return;
-    setSelectedCompanyId(approval.companyId, { source: "route_sync" });
-  }, [approval?.companyId, selectedCompanyId, setSelectedCompanyId]);
+    if (!approval?.productId || approval.productId === selectedCompanyId) return;
+    setSelectedCompanyId(approval.productId, { source: "route_sync" });
+  }, [approval?.productId, selectedCompanyId, setSelectedCompanyId]);
 
   const agentNameById = useMemo(() => {
     const map = new Map<string, string>();
@@ -75,12 +75,12 @@ export function ReviewDetail() {
     queryClient.invalidateQueries({ queryKey: queryKeys.approvals.detail(approvalId) });
     queryClient.invalidateQueries({ queryKey: queryKeys.approvals.comments(approvalId) });
     queryClient.invalidateQueries({ queryKey: queryKeys.approvals.issues(approvalId) });
-    if (approval?.companyId) {
-      queryClient.invalidateQueries({ queryKey: queryKeys.approvals.list(approval.companyId) });
+    if (approval?.productId) {
+      queryClient.invalidateQueries({ queryKey: queryKeys.approvals.list(approval.productId) });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.approvals.list(approval.companyId, "pending"),
+        queryKey: queryKeys.approvals.list(approval.productId, "pending"),
       });
-      queryClient.invalidateQueries({ queryKey: queryKeys.agents.list(approval.companyId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.agents.list(approval.productId) });
     }
   };
 

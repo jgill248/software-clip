@@ -66,7 +66,7 @@ async function createApp() {
     (req as any).actor = {
       type: "board",
       userId: "board-user",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     };
@@ -80,7 +80,7 @@ async function createApp() {
 function buildProject(overrides: Record<string, unknown> = {}) {
   return {
     id: "project-1",
-    companyId: "company-1",
+    productId: "company-1",
     urlKey: "project-1",
     goalId: null,
     goalIds: [],

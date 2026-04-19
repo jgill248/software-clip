@@ -141,20 +141,20 @@ describe("feedbackService.saveIssueVote", () => {
   });
 
   async function seedIssueWithAgentComment() {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const issueId = randomUUID();
     const commentId = randomUUID();
 
     await db.insert(products).values({
-      id: companyId,
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `F${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `F${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(agents).values({
       id: agentId,
-      companyId,
+      productId,
       name: "CodexCoder",
       role: "engineer",
       status: "active",
@@ -166,7 +166,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(issues).values({
       id: issueId,
-      companyId,
+      productId,
       title: "Add feedback voting",
       status: "todo",
       priority: "medium",
@@ -175,17 +175,17 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(issueComments).values({
       id: commentId,
-      companyId,
+      productId,
       issueId,
       authorAgentId: agentId,
       body: "AI generated update",
     });
 
-    return { companyId, issueId, commentId };
+    return { productId, issueId, commentId };
   }
 
   async function seedIssueWithRichAgentComment() {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const issueId = randomUUID();
     const targetCommentId = randomUUID();
@@ -206,15 +206,15 @@ describe("feedbackService.saveIssueVote", () => {
     );
 
     await db.insert(products).values({
-      id: companyId,
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `R${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `R${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(companySkills).values([
       {
         id: randomUUID(),
-        companyId,
+        productId,
         key: "paperclipai/paperclip/paperclip",
         slug: "paperclip",
         name: "Paperclip",
@@ -226,7 +226,7 @@ describe("feedbackService.saveIssueVote", () => {
       },
       {
         id: randomUUID(),
-        companyId,
+        productId,
         key: "octo/research/public-skill",
         slug: "public-skill",
         name: "Public Skill",
@@ -240,7 +240,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(agents).values({
       id: agentId,
-      companyId,
+      productId,
       name: "CodexCoder",
       role: "engineer",
       status: "active",
@@ -266,7 +266,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(issues).values({
       id: issueId,
-      companyId,
+      productId,
       title: "Trace-rich feedback",
       description: "Issue context includes ops@example.com and a backup phone 555 111 2222.",
       status: "todo",
@@ -276,7 +276,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(heartbeatRuns).values({
       id: runId,
-      companyId,
+      productId,
       agentId,
       invocationSource: "manual",
       status: "succeeded",
@@ -293,7 +293,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(costEvents).values({
       id: randomUUID(),
-      companyId,
+      productId,
       agentId,
       issueId,
       heartbeatRunId: runId,
@@ -311,7 +311,7 @@ describe("feedbackService.saveIssueVote", () => {
     await db.insert(issueComments).values([
       {
         id: earlierCommentId,
-        companyId,
+        productId,
         issueId,
         authorAgentId: agentId,
         createdByRunId: runId,
@@ -320,7 +320,7 @@ describe("feedbackService.saveIssueVote", () => {
       },
       {
         id: targetCommentId,
-        companyId,
+        productId,
         issueId,
         authorAgentId: agentId,
         createdByRunId: runId,
@@ -329,7 +329,7 @@ describe("feedbackService.saveIssueVote", () => {
       },
       {
         id: laterCommentId,
-        companyId,
+        productId,
         issueId,
         authorAgentId: agentId,
         createdByRunId: runId,
@@ -338,25 +338,25 @@ describe("feedbackService.saveIssueVote", () => {
       },
     ]);
 
-    return { companyId, issueId, targetCommentId, runId };
+    return { productId, issueId, targetCommentId, runId };
   }
 
   async function seedIssueWithAgentDocument() {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const issueId = randomUUID();
     const documentId = randomUUID();
     const revisionId = randomUUID();
 
     await db.insert(products).values({
-      id: companyId,
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `D${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `D${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(agents).values({
       id: agentId,
-      companyId,
+      productId,
       name: "CodexCoder",
       role: "engineer",
       status: "active",
@@ -368,7 +368,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(issues).values({
       id: issueId,
-      companyId,
+      productId,
       title: "Document feedback",
       status: "todo",
       priority: "medium",
@@ -377,7 +377,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(documents).values({
       id: documentId,
-      companyId,
+      productId,
       title: "Plan",
       format: "markdown",
       latestBody: "Drafted by an agent",
@@ -389,7 +389,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(documentRevisions).values({
       id: revisionId,
-      companyId,
+      productId,
       documentId,
       revisionNumber: 1,
       body: "Drafted by an agent",
@@ -397,34 +397,34 @@ describe("feedbackService.saveIssueVote", () => {
     });
 
     await db.insert(issueDocuments).values({
-      companyId,
+      productId,
       issueId,
       documentId,
       key: "plan",
     });
 
-    return { companyId, issueId, revisionId };
+    return { productId, issueId, revisionId };
   }
 
   async function seedIssueWithAdapterRunComment(input: {
     adapterType: "claude_local" | "opencode_local";
     sessionId: string;
   }) {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const issueId = randomUUID();
     const commentId = randomUUID();
     const runId = randomUUID();
 
     await db.insert(products).values({
-      id: companyId,
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(agents).values({
       id: agentId,
-      companyId,
+      productId,
       name: "TraceCollector",
       role: "engineer",
       status: "active",
@@ -436,7 +436,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(issues).values({
       id: issueId,
-      companyId,
+      productId,
       title: "Trace-backed feedback",
       status: "todo",
       priority: "medium",
@@ -445,7 +445,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(heartbeatRuns).values({
       id: runId,
-      companyId,
+      productId,
       agentId,
       invocationSource: "manual",
       status: "succeeded",
@@ -460,18 +460,18 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(issueComments).values({
       id: commentId,
-      companyId,
+      productId,
       issueId,
       authorAgentId: agentId,
       createdByRunId: runId,
       body: "Trace-backed agent output",
     });
 
-    return { companyId, issueId, commentId };
+    return { productId, issueId, commentId };
   }
 
   it("stores a local vote without enabling sharing by default", async () => {
-    const { companyId, issueId, commentId } = await seedIssueWithAgentComment();
+    const { productId, issueId, commentId } = await seedIssueWithAgentComment();
 
     const result = await svc.saveIssueVote({
       issueId,
@@ -489,7 +489,7 @@ describe("feedbackService.saveIssueVote", () => {
     const company = await db
       .select()
       .from(products)
-      .where(eq(products.id, companyId))
+      .where(eq(products.id, productId))
       .then((rows) => rows[0] ?? null);
 
     expect(company?.feedbackDataSharingEnabled).toBe(false);
@@ -506,7 +506,7 @@ describe("feedbackService.saveIssueVote", () => {
     });
 
     const traces = await svc.listFeedbackTraces({
-      companyId,
+      productId,
       issueId,
       includePayload: true,
     });
@@ -515,7 +515,7 @@ describe("feedbackService.saveIssueVote", () => {
   });
 
   it("enables sharing metadata on the first consented vote and upserts subsequent votes", async () => {
-    const { companyId, issueId, commentId } = await seedIssueWithAgentComment();
+    const { productId, issueId, commentId } = await seedIssueWithAgentComment();
 
     const first = await svc.saveIssueVote({
       issueId,
@@ -558,7 +558,7 @@ describe("feedbackService.saveIssueVote", () => {
     const company = await db
       .select()
       .from(products)
-      .where(eq(products.id, companyId))
+      .where(eq(products.id, productId))
       .then((rows) => rows[0] ?? null);
 
     expect(company?.feedbackDataSharingEnabled).toBe(true);
@@ -592,7 +592,7 @@ describe("feedbackService.saveIssueVote", () => {
     expect(result.sharingEnabled).toBe(true);
 
     const traces = await svc.listFeedbackTraces({
-      companyId: result.vote.companyId,
+      productId: result.vote.productId,
       issueId,
       includePayload: true,
     });
@@ -625,7 +625,7 @@ describe("feedbackService.saveIssueVote", () => {
     expect(result.vote.reason).toBe("The update missed the edge case handling.");
 
     const traces = await svc.listFeedbackTraces({
-      companyId: result.vote.companyId,
+      productId: result.vote.productId,
       issueId,
       includePayload: true,
     });
@@ -661,7 +661,7 @@ describe("feedbackService.saveIssueVote", () => {
     expect(secondResult.vote.reason).toBe("Needed concrete next steps.");
 
     const traces = await svc.listFeedbackTraces({
-      companyId: secondResult.vote.companyId,
+      productId: secondResult.vote.productId,
       issueId,
       includePayload: true,
     });
@@ -676,7 +676,7 @@ describe("feedbackService.saveIssueVote", () => {
   });
 
   it("builds a detailed sanitized shared bundle with issue and agent context", async () => {
-    const { companyId, issueId, targetCommentId, runId } = await seedIssueWithRichAgentComment();
+    const { productId, issueId, targetCommentId, runId } = await seedIssueWithRichAgentComment();
 
     await svc.saveIssueVote({
       issueId,
@@ -688,7 +688,7 @@ describe("feedbackService.saveIssueVote", () => {
     });
 
     const traces = await svc.listFeedbackTraces({
-      companyId,
+      productId,
       issueId,
       includePayload: true,
     });
@@ -724,7 +724,7 @@ describe("feedbackService.saveIssueVote", () => {
   });
 
   it("keeps earlier local votes local when a later vote enables sharing", async () => {
-    const { companyId, issueId, commentId: firstCommentId } = await seedIssueWithAgentComment();
+    const { productId, issueId, commentId: firstCommentId } = await seedIssueWithAgentComment();
     const secondCommentId = randomUUID();
     const agentId = await db
       .select({ authorAgentId: issueComments.authorAgentId })
@@ -734,7 +734,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(issueComments).values({
       id: secondCommentId,
-      companyId,
+      productId,
       issueId,
       authorAgentId: agentId,
       body: "Second AI generated update",
@@ -758,7 +758,7 @@ describe("feedbackService.saveIssueVote", () => {
     });
 
     const traces = await svc.listFeedbackTraces({
-      companyId,
+      productId,
       issueId,
       includePayload: true,
     });
@@ -980,19 +980,19 @@ describe("feedbackService.saveIssueVote", () => {
   });
 
   it("rejects feedback votes on human-authored comments", async () => {
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const issueId = randomUUID();
     const commentId = randomUUID();
 
     await db.insert(products).values({
-      id: companyId,
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `H${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `H${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
 
     await db.insert(issues).values({
       id: issueId,
-      companyId,
+      productId,
       title: "Human-authored comment",
       status: "todo",
       priority: "medium",
@@ -1001,7 +1001,7 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(issueComments).values({
       id: commentId,
-      companyId,
+      productId,
       issueId,
       authorUserId: "user-2",
       body: "Board comment",
@@ -1019,9 +1019,9 @@ describe("feedbackService.saveIssueVote", () => {
   });
 
   it("flushes pending shared traces into configured object storage and marks them sent", async () => {
-    const { companyId, issueId, commentId } = await seedIssueWithAgentComment();
+    const { productId, issueId, commentId } = await seedIssueWithAgentComment();
     const uploadTraceBundle = vi.fn().mockResolvedValue({
-      objectKey: `feedback-traces/${companyId}/2026/04/01/test-trace.json`,
+      objectKey: `feedback-traces/${productId}/2026/04/01/test-trace.json`,
     });
     const flushingSvc = feedbackService(db, {
       shareClient: {
@@ -1046,7 +1046,7 @@ describe("feedbackService.saveIssueVote", () => {
     });
 
     const traces = await flushingSvc.listFeedbackTraces({
-      companyId,
+      productId,
       issueId,
       includePayload: true,
     });
@@ -1058,7 +1058,7 @@ describe("feedbackService.saveIssueVote", () => {
     expect(uploadTraceBundle.mock.calls[0]?.[0]).toMatchObject({
       traceId: traces[0]?.id,
       exportId: traces[0]?.exportId,
-      companyId,
+      productId,
       issueId,
       issueIdentifier: traces[0]?.issueIdentifier,
       captureStatus: expect.stringMatching(/^(full|partial|unavailable)$/),
@@ -1070,7 +1070,7 @@ describe("feedbackService.saveIssueVote", () => {
   });
 
   it("can flush a single shared trace immediately by trace id", async () => {
-    const { companyId, issueId, commentId: firstCommentId } = await seedIssueWithAgentComment();
+    const { productId, issueId, commentId: firstCommentId } = await seedIssueWithAgentComment();
     const secondCommentId = randomUUID();
     const agentId = await db
       .select({ authorAgentId: issueComments.authorAgentId })
@@ -1080,14 +1080,14 @@ describe("feedbackService.saveIssueVote", () => {
 
     await db.insert(issueComments).values({
       id: secondCommentId,
-      companyId,
+      productId,
       issueId,
       authorAgentId: agentId,
       body: "Second AI generated update",
     });
 
     const uploadTraceBundle = vi.fn().mockResolvedValue({
-      objectKey: `feedback-traces/${companyId}/2026/04/01/test-trace.json`,
+      objectKey: `feedback-traces/${productId}/2026/04/01/test-trace.json`,
     });
     const flushingSvc = feedbackService(db, {
       shareClient: {
@@ -1113,7 +1113,7 @@ describe("feedbackService.saveIssueVote", () => {
     });
 
     const flushResult = await flushingSvc.flushPendingFeedbackTraces({
-      companyId,
+      productId,
       traceId: first.traceId ?? undefined,
       limit: 1,
     });
@@ -1126,7 +1126,7 @@ describe("feedbackService.saveIssueVote", () => {
     expect(uploadTraceBundle).toHaveBeenCalledTimes(1);
 
     const traces = await flushingSvc.listFeedbackTraces({
-      companyId,
+      productId,
       issueId,
       includePayload: true,
     });
@@ -1137,7 +1137,7 @@ describe("feedbackService.saveIssueVote", () => {
   });
 
   it("marks pending shared traces as failed when remote export upload fails", async () => {
-    const { companyId, issueId, commentId } = await seedIssueWithAgentComment();
+    const { productId, issueId, commentId } = await seedIssueWithAgentComment();
     const uploadTraceBundle = vi.fn().mockRejectedValue(new Error("telemetry unavailable"));
     const flushingSvc = feedbackService(db, {
       shareClient: {
@@ -1162,7 +1162,7 @@ describe("feedbackService.saveIssueVote", () => {
     });
 
     const traces = await flushingSvc.listFeedbackTraces({
-      companyId,
+      productId,
       issueId,
       includePayload: true,
     });
@@ -1175,7 +1175,7 @@ describe("feedbackService.saveIssueVote", () => {
   });
 
   it("marks pending shared traces as failed when no feedback export backend is configured", async () => {
-    const { companyId, issueId, commentId } = await seedIssueWithAgentComment();
+    const { productId, issueId, commentId } = await seedIssueWithAgentComment();
 
     const result = await svc.saveIssueVote({
       issueId,
@@ -1187,7 +1187,7 @@ describe("feedbackService.saveIssueVote", () => {
     });
 
     const flushResult = await svc.flushPendingFeedbackTraces({
-      companyId,
+      productId,
       traceId: result.traceId ?? undefined,
       limit: 1,
     });
@@ -1199,7 +1199,7 @@ describe("feedbackService.saveIssueVote", () => {
     });
 
     const traces = await svc.listFeedbackTraces({
-      companyId,
+      productId,
       issueId,
       includePayload: true,
     });

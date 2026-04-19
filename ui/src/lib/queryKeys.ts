@@ -5,15 +5,15 @@ export const queryKeys = {
     stats: ["companies", "stats"] as const,
   },
   companySkills: {
-    list: (companyId: string) => ["company-skills", companyId] as const,
-    detail: (companyId: string, skillId: string) => ["company-skills", companyId, skillId] as const,
-    updateStatus: (companyId: string, skillId: string) =>
-      ["company-skills", companyId, skillId, "update-status"] as const,
-    file: (companyId: string, skillId: string, relativePath: string) =>
-      ["company-skills", companyId, skillId, "file", relativePath] as const,
+    list: (productId: string) => ["company-skills", productId] as const,
+    detail: (productId: string, skillId: string) => ["company-skills", productId, skillId] as const,
+    updateStatus: (productId: string, skillId: string) =>
+      ["company-skills", productId, skillId, "update-status"] as const,
+    file: (productId: string, skillId: string, relativePath: string) =>
+      ["company-skills", productId, skillId, "file", relativePath] as const,
   },
   agents: {
-    list: (companyId: string) => ["agents", companyId] as const,
+    list: (productId: string) => ["agents", productId] as const,
     detail: (id: string) => ["agents", "detail", id] as const,
     runtimeState: (id: string) => ["agents", "runtime-state", id] as const,
     taskSessions: (id: string) => ["agents", "task-sessions", id] as const,
@@ -23,26 +23,26 @@ export const queryKeys = {
       ["agents", "instructions-bundle", id, "file", relativePath] as const,
     keys: (agentId: string) => ["agents", "keys", agentId] as const,
     configRevisions: (agentId: string) => ["agents", "config-revisions", agentId] as const,
-    adapterModels: (companyId: string, adapterType: string) =>
-      ["agents", companyId, "adapter-models", adapterType] as const,
-    detectModel: (companyId: string, adapterType: string) =>
-      ["agents", companyId, "detect-model", adapterType] as const,
+    adapterModels: (productId: string, adapterType: string) =>
+      ["agents", productId, "adapter-models", adapterType] as const,
+    detectModel: (productId: string, adapterType: string) =>
+      ["agents", productId, "detect-model", adapterType] as const,
   },
   issues: {
-    list: (companyId: string) => ["issues", companyId] as const,
-    search: (companyId: string, q: string, projectId?: string, limit?: number) =>
-      ["issues", companyId, "search", q, projectId ?? "__all-projects__", limit ?? "__no-limit__"] as const,
-    listAssignedToMe: (companyId: string) => ["issues", companyId, "assigned-to-me"] as const,
-    listMineByMe: (companyId: string) => ["issues", companyId, "mine-by-me"] as const,
-    listTouchedByMe: (companyId: string) => ["issues", companyId, "touched-by-me"] as const,
-    listUnreadTouchedByMe: (companyId: string) => ["issues", companyId, "unread-touched-by-me"] as const,
-    labels: (companyId: string) => ["issues", companyId, "labels"] as const,
-    listByProject: (companyId: string, projectId: string) =>
-      ["issues", companyId, "project", projectId] as const,
-    listByParent: (companyId: string, parentId: string) =>
-      ["issues", companyId, "parent", parentId] as const,
-    listByExecutionWorkspace: (companyId: string, executionWorkspaceId: string) =>
-      ["issues", companyId, "execution-workspace", executionWorkspaceId] as const,
+    list: (productId: string) => ["issues", productId] as const,
+    search: (productId: string, q: string, projectId?: string, limit?: number) =>
+      ["issues", productId, "search", q, projectId ?? "__all-projects__", limit ?? "__no-limit__"] as const,
+    listAssignedToMe: (productId: string) => ["issues", productId, "assigned-to-me"] as const,
+    listMineByMe: (productId: string) => ["issues", productId, "mine-by-me"] as const,
+    listTouchedByMe: (productId: string) => ["issues", productId, "touched-by-me"] as const,
+    listUnreadTouchedByMe: (productId: string) => ["issues", productId, "unread-touched-by-me"] as const,
+    labels: (productId: string) => ["issues", productId, "labels"] as const,
+    listByProject: (productId: string, projectId: string) =>
+      ["issues", productId, "project", projectId] as const,
+    listByParent: (productId: string, parentId: string) =>
+      ["issues", productId, "parent", parentId] as const,
+    listByExecutionWorkspace: (productId: string, executionWorkspaceId: string) =>
+      ["issues", productId, "execution-workspace", executionWorkspaceId] as const,
     detail: (id: string) => ["issues", "detail", id] as const,
     comments: (issueId: string) => ["issues", "comments", issueId] as const,
     feedbackVotes: (issueId: string) => ["issues", "feedback-votes", issueId] as const,
@@ -59,52 +59,52 @@ export const queryKeys = {
     workProducts: (issueId: string) => ["issues", "work-products", issueId] as const,
   },
   routines: {
-    list: (companyId: string) => ["routines", companyId] as const,
+    list: (productId: string) => ["routines", productId] as const,
     detail: (id: string) => ["routines", "detail", id] as const,
     runs: (id: string) => ["routines", "runs", id] as const,
-    activity: (companyId: string, id: string) => ["routines", "activity", companyId, id] as const,
+    activity: (productId: string, id: string) => ["routines", "activity", productId, id] as const,
   },
   sprints: {
-    list: (companyId: string, state?: string) =>
-      ["sprints", companyId, state ?? "__all__"] as const,
-    active: (companyId: string) => ["sprints", companyId, "active"] as const,
+    list: (productId: string, state?: string) =>
+      ["sprints", productId, state ?? "__all__"] as const,
+    active: (productId: string) => ["sprints", productId, "active"] as const,
     detail: (id: string) => ["sprints", "detail", id] as const,
     issues: (id: string) => ["sprints", "issues", id] as const,
     summary: (id: string) => ["sprints", "summary", id] as const,
   },
   executionWorkspaces: {
-    list: (companyId: string, filters?: Record<string, string | boolean | undefined>) =>
-      ["execution-workspaces", companyId, filters ?? {}] as const,
-    summaryList: (companyId: string, filters?: Record<string, string | boolean | undefined>) =>
-      ["execution-workspaces", companyId, "summary", filters ?? {}] as const,
+    list: (productId: string, filters?: Record<string, string | boolean | undefined>) =>
+      ["execution-workspaces", productId, filters ?? {}] as const,
+    summaryList: (productId: string, filters?: Record<string, string | boolean | undefined>) =>
+      ["execution-workspaces", productId, "summary", filters ?? {}] as const,
     detail: (id: string) => ["execution-workspaces", "detail", id] as const,
     closeReadiness: (id: string) => ["execution-workspaces", "close-readiness", id] as const,
     workspaceOperations: (id: string) => ["execution-workspaces", "workspace-operations", id] as const,
   },
   projects: {
-    list: (companyId: string) => ["projects", companyId] as const,
+    list: (productId: string) => ["projects", productId] as const,
     detail: (id: string) => ["projects", "detail", id] as const,
   },
   goals: {
-    list: (companyId: string) => ["goals", companyId] as const,
+    list: (productId: string) => ["goals", productId] as const,
     detail: (id: string) => ["goals", "detail", id] as const,
   },
   // Softclip pivot §6: queryKeys.budgets branch removed along with the UI
   // budget panels. Nothing should be reading budgets overview data any more.
   approvals: {
-    list: (companyId: string, status?: string) =>
-      ["approvals", companyId, status] as const,
+    list: (productId: string, status?: string) =>
+      ["approvals", productId, status] as const,
     detail: (approvalId: string) => ["approvals", "detail", approvalId] as const,
     comments: (approvalId: string) => ["approvals", "comments", approvalId] as const,
     issues: (approvalId: string) => ["approvals", "issues", approvalId] as const,
   },
   access: {
-    invites: (companyId: string, state: string = "all", limit: number = 20) =>
-      ["access", "invites", "paginated-v1", companyId, state, limit] as const,
-    joinRequests: (companyId: string, status: string = "pending_approval") =>
-      ["access", "join-requests", companyId, status] as const,
-    companyMembers: (companyId: string) => ["access", "company-members", companyId] as const,
-    companyUserDirectory: (companyId: string) => ["access", "company-user-directory", companyId] as const,
+    invites: (productId: string, state: string = "all", limit: number = 20) =>
+      ["access", "invites", "paginated-v1", productId, state, limit] as const,
+    joinRequests: (productId: string, status: string = "pending_approval") =>
+      ["access", "join-requests", productId, status] as const,
+    companyMembers: (productId: string) => ["access", "company-members", productId] as const,
+    companyUserDirectory: (productId: string) => ["access", "company-user-directory", productId] as const,
     adminUsers: (query: string) => ["access", "admin-users", query] as const,
     userCompanyAccess: (userId: string) => ["access", "user-company-access", userId] as const,
     invite: (token: string) => ["access", "invite", token] as const,
@@ -115,8 +115,8 @@ export const queryKeys = {
   },
   sidebarPreferences: {
     companyOrder: (userId: string) => ["sidebar-preferences", "company-order", userId] as const,
-    projectOrder: (companyId: string, userId: string) =>
-      ["sidebar-preferences", "project-order", companyId, userId] as const,
+    projectOrder: (productId: string, userId: string) =>
+      ["sidebar-preferences", "project-order", productId, userId] as const,
   },
   instance: {
     generalSettings: ["instance", "general-settings"] as const,
@@ -125,34 +125,34 @@ export const queryKeys = {
   },
   health: ["health"] as const,
   secrets: {
-    list: (companyId: string) => ["secrets", companyId] as const,
-    providers: (companyId: string) => ["secret-providers", companyId] as const,
+    list: (productId: string) => ["secrets", productId] as const,
+    providers: (productId: string) => ["secret-providers", productId] as const,
   },
-  dashboard: (companyId: string) => ["dashboard", companyId] as const,
-  sidebarBadges: (companyId: string) => ["sidebar-badges", companyId] as const,
-  inboxDismissals: (companyId: string) => ["inbox-dismissals", companyId] as const,
-  activity: (companyId: string) => ["activity", companyId] as const,
-  costs: (companyId: string, from?: string, to?: string) =>
-    ["costs", companyId, from, to] as const,
-  usageByProvider: (companyId: string, from?: string, to?: string) =>
-    ["usage-by-provider", companyId, from, to] as const,
-  usageByBiller: (companyId: string, from?: string, to?: string) =>
-    ["usage-by-biller", companyId, from, to] as const,
+  dashboard: (productId: string) => ["dashboard", productId] as const,
+  sidebarBadges: (productId: string) => ["sidebar-badges", productId] as const,
+  inboxDismissals: (productId: string) => ["inbox-dismissals", productId] as const,
+  activity: (productId: string) => ["activity", productId] as const,
+  costs: (productId: string, from?: string, to?: string) =>
+    ["costs", productId, from, to] as const,
+  usageByProvider: (productId: string, from?: string, to?: string) =>
+    ["usage-by-provider", productId, from, to] as const,
+  usageByBiller: (productId: string, from?: string, to?: string) =>
+    ["usage-by-biller", productId, from, to] as const,
   // Softclip pivot §6: finance-* query keys removed (finance_events
   // table is gone). Cost-* keys stay because LiveUpdatesProvider still
   // invalidates them on live events — the invalidation is a no-op now
   // but the hook remains.
-  usageWindowSpend: (companyId: string) =>
-    ["usage-window-spend", companyId] as const,
-  usageQuotaWindows: (companyId: string) =>
-    ["usage-quota-windows", companyId] as const,
-  heartbeats: (companyId: string, agentId?: string) =>
-    ["heartbeats", companyId, agentId] as const,
+  usageWindowSpend: (productId: string) =>
+    ["usage-window-spend", productId] as const,
+  usageQuotaWindows: (productId: string) =>
+    ["usage-quota-windows", productId] as const,
+  heartbeats: (productId: string, agentId?: string) =>
+    ["heartbeats", productId, agentId] as const,
   runDetail: (runId: string) => ["heartbeat-run", runId] as const,
   runWorkspaceOperations: (runId: string) => ["heartbeat-run", runId, "workspace-operations"] as const,
-  liveRuns: (companyId: string) => ["live-runs", companyId] as const,
+  liveRuns: (productId: string) => ["live-runs", productId] as const,
   runIssues: (runId: string) => ["run-issues", runId] as const,
-  org: (companyId: string) => ["org", companyId] as const,
+  org: (productId: string) => ["org", productId] as const,
   skills: {
     available: ["skills", "available"] as const,
   },

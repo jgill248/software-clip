@@ -13,7 +13,7 @@ export const goals = pgTable(
   "goals",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     title: text("title").notNull(),
     description: text("description"),
     level: text("level").notNull().default("task"),
@@ -24,6 +24,6 @@ export const goals = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyIdx: index("goals_product_idx").on(table.companyId),
+    companyIdx: index("goals_product_idx").on(table.productId),
   }),
 );

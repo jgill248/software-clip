@@ -7,7 +7,7 @@ export const activityLog = pgTable(
   "activity_log",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     actorType: text("actor_type").notNull().default("system"),
     actorId: text("actor_id").notNull(),
     action: text("action").notNull(),
@@ -19,7 +19,7 @@ export const activityLog = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyCreatedIdx: index("activity_log_product_created_idx").on(table.companyId, table.createdAt),
+    companyCreatedIdx: index("activity_log_product_created_idx").on(table.productId, table.createdAt),
     runIdIdx: index("activity_log_run_id_idx").on(table.runId),
     entityIdx: index("activity_log_entity_type_id_idx").on(table.entityType, table.entityId),
   }),

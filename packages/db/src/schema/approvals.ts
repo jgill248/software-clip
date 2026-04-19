@@ -6,7 +6,7 @@ export const approvals = pgTable(
   "approvals",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     type: text("type").notNull(),
     requestedByAgentId: uuid("requested_by_agent_id").references(() => agents.id),
     requestedByUserId: text("requested_by_user_id"),
@@ -20,7 +20,7 @@ export const approvals = pgTable(
   },
   (table) => ({
     companyStatusTypeIdx: index("approvals_product_status_type_idx").on(
-      table.companyId,
+      table.productId,
       table.status,
       table.type,
     ),

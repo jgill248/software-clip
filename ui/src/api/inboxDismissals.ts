@@ -2,7 +2,7 @@ import type { InboxDismissal } from "@softclipai/shared";
 import { api } from "./client";
 
 export const inboxDismissalsApi = {
-  list: (companyId: string) => api.get<InboxDismissal[]>(`/companies/${companyId}/inbox-dismissals`),
-  dismiss: (companyId: string, itemKey: string) =>
-    api.post<InboxDismissal>(`/companies/${companyId}/inbox-dismissals`, { itemKey }),
+  list: (productId: string) => api.get<InboxDismissal[]>(`/companies/${productId}/inbox-dismissals`),
+  dismiss: (productId: string, itemKey: string) =>
+    api.post<InboxDismissal>(`/companies/${productId}/inbox-dismissals`, { itemKey }),
 };

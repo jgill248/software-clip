@@ -7,7 +7,7 @@ export const issueRelations = pgTable(
   "issue_relations",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     issueId: uuid("issue_id").notNull().references(() => issues.id, { onDelete: "cascade" }),
     relatedIssueId: uuid("related_issue_id").notNull().references(() => issues.id, { onDelete: "cascade" }),
     type: text("type").$type<"blocks">().notNull(),
@@ -17,11 +17,11 @@ export const issueRelations = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyIssueIdx: index("issue_relations_product_issue_idx").on(table.companyId, table.issueId),
-    companyRelatedIssueIdx: index("issue_relations_product_related_issue_idx").on(table.companyId, table.relatedIssueId),
-    companyTypeIdx: index("issue_relations_product_type_idx").on(table.companyId, table.type),
+    companyIssueIdx: index("issue_relations_product_issue_idx").on(table.productId, table.issueId),
+    companyRelatedIssueIdx: index("issue_relations_product_related_issue_idx").on(table.productId, table.relatedIssueId),
+    companyTypeIdx: index("issue_relations_product_type_idx").on(table.productId, table.type),
     companyEdgeUq: uniqueIndex("issue_relations_product_edge_uq").on(
-      table.companyId,
+      table.productId,
       table.issueId,
       table.relatedIssueId,
       table.type,

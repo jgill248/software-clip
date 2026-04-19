@@ -7,7 +7,7 @@ export const approvalComments = pgTable(
   "approval_comments",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     approvalId: uuid("approval_id").notNull().references(() => approvals.id),
     authorAgentId: uuid("author_agent_id").references(() => agents.id),
     authorUserId: text("author_user_id"),
@@ -16,7 +16,7 @@ export const approvalComments = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyIdx: index("approval_comments_product_idx").on(table.companyId),
+    companyIdx: index("approval_comments_product_idx").on(table.productId),
     approvalIdx: index("approval_comments_approval_idx").on(table.approvalId),
     approvalCreatedIdx: index("approval_comments_approval_created_idx").on(
       table.approvalId,

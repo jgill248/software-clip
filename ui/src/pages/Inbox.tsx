@@ -1370,8 +1370,8 @@ export function Inbox() {
       setRetryingRunIds((prev) => new Set(prev).add(run.id));
     },
     onSuccess: ({ newRun, originalRun }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.heartbeats(originalRun.companyId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.heartbeats(originalRun.companyId, originalRun.agentId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.heartbeats(originalRun.productId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.heartbeats(originalRun.productId, originalRun.agentId) });
       navigate(`/agents/${originalRun.agentId}/runs/${newRun.id}`);
     },
     onSettled: (_data, _error, run) => {

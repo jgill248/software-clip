@@ -6,7 +6,7 @@ function makeClient() {
   return new PaperclipApiClient({
     apiUrl: "http://localhost:3100/api",
     apiKey: "token-123",
-    companyId: "11111111-1111-1111-1111-111111111111",
+    productId: "11111111-1111-1111-1111-111111111111",
     agentId: "22222222-2222-2222-2222-222222222222",
     runId: "33333333-3333-3333-3333-333333333333",
   });

@@ -71,7 +71,7 @@ export function sprintService(db: Db) {
     getById: (id: string) => loadByIdOrNull(id),
 
     list: async (
-      companyId: string,
+      productId: string,
       filters: { state?: SprintState } = {},
     ): Promise<SprintRow[]> => {
       if (filters.state && !isValidState(filters.state)) {
@@ -79,10 +79,10 @@ export function sprintService(db: Db) {
       }
       const whereClause = filters.state
         ? and(
-            eq(sprints.companyId, companyId),
+            eq(sprints.productId, productId),
             eq(sprints.state, filters.state),
           )
-        : eq(sprints.companyId, companyId);
+        : eq(sprints.productId, productId);
       return db
         .select()
         .from(sprints)
@@ -94,18 +94,18 @@ export function sprintService(db: Db) {
      * Convenience helper used heavily by the UI sidebar and by heartbeat
      * planners. Returns null if no active sprint exists.
      */
-    getActive: async (companyId: string): Promise<SprintRow | null> => {
+    getActive: async (productId: string): Promise<SprintRow | null> => {
       const rows = await db
         .select()
         .from(sprints)
         .where(
-          and(eq(sprints.companyId, companyId), eq(sprints.state, "active")),
+          and(eq(sprints.productId, productId), eq(sprints.state, "active")),
         );
       return rows[0] ?? null;
     },
 
     create: async (
-      companyId: string,
+      productId: string,
       input: {
         name: string;
         goal?: string | null;
@@ -136,7 +136,7 @@ export function sprintService(db: Db) {
       const [row] = await db
         .insert(sprints)
         .values({
-          companyId,
+          productId,
           name,
           goal: goal && goal.length > 0 ? goal : null,
           state: "planned",
@@ -271,7 +271,7 @@ export function sprintService(db: Db) {
       sprintId: string | null,
     ): Promise<void> => {
       const issueRows = await db
-        .select({ id: issues.id, companyId: issues.companyId })
+        .select({ id: issues.id, productId: issues.productId })
         .from(issues)
         .where(eq(issues.id, issueId));
       const issue = issueRows[0];
@@ -279,7 +279,7 @@ export function sprintService(db: Db) {
 
       if (sprintId !== null) {
         const sprint = await assertExists(sprintId);
-        if (sprint.companyId !== issue.companyId) {
+        if (sprint.productId !== issue.productId) {
           throw unprocessable(
             "Cannot assign an issue to a sprint in a different product",
           );

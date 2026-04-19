@@ -131,7 +131,7 @@ describe("claude execute", () => {
     try {
       await execute({
         runId: "run-fresh",
-        agent: { id: "agent-1", companyId: "co-1", name: "Test", adapterType: "claude_local", adapterConfig: {} },
+        agent: { id: "agent-1", productId: "co-1", name: "Test", adapterType: "claude_local", adapterConfig: {} },
         runtime: { sessionId: null, sessionParams: null, sessionDisplayId: null, taskKey: null },
         config: {
           command: commandPath,
@@ -161,7 +161,7 @@ describe("claude execute", () => {
     try {
       await execute({
         runId: "run-resume",
-        agent: { id: "agent-1", companyId: "co-1", name: "Test", adapterType: "claude_local", adapterConfig: {} },
+        agent: { id: "agent-1", productId: "co-1", name: "Test", adapterType: "claude_local", adapterConfig: {} },
         runtime: { sessionId: "claude-session-1", sessionParams: null, sessionDisplayId: null, taskKey: null },
         config: {
           command: commandPath,
@@ -199,7 +199,7 @@ describe("claude execute", () => {
     try {
       await execute({
         runId: "run-notes-fresh",
-        agent: { id: "agent-1", companyId: "co-1", name: "Test", adapterType: "claude_local", adapterConfig: {} },
+        agent: { id: "agent-1", productId: "co-1", name: "Test", adapterType: "claude_local", adapterConfig: {} },
         runtime: { sessionId: null, sessionParams: null, sessionDisplayId: null, taskKey: null },
         config: {
           command: commandPath,
@@ -229,7 +229,7 @@ describe("claude execute", () => {
     try {
       await execute({
         runId: "run-notes-resume",
-        agent: { id: "agent-1", companyId: "co-1", name: "Test", adapterType: "claude_local", adapterConfig: {} },
+        agent: { id: "agent-1", productId: "co-1", name: "Test", adapterType: "claude_local", adapterConfig: {} },
         runtime: { sessionId: "claude-session-1", sessionParams: null, sessionDisplayId: null, taskKey: null },
         config: {
           command: commandPath,
@@ -261,7 +261,7 @@ describe("claude execute", () => {
     try {
       const result = await execute({
         runId: "run-resume-fallback",
-        agent: { id: "agent-1", companyId: "co-1", name: "Test", adapterType: "claude_local", adapterConfig: {} },
+        agent: { id: "agent-1", productId: "co-1", name: "Test", adapterType: "claude_local", adapterConfig: {} },
         runtime: { sessionId: "claude-session-1", sessionParams: null, sessionDisplayId: null, taskKey: null },
         config: {
           command: commandPath,
@@ -339,7 +339,7 @@ describe("claude execute", () => {
         runId: "run-meta",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Claude Coder",
           adapterType: "claude_local",
           adapterConfig: {},
@@ -406,7 +406,7 @@ describe("claude execute", () => {
         runId: "run-1",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Claude Coder",
           adapterType: "claude_local",
           adapterConfig: {},
@@ -443,7 +443,7 @@ describe("claude execute", () => {
         runId: "run-2",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Claude Coder",
           adapterType: "claude_local",
           adapterConfig: {},
@@ -561,7 +561,7 @@ describe("claude execute", () => {
         runId: "run-before",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Claude Coder",
           adapterType: "claude_local",
           adapterConfig: {},
@@ -592,7 +592,7 @@ describe("claude execute", () => {
         runId: "run-after",
         agent: {
           id: "agent-1",
-          companyId: "company-1",
+          productId: "company-1",
           name: "Claude Coder",
           adapterType: "claude_local",
           adapterConfig: {},

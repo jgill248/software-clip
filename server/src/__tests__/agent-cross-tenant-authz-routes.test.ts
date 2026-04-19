@@ -5,12 +5,12 @@ import { errorHandler } from "../middleware/index.js";
 import { agentRoutes } from "../routes/agents.js";
 
 const agentId = "11111111-1111-4111-8111-111111111111";
-const companyId = "22222222-2222-4222-8222-222222222222";
+const productId = "22222222-2222-4222-8222-222222222222";
 const keyId = "33333333-3333-4333-8333-333333333333";
 
 const baseAgent = {
   id: agentId,
-  companyId,
+  productId,
   name: "Builder",
   urlKey: "builder",
   role: "engineer",
@@ -36,7 +36,7 @@ const baseAgent = {
 const baseKey = {
   id: keyId,
   agentId,
-  companyId,
+  productId,
   name: "exploit",
   createdAt: new Date("2026-04-11T00:00:00.000Z"),
   revokedAt: null,
@@ -171,7 +171,7 @@ describe("agent cross-tenant route authorization", () => {
     const app = createApp({
       type: "board",
       userId: "mallory",
-      companyIds: [],
+      productIds: [],
       source: "session",
       isInstanceAdmin: false,
     });
@@ -189,7 +189,7 @@ describe("agent cross-tenant route authorization", () => {
     const app = createApp({
       type: "board",
       userId: "mallory",
-      companyIds: [],
+      productIds: [],
       source: "session",
       isInstanceAdmin: false,
     });
@@ -206,7 +206,7 @@ describe("agent cross-tenant route authorization", () => {
     const app = createApp({
       type: "board",
       userId: "mallory",
-      companyIds: [],
+      productIds: [],
       source: "session",
       isInstanceAdmin: false,
     });
@@ -225,7 +225,7 @@ describe("agent cross-tenant route authorization", () => {
     const app = createApp({
       type: "board",
       userId: "mallory",
-      companyIds: [],
+      productIds: [],
       source: "session",
       isInstanceAdmin: false,
     });
@@ -249,7 +249,7 @@ describe("agent cross-tenant route authorization", () => {
     const app = createApp({
       type: "board",
       userId: "board-user",
-      companyIds: [companyId],
+      productIds: [productId],
       source: "session",
       isInstanceAdmin: false,
     });

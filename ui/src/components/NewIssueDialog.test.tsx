@@ -268,7 +268,7 @@ describe("NewIssueDialog", () => {
     mockInstanceSettingsApi.getExperimental.mockResolvedValue({ enableIsolatedWorkspaces: false });
     mockIssuesApi.create.mockResolvedValue({
       id: "issue-2",
-      companyId: "company-1",
+      productId: "company-1",
       identifier: "PAP-2",
     });
   });

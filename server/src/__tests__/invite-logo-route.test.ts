@@ -71,7 +71,7 @@ describe("GET /invites/:token/logo", () => {
   it("serves the company logo for an active invite without company auth", async () => {
     const invite = {
       id: "invite-1",
-      companyId: "company-1",
+      productId: "company-1",
       inviteType: "company_join",
       allowedJoinTypes: "human",
       tokenHash: "hash",
@@ -95,7 +95,7 @@ describe("GET /invites/:token/logo", () => {
     });
     const app = createApp(
       createDbStub([invite], [{
-        companyId: "company-1",
+        productId: "company-1",
         objectKey: "assets/companies/logo-1",
         contentType: "image/png",
         byteSize: 3,
@@ -114,7 +114,7 @@ describe("GET /invites/:token/logo", () => {
   it("returns 404 when the logo asset record exists but storage does not", async () => {
     const invite = {
       id: "invite-1",
-      companyId: "company-1",
+      productId: "company-1",
       inviteType: "company_join",
       allowedJoinTypes: "human",
       tokenHash: "hash",
@@ -129,7 +129,7 @@ describe("GET /invites/:token/logo", () => {
     mockStorage.headObject.mockResolvedValue({ exists: false });
     const app = createApp(
       createDbStub([invite], [{
-        companyId: "company-1",
+        productId: "company-1",
         objectKey: "assets/companies/logo-1",
         contentType: "image/png",
         byteSize: 3,

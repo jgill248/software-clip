@@ -63,26 +63,26 @@ export function productService(db: Db) {
   }
 
   async function getMonthlySpendByCompanyIds(
-    companyIds: string[],
+    productIds: string[],
     database: Pick<Db, "select"> = db,
   ) {
-    if (companyIds.length === 0) return new Map<string, number>();
+    if (productIds.length === 0) return new Map<string, number>();
     const { start, end } = currentUtcMonthWindow();
     const rows = await database
         .select({
-          companyId: costEvents.companyId,
+          productId: costEvents.productId,
           spentMonthlyCents: sql<number>`coalesce(sum(${costEvents.costCents}), 0)::double precision`,
         })
       .from(costEvents)
       .where(
         and(
-          inArray(costEvents.companyId, companyIds),
+          inArray(costEvents.productId, productIds),
           gte(costEvents.occurredAt, start),
           lt(costEvents.occurredAt, end),
         ),
       )
-      .groupBy(costEvents.companyId);
-    return new Map(rows.map((row) => [row.companyId, Number(row.spentMonthlyCents ?? 0)]));
+      .groupBy(costEvents.productId);
+    return new Map(rows.map((row) => [row.productId, Number(row.spentMonthlyCents ?? 0)]));
   }
 
   async function hydrateCompanySpend<T extends { id: string; spentMonthlyCents: number }>(
@@ -213,32 +213,32 @@ export function productService(db: Db) {
     remove: (id: string) =>
       db.transaction(async (tx) => {
         // Delete from child tables in dependency order
-        await tx.delete(heartbeatRunEvents).where(eq(heartbeatRunEvents.companyId, id));
-        await tx.delete(agentTaskSessions).where(eq(agentTaskSessions.companyId, id));
-        await tx.delete(activityLog).where(eq(activityLog.companyId, id));
-        await tx.delete(heartbeatRuns).where(eq(heartbeatRuns.companyId, id));
-        await tx.delete(agentWakeupRequests).where(eq(agentWakeupRequests.companyId, id));
-        await tx.delete(agentApiKeys).where(eq(agentApiKeys.companyId, id));
-        await tx.delete(agentRuntimeState).where(eq(agentRuntimeState.companyId, id));
-        await tx.delete(issueComments).where(eq(issueComments.companyId, id));
-        await tx.delete(costEvents).where(eq(costEvents.companyId, id));
+        await tx.delete(heartbeatRunEvents).where(eq(heartbeatRunEvents.productId, id));
+        await tx.delete(agentTaskSessions).where(eq(agentTaskSessions.productId, id));
+        await tx.delete(activityLog).where(eq(activityLog.productId, id));
+        await tx.delete(heartbeatRuns).where(eq(heartbeatRuns.productId, id));
+        await tx.delete(agentWakeupRequests).where(eq(agentWakeupRequests.productId, id));
+        await tx.delete(agentApiKeys).where(eq(agentApiKeys.productId, id));
+        await tx.delete(agentRuntimeState).where(eq(agentRuntimeState.productId, id));
+        await tx.delete(issueComments).where(eq(issueComments.productId, id));
+        await tx.delete(costEvents).where(eq(costEvents.productId, id));
         // Softclip pivot §6: financeEvents table removed.
-        await tx.delete(approvalComments).where(eq(approvalComments.companyId, id));
-        await tx.delete(approvals).where(eq(approvals.companyId, id));
-        await tx.delete(companySecrets).where(eq(companySecrets.companyId, id));
-        await tx.delete(joinRequests).where(eq(joinRequests.companyId, id));
-        await tx.delete(invites).where(eq(invites.companyId, id));
-        await tx.delete(principalPermissionGrants).where(eq(principalPermissionGrants.companyId, id));
-        await tx.delete(companyMemberships).where(eq(companyMemberships.companyId, id));
-        await tx.delete(companySkills).where(eq(companySkills.companyId, id));
-        await tx.delete(issueReadStates).where(eq(issueReadStates.companyId, id));
-        await tx.delete(issues).where(eq(issues.companyId, id));
+        await tx.delete(approvalComments).where(eq(approvalComments.productId, id));
+        await tx.delete(approvals).where(eq(approvals.productId, id));
+        await tx.delete(companySecrets).where(eq(companySecrets.productId, id));
+        await tx.delete(joinRequests).where(eq(joinRequests.productId, id));
+        await tx.delete(invites).where(eq(invites.productId, id));
+        await tx.delete(principalPermissionGrants).where(eq(principalPermissionGrants.productId, id));
+        await tx.delete(companyMemberships).where(eq(companyMemberships.productId, id));
+        await tx.delete(companySkills).where(eq(companySkills.productId, id));
+        await tx.delete(issueReadStates).where(eq(issueReadStates.productId, id));
+        await tx.delete(issues).where(eq(issues.productId, id));
         // Softclip pivot §6: company_logos table gone; just clean up
         // any remaining assets on delete.
-        await tx.delete(assets).where(eq(assets.companyId, id));
-        await tx.delete(goals).where(eq(goals.companyId, id));
-        await tx.delete(projects).where(eq(projects.companyId, id));
-        await tx.delete(agents).where(eq(agents.companyId, id));
+        await tx.delete(assets).where(eq(assets.productId, id));
+        await tx.delete(goals).where(eq(goals.productId, id));
+        await tx.delete(projects).where(eq(projects.productId, id));
+        await tx.delete(agents).where(eq(agents.productId, id));
         const rows = await tx
           .delete(products)
           .where(eq(products.id, id))
@@ -249,23 +249,23 @@ export function productService(db: Db) {
     stats: () =>
       Promise.all([
         db
-          .select({ companyId: agents.companyId, count: count() })
+          .select({ productId: agents.productId, count: count() })
           .from(agents)
-          .groupBy(agents.companyId),
+          .groupBy(agents.productId),
         db
-          .select({ companyId: issues.companyId, count: count() })
+          .select({ productId: issues.productId, count: count() })
           .from(issues)
-          .groupBy(issues.companyId),
+          .groupBy(issues.productId),
       ]).then(([agentRows, issueRows]) => {
         const result: Record<string, { agentCount: number; issueCount: number }> = {};
         for (const row of agentRows) {
-          result[row.companyId] = { agentCount: row.count, issueCount: 0 };
+          result[row.productId] = { agentCount: row.count, issueCount: 0 };
         }
         for (const row of issueRows) {
-          if (result[row.companyId]) {
-            result[row.companyId].issueCount = row.count;
+          if (result[row.productId]) {
+            result[row.productId].issueCount = row.count;
           } else {
-            result[row.companyId] = { agentCount: 0, issueCount: row.count };
+            result[row.productId] = { agentCount: 0, issueCount: row.count };
           }
         }
         return result;

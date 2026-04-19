@@ -249,9 +249,9 @@ export function ProjectWorkspaceDetail() {
   const isDirty = Boolean(form && initialState && JSON.stringify(form) !== JSON.stringify(initialState));
 
   useEffect(() => {
-    if (!project?.companyId || project.companyId === selectedCompanyId) return;
-    setSelectedCompanyId(project.companyId, { source: "route_sync" });
-  }, [project?.companyId, selectedCompanyId, setSelectedCompanyId]);
+    if (!project?.productId || project.productId === selectedCompanyId) return;
+    setSelectedCompanyId(project.productId, { source: "route_sync" });
+  }, [project?.productId, selectedCompanyId, setSelectedCompanyId]);
 
   useEffect(() => {
     if (!workspace) return;

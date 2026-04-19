@@ -82,7 +82,7 @@ export interface PluginBridgeError {
  */
 export interface PluginHostContext {
   /** UUID of the currently active company, if any. */
-  companyId: string | null;
+  productId: string | null;
   /** URL prefix for the current company (e.g. `"my-company"`). */
   companyPrefix: string | null;
   /** UUID of the currently active project, if any. */
@@ -373,7 +373,7 @@ export interface PluginStreamResult<T = unknown> {
  * @example
  * ```tsx
  * const resync = usePluginAction("resync");
- * <button onClick={() => resync({ companyId }).catch(err => console.error(err))}>
+ * <button onClick={() => resync({ productId }).catch(err => console.error(err))}>
  *   Resync Now
  * </button>
  * ```

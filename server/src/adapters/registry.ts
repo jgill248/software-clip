@@ -200,13 +200,21 @@ const piLocalAdapter: ServerAdapterModule = {
   agentConfigurationDoc: piAgentConfigurationDoc,
 };
 
+// hermes-paperclip-adapter is a published 3rd-party adapter built against
+// @paperclipai/adapter-utils, which exposes the pre-Stage-4d `companyId`
+// field shape. Our workspace-local @softclipai/adapter-utils uses
+// `productId` after the §1 Stage 4d rename. Runtime behavior is
+// compatible (the server passes the object by reference and only
+// structural fields differ); cast through `unknown` so the two
+// adapter-utils identities satisfy ServerAdapterModule without
+// forcing hermes to republish.
 const hermesLocalAdapter: ServerAdapterModule = {
   type: "hermes_local",
-  execute: hermesExecute,
-  testEnvironment: hermesTestEnvironment,
+  execute: hermesExecute as unknown as ServerAdapterModule["execute"],
+  testEnvironment: hermesTestEnvironment as unknown as ServerAdapterModule["testEnvironment"],
   sessionCodec: hermesSessionCodec,
-  listSkills: hermesListSkills,
-  syncSkills: hermesSyncSkills,
+  listSkills: hermesListSkills as unknown as ServerAdapterModule["listSkills"],
+  syncSkills: hermesSyncSkills as unknown as ServerAdapterModule["syncSkills"],
   models: hermesModels,
   supportsLocalAgentJwt: true,
   supportsInstructionsBundle: true,

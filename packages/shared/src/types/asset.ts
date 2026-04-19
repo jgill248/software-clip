@@ -1,6 +1,6 @@
 export interface AssetImage {
   assetId: string;
-  companyId: string;
+  productId: string;
   provider: string;
   objectKey: string;
   contentType: string;

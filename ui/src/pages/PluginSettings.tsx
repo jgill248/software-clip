@@ -102,7 +102,7 @@ export function PluginSettings() {
 
   const { slots } = usePluginSlots({
     slotTypes: ["settingsPage"],
-    companyId: selectedCompanyId,
+    productId: selectedCompanyId,
     enabled: !!selectedCompanyId,
   });
 
@@ -219,7 +219,7 @@ export function PluginSettings() {
                       key={`${slot.pluginKey}:${slot.id}`}
                       slot={slot}
                       context={{
-                        companyId: selectedCompanyId,
+                        productId: selectedCompanyId,
                         companyPrefix: companyPrefix ?? null,
                       }}
                       missingBehavior="placeholder"

@@ -78,7 +78,7 @@ describe("company skill mutation permissions", () => {
     const res = await request(await createApp({
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     }))
@@ -97,7 +97,7 @@ describe("company skill mutation permissions", () => {
       imported: [
         {
           id: "skill-1",
-          companyId: "company-1",
+          productId: "company-1",
           key: "vercel-labs/agent-browser/find-skills",
           slug: "find-skills",
           name: "Find Skills",
@@ -124,7 +124,7 @@ describe("company skill mutation permissions", () => {
     const res = await request(await createApp({
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     }))
@@ -143,7 +143,7 @@ describe("company skill mutation permissions", () => {
       imported: [
         {
           id: "skill-1",
-          companyId: "company-1",
+          productId: "company-1",
           key: "private-skill",
           slug: "private-skill",
           name: "Private Skill",
@@ -170,7 +170,7 @@ describe("company skill mutation permissions", () => {
     const res = await request(await createApp({
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     }))
@@ -189,7 +189,7 @@ describe("company skill mutation permissions", () => {
       imported: [
         {
           id: "skill-1",
-          companyId: "company-1",
+          productId: "company-1",
           key: "unknown/private-skill",
           slug: "private-skill",
           name: "Private Skill",
@@ -212,7 +212,7 @@ describe("company skill mutation permissions", () => {
     const res = await request(await createApp({
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     }))
@@ -229,14 +229,14 @@ describe("company skill mutation permissions", () => {
   it("blocks same-company agents without management permission from mutating company skills", async () => {
     mockAgentService.getById.mockResolvedValue({
       id: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       permissions: {},
     });
 
     const res = await request(await createApp({
       type: "agent",
       agentId: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       runId: "run-1",
     }))
       .post("/api/companies/company-1/skills/import")
@@ -249,14 +249,14 @@ describe("company skill mutation permissions", () => {
   it("allows agents with canCreateAgents to mutate company skills", async () => {
     mockAgentService.getById.mockResolvedValue({
       id: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       permissions: { canCreateAgents: true },
     });
 
     const res = await request(await createApp({
       type: "agent",
       agentId: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       runId: "run-1",
     }))
       .post("/api/companies/company-1/skills/import")
@@ -280,7 +280,7 @@ describe("company skill mutation permissions", () => {
     const res = await request(await createApp({
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     }))

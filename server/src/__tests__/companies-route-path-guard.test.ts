@@ -41,13 +41,13 @@ vi.mock("../services/default-agent-instructions.js", () => ({
 }));
 
 describe("company routes malformed issue path guard", () => {
-  it("returns a clear error when companyId is missing for issues list path", async () => {
+  it("returns a clear error when productId is missing for issues list path", async () => {
     const app = express();
     app.use((req, _res, next) => {
       (req as any).actor = {
         type: "agent",
         agentId: "agent-1",
-        companyId: "company-1",
+        productId: "company-1",
         source: "agent_key",
       };
       next();
@@ -58,7 +58,7 @@ describe("company routes malformed issue path guard", () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual({
-      error: "Missing companyId in path. Use /api/companies/{companyId}/issues.",
+      error: "Missing productId in path. Use /api/companies/{productId}/issues.",
     });
   });
 });

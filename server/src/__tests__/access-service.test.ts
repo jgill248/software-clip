@@ -29,7 +29,7 @@ async function createCompanyWithOwner(db: ReturnType<typeof createDb>) {
   const owner = await db
     .insert(companyMemberships)
     .values({
-      companyId: company.id,
+      productId: company.id,
       principalType: "user",
       principalId: `owner-${randomUUID()}`,
       status: "active",

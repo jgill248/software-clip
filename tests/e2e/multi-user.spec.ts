@@ -36,7 +36,7 @@ async function ensureBootstrapped(request: APIRequestContext): Promise<void> {
 async function createCompanyViaWizard(
   request: APIRequestContext,
   name: string
-): Promise<{ companyId: string; agentId: string; prefix: string }> {
+): Promise<{ productId: string; agentId: string; prefix: string }> {
   await ensureBootstrapped(request);
 
   const createRes = await request.post(`${BASE}/api/companies`, {
@@ -66,7 +66,7 @@ async function createCompanyViaWizard(
   const agent = await agentRes.json();
 
   return {
-    companyId: company.id,
+    productId: company.id,
     agentId: agent.id,
     prefix: company.issuePrefix ?? company.id,
   };
@@ -75,11 +75,11 @@ async function createCompanyViaWizard(
 /** Create a human invite and return token + invite URL. */
 async function createHumanInvite(
   request: APIRequestContext,
-  companyId: string,
+  productId: string,
   role: string = "operator"
 ): Promise<{ token: string; inviteUrl: string; inviteId: string }> {
   const res = await request.post(
-    `${BASE}/api/companies/${companyId}/invites`,
+    `${BASE}/api/companies/${productId}/invites`,
     {
       data: {
         allowedJoinTypes: "human",
@@ -101,21 +101,21 @@ async function createHumanInvite(
 // ---------------------------------------------------------------------------
 
 test.describe("Multi-user: API", () => {
-  let companyId: string;
+  let productId: string;
 
   test.beforeAll(async ({ request }) => {
     const result = await createCompanyViaWizard(
       request,
       `MU-API-${Date.now()}`
     );
-    companyId = result.companyId;
+    productId = result.productId;
   });
 
   test("GET /companies/:id/members returns member list with access info", async ({
     request,
   }) => {
     const res = await request.get(
-      `${BASE}/api/companies/${companyId}/members`
+      `${BASE}/api/companies/${productId}/members`
     );
     expect(res.ok()).toBe(true);
     const body = await res.json();
@@ -132,7 +132,7 @@ test.describe("Multi-user: API", () => {
     request,
   }) => {
     const res = await request.post(
-      `${BASE}/api/companies/${companyId}/invites`,
+      `${BASE}/api/companies/${productId}/invites`,
       {
         data: {
           allowedJoinTypes: "human",
@@ -150,12 +150,12 @@ test.describe("Multi-user: API", () => {
   });
 
   test("GET /invites/:token returns invite summary", async ({ request }) => {
-    const invite = await createHumanInvite(request, companyId, "viewer");
+    const invite = await createHumanInvite(request, productId, "viewer");
     const res = await request.get(`${BASE}/api/invites/${invite.token}`);
     expect(res.ok()).toBe(true);
     const body = await res.json();
 
-    expect(body).toHaveProperty("companyId");
+    expect(body).toHaveProperty("productId");
     expect(body).toHaveProperty("allowedJoinTypes");
     expect(body.allowedJoinTypes).toBe("human");
     expect(body).toHaveProperty("inviteType");
@@ -165,7 +165,7 @@ test.describe("Multi-user: API", () => {
   test("POST /invites/:token/accept (human) creates membership", async ({
     request,
   }) => {
-    const invite = await createHumanInvite(request, companyId, "operator");
+    const invite = await createHumanInvite(request, productId, "operator");
     const acceptRes = await request.post(
       `${BASE}/api/invites/${invite.token}/accept`,
       {
@@ -182,7 +182,7 @@ test.describe("Multi-user: API", () => {
   test("POST /invites/:token/accept rejects agent on human-only invite", async ({
     request,
   }) => {
-    const invite = await createHumanInvite(request, companyId, "operator");
+    const invite = await createHumanInvite(request, productId, "operator");
     const acceptRes = await request.post(
       `${BASE}/api/invites/${invite.token}/accept`,
       {
@@ -198,7 +198,7 @@ test.describe("Multi-user: API", () => {
   }) => {
     for (const role of ["owner", "admin", "operator", "viewer"]) {
       const res = await request.post(
-        `${BASE}/api/companies/${companyId}/invites`,
+        `${BASE}/api/companies/${productId}/invites`,
         {
           data: { allowedJoinTypes: "human", humanRole: role },
         }
@@ -220,7 +220,7 @@ test.describe("Multi-user: API", () => {
 
     // First promote the local-board member to owner
     const membersRes = await request.get(
-      `${BASE}/api/companies/${fresh.companyId}/members`
+      `${BASE}/api/companies/${fresh.productId}/members`
     );
     const { members } = await membersRes.json();
 
@@ -235,14 +235,14 @@ test.describe("Multi-user: API", () => {
 
     // Promote to owner first
     const promoteRes = await request.patch(
-      `${BASE}/api/companies/${fresh.companyId}/members/${boardMember.id}`,
+      `${BASE}/api/companies/${fresh.productId}/members/${boardMember.id}`,
       { data: { membershipRole: "owner" } }
     );
     expect(promoteRes.ok()).toBe(true);
 
     // Now try to demote the last (and only) owner to operator — should fail
     const demoteRes = await request.patch(
-      `${BASE}/api/companies/${fresh.companyId}/members/${boardMember.id}`,
+      `${BASE}/api/companies/${fresh.productId}/members/${boardMember.id}`,
       { data: { membershipRole: "operator" } }
     );
     expect(demoteRes.status()).toBe(409);
@@ -254,7 +254,7 @@ test.describe("Multi-user: API", () => {
     request,
   }) => {
     const res = await request.post(
-      `${BASE}/api/companies/${companyId}/openclaw/invite-prompt`,
+      `${BASE}/api/companies/${productId}/openclaw/invite-prompt`,
       {
         data: { agentMessage: "E2E test agent invite" },
       }
@@ -269,7 +269,7 @@ test.describe("Multi-user: API", () => {
 });
 
 test.describe("Multi-user: Company Settings UI", () => {
-  let companyId: string;
+  let productId: string;
   let companyPrefix: string;
 
   test.beforeAll(async ({ request }) => {
@@ -277,7 +277,7 @@ test.describe("Multi-user: Company Settings UI", () => {
       request,
       `MU-UI-${Date.now()}`
     );
-    companyId = result.companyId;
+    productId = result.productId;
     companyPrefix = result.prefix;
   });
 
@@ -316,7 +316,7 @@ test.describe("Multi-user: Company Settings UI", () => {
 });
 
 test.describe("Multi-user: Invite Landing UI", () => {
-  let companyId: string;
+  let productId: string;
   let inviteToken: string;
 
   test.beforeAll(async ({ request }) => {
@@ -324,9 +324,9 @@ test.describe("Multi-user: Invite Landing UI", () => {
       request,
       `MU-Invite-${Date.now()}`
     );
-    companyId = result.companyId;
+    productId = result.productId;
 
-    const invite = await createHumanInvite(request, companyId, "operator");
+    const invite = await createHumanInvite(request, productId, "operator");
     inviteToken = invite.token;
   });
 
@@ -357,21 +357,21 @@ test.describe("Multi-user: Invite Landing UI", () => {
 });
 
 test.describe("Multi-user: Member role management API", () => {
-  let companyId: string;
+  let productId: string;
 
   test.beforeAll(async ({ request }) => {
     const result = await createCompanyViaWizard(
       request,
       `MU-Roles-${Date.now()}`
     );
-    companyId = result.companyId;
+    productId = result.productId;
   });
 
   test("invite + accept creates member with correct role", async ({
     request,
   }) => {
     // Create invite for 'viewer' role
-    const invite = await createHumanInvite(request, companyId, "viewer");
+    const invite = await createHumanInvite(request, productId, "viewer");
 
     // Accept the invite
     const acceptRes = await request.post(
@@ -382,7 +382,7 @@ test.describe("Multi-user: Member role management API", () => {
 
     // Check members list
     const membersRes = await request.get(
-      `${BASE}/api/companies/${companyId}/members`
+      `${BASE}/api/companies/${productId}/members`
     );
     const { members } = await membersRes.json();
 
@@ -392,7 +392,7 @@ test.describe("Multi-user: Member role management API", () => {
 
   test("PATCH member role updates correctly", async ({ request }) => {
     // First create an invite and accept it to get a second member
-    const invite = await createHumanInvite(request, companyId, "operator");
+    const invite = await createHumanInvite(request, productId, "operator");
     const acceptRes = await request.post(
       `${BASE}/api/invites/${invite.token}/accept`,
       { data: { requestType: "human" } }
@@ -401,7 +401,7 @@ test.describe("Multi-user: Member role management API", () => {
 
     // List members
     const membersRes = await request.get(
-      `${BASE}/api/companies/${companyId}/members`
+      `${BASE}/api/companies/${productId}/members`
     );
     const { members } = await membersRes.json();
 
@@ -416,7 +416,7 @@ test.describe("Multi-user: Member role management API", () => {
 
     // Update role to admin
     const patchRes = await request.patch(
-      `${BASE}/api/companies/${companyId}/members/${nonOwner.id}`,
+      `${BASE}/api/companies/${productId}/members/${nonOwner.id}`,
       { data: { membershipRole: "admin" } }
     );
     expect(patchRes.ok()).toBe(true);
@@ -426,13 +426,13 @@ test.describe("Multi-user: Member role management API", () => {
 
   test("PATCH member status to suspended works", async ({ request }) => {
     // Create another member
-    const invite = await createHumanInvite(request, companyId, "operator");
+    const invite = await createHumanInvite(request, productId, "operator");
     await request.post(`${BASE}/api/invites/${invite.token}/accept`, {
       data: { requestType: "human" },
     });
 
     const membersRes = await request.get(
-      `${BASE}/api/companies/${companyId}/members`
+      `${BASE}/api/companies/${productId}/members`
     );
     const { members } = await membersRes.json();
 
@@ -446,7 +446,7 @@ test.describe("Multi-user: Member role management API", () => {
     }
 
     const patchRes = await request.patch(
-      `${BASE}/api/companies/${companyId}/members/${nonOwner.id}`,
+      `${BASE}/api/companies/${productId}/members/${nonOwner.id}`,
       { data: { status: "suspended" } }
     );
     expect(patchRes.ok()).toBe(true);
@@ -456,14 +456,14 @@ test.describe("Multi-user: Member role management API", () => {
 });
 
 test.describe("Multi-user: Agent invite flow", () => {
-  let companyId: string;
+  let productId: string;
 
   test.beforeAll(async ({ request }) => {
     const result = await createCompanyViaWizard(
       request,
       `MU-Agent-${Date.now()}`
     );
-    companyId = result.companyId;
+    productId = result.productId;
   });
 
   test("agent invite accept creates pending join request", async ({
@@ -471,7 +471,7 @@ test.describe("Multi-user: Agent invite flow", () => {
   }) => {
     // Create agent invite
     const res = await request.post(
-      `${BASE}/api/companies/${companyId}/openclaw/invite-prompt`,
+      `${BASE}/api/companies/${productId}/openclaw/invite-prompt`,
       { data: {} }
     );
     expect(res.ok()).toBe(true);
@@ -498,7 +498,7 @@ test.describe("Multi-user: Agent invite flow", () => {
     request,
   }) => {
     const res = await request.get(
-      `${BASE}/api/companies/${companyId}/join-requests?status=pending_approval`
+      `${BASE}/api/companies/${productId}/join-requests?status=pending_approval`
     );
     expect(res.ok()).toBe(true);
     const requests = await res.json();

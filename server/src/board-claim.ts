@@ -113,7 +113,7 @@ export async function claimBoardOwnership(
         .from(companyMemberships)
         .where(
           and(
-            eq(companyMemberships.companyId, company.id),
+            eq(companyMemberships.productId, company.id),
             eq(companyMemberships.principalType, "user"),
             eq(companyMemberships.principalId, opts.userId),
           ),
@@ -122,7 +122,7 @@ export async function claimBoardOwnership(
 
       if (!existing) {
         await tx.insert(companyMemberships).values({
-          companyId: company.id,
+          productId: company.id,
           principalType: "user",
           principalId: opts.userId,
           status: "active",

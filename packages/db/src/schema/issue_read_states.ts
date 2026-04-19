@@ -6,7 +6,7 @@ export const issueReadStates = pgTable(
   "issue_read_states",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     issueId: uuid("issue_id").notNull().references(() => issues.id),
     userId: text("user_id").notNull(),
     lastReadAt: timestamp("last_read_at", { withTimezone: true }).notNull().defaultNow(),
@@ -14,10 +14,10 @@ export const issueReadStates = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    companyIssueIdx: index("issue_read_states_product_issue_idx").on(table.companyId, table.issueId),
-    companyUserIdx: index("issue_read_states_product_user_idx").on(table.companyId, table.userId),
+    companyIssueIdx: index("issue_read_states_product_issue_idx").on(table.productId, table.issueId),
+    companyUserIdx: index("issue_read_states_product_user_idx").on(table.productId, table.userId),
     companyIssueUserUnique: uniqueIndex("issue_read_states_product_issue_user_idx").on(
-      table.companyId,
+      table.productId,
       table.issueId,
       table.userId,
     ),

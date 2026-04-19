@@ -238,22 +238,22 @@ describe("heartbeat comment wake batching", () => {
 
   it("batches deferred comment wakes and forwards the ordered batch to the next run", async () => {
     const gateway = await createControlledGatewayServer();
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const issueId = randomUUID();
-    const issuePrefix = `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+    const issuePrefix = `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
     const heartbeat = heartbeatService(db);
 
     try {
       await db.insert(products).values({
-        id: companyId,
+        id: productId,
         name: "Paperclip",
         issuePrefix,
       });
 
       await db.insert(agents).values({
         id: agentId,
-        companyId,
+        productId,
         name: "Gateway Agent",
         role: "engineer",
         status: "idle",
@@ -274,7 +274,7 @@ describe("heartbeat comment wake batching", () => {
 
       await db.insert(issues).values({
         id: issueId,
-        companyId,
+        productId,
         title: "Batch wake comments",
         status: "todo",
         priority: "medium",
@@ -286,7 +286,7 @@ describe("heartbeat comment wake batching", () => {
       const comment1 = await db
         .insert(issueComments)
         .values({
-          companyId,
+          productId,
           issueId,
           authorUserId: "user-1",
           body: "First comment",
@@ -312,7 +312,7 @@ describe("heartbeat comment wake batching", () => {
       await waitFor(() => gateway.getAgentPayloads().length === 1);
 
       await db.insert(issueComments).values({
-        companyId,
+        productId,
         issueId,
         authorAgentId: agentId,
         createdByRunId: firstRun?.id ?? null,
@@ -322,7 +322,7 @@ describe("heartbeat comment wake batching", () => {
       const comment2 = await db
         .insert(issueComments)
         .values({
-          companyId,
+          productId,
           issueId,
           authorUserId: "user-1",
           body: "Second comment",
@@ -332,7 +332,7 @@ describe("heartbeat comment wake batching", () => {
       const comment3 = await db
         .insert(issueComments)
         .values({
-          companyId,
+          productId,
           issueId,
           authorUserId: "user-1",
           body: "Third comment",
@@ -378,7 +378,7 @@ describe("heartbeat comment wake batching", () => {
           .from(agentWakeupRequests)
           .where(
             and(
-              eq(agentWakeupRequests.companyId, companyId),
+              eq(agentWakeupRequests.productId, productId),
               eq(agentWakeupRequests.agentId, agentId),
               eq(agentWakeupRequests.status, "deferred_issue_execution"),
             ),
@@ -392,7 +392,7 @@ describe("heartbeat comment wake batching", () => {
           .from(agentWakeupRequests)
           .where(
             and(
-              eq(agentWakeupRequests.companyId, companyId),
+              eq(agentWakeupRequests.productId, productId),
               eq(agentWakeupRequests.agentId, agentId),
               eq(agentWakeupRequests.status, "deferred_issue_execution"),
             ),
@@ -430,22 +430,22 @@ describe("heartbeat comment wake batching", () => {
 
   it("promotes deferred comment wakes after the active run closes the issue", async () => {
     const gateway = await createControlledGatewayServer();
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const issueId = randomUUID();
-    const issuePrefix = `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+    const issuePrefix = `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
     const heartbeat = heartbeatService(db);
 
     try {
       await db.insert(products).values({
-        id: companyId,
+        id: productId,
         name: "Paperclip",
         issuePrefix,
       });
 
       await db.insert(agents).values({
         id: agentId,
-        companyId,
+        productId,
         name: "Gateway Agent",
         role: "engineer",
         status: "idle",
@@ -466,7 +466,7 @@ describe("heartbeat comment wake batching", () => {
 
       await db.insert(issues).values({
         id: issueId,
-        companyId,
+        productId,
         title: "Reopen after deferred comment",
         status: "todo",
         priority: "medium",
@@ -478,7 +478,7 @@ describe("heartbeat comment wake batching", () => {
       const comment1 = await db
         .insert(issueComments)
         .values({
-          companyId,
+          productId,
           issueId,
           authorUserId: "user-1",
           body: "First comment",
@@ -514,7 +514,7 @@ describe("heartbeat comment wake batching", () => {
       const comment2 = await db
         .insert(issueComments)
         .values({
-          companyId,
+          productId,
           issueId,
           authorUserId: "user-1",
           body: "Please handle this follow-up after you finish",
@@ -545,7 +545,7 @@ describe("heartbeat comment wake batching", () => {
           .from(agentWakeupRequests)
           .where(
             and(
-              eq(agentWakeupRequests.companyId, companyId),
+              eq(agentWakeupRequests.productId, productId),
               eq(agentWakeupRequests.agentId, agentId),
               eq(agentWakeupRequests.status, "deferred_issue_execution"),
             ),
@@ -615,22 +615,22 @@ describe("heartbeat comment wake batching", () => {
 
   it("queues exactly one follow-up run when an issue-bound run exits without a comment", async () => {
     const gateway = await createControlledGatewayServer();
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const issueId = randomUUID();
-    const issuePrefix = `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+    const issuePrefix = `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
     const heartbeat = heartbeatService(db);
 
     try {
       await db.insert(products).values({
-        id: companyId,
+        id: productId,
         name: "Paperclip",
         issuePrefix,
       });
 
       await db.insert(agents).values({
         id: agentId,
-        companyId,
+        productId,
         name: "Gateway Agent",
         role: "engineer",
         status: "idle",
@@ -651,7 +651,7 @@ describe("heartbeat comment wake batching", () => {
 
       await db.insert(issues).values({
         id: issueId,
-        companyId,
+        productId,
         title: "Require a comment",
         status: "todo",
         priority: "medium",
@@ -748,7 +748,7 @@ describe("heartbeat comment wake batching", () => {
         const wakeups = await db
           .select()
           .from(agentWakeupRequests)
-          .where(and(eq(agentWakeupRequests.companyId, companyId), eq(agentWakeupRequests.agentId, agentId)));
+          .where(and(eq(agentWakeupRequests.productId, productId), eq(agentWakeupRequests.agentId, agentId)));
         return wakeups.length >= 2;
       });
 
@@ -765,16 +765,16 @@ describe("heartbeat comment wake batching", () => {
 
   it("defers mentioned-agent wakes while another agent is actively executing the same issue", async () => {
     const gateway = await createControlledGatewayServer();
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const primaryAgentId = randomUUID();
     const mentionedAgentId = randomUUID();
     const issueId = randomUUID();
-    const issuePrefix = `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+    const issuePrefix = `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
     const heartbeat = heartbeatService(db);
 
     try {
       await db.insert(products).values({
-        id: companyId,
+        id: productId,
         name: "Paperclip",
         issuePrefix,
       });
@@ -782,7 +782,7 @@ describe("heartbeat comment wake batching", () => {
       await db.insert(agents).values([
         {
           id: primaryAgentId,
-          companyId,
+          productId,
           name: "Primary Agent",
           role: "engineer",
           status: "idle",
@@ -802,7 +802,7 @@ describe("heartbeat comment wake batching", () => {
         },
         {
           id: mentionedAgentId,
-          companyId,
+          productId,
           name: "Mentioned Agent",
           role: "engineer",
           status: "idle",
@@ -824,7 +824,7 @@ describe("heartbeat comment wake batching", () => {
 
       await db.insert(issues).values({
         id: issueId,
-        companyId,
+        productId,
         title: "Prevent concurrent mention execution",
         status: "todo",
         priority: "high",
@@ -853,7 +853,7 @@ describe("heartbeat comment wake batching", () => {
       const mentionComment = await db
         .insert(issueComments)
         .values({
-          companyId,
+          productId,
           issueId,
           authorUserId: "user-1",
           body: "@Mentioned Agent please inspect this after the current run.",
@@ -886,7 +886,7 @@ describe("heartbeat comment wake batching", () => {
           .from(agentWakeupRequests)
           .where(
             and(
-              eq(agentWakeupRequests.companyId, companyId),
+              eq(agentWakeupRequests.productId, productId),
               eq(agentWakeupRequests.agentId, mentionedAgentId),
               eq(agentWakeupRequests.status, "deferred_issue_execution"),
             ),
@@ -927,22 +927,22 @@ describe("heartbeat comment wake batching", () => {
   }, 120_000);
   it("treats the automatic run summary as fallback-only when the run already posted a comment", async () => {
     const gateway = await createControlledGatewayServer();
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const agentId = randomUUID();
     const issueId = randomUUID();
-    const issuePrefix = `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+    const issuePrefix = `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
     const heartbeat = heartbeatService(db);
 
     try {
       await db.insert(products).values({
-        id: companyId,
+        id: productId,
         name: "Paperclip",
         issuePrefix,
       });
 
       await db.insert(agents).values({
         id: agentId,
-        companyId,
+        productId,
         name: "Gateway Agent",
         role: "engineer",
         status: "idle",
@@ -963,7 +963,7 @@ describe("heartbeat comment wake batching", () => {
 
       await db.insert(issues).values({
         id: issueId,
-        companyId,
+        productId,
         title: "Use existing comment",
         status: "todo",
         priority: "medium",
@@ -990,7 +990,7 @@ describe("heartbeat comment wake batching", () => {
       await waitFor(() => gateway.getAgentPayloads().length === 1);
 
       await db.insert(issueComments).values({
-        companyId,
+        productId,
         issueId,
         authorAgentId: agentId,
         authorUserId: null,
@@ -1030,7 +1030,7 @@ describe("heartbeat comment wake batching", () => {
       const wakeups = await db
         .select()
         .from(agentWakeupRequests)
-        .where(and(eq(agentWakeupRequests.companyId, companyId), eq(agentWakeupRequests.agentId, agentId)));
+        .where(and(eq(agentWakeupRequests.productId, productId), eq(agentWakeupRequests.agentId, agentId)));
 
       expect(wakeups).toHaveLength(1);
     } finally {

@@ -8,7 +8,7 @@ export const documentRevisions = pgTable(
   "document_revisions",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     documentId: uuid("document_id").notNull().references(() => documents.id, { onDelete: "cascade" }),
     revisionNumber: integer("revision_number").notNull(),
     title: text("title"),
@@ -26,7 +26,7 @@ export const documentRevisions = pgTable(
       table.revisionNumber,
     ),
     companyDocumentCreatedIdx: index("document_revisions_product_document_created_idx").on(
-      table.companyId,
+      table.productId,
       table.documentId,
       table.createdAt,
     ),

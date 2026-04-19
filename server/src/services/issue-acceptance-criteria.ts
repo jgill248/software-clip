@@ -33,7 +33,7 @@ function isValidStatus(value: unknown): value is AcceptanceCriterionStatus {
 
 async function loadIssue(db: Dbish, issueId: string) {
   const rows = await db
-    .select({ id: issues.id, companyId: issues.companyId, status: issues.status })
+    .select({ id: issues.id, productId: issues.productId, status: issues.status })
     .from(issues)
     .where(eq(issues.id, issueId));
   return rows[0] ?? null;

@@ -10,8 +10,8 @@ import { Ceremonies, buildRoutineGroups } from "./Ceremonies";
 let currentSearch = "";
 
 const navigateMock = vi.fn();
-const routinesListMock = vi.fn<(companyId: string) => Promise<RoutineListItem[]>>();
-const issuesListMock = vi.fn<(companyId: string, filters?: Record<string, unknown>) => Promise<Issue[]>>();
+const routinesListMock = vi.fn<(productId: string) => Promise<RoutineListItem[]>>();
+const issuesListMock = vi.fn<(productId: string, filters?: Record<string, unknown>) => Promise<Issue[]>>();
 const issuesListRenderMock = vi.fn(({ issues }: { issues: Issue[] }) => (
   <div data-testid="issues-list">{issues.map((issue) => issue.title).join(", ")}</div>
 ));
@@ -36,7 +36,7 @@ vi.mock("../context/ToastContext", () => ({
 
 vi.mock("../api/ceremonies", () => ({
   routinesApi: {
-    list: (companyId: string) => routinesListMock(companyId),
+    list: (productId: string) => routinesListMock(productId),
     create: vi.fn(),
     update: vi.fn(),
     run: vi.fn(),
@@ -45,7 +45,7 @@ vi.mock("../api/ceremonies", () => ({
 
 vi.mock("../api/issues", () => ({
   issuesApi: {
-    list: (companyId: string, filters?: Record<string, unknown>) => issuesListMock(companyId, filters),
+    list: (productId: string, filters?: Record<string, unknown>) => issuesListMock(productId, filters),
     update: vi.fn(),
   },
 }));
@@ -55,7 +55,7 @@ vi.mock("../api/agents", () => ({
     list: vi.fn(async () => [
       {
         id: "agent-1",
-        companyId: "company-1",
+        productId: "company-1",
         name: "Agent One",
         role: "engineer",
         title: null,
@@ -79,7 +79,7 @@ vi.mock("../api/agents", () => ({
       },
       {
         id: "agent-2",
-        companyId: "company-1",
+        productId: "company-1",
         name: "Agent Two",
         role: "engineer",
         title: null,
@@ -110,7 +110,7 @@ vi.mock("../api/projects", () => ({
     list: vi.fn(async () => [
       {
         id: "project-1",
-        companyId: "company-1",
+        productId: "company-1",
         urlKey: "project-alpha",
         goalId: null,
         goalIds: [],
@@ -133,7 +133,7 @@ vi.mock("../api/projects", () => ({
       },
       {
         id: "project-2",
-        companyId: "company-1",
+        productId: "company-1",
         urlKey: "project-beta",
         goalId: null,
         goalIds: [],
@@ -213,7 +213,7 @@ vi.mock("../components/AgentIconPicker", () => ({
 function createRoutine(overrides: Partial<RoutineListItem>): RoutineListItem {
   return {
     id: "routine-1",
-    companyId: "company-1",
+    productId: "company-1",
     projectId: "project-1",
     goalId: null,
     parentIssueId: null,
@@ -244,7 +244,7 @@ function createIssue(overrides: Partial<Issue> = {}): Issue {
   return {
     id: "issue-1",
     identifier: "PAP-1000",
-    companyId: "company-1",
+    productId: "company-1",
     projectId: "project-1",
     projectWorkspaceId: null,
     goalId: null,

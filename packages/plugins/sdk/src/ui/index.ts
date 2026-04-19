@@ -17,7 +17,7 @@
  *
  * export function DashboardWidget({ context }: PluginWidgetProps) {
  *   const { data, loading, error } = usePluginData("sync-health", {
- *     companyId: context.companyId,
+ *     productId: context.productId,
  *   });
  *   const resync = usePluginAction("resync");
  *
@@ -28,7 +28,7 @@
  *     <div style={{ display: "grid", gap: 8 }}>
  *       <strong>Synced Issues</strong>
  *       <div>{data!.syncedCount}</div>
- *       <button onClick={() => resync({ companyId: context.companyId })}>
+ *       <button onClick={() => resync({ productId: context.productId })}>
  *         Resync Now
  *       </button>
  *     </div>

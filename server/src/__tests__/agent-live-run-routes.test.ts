@@ -54,7 +54,7 @@ async function createApp() {
     (req as any).actor = {
       type: "board",
       userId: "local-board",
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       source: "local_implicit",
       isInstanceAdmin: false,
     };
@@ -77,7 +77,7 @@ describe("agent live run routes", () => {
     vi.resetAllMocks();
     mockIssueService.getByIdentifier.mockResolvedValue({
       id: "issue-1",
-      companyId: "company-1",
+      productId: "company-1",
       executionRunId: "run-1",
       assigneeAgentId: "agent-1",
       status: "in_progress",
@@ -85,7 +85,7 @@ describe("agent live run routes", () => {
     mockIssueService.getById.mockResolvedValue(null);
     mockAgentService.getById.mockResolvedValue({
       id: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       name: "Builder",
       adapterType: "codex_local",
     });
@@ -103,7 +103,7 @@ describe("agent live run routes", () => {
     mockHeartbeatService.getActiveRunIssueSummaryForAgent.mockResolvedValue(null);
     mockHeartbeatService.getRunLogAccess.mockResolvedValue({
       id: "run-1",
-      companyId: "company-1",
+      productId: "company-1",
       logStore: "local_file",
       logRef: "logs/run-1.ndjson",
     });
@@ -185,7 +185,7 @@ describe("agent live run routes", () => {
     expect(mockHeartbeatService.getRunLogAccess).toHaveBeenCalledWith("run-1");
     expect(mockHeartbeatService.readLog).toHaveBeenCalledWith({
       id: "run-1",
-      companyId: "company-1",
+      productId: "company-1",
       logStore: "local_file",
       logRef: "logs/run-1.ndjson",
     }, {

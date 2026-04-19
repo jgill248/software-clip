@@ -61,7 +61,7 @@ describe("sidebar preference routes", () => {
       userId: "user-1",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
     });
 
     const res = await request(app).get("/api/sidebar-preferences/me");
@@ -80,7 +80,7 @@ describe("sidebar preference routes", () => {
       userId: "user-1",
       source: "local_implicit",
       isInstanceAdmin: true,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
     });
 
     const res = await request(app)
@@ -97,7 +97,7 @@ describe("sidebar preference routes", () => {
       userId: "user-1",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
     });
 
     const res = await request(app).get("/api/companies/company-1/sidebar-preferences/me");
@@ -112,7 +112,7 @@ describe("sidebar preference routes", () => {
       userId: "user-1",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: ["company-1"],
+      productIds: ["company-1"],
       runId: "run-1",
     });
 
@@ -125,7 +125,7 @@ describe("sidebar preference routes", () => {
     expect(mockLogActivity).toHaveBeenCalledWith(
       {} as never,
       expect.objectContaining({
-        companyId: "company-1",
+        productId: "company-1",
         action: "sidebar_preferences.project_order_updated",
         details: expect.objectContaining({
           userId: "user-1",
@@ -141,7 +141,7 @@ describe("sidebar preference routes", () => {
       userId: "user-1",
       source: "session",
       isInstanceAdmin: false,
-      companyIds: ["company-2"],
+      productIds: ["company-2"],
     });
 
     const res = await request(app).get("/api/companies/company-1/sidebar-preferences/me");
@@ -154,7 +154,7 @@ describe("sidebar preference routes", () => {
     const app = createApp({
       type: "agent",
       agentId: "agent-1",
-      companyId: "company-1",
+      productId: "company-1",
       source: "agent_key",
     });
 

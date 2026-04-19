@@ -962,7 +962,7 @@ export function Ceremonies() {
         onOpenChange={(next) => {
           if (!next) setRunDialogRoutine(null);
         }}
-        companyId={selectedCompanyId}
+        productId={selectedCompanyId}
         routineName={runDialogRoutine?.title ?? null}
         agents={agents ?? []}
         projects={projects ?? []}

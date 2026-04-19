@@ -68,14 +68,14 @@ function safeCompare(a: string, b: string) {
   return timingSafeEqual(left, right);
 }
 
-export function createLocalAgentJwt(agentId: string, companyId: string, adapterType: string, runId: string) {
+export function createLocalAgentJwt(agentId: string, productId: string, adapterType: string, runId: string) {
   const config = jwtConfig();
   if (!config) return null;
 
   const now = Math.floor(Date.now() / 1000);
   const claims: LocalAgentJwtClaims = {
     sub: agentId,
-    company_id: companyId,
+    company_id: productId,
     adapter_type: adapterType,
     run_id: runId,
     iat: now,
@@ -115,12 +115,12 @@ export function verifyLocalAgentJwt(token: string): LocalAgentJwtClaims | null {
   if (!claims) return null;
 
   const sub = typeof claims.sub === "string" ? claims.sub : null;
-  const companyId = typeof claims.company_id === "string" ? claims.company_id : null;
+  const productId = typeof claims.company_id === "string" ? claims.company_id : null;
   const adapterType = typeof claims.adapter_type === "string" ? claims.adapter_type : null;
   const runId = typeof claims.run_id === "string" ? claims.run_id : null;
   const iat = typeof claims.iat === "number" ? claims.iat : null;
   const exp = typeof claims.exp === "number" ? claims.exp : null;
-  if (!sub || !companyId || !adapterType || !runId || !iat || !exp) return null;
+  if (!sub || !productId || !adapterType || !runId || !iat || !exp) return null;
 
   const now = Math.floor(Date.now() / 1000);
   if (exp < now) return null;
@@ -132,7 +132,7 @@ export function verifyLocalAgentJwt(token: string): LocalAgentJwtClaims | null {
 
   return {
     sub,
-    company_id: companyId,
+    company_id: productId,
     adapter_type: adapterType,
     run_id: runId,
     iat,

@@ -4,15 +4,15 @@ import { inboxDismissals } from "@softclipai/db";
 
 export function inboxDismissalService(db: Db) {
   return {
-    list: async (companyId: string, userId: string) =>
+    list: async (productId: string, userId: string) =>
       db
         .select()
         .from(inboxDismissals)
-        .where(and(eq(inboxDismissals.companyId, companyId), eq(inboxDismissals.userId, userId)))
+        .where(and(eq(inboxDismissals.productId, productId), eq(inboxDismissals.userId, userId)))
         .orderBy(desc(inboxDismissals.updatedAt)),
 
     dismiss: async (
-      companyId: string,
+      productId: string,
       userId: string,
       itemKey: string,
       dismissedAt: Date = new Date(),
@@ -21,14 +21,14 @@ export function inboxDismissalService(db: Db) {
       const [row] = await db
         .insert(inboxDismissals)
         .values({
-          companyId,
+          productId,
           userId,
           itemKey,
           dismissedAt,
           updatedAt: now,
         })
         .onConflictDoUpdate({
-          target: [inboxDismissals.companyId, inboxDismissals.userId, inboxDismissals.itemKey],
+          target: [inboxDismissals.productId, inboxDismissals.userId, inboxDismissals.itemKey],
           set: {
             dismissedAt,
             updatedAt: now,

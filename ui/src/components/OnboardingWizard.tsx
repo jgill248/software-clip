@@ -93,7 +93,7 @@ export function OnboardingWizard() {
     : routeOnboardingOptions ?? {};
 
   const initialStep = effectiveOnboardingOptions.initialStep ?? 1;
-  const existingCompanyId = effectiveOnboardingOptions.companyId;
+  const existingCompanyId = effectiveOnboardingOptions.productId;
 
   const [step, setStep] = useState<Step>(initialStep);
   const [loading, setLoading] = useState(false);
@@ -161,7 +161,7 @@ export function OnboardingWizard() {
   // doesn't get reset after creating a company.
   useEffect(() => {
     if (!effectiveOnboardingOpen) return;
-    const cId = effectiveOnboardingOptions.companyId ?? null;
+    const cId = effectiveOnboardingOptions.productId ?? null;
     setStep(effectiveOnboardingOptions.initialStep ?? 1);
     setCreatedCompanyId(cId);
     setCreatedCompanyPrefix(null);
@@ -171,7 +171,7 @@ export function OnboardingWizard() {
     setCreatedIssueRef(null);
   }, [
     effectiveOnboardingOpen,
-    effectiveOnboardingOptions.companyId,
+    effectiveOnboardingOptions.productId,
     effectiveOnboardingOptions.initialStep
   ]);
 

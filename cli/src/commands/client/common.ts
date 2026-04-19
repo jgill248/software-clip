@@ -13,13 +13,13 @@ export interface BaseClientOptions {
   profile?: string;
   apiBase?: string;
   apiKey?: string;
-  companyId?: string;
+  productId?: string;
   json?: boolean;
 }
 
 export interface ResolvedClientContext {
   api: PaperclipApiClient;
-  companyId?: string;
+  productId?: string;
   profileName: string;
   profile: ClientContextProfile;
   json: boolean;
@@ -62,14 +62,14 @@ export function resolveCommandContext(
   const storedBoardCredential = explicitApiKey ? null : getStoredBoardCredential(apiBase);
   const apiKey = explicitApiKey || storedBoardCredential?.token;
 
-  const companyId =
-    options.companyId?.trim() ||
+  const productId =
+    options.productId?.trim() ||
     process.env.PAPERCLIP_COMPANY_ID?.trim() ||
-    profile.companyId;
+    profile.productId;
 
-  if (opts?.requireCompany && !companyId) {
+  if (opts?.requireCompany && !productId) {
     throw new Error(
-      "Company ID is required. Pass --company-id, set PAPERCLIP_COMPANY_ID, or set context profile companyId via `paperclipai context set`.",
+      "Company ID is required. Pass --company-id, set PAPERCLIP_COMPANY_ID, or set context profile productId via `paperclipai context set`.",
     );
   }
 
@@ -88,7 +88,7 @@ export function resolveCommandContext(
           const login = await loginBoardCli({
             apiBase,
             requestedAccess,
-            requestedCompanyId: companyId ?? null,
+            requestedCompanyId: productId ?? null,
             command: buildCliCommandLabel(),
           });
           return login.token;
@@ -96,7 +96,7 @@ export function resolveCommandContext(
   });
   return {
     api,
-    companyId,
+    productId,
     profileName,
     profile,
     json: Boolean(options.json),

@@ -19,7 +19,7 @@ export interface RunTranscriptSource {
 
 interface UseLiveRunTranscriptsOptions {
   runs: RunTranscriptSource[];
-  companyId?: string | null;
+  productId?: string | null;
   maxChunksPerRun?: number;
 }
 
@@ -69,7 +69,7 @@ function parsePersistedLogContent(
 
 export function useLiveRunTranscripts({
   runs,
-  companyId,
+  productId,
   maxChunksPerRun = 200,
 }: UseLiveRunTranscriptsOptions) {
   const runsKey = useMemo(
@@ -227,7 +227,7 @@ export function useLiveRunTranscripts({
   }, [normalizedRuns, runIdsKey]);
 
   useEffect(() => {
-    if (!companyId || activeRunIds.size === 0) return;
+    if (!productId || activeRunIds.size === 0) return;
 
     let closed = false;
     let reconnectTimer: number | null = null;
@@ -241,7 +241,7 @@ export function useLiveRunTranscripts({
     const connect = () => {
       if (closed) return;
       const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-      const url = `${protocol}://${window.location.host}/api/companies/${encodeURIComponent(companyId)}/events/ws`;
+      const url = `${protocol}://${window.location.host}/api/companies/${encodeURIComponent(productId)}/events/ws`;
       socket = new WebSocket(url);
 
       socket.onmessage = (message) => {
@@ -255,7 +255,7 @@ export function useLiveRunTranscripts({
           return;
         }
 
-        if (event.companyId !== companyId) return;
+        if (event.productId !== productId) return;
         const payload = event.payload ?? {};
         const runId = readString(payload["runId"]);
         if (!runId || !activeRunIds.has(runId)) return;
@@ -334,7 +334,7 @@ export function useLiveRunTranscripts({
         }
       }
     };
-  }, [activeRunIds, companyId, runById]);
+  }, [activeRunIds, productId, runById]);
 
   const transcriptByRun = useMemo(() => {
     const next = new Map<string, TranscriptEntry[]>();

@@ -426,7 +426,7 @@ describe("LiveUpdatesProvider visible issue comment hydration", () => {
   it("hydrates the visible issue comments cache with only the new comment", async () => {
     getCommentMock.mockResolvedValueOnce({
       id: "comment-2",
-      companyId: "company-1",
+      productId: "company-1",
       issueId: "issue-1",
       authorAgentId: "agent-1",
       authorUserId: null,
@@ -449,7 +449,7 @@ describe("LiveUpdatesProvider visible issue comment hydration", () => {
           return {
             pages: [[{
               id: "comment-1",
-              companyId: "company-1",
+              productId: "company-1",
               issueId: "issue-1",
               authorAgentId: null,
               authorUserId: "user-1",
@@ -491,7 +491,7 @@ describe("LiveUpdatesProvider visible issue comment hydration", () => {
       pages: [[
         {
           id: "comment-2",
-          companyId: "company-1",
+          productId: "company-1",
           issueId: "issue-1",
           authorAgentId: "agent-1",
           authorUserId: null,
@@ -501,7 +501,7 @@ describe("LiveUpdatesProvider visible issue comment hydration", () => {
         },
         {
           id: "comment-1",
-          companyId: "company-1",
+          productId: "company-1",
           issueId: "issue-1",
           authorAgentId: null,
           authorUserId: "user-1",

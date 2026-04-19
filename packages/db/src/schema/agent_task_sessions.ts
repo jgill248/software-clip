@@ -7,7 +7,7 @@ export const agentTaskSessions = pgTable(
   "agent_task_sessions",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     agentId: uuid("agent_id").notNull().references(() => agents.id),
     adapterType: text("adapter_type").notNull(),
     taskKey: text("task_key").notNull(),
@@ -20,18 +20,18 @@ export const agentTaskSessions = pgTable(
   },
   (table) => ({
     companyAgentTaskUniqueIdx: uniqueIndex("agent_task_sessions_product_agent_adapter_task_uniq").on(
-      table.companyId,
+      table.productId,
       table.agentId,
       table.adapterType,
       table.taskKey,
     ),
     companyAgentUpdatedIdx: index("agent_task_sessions_product_agent_updated_idx").on(
-      table.companyId,
+      table.productId,
       table.agentId,
       table.updatedAt,
     ),
     companyTaskUpdatedIdx: index("agent_task_sessions_product_task_updated_idx").on(
-      table.companyId,
+      table.productId,
       table.taskKey,
       table.updatedAt,
     ),

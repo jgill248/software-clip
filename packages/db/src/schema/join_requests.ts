@@ -9,7 +9,7 @@ export const joinRequests = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     inviteId: uuid("invite_id").notNull().references(() => invites.id),
-    companyId: uuid("product_id").notNull().references(() => products.id),
+    productId: uuid("product_id").notNull().references(() => products.id),
     requestType: text("request_type").notNull(),
     status: text("status").notNull().default("pending_approval"),
     requestIp: text("request_ip").notNull(),
@@ -33,16 +33,16 @@ export const joinRequests = pgTable(
   (table) => ({
     inviteUniqueIdx: uniqueIndex("join_requests_invite_unique_idx").on(table.inviteId),
     companyStatusTypeCreatedIdx: index("join_requests_product_status_type_created_idx").on(
-      table.companyId,
+      table.productId,
       table.status,
       table.requestType,
       table.createdAt,
     ),
     pendingHumanUserUniqueIdx: uniqueIndex("join_requests_pending_human_user_uq")
-      .on(table.companyId, table.requestingUserId)
+      .on(table.productId, table.requestingUserId)
       .where(sql`${table.requestType} = 'human' AND ${table.status} = 'pending_approval' AND ${table.requestingUserId} IS NOT NULL`),
     pendingHumanEmailUniqueIdx: uniqueIndex("join_requests_pending_human_email_uq")
-      .on(table.companyId, sql`lower(${table.requestEmailSnapshot})`)
+      .on(table.productId, sql`lower(${table.requestEmailSnapshot})`)
       .where(sql`${table.requestType} = 'human' AND ${table.status} = 'pending_approval' AND ${table.requestEmailSnapshot} IS NOT NULL`),
   }),
 );

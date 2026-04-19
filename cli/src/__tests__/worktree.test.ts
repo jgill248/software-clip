@@ -1051,7 +1051,7 @@ describeEmbeddedPostgres("pauseSeededScheduledRoutines", () => {
   it("pauses only routines with enabled schedule triggers", async () => {
     const tempDb = await startEmbeddedPostgresTestDatabase("paperclip-worktree-routines-");
     const db = createDb(tempDb.connectionString);
-    const companyId = randomUUID();
+    const productId = randomUUID();
     const projectId = randomUUID();
     const agentId = randomUUID();
     const activeScheduledRoutineId = randomUUID();
@@ -1062,13 +1062,13 @@ describeEmbeddedPostgres("pauseSeededScheduledRoutines", () => {
 
     try {
       await db.insert(products).values({
-        id: companyId,
+        id: productId,
         name: "Paperclip",
-        issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+        issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
       });
       await db.insert(agents).values({
         id: agentId,
-        companyId,
+        productId,
         name: "Coder",
         adapterType: "process",
         adapterConfig: {},
@@ -1077,14 +1077,14 @@ describeEmbeddedPostgres("pauseSeededScheduledRoutines", () => {
       });
       await db.insert(projects).values({
         id: projectId,
-        companyId,
+        productId,
         name: "Project",
         status: "in_progress",
       });
       await db.insert(routines).values([
         {
           id: activeScheduledRoutineId,
-          companyId,
+          productId,
           projectId,
           assigneeAgentId: agentId,
           title: "Active scheduled",
@@ -1092,7 +1092,7 @@ describeEmbeddedPostgres("pauseSeededScheduledRoutines", () => {
         },
         {
           id: activeApiRoutineId,
-          companyId,
+          productId,
           projectId,
           assigneeAgentId: agentId,
           title: "Active API",
@@ -1100,7 +1100,7 @@ describeEmbeddedPostgres("pauseSeededScheduledRoutines", () => {
         },
         {
           id: pausedScheduledRoutineId,
-          companyId,
+          productId,
           projectId,
           assigneeAgentId: agentId,
           title: "Paused scheduled",
@@ -1108,7 +1108,7 @@ describeEmbeddedPostgres("pauseSeededScheduledRoutines", () => {
         },
         {
           id: archivedScheduledRoutineId,
-          companyId,
+          productId,
           projectId,
           assigneeAgentId: agentId,
           title: "Archived scheduled",
@@ -1116,7 +1116,7 @@ describeEmbeddedPostgres("pauseSeededScheduledRoutines", () => {
         },
         {
           id: disabledScheduleRoutineId,
-          companyId,
+          productId,
           projectId,
           assigneeAgentId: agentId,
           title: "Disabled schedule",
@@ -1125,7 +1125,7 @@ describeEmbeddedPostgres("pauseSeededScheduledRoutines", () => {
       ]);
       await db.insert(routineTriggers).values([
         {
-          companyId,
+          productId,
           routineId: activeScheduledRoutineId,
           kind: "schedule",
           enabled: true,
@@ -1133,13 +1133,13 @@ describeEmbeddedPostgres("pauseSeededScheduledRoutines", () => {
           timezone: "UTC",
         },
         {
-          companyId,
+          productId,
           routineId: activeApiRoutineId,
           kind: "api",
           enabled: true,
         },
         {
-          companyId,
+          productId,
           routineId: pausedScheduledRoutineId,
           kind: "schedule",
           enabled: true,
@@ -1147,7 +1147,7 @@ describeEmbeddedPostgres("pauseSeededScheduledRoutines", () => {
           timezone: "UTC",
         },
         {
-          companyId,
+          productId,
           routineId: archivedScheduledRoutineId,
           kind: "schedule",
           enabled: true,
@@ -1155,7 +1155,7 @@ describeEmbeddedPostgres("pauseSeededScheduledRoutines", () => {
           timezone: "UTC",
         },
         {
-          companyId,
+          productId,
           routineId: disabledScheduleRoutineId,
           kind: "schedule",
           enabled: false,

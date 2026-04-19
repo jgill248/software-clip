@@ -36,10 +36,10 @@ if (!embeddedPostgresSupport.supported) {
   );
 }
 
-describeEmbeddedPostgres("GET /companies/:companyId/invites", () => {
+describeEmbeddedPostgres("GET /companies/:productId/invites", () => {
   let db!: ReturnType<typeof createDb>;
   let tempDb: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
-  let companyId!: string;
+  let productId!: string;
 
   beforeAll(async () => {
     tempDb = await startEmbeddedPostgresTestDatabase("paperclip-invite-list-route-");
@@ -47,11 +47,11 @@ describeEmbeddedPostgres("GET /companies/:companyId/invites", () => {
   }, 20_000);
 
   beforeEach(async () => {
-    companyId = randomUUID();
+    productId = randomUUID();
     await db.insert(products).values({
-      id: companyId,
+      id: productId,
       name: "Paperclip",
-      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      issuePrefix: `T${productId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
     });
   });
 
@@ -73,7 +73,7 @@ describeEmbeddedPostgres("GET /companies/:companyId/invites", () => {
         type: "board",
         source: "local_implicit",
         userId: null,
-        companyIds: [currentCompanyId],
+        productIds: [currentCompanyId],
       };
       next();
     });
@@ -98,7 +98,7 @@ describeEmbeddedPostgres("GET /companies/:companyId/invites", () => {
     await db.insert(invites).values([
       {
         id: inviteOneId,
-        companyId,
+        productId,
         inviteType: "company_join",
         tokenHash: "invite-token-1",
         allowedJoinTypes: "human",
@@ -109,7 +109,7 @@ describeEmbeddedPostgres("GET /companies/:companyId/invites", () => {
       },
       {
         id: inviteTwoId,
-        companyId,
+        productId,
         inviteType: "company_join",
         tokenHash: "invite-token-2",
         allowedJoinTypes: "human",
@@ -120,7 +120,7 @@ describeEmbeddedPostgres("GET /companies/:companyId/invites", () => {
       },
       {
         id: inviteThreeId,
-        companyId,
+        productId,
         inviteType: "company_join",
         tokenHash: "invite-token-3",
         allowedJoinTypes: "human",
@@ -134,7 +134,7 @@ describeEmbeddedPostgres("GET /companies/:companyId/invites", () => {
     await db.insert(joinRequests).values({
       id: randomUUID(),
       inviteId: inviteThreeId,
-      companyId,
+      productId,
       requestType: "human",
       status: "pending_approval",
       requestIp: "127.0.0.1",
@@ -143,9 +143,9 @@ describeEmbeddedPostgres("GET /companies/:companyId/invites", () => {
       updatedAt: new Date("2026-04-12T00:05:00.000Z"),
     });
 
-    const app = createApp(companyId);
+    const app = createApp(productId);
 
-    const firstPage = await request(app).get(`/api/companies/${companyId}/invites?limit=2`);
+    const firstPage = await request(app).get(`/api/companies/${productId}/invites?limit=2`);
 
     expect(firstPage.status).toBe(200);
     expect(firstPage.body.invites).toHaveLength(2);
@@ -153,7 +153,7 @@ describeEmbeddedPostgres("GET /companies/:companyId/invites", () => {
     expect(firstPage.body.invites[0].relatedJoinRequestId).toBeTruthy();
     expect(firstPage.body.nextOffset).toBe(2);
 
-    const secondPage = await request(app).get(`/api/companies/${companyId}/invites?limit=2&offset=2`);
+    const secondPage = await request(app).get(`/api/companies/${productId}/invites?limit=2&offset=2`);
 
     expect(secondPage.status).toBe(200);
     expect(secondPage.body.invites).toHaveLength(1);
