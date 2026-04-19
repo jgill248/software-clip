@@ -649,7 +649,7 @@ function JoinRequestInboxRow({
 
 export function Inbox() {
   const { selectedCompanyId } = useCompany();
-  const { setBreadcrumbs } = useBreadcrumbs();
+  const { setBreadcrumbs, setRightActions } = useBreadcrumbs();
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
   const location = useLocation();
@@ -723,6 +723,17 @@ export function Inbox() {
   useEffect(() => {
     setBreadcrumbs([{ label: "Inbox" }]);
   }, [setBreadcrumbs]);
+
+  // Surface "Review queue" as the topbar's primary action, mirroring the
+  // Softclip prototype's two-rail split (review queue + notifications).
+  useEffect(() => {
+    setRightActions(
+      <Link to="/reviews/pending" className="sc-btn size-sm variant-outline">
+        Review queue
+      </Link>,
+    );
+    return () => setRightActions(null);
+  }, [setRightActions]);
 
   useEffect(() => {
     saveLastInboxTab(tab);
