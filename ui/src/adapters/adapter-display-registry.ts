@@ -98,15 +98,13 @@ const adapterDisplayMap: Record<string, AdapterDisplayInfo> = {
   },
   process: {
     label: "Process",
-    description: "Internal process adapter",
+    description: "Spawn a local process to run the agent",
     icon: Cpu,
-    comingSoon: true,
   },
   http: {
     label: "HTTP",
-    description: "Internal HTTP adapter",
+    description: "POST heartbeats to an HTTP endpoint (e.g. Ollama, webhooks)",
     icon: Cpu,
-    comingSoon: true,
   },
 };
 

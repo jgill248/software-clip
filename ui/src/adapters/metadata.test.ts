@@ -26,8 +26,12 @@ describe("adapter metadata", () => {
     ]);
   });
 
-  it("keeps intentionally withheld built-in adapters marked as coming soon", () => {
-    expect(isEnabledAdapterType("process")).toBe(false);
-    expect(isEnabledAdapterType("http")).toBe(false);
+  it("enables the generic process and http transport adapters", () => {
+    expect(isEnabledAdapterType("process")).toBe(true);
+    expect(isEnabledAdapterType("http")).toBe(true);
+  });
+
+  it("keeps openclaw_gateway marked as coming soon (configured via a separate flow)", () => {
+    expect(isEnabledAdapterType("openclaw_gateway")).toBe(false);
   });
 });

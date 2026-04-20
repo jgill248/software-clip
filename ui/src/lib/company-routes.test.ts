@@ -20,4 +20,16 @@ describe("company routes", () => {
       "/execution-workspaces/workspace-123",
     );
   });
+
+  it("prefixes the sidebar ceremonies and roadmap routes with the active company", () => {
+    // Regression: these two sidebar links previously rendered as
+    // `/ceremonies` / `/roadmap`, which the router then treated as the
+    // company prefix `CEREMONIES` / `ROADMAP` and 404'd with "Company not found".
+    expect(isBoardPathWithoutPrefix("/ceremonies")).toBe(true);
+    expect(isBoardPathWithoutPrefix("/roadmap")).toBe(true);
+    expect(applyCompanyPrefix("/ceremonies", "OLL")).toBe("/OLL/ceremonies");
+    expect(applyCompanyPrefix("/roadmap", "OLL")).toBe("/OLL/roadmap");
+    expect(toCompanyRelativePath("/OLL/ceremonies")).toBe("/ceremonies");
+    expect(toCompanyRelativePath("/OLL/roadmap")).toBe("/roadmap");
+  });
 });
