@@ -133,7 +133,7 @@ describe("CompanyInvites", () => {
     await flushReact();
     await flushReact();
 
-    expect(container.textContent).toContain("Company Invites");
+    expect(container.textContent).toContain("Product Invites");
     expect(container.textContent).toContain("Create invite");
     expect(container.textContent).toContain("Invite history");
     expect(container.textContent).toContain("Board User 25");

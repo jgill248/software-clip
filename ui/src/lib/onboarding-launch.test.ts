@@ -91,15 +91,15 @@ describe("onboarding launch payloads", () => {
 
     expect(
       buildOnboardingIssuePayload({
-        title: "  Hire your first engineer  ",
-        description: "  Kick off the hiring plan  ",
+        title: "  Draft the first roadmap item  ",
+        description: "  Write acceptance criteria  ",
         assigneeAgentId: "agent-1",
         projectId: "project-1",
         goalId: "goal-1",
       }),
     ).toEqual({
-      title: "Hire your first engineer",
-      description: "Kick off the hiring plan",
+      title: "Draft the first roadmap item",
+      description: "Write acceptance criteria",
       assigneeAgentId: "agent-1",
       projectId: "project-1",
       goalId: "goal-1",

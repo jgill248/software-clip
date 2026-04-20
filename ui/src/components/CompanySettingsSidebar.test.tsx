@@ -103,7 +103,7 @@ describe("CompanySettingsSidebar", () => {
     await flushReact();
 
     expect(container.textContent).toContain("Softclip");
-    expect(container.textContent).toContain("Company Settings");
+    expect(container.textContent).toContain("Product Settings");
     expect(container.textContent).toContain("General");
     expect(container.textContent).toContain("Access");
     expect(container.textContent).toContain("Invites");
