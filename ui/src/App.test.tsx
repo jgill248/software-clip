@@ -98,7 +98,7 @@ describe("CloudAccessGate", () => {
     await flushReact();
     await flushReact();
 
-    expect(container.textContent).toContain("No company access");
+    expect(container.textContent).toContain("No product access");
     expect(container.textContent).not.toContain("Outlet content");
 
     await act(async () => {

@@ -555,7 +555,7 @@ export function Ceremonies() {
   }
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={Repeat} message="Select a company to view routines." />;
+    return <EmptyState icon={Repeat} message="Select a product to view routines." />;
   }
 
   if (isLoading) {

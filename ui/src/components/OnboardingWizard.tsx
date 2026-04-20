@@ -60,11 +60,13 @@ import {
 type Step = 1 | 2 | 3 | 4;
 type AdapterType = string;
 
-const DEFAULT_TASK_DESCRIPTION = `You are the CEO. You set the direction for the company.
+const DEFAULT_TASK_TITLE = "Draft the first roadmap item and acceptance criteria";
 
-- hire a founding engineer
-- write a hiring plan
-- break the roadmap into concrete tasks and start delegating work`;
+const DEFAULT_TASK_DESCRIPTION = `You are the Product Owner. You own what gets built and why.
+
+- pick the first concrete roadmap item worth shipping
+- write acceptance criteria that describe what "done" looks like
+- break it into issues the engineer and QA can pick up`;
 
 export function OnboardingWizard() {
   const { onboardingOpen, onboardingOptions, closeOnboarding } = useDialog();
@@ -105,8 +107,10 @@ export function OnboardingWizard() {
   const [companyName, setCompanyName] = useState("");
   const [companyGoal, setCompanyGoal] = useState("");
 
-  // Step 2
-  const [agentName, setAgentName] = useState("CEO");
+  // Step 2 — the Product Owner is auto-seeded by the server on product create
+  // (see server/src/routes/products.ts §10). This step lets the operator
+  // customise the PO's name and pick the adapter it will run on.
+  const [agentName, setAgentName] = useState("Product Owner");
   const [adapterType, setAdapterType] = useState<AdapterType>("claude_local");
   const [model, setModel] = useState("");
   const [command, setCommand] = useState("");
@@ -122,9 +126,7 @@ export function OnboardingWizard() {
   const [showMoreAdapters, setShowMoreAdapters] = useState(false);
 
   // Step 3
-  const [taskTitle, setTaskTitle] = useState(
-    "Hire your first engineer and create a hiring plan"
-  );
+  const [taskTitle, setTaskTitle] = useState(DEFAULT_TASK_TITLE);
   const [taskDescription, setTaskDescription] = useState(
     DEFAULT_TASK_DESCRIPTION
   );
@@ -285,7 +287,7 @@ export function OnboardingWizard() {
     setError(null);
     setCompanyName("");
     setCompanyGoal("");
-    setAgentName("CEO");
+    setAgentName("Product Owner");
     setAdapterType("claude_local");
     setModel("");
     setCommand("");
@@ -296,7 +298,7 @@ export function OnboardingWizard() {
     setAdapterEnvLoading(false);
     setForceUnsetAnthropicApiKey(false);
     setUnsetAnthropicLoading(false);
-    setTaskTitle("Hire your first engineer and create a hiring plan");
+    setTaskTitle(DEFAULT_TASK_TITLE);
     setTaskDescription(DEFAULT_TASK_DESCRIPTION);
     setCreatedCompanyId(null);
     setCreatedCompanyPrefix(null);
@@ -352,7 +354,7 @@ export function OnboardingWizard() {
   ): Promise<AdapterEnvironmentTestResult | null> {
     if (!createdCompanyId) {
       setAdapterEnvError(
-        "Create or select a company before testing adapter environment."
+        "Create or select a product before testing adapter environment."
       );
       return null;
     }
@@ -408,7 +410,7 @@ export function OnboardingWizard() {
 
       setStep(2);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create company");
+      setError(err instanceof Error ? err.message : "Failed to create product");
     } finally {
       setLoading(false);
     }
@@ -457,20 +459,47 @@ export function OnboardingWizard() {
         if (!result) return;
       }
 
-      const agent = await agentsApi.create(createdCompanyId, {
+      // The server auto-seeds a Product Owner at the root on product create
+      // (server/src/routes/products.ts §10). Find it and configure it with the
+      // adapter the operator picked here — don't create a second root agent.
+      const existingAgents = await agentsApi.list(createdCompanyId);
+      const productOwner = existingAgents.find(
+        (a) => a.role === "product-owner",
+      );
+
+      const updatePayload: Record<string, unknown> = {
         name: agentName.trim(),
-        role: "ceo",
         adapterType,
         adapterConfig: buildAdapterConfig(),
-        runtimeConfig: buildNewAgentRuntimeConfig()
-      });
+        runtimeConfig: buildNewAgentRuntimeConfig(),
+      };
+
+      let agent;
+      if (productOwner) {
+        agent = await agentsApi.update(
+          productOwner.id,
+          updatePayload,
+          createdCompanyId,
+        );
+      } else {
+        // Fallback: PO seed failed during product create (server logs and
+        // continues in that case). Hire one now so the product has a root.
+        agent = await agentsApi.create(createdCompanyId, {
+          ...updatePayload,
+          role: "product-owner",
+          title: "Product Owner",
+          reportsTo: null,
+        });
+      }
       setCreatedAgentId(agent.id);
       queryClient.invalidateQueries({
-        queryKey: queryKeys.agents.list(createdCompanyId)
+        queryKey: queryKeys.agents.list(createdCompanyId),
       });
       setStep(3);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create agent");
+      setError(
+        err instanceof Error ? err.message : "Failed to configure Product Owner",
+      );
     } finally {
       setLoading(false);
     }
@@ -639,8 +668,8 @@ export function OnboardingWizard() {
               <div className="flex items-center gap-0 mb-8 border-b border-border">
                 {(
                   [
-                    { step: 1 as Step, label: "Company", icon: Building2 },
-                    { step: 2 as Step, label: "Agent", icon: Bot },
+                    { step: 1 as Step, label: "Product", icon: Building2 },
+                    { step: 2 as Step, label: "Product Owner", icon: Bot },
                     { step: 3 as Step, label: "Task", icon: ListTodo },
                     { step: 4 as Step, label: "Launch", icon: Rocket }
                   ] as const
@@ -670,9 +699,9 @@ export function OnboardingWizard() {
                       <Building2 className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <div>
-                      <h3 className="font-medium">Name your company</h3>
+                      <h3 className="font-medium">Name your product</h3>
                       <p className="text-xs text-muted-foreground">
-                        This is the organization your agents will work for.
+                        This is the product your dev team will ship.
                       </p>
                     </div>
                   </div>
@@ -685,11 +714,11 @@ export function OnboardingWizard() {
                           : "text-muted-foreground group-focus-within:text-foreground"
                       )}
                     >
-                      Company name
+                      Product name
                     </label>
                     <input
                       className="w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground/50"
-                      placeholder="Acme Corp"
+                      placeholder="Acme App"
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
                       autoFocus
@@ -708,7 +737,7 @@ export function OnboardingWizard() {
                     </label>
                     <textarea
                       className="w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground/50 resize-none min-h-[60px]"
-                      placeholder="What is this company trying to achieve?"
+                      placeholder="What is this product trying to deliver?"
                       value={companyGoal}
                       onChange={(e) => setCompanyGoal(e.target.value)}
                     />
@@ -723,9 +752,10 @@ export function OnboardingWizard() {
                       <Bot className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <div>
-                      <h3 className="font-medium">Create your first agent</h3>
+                      <h3 className="font-medium">Configure your Product Owner</h3>
                       <p className="text-xs text-muted-foreground">
-                        Choose how this agent will run tasks.
+                        The Product Owner is the root agent for your dev team.
+                        Pick the adapter it will run on and the model it will use.
                       </p>
                     </div>
                   </div>
@@ -735,7 +765,7 @@ export function OnboardingWizard() {
                     </label>
                     <input
                       className="w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground/50"
-                      placeholder="CEO"
+                      placeholder="Product Owner"
                       value={agentName}
                       onChange={(e) => setAgentName(e.target.value)}
                       autoFocus
@@ -990,8 +1020,8 @@ export function OnboardingWizard() {
                           <p className="text-[11px] text-amber-900/90 leading-relaxed">
                             Claude failed while{" "}
                             <span className="font-mono">ANTHROPIC_API_KEY</span>{" "}
-                            is set. You can clear it in this CEO adapter config
-                            and retry the probe.
+                            is set. You can clear it in this agent's adapter
+                            config and retry the probe.
                           </p>
                           <Button
                             size="sm"
@@ -1149,7 +1179,7 @@ export function OnboardingWizard() {
                         <p className="text-sm font-medium truncate">
                           {companyName}
                         </p>
-                        <p className="text-xs text-muted-foreground">Company</p>
+                        <p className="text-xs text-muted-foreground">Product</p>
                       </div>
                       <Check className="h-4 w-4 text-green-500 shrink-0" />
                     </div>

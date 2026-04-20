@@ -256,14 +256,14 @@ export function Dashboard() {
       return (
         <EmptyState
           icon={LayoutDashboard}
-          message="Welcome to Softclip. Set up your first company and agent to get started."
+          message="Welcome to Softclip. Set up your first product and Product Owner to get started."
           action="Get Started"
           onAction={openOnboarding}
         />
       );
     }
     return (
-      <EmptyState icon={LayoutDashboard} message="Create or select a company to view the dashboard." />
+      <EmptyState icon={LayoutDashboard} message="Create or select a product to view the dashboard." />
     );
   }
 

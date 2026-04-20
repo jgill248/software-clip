@@ -399,15 +399,15 @@ describe("InviteLandingPage", () => {
 
     expect(acceptInviteMock).toHaveBeenCalledWith("pcp_invite_test", { requestType: "human" });
     expect(container.textContent).toContain("Request to join Acme Robotics");
-    expect(container.textContent).toContain("A company admin must approve your request to join.");
+    expect(container.textContent).toContain("A product admin must approve your request to join.");
     expect(container.textContent).toContain(
-      "Ask them to visit Company Settings → Access to approve your request.",
+      "Ask them to visit Product Settings → Access to approve your request.",
     );
     expect(container.querySelector('img[alt="Acme Robotics logo"]')).not.toBeNull();
     expect(container.textContent).not.toContain("http://localhost/company/settings/access");
 
     const approvalLinks = Array.from(container.querySelectorAll("a")).filter(
-      (link) => link.textContent === "Company Settings → Access",
+      (link) => link.textContent === "Product Settings → Access",
     );
     expect(approvalLinks).toHaveLength(2);
     const expectedApprovalUrl = `${window.location.origin}/company/settings/access`;
@@ -467,7 +467,7 @@ describe("InviteLandingPage", () => {
     expect(container.querySelector('[data-testid="invite-pending-approval"]')).not.toBeNull();
     expect(container.textContent).toContain("Your request is still awaiting approval.");
     expect(container.textContent).toContain(
-      "Ask them to visit Company Settings → Access to approve your request.",
+      "Ask them to visit Product Settings → Access to approve your request.",
     );
 
     await act(async () => {
@@ -475,7 +475,7 @@ describe("InviteLandingPage", () => {
     });
   });
 
-  it("redirects straight to the company after sign-in when the user already has access", async () => {
+  it("redirects straight to the product after sign-in when the user already has access", async () => {
     getSessionMock.mockResolvedValueOnce(null);
     getSessionMock.mockResolvedValue({
       session: { id: "session-1", userId: "user-1" },

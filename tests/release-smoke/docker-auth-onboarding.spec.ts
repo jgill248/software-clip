@@ -10,7 +10,7 @@ const ADMIN_PASSWORD =
   "softclip-smoke-password";
 
 const COMPANY_NAME = `Release-Smoke-${Date.now()}`;
-const AGENT_NAME = "CEO";
+const AGENT_NAME = "Product Owner";
 const TASK_TITLE = "Release smoke task";
 
 async function signIn(page: Page) {
@@ -25,7 +25,7 @@ async function signIn(page: Page) {
 }
 
 async function openOnboarding(page: Page) {
-  const wizardHeading = page.locator("h3", { hasText: "Name your company" });
+  const wizardHeading = page.locator("h3", { hasText: "Name your product" });
   const startButton = page.getByRole("button", { name: "Start Onboarding" });
 
   await expect(wizardHeading.or(startButton)).toBeVisible({ timeout: 20_000 });
@@ -38,20 +38,20 @@ async function openOnboarding(page: Page) {
 }
 
 test.describe("Docker authenticated onboarding smoke", () => {
-  test("logs in, completes onboarding, and triggers the first CEO run", async ({
+  test("logs in, completes onboarding, and triggers the first Product Owner run", async ({
     page,
   }) => {
     await signIn(page);
     await openOnboarding(page);
 
-    await page.locator('input[placeholder="Acme Corp"]').fill(COMPANY_NAME);
+    await page.locator('input[placeholder="Acme App"]').fill(COMPANY_NAME);
     await page.getByRole("button", { name: "Next" }).click();
 
     await expect(
-      page.locator("h3", { hasText: "Create your first agent" })
+      page.locator("h3", { hasText: "Configure your Product Owner" })
     ).toBeVisible({ timeout: 10_000 });
 
-    await expect(page.locator('input[placeholder="CEO"]')).toHaveValue(AGENT_NAME);
+    await expect(page.locator('input[placeholder="Product Owner"]')).toHaveValue(AGENT_NAME);
     await page.getByRole("button", { name: "Next" }).click();
 
     await expect(
@@ -90,10 +90,10 @@ test.describe("Docker authenticated onboarding smoke", () => {
       role: string;
       adapterType: string;
     }>;
-    const ceoAgent = agents.find((entry) => entry.name === AGENT_NAME);
-    expect(ceoAgent).toBeTruthy();
-    expect(ceoAgent!.role).toBe("ceo");
-    expect(ceoAgent!.adapterType).not.toBe("process");
+    const poAgent = agents.find((entry) => entry.name === AGENT_NAME);
+    expect(poAgent).toBeTruthy();
+    expect(poAgent!.role).toBe("product-owner");
+    expect(poAgent!.adapterType).not.toBe("process");
 
     const issuesRes = await page.request.get(
       `${baseUrl}/api/companies/${company!.id}/issues`
@@ -106,12 +106,12 @@ test.describe("Docker authenticated onboarding smoke", () => {
     }>;
     const issue = issues.find((entry) => entry.title === TASK_TITLE);
     expect(issue).toBeTruthy();
-    expect(issue!.assigneeAgentId).toBe(ceoAgent!.id);
+    expect(issue!.assigneeAgentId).toBe(poAgent!.id);
 
     await expect.poll(
       async () => {
         const runsRes = await page.request.get(
-          `${baseUrl}/api/companies/${company!.id}/heartbeat-runs?agentId=${ceoAgent!.id}`
+          `${baseUrl}/api/companies/${company!.id}/heartbeat-runs?agentId=${poAgent!.id}`
         );
         expect(runsRes.ok()).toBe(true);
         const runs = (await runsRes.json()) as Array<{
@@ -119,7 +119,7 @@ test.describe("Docker authenticated onboarding smoke", () => {
           invocationSource: string;
           status: string;
         }>;
-        const latestRun = runs.find((entry) => entry.agentId === ceoAgent!.id);
+        const latestRun = runs.find((entry) => entry.agentId === poAgent!.id);
         return latestRun
           ? {
               invocationSource: latestRun.invocationSource,

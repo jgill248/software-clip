@@ -258,7 +258,7 @@ export function CompanyRail() {
         style={{ background: "var(--border-subtle)" }}
       />
 
-      {/* Add company button */}
+      {/* Add product button */}
       <div className="flex items-center justify-center py-2 shrink-0">
         <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
@@ -268,13 +268,13 @@ export function CompanyRail() {
                 "flex items-center justify-center h-9 w-9 rounded-[8px] transition-colors",
                 "text-muted-foreground hover:text-foreground hover:bg-[color:var(--hover)]",
               )}
-              aria-label="Add company"
+              aria-label="Add product"
             >
               <Plus className="h-4 w-4" />
             </button>
           </TooltipTrigger>
           <TooltipContent side="right" sideOffset={8}>
-            <p>Add company</p>
+            <p>Add product</p>
           </TooltipContent>
         </Tooltip>
       </div>

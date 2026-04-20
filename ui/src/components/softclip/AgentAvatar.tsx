@@ -8,16 +8,19 @@ import {
   ShieldCheck,
   Cpu,
   Briefcase,
+  Target,
+  Boxes,
+  Database,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const ROLE_ICONS: Record<AgentRole, LucideIcon> = {
-  ceo: Compass,
-  cto: Columns3,
-  cmo: Briefcase,
-  cfo: Briefcase,
-  pm: Compass,
+  // Softclip dev-team roles
+  "product-owner": Target,
+  "software-architect": Boxes,
+  "solution-architect": Boxes,
+  "data-architect": Database,
   engineer: Wrench,
   designer: PenTool,
   qa: ShieldCheck,
@@ -25,6 +28,12 @@ const ROLE_ICONS: Record<AgentRole, LucideIcon> = {
   security: ShieldCheck,
   researcher: Columns3,
   general: Cpu,
+  // Legacy roles
+  ceo: Compass,
+  cto: Columns3,
+  cmo: Briefcase,
+  cfo: Briefcase,
+  pm: Compass,
 };
 
 export function agentRoleIcon(role: AgentRole | string | null | undefined): LucideIcon {

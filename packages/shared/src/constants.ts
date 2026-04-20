@@ -38,34 +38,48 @@ export const AGENT_ADAPTER_TYPES = [
 export type AgentAdapterType = (typeof AGENT_ADAPTER_TYPES)[number] | (string & {});
 
 export const AGENT_ROLES = [
-  "ceo",
-  "cto",
-  "cmo",
-  "cfo",
+  // Softclip dev-team roles (post-pivot). The Product Owner is the root
+  // agent; architects, designer, engineer, QA, devops, and security all
+  // report to the PO. See `server/src/onboarding-assets/README.md`.
+  "product-owner",
+  "software-architect",
+  "solution-architect",
+  "data-architect",
   "engineer",
   "designer",
-  "pm",
   "qa",
   "devops",
   "security",
   "researcher",
   "general",
+  // Legacy Paperclip-era C-suite roles kept for backwards compatibility
+  // with existing databases. New deployments default to `product-owner`.
+  "ceo",
+  "cto",
+  "cmo",
+  "cfo",
+  "pm",
 ] as const;
 export type AgentRole = (typeof AGENT_ROLES)[number];
 
 export const AGENT_ROLE_LABELS: Record<AgentRole, string> = {
-  ceo: "CEO",
-  cto: "CTO",
-  cmo: "CMO",
-  cfo: "CFO",
+  "product-owner": "Product Owner",
+  "software-architect": "Software Architect",
+  "solution-architect": "Solution Architect",
+  "data-architect": "Data Architect",
   engineer: "Engineer",
   designer: "Designer",
-  pm: "PM",
   qa: "QA",
   devops: "DevOps",
   security: "Security",
   researcher: "Researcher",
   general: "General",
+  // Legacy roles
+  ceo: "CEO",
+  cto: "CTO",
+  cmo: "CMO",
+  cfo: "CFO",
+  pm: "PM",
 };
 
 export const AGENT_ICON_NAMES = [

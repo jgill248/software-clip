@@ -32,7 +32,7 @@ async function ensureBootstrapped(request: APIRequestContext): Promise<void> {
   }
 }
 
-/** Create a company via the onboarding wizard API shortcut. */
+/** Create a product via the onboarding wizard API shortcut. */
 async function createCompanyViaWizard(
   request: APIRequestContext,
   name: string
@@ -45,29 +45,25 @@ async function createCompanyViaWizard(
   if (!createRes.ok()) {
     const errText = await createRes.text();
     throw new Error(
-      `Failed to create company (${createRes.status()}): ${errText}`
+      `Failed to create product (${createRes.status()}): ${errText}`
     );
   }
   const company = await createRes.json();
 
-  // Create a CEO agent
-  const agentRes = await request.post(
-    `${BASE}/api/companies/${company.id}/agents`,
-    {
-      data: {
-        name: "CEO",
-        role: "ceo",
-        title: "CEO",
-        adapterType: "claude_local",
-      },
-    }
+  // The server auto-seeds a Product Owner as the root agent on product create
+  // (see server/src/routes/products.ts §10). Find it and return its id for the
+  // rest of the test flow — don't create a duplicate root agent.
+  const agentsRes = await request.get(
+    `${BASE}/api/companies/${company.id}/agents`
   );
-  expect(agentRes.ok()).toBe(true);
-  const agent = await agentRes.json();
+  expect(agentsRes.ok()).toBe(true);
+  const agents = (await agentsRes.json()) as Array<{ id: string; role: string }>;
+  const productOwner = agents.find((a) => a.role === "product-owner");
+  expect(productOwner, "expected auto-seeded Product Owner").toBeTruthy();
 
   return {
     productId: company.id,
-    agentId: agent.id,
+    agentId: productOwner!.id,
     prefix: company.issuePrefix ?? company.id,
   };
 }
