@@ -231,7 +231,7 @@ export function sprintService(db: Db) {
           .returning();
         return row;
       } catch (err) {
-        // The partial unique index on (company_id) where state='active'
+        // The partial unique index on (product_id) where state='active'
         // raises a 23505 (unique_violation) when a second sprint tries to
         // activate. Surface a clearer 409 so the caller can react.
         if (

@@ -2315,7 +2315,7 @@ export function heartbeatService(db: Db) {
 
     const retryRun = await db.transaction(async (tx) => {
       await tx.execute(
-        sql`select id from issues where company_id = ${run.productId} and execution_run_id = ${run.id} for update`,
+        sql`select id from issues where product_id = ${run.productId} and execution_run_id = ${run.id} for update`,
       );
 
       const issue = await tx
@@ -4202,11 +4202,11 @@ export function heartbeatService(db: Db) {
     const promotionResult = await db.transaction(async (tx) => {
       if (contextIssueId) {
         await tx.execute(
-          sql`select id from issues where company_id = ${run.productId} and id = ${contextIssueId} for update`,
+          sql`select id from issues where product_id = ${run.productId} and id = ${contextIssueId} for update`,
         );
       } else {
         await tx.execute(
-          sql`select id from issues where company_id = ${run.productId} and execution_run_id = ${run.id} for update`,
+          sql`select id from issues where product_id = ${run.productId} and execution_run_id = ${run.id} for update`,
         );
       }
 
@@ -4519,7 +4519,7 @@ export function heartbeatService(db: Db) {
 
       const outcome = await db.transaction(async (tx) => {
         await tx.execute(
-          sql`select id from issues where id = ${issueId} and company_id = ${agent.productId} for update`,
+          sql`select id from issues where id = ${issueId} and product_id = ${agent.productId} for update`,
         );
 
         const issue = await tx
