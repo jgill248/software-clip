@@ -52,5 +52,11 @@ tests/e2e/test-results/
 tests/e2e/playwright-report/
 tests/release-smoke/test-results/
 tests/release-smoke/playwright-report/
+.playwright-mcp/
 .superset/
 .claude/worktrees/
+
+# Ad-hoc screenshots and dev logs at repo root
+/*.png
+/softclip-dev.log
+/softclip-dev.err.log
