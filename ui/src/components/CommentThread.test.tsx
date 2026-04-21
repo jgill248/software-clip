@@ -8,6 +8,13 @@ import type { Agent, Approval } from "@softclipai/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CommentThread } from "./CommentThread";
 
+vi.mock("../context/CompanyContext", () => ({
+  useCompany: () => ({
+    selectedCompany: null,
+    selectedCompanyId: null,
+  }),
+}));
+
 vi.mock("./MarkdownBody", () => ({
   MarkdownBody: ({ children, className }: { children: ReactNode; className?: string }) => (
     <div className={className}>{children}</div>
@@ -285,7 +292,7 @@ describe("CommentThread", () => {
 
     const approvalRow = container.querySelector("#approval-approval-1") as HTMLDivElement | null;
     expect(approvalRow).not.toBeNull();
-    expect(container.textContent).toContain("request_board_approval");
+    expect(container.textContent).toContain("Board Approval");
     expect(container.textContent).toContain("Approve hosting spend");
     expect(container.textContent).toContain("Approve");
     expect(container.textContent).toContain("Reject");

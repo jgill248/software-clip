@@ -369,7 +369,7 @@ describe("inbox helpers", () => {
 
     expect(result.mineIssues).toBe(1);
     expect(result.inbox).toBe(1);
-    expect(result.alerts).toBe(2);
+    expect(result.alerts).toBe(1);
   });
 
   it("resurfaces non-issue items when they change after dismissal", () => {
@@ -476,7 +476,7 @@ describe("inbox helpers", () => {
       currentUserId: "user-1",
     });
 
-    expect(result.alerts).toBe(2);
+    expect(result.alerts).toBe(1);
     expect(result.inbox).toBe(0);
   });
 
