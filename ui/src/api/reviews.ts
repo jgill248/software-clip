@@ -1,7 +1,7 @@
 import type { Approval, ApprovalComment, Issue } from "@softclipai/shared";
 import { api } from "./client";
 
-export const approvalsApi = {
+export const reviewsApi = {
   list: (productId: string, status?: string) =>
     api.get<Approval[]>(
       `/companies/${productId}/approvals${status ? `?status=${encodeURIComponent(status)}` : ""}`,

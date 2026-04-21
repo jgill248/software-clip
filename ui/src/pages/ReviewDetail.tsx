@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "@/lib/router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { approvalsApi } from "../api/reviews";
+import { reviewsApi } from "../api/reviews";
 import { agentsApi } from "../api/agents";
 import { useCompany } from "../context/CompanyContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
@@ -29,20 +29,20 @@ export function ReviewDetail() {
 
   const { data: approval, isLoading } = useQuery({
     queryKey: queryKeys.approvals.detail(approvalId!),
-    queryFn: () => approvalsApi.get(approvalId!),
+    queryFn: () => reviewsApi.get(approvalId!),
     enabled: !!approvalId,
   });
   const resolvedCompanyId = approval?.productId ?? selectedCompanyId;
 
   const { data: comments } = useQuery({
     queryKey: queryKeys.approvals.comments(approvalId!),
-    queryFn: () => approvalsApi.listComments(approvalId!),
+    queryFn: () => reviewsApi.listComments(approvalId!),
     enabled: !!approvalId,
   });
 
   const { data: linkedIssues } = useQuery({
     queryKey: queryKeys.approvals.issues(approvalId!),
-    queryFn: () => approvalsApi.listIssues(approvalId!),
+    queryFn: () => reviewsApi.listIssues(approvalId!),
     enabled: !!approvalId,
   });
 
@@ -85,7 +85,7 @@ export function ReviewDetail() {
   };
 
   const approveMutation = useMutation({
-    mutationFn: () => approvalsApi.approve(approvalId!),
+    mutationFn: () => reviewsApi.approve(approvalId!),
     onSuccess: () => {
       setError(null);
       refresh();
@@ -95,7 +95,7 @@ export function ReviewDetail() {
   });
 
   const rejectMutation = useMutation({
-    mutationFn: () => approvalsApi.reject(approvalId!),
+    mutationFn: () => reviewsApi.reject(approvalId!),
     onSuccess: () => {
       setError(null);
       refresh();
@@ -104,7 +104,7 @@ export function ReviewDetail() {
   });
 
   const revisionMutation = useMutation({
-    mutationFn: () => approvalsApi.requestRevision(approvalId!),
+    mutationFn: () => reviewsApi.requestRevision(approvalId!),
     onSuccess: () => {
       setError(null);
       refresh();
@@ -113,7 +113,7 @@ export function ReviewDetail() {
   });
 
   const resubmitMutation = useMutation({
-    mutationFn: () => approvalsApi.resubmit(approvalId!),
+    mutationFn: () => reviewsApi.resubmit(approvalId!),
     onSuccess: () => {
       setError(null);
       refresh();
@@ -122,7 +122,7 @@ export function ReviewDetail() {
   });
 
   const addCommentMutation = useMutation({
-    mutationFn: () => approvalsApi.addComment(approvalId!, commentBody.trim()),
+    mutationFn: () => reviewsApi.addComment(approvalId!, commentBody.trim()),
     onSuccess: () => {
       setCommentBody("");
       setError(null);
@@ -132,7 +132,7 @@ export function ReviewDetail() {
   });
 
   const materializeMutation = useMutation({
-    mutationFn: () => approvalsApi.materializePlan(approvalId!),
+    mutationFn: () => reviewsApi.materializePlan(approvalId!),
     onSuccess: (result) => {
       setError(null);
       refresh();

@@ -2,7 +2,7 @@ import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } fro
 import { Link, useLocation, useNavigate } from "@/lib/router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { INBOX_MINE_ISSUE_STATUS_FILTER } from "@softclipai/shared";
-import { approvalsApi } from "../api/reviews";
+import { reviewsApi } from "../api/reviews";
 import { accessApi } from "../api/access";
 import { authApi } from "../api/auth";
 import { ApiError } from "../api/client";
@@ -754,7 +754,7 @@ export function Inbox() {
     error: approvalsError,
   } = useQuery({
     queryKey: queryKeys.approvals.list(selectedCompanyId!),
-    queryFn: () => approvalsApi.list(selectedCompanyId!),
+    queryFn: () => reviewsApi.list(selectedCompanyId!),
     enabled: !!selectedCompanyId,
   });
 
@@ -1303,7 +1303,7 @@ export function Inbox() {
   }, []);
 
   const approveMutation = useMutation({
-    mutationFn: (id: string) => approvalsApi.approve(id),
+    mutationFn: (id: string) => reviewsApi.approve(id),
     onSuccess: (_approval, id) => {
       setActionError(null);
       queryClient.invalidateQueries({ queryKey: queryKeys.approvals.list(selectedCompanyId!) });
@@ -1315,7 +1315,7 @@ export function Inbox() {
   });
 
   const rejectMutation = useMutation({
-    mutationFn: (id: string) => approvalsApi.reject(id),
+    mutationFn: (id: string) => reviewsApi.reject(id),
     onSuccess: () => {
       setActionError(null);
       queryClient.invalidateQueries({ queryKey: queryKeys.approvals.list(selectedCompanyId!) });

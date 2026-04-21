@@ -22,17 +22,28 @@ interface StubState {
   existingTitles: Set<string>;
 }
 
-function makeDbStub(state: StubState) {
+/**
+ * The stub can't introspect drizzle predicates, so it walks the template
+ * titles in the same order the service iterates them. `queriedTitles`
+ * defaults to every template title; tests that pass a `slugs` filter
+ * must pass the matching title list so the stub lines up with the
+ * queries the service actually makes.
+ */
+function makeDbStub(
+  state: StubState,
+  queriedTitles: readonly string[] = CEREMONY_TEMPLATES.map((t) => t.title),
+) {
+  let callIdx = 0;
   return {
     select: (_fields?: unknown) => ({
       from: (_table: unknown) => ({
-        where: (_predicate: unknown) =>
-          Promise.resolve(
-            [...state.existingTitles].map((title) => ({
-              id: `pre-${title}`,
-              title,
-            })),
-          ),
+        where: (_predicate: unknown) => {
+          const title = queriedTitles[callIdx++];
+          if (title && state.existingTitles.has(title)) {
+            return Promise.resolve([{ id: `pre-${title}`, title }]);
+          }
+          return Promise.resolve([]);
+        },
       }),
     }),
   } as any;

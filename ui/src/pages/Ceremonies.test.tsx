@@ -35,7 +35,7 @@ vi.mock("../context/ToastContext", () => ({
 }));
 
 vi.mock("../api/ceremonies", () => ({
-  routinesApi: {
+  ceremoniesApi: {
     list: (productId: string) => routinesListMock(productId),
     create: vi.fn(),
     update: vi.fn(),

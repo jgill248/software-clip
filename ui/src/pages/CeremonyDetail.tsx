@@ -15,7 +15,7 @@ import {
   Webhook,
   Zap,
 } from "lucide-react";
-import { routinesApi, type RoutineTriggerResponse, type RotateRoutineTriggerResponse } from "../api/ceremonies";
+import { ceremoniesApi, type RoutineTriggerResponse, type RotateRoutineTriggerResponse } from "../api/ceremonies";
 import { heartbeatsApi } from "../api/heartbeats";
 import { LiveRunWidget } from "../components/LiveRunWidget";
 import { agentsApi } from "../api/agents";
@@ -306,7 +306,7 @@ export function CeremonyDetail() {
 
   const { data: routine, isLoading, error } = useQuery({
     queryKey: queryKeys.routines.detail(routineId!),
-    queryFn: () => routinesApi.get(routineId!),
+    queryFn: () => ceremoniesApi.get(routineId!),
     enabled: !!routineId,
   });
   const activeIssueId = routine?.activeIssue?.id;
@@ -319,7 +319,7 @@ export function CeremonyDetail() {
   const hasLiveRun = (liveRuns ?? []).length > 0;
   const { data: routineRuns } = useQuery({
     queryKey: queryKeys.routines.runs(routineId!),
-    queryFn: () => routinesApi.listRuns(routineId!),
+    queryFn: () => ceremoniesApi.listRuns(routineId!),
     enabled: !!routineId,
     refetchInterval: hasLiveRun ? 3000 : false,
   });
@@ -336,7 +336,7 @@ export function CeremonyDetail() {
       relatedActivityIds.triggerIds.join(","),
       relatedActivityIds.runIds.join(","),
     ],
-    queryFn: () => routinesApi.activity(selectedCompanyId!, routineId!, relatedActivityIds),
+    queryFn: () => ceremoniesApi.activity(selectedCompanyId!, routineId!, relatedActivityIds),
     enabled: !!selectedCompanyId && !!routineId && !!routine,
   });
   const { data: agents } = useQuery({
@@ -429,7 +429,7 @@ export function CeremonyDetail() {
 
   const saveRoutine = useMutation({
     mutationFn: () => {
-      return routinesApi.update(routineId!, buildRoutineMutationPayload(editDraft));
+      return ceremoniesApi.update(routineId!, buildRoutineMutationPayload(editDraft));
     },
     onSuccess: async () => {
       await Promise.all([
@@ -449,7 +449,7 @@ export function CeremonyDetail() {
 
   const runRoutine = useMutation({
     mutationFn: (data?: RoutineRunDialogSubmitData) =>
-      routinesApi.run(routineId!, {
+      ceremoniesApi.run(routineId!, {
         ...(data?.variables && Object.keys(data.variables).length > 0 ? { variables: data.variables } : {}),
         ...(data?.assigneeAgentId !== undefined ? { assigneeAgentId: data.assigneeAgentId } : {}),
         ...(data?.projectId !== undefined ? { projectId: data.projectId } : {}),
@@ -482,7 +482,7 @@ export function CeremonyDetail() {
   });
 
   const updateRoutineStatus = useMutation({
-    mutationFn: (status: string) => routinesApi.update(routineId!, { status }),
+    mutationFn: (status: string) => ceremoniesApi.update(routineId!, { status }),
     onSuccess: async (_data, status) => {
       pushToast({
         title: "Routine saved",
@@ -507,7 +507,7 @@ export function CeremonyDetail() {
     mutationFn: async (): Promise<RoutineTriggerResponse> => {
       const existingOfKind = (routine?.triggers ?? []).filter((t) => t.kind === newTrigger.kind).length;
       const autoLabel = existingOfKind > 0 ? `${newTrigger.kind}-${existingOfKind + 1}` : newTrigger.kind;
-      return routinesApi.createTrigger(routineId!, {
+      return ceremoniesApi.createTrigger(routineId!, {
         kind: newTrigger.kind,
         label: autoLabel,
         ...(newTrigger.kind === "schedule"
@@ -551,7 +551,7 @@ export function CeremonyDetail() {
   });
 
   const updateTrigger = useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: Record<string, unknown> }) => routinesApi.updateTrigger(id, patch),
+    mutationFn: ({ id, patch }: { id: string; patch: Record<string, unknown> }) => ceremoniesApi.updateTrigger(id, patch),
     onSuccess: async () => {
       pushToast({
         title: "Trigger saved",
@@ -574,7 +574,7 @@ export function CeremonyDetail() {
   });
 
   const deleteTrigger = useMutation({
-    mutationFn: (id: string) => routinesApi.deleteTrigger(id),
+    mutationFn: (id: string) => ceremoniesApi.deleteTrigger(id),
     onSuccess: async () => {
       pushToast({
         title: "Trigger deleted",
@@ -596,7 +596,7 @@ export function CeremonyDetail() {
   });
 
   const rotateTrigger = useMutation({
-    mutationFn: (id: string): Promise<RotateRoutineTriggerResponse> => routinesApi.rotateTriggerSecret(id),
+    mutationFn: (id: string): Promise<RotateRoutineTriggerResponse> => ceremoniesApi.rotateTriggerSecret(id),
     onSuccess: async (result) => {
       setSecretMessage({
         title: "Webhook secret rotated",
