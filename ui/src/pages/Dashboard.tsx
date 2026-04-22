@@ -23,7 +23,7 @@ import { agentsApi } from "../api/agents";
 import { projectsApi } from "../api/projects";
 import { heartbeatsApi } from "../api/heartbeats";
 import { sprintsApi } from "../api/sprints";
-import { approvalsApi } from "../api/reviews";
+import { reviewsApi } from "../api/reviews";
 import { buildCompanyUserProfileMap } from "../lib/company-members";
 import { useCompany } from "../context/CompanyContext";
 import { useDialog } from "../context/DialogContext";
@@ -178,7 +178,7 @@ export function Dashboard() {
 
   const { data: pendingApprovals } = useQuery({
     queryKey: queryKeys.approvals.list(selectedCompanyId!, "pending"),
-    queryFn: () => approvalsApi.list(selectedCompanyId!, "pending"),
+    queryFn: () => reviewsApi.list(selectedCompanyId!, "pending"),
     enabled: !!selectedCompanyId,
   });
 

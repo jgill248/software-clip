@@ -2,7 +2,7 @@ import { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useSearchParams } from "@/lib/router";
 import { Check, ChevronDown, ChevronRight, Layers, MoreHorizontal, Plus, Repeat } from "lucide-react";
-import { routinesApi } from "../api/ceremonies";
+import { ceremoniesApi } from "../api/ceremonies";
 import { agentsApi } from "../api/agents";
 import { projectsApi } from "../api/projects";
 import { issuesApi } from "../api/issues";
@@ -338,7 +338,7 @@ export function Ceremonies() {
 
   const { data: routines, isLoading, error } = useQuery({
     queryKey: queryKeys.routines.list(selectedCompanyId!),
-    queryFn: () => routinesApi.list(selectedCompanyId!),
+    queryFn: () => ceremoniesApi.list(selectedCompanyId!),
     enabled: !!selectedCompanyId,
   });
   const { data: agents } = useQuery({
@@ -369,7 +369,7 @@ export function Ceremonies() {
 
   const createRoutine = useMutation({
     mutationFn: () =>
-      routinesApi.create(selectedCompanyId!, buildRoutineMutationPayload(draft)),
+      ceremoniesApi.create(selectedCompanyId!, buildRoutineMutationPayload(draft)),
     onSuccess: async (routine) => {
       setDraft({
         title: "",
@@ -403,7 +403,7 @@ export function Ceremonies() {
   });
 
   const updateRoutineStatus = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) => routinesApi.update(id, { status }),
+    mutationFn: ({ id, status }: { id: string; status: string }) => ceremoniesApi.update(id, { status }),
     onMutate: ({ id }) => {
       setStatusMutationRoutineId(id);
     },
@@ -426,7 +426,7 @@ export function Ceremonies() {
   });
 
   const runRoutine = useMutation({
-    mutationFn: ({ id, data }: { id: string; data?: RoutineRunDialogSubmitData }) => routinesApi.run(id, {
+    mutationFn: ({ id, data }: { id: string; data?: RoutineRunDialogSubmitData }) => ceremoniesApi.run(id, {
       ...(data?.variables && Object.keys(data.variables).length > 0 ? { variables: data.variables } : {}),
       ...(data?.assigneeAgentId !== undefined ? { assigneeAgentId: data.assigneeAgentId } : {}),
       ...(data?.projectId !== undefined ? { projectId: data.projectId } : {}),

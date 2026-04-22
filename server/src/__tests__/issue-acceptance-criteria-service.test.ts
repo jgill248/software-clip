@@ -258,7 +258,12 @@ describe("issueAcceptanceCriteriaService", () => {
         makeCriterion({ status: "met" }),
         makeCriterion({ status: "waived", waivedReason: "won't ship" }),
       ];
-      const svc = issueAcceptanceCriteriaService(makeDbStub(state));
+      // assertReadyToClose queries with `where status = 'pending'`; the
+      // stub honours that filter in `pending-only` mode, which correctly
+      // returns zero rows for a list with no pending criteria.
+      const svc = issueAcceptanceCriteriaService(
+        makeDbStub(state, "pending-only"),
+      );
       await expect(svc.assertReadyToClose("issue-1")).resolves.toBeUndefined();
     });
 

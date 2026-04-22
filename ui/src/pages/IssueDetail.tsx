@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate, useNavigationType, useParams } from "@/
 import { useInfiniteQuery, useQuery, useMutation, useQueryClient, type InfiniteData, type QueryClient } from "@tanstack/react-query";
 import { issuesApi } from "../api/issues";
 import { ApiError } from "../api/client";
-import { approvalsApi } from "../api/reviews";
+import { reviewsApi } from "../api/reviews";
 import { activityApi, type RunForIssue } from "../api/activity";
 import { heartbeatsApi, type ActiveRunForIssue, type LiveRunForIssue } from "../api/heartbeats";
 import { instanceSettingsApi } from "../api/instanceSettings";
@@ -1306,9 +1306,9 @@ export function IssueDetail() {
   const approvalDecision = useMutation({
     mutationFn: async ({ approvalId, action }: { approvalId: string; action: "approve" | "reject" }) => {
       if (action === "approve") {
-        return approvalsApi.approve(approvalId);
+        return reviewsApi.approve(approvalId);
       }
-      return approvalsApi.reject(approvalId);
+      return reviewsApi.reject(approvalId);
     },
     onMutate: ({ approvalId, action }) => {
       setPendingApprovalAction({ approvalId, action });

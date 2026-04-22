@@ -21,7 +21,7 @@ export interface RotateRoutineTriggerResponse {
   secretMaterial: RoutineTriggerSecretMaterial;
 }
 
-export const routinesApi = {
+export const ceremoniesApi = {
   list: (productId: string) => api.get<RoutineListItem[]>(`/companies/${productId}/routines`),
   create: (productId: string, data: Record<string, unknown>) =>
     api.post<Routine>(`/companies/${productId}/routines`, data),

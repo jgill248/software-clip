@@ -6,9 +6,9 @@ export { companiesApi } from "./companies";
 export { agentsApi } from "./agents";
 export { projectsApi } from "./projects";
 export { issuesApi } from "./issues";
-export { routinesApi } from "./ceremonies";
+export { ceremoniesApi } from "./ceremonies";
 export { goalsApi } from "./roadmap-items";
-export { approvalsApi } from "./reviews";
+export { reviewsApi } from "./reviews";
 export { acceptanceCriteriaApi } from "./acceptance-criteria";
 export type {
   AcceptanceCriterion,
