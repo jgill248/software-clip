@@ -13,7 +13,7 @@ export function inboxDismissalRoutes(db: Db) {
   const router = Router();
   const svc = inboxDismissalService(db);
 
-  router.get("/companies/:productId/inbox-dismissals", async (req, res) => {
+  router.get("/products/:productId/inbox-dismissals", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     if (req.actor.type !== "board") {
@@ -29,7 +29,7 @@ export function inboxDismissalRoutes(db: Db) {
   });
 
   router.post(
-    "/companies/:productId/inbox-dismissals",
+    "/products/:productId/inbox-dismissals",
     validate(inboxDismissalSchema),
     async (req, res) => {
       const productId = req.params.productId as string;

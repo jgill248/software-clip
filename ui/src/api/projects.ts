@@ -18,10 +18,10 @@ function projectPath(id: string, productId?: string, suffix = "") {
 }
 
 export const projectsApi = {
-  list: (productId: string) => api.get<Project[]>(`/companies/${productId}/projects`),
+  list: (productId: string) => api.get<Project[]>(`/products/${productId}/projects`),
   get: (id: string, productId?: string) => api.get<Project>(projectPath(id, productId)),
   create: (productId: string, data: Record<string, unknown>) =>
-    api.post<Project>(`/companies/${productId}/projects`, data),
+    api.post<Project>(`/products/${productId}/projects`, data),
   update: (id: string, data: Record<string, unknown>, productId?: string) =>
     api.patch<Project>(projectPath(id, productId), data),
   listWorkspaces: (projectId: string, productId?: string) =>

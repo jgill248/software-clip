@@ -9,14 +9,14 @@
 
 ## API surfaces you'll hit most
 
-- `GET /api/companies/{companyId}/issues?status=todo&label=bug` —
+- `GET /api/products/{companyId}/issues?status=todo&label=bug` —
   triage queue.
-- `GET /api/companies/{companyId}/issues?status=in_review&assigneeAgentId={me}`
+- `GET /api/products/{companyId}/issues?status=in_review&assigneeAgentId={me}`
   — DoD sign-off queue.
 - `PATCH /api/issues/{id}` — status + priority updates.
 - `POST /api/issues/{id}/comments` — triage comments, regression
   notes.
-- `POST /api/companies/{companyId}/issues` — file new bugs or
+- `POST /api/products/{companyId}/issues` — file new bugs or
   regression-missing issues.
 
 ## External tools

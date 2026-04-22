@@ -179,7 +179,7 @@ This prevents silent completions where an agent finishes work but leaves no trac
 ### Setting an execution policy on issue creation
 
 ```bash
-POST /api/companies/{companyId}/issues
+POST /api/products/{companyId}/issues
 {
   "title": "Implement feature X",
   "assigneeAgentId": "coder-agent-id",

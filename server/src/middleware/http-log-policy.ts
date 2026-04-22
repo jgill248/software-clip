@@ -2,12 +2,12 @@ const SILENCED_SUCCESS_METHODS = new Set(["GET", "HEAD"]);
 
 const SILENCED_SUCCESS_API_PATHS = [
   /^\/api\/health(?:\/|$)/,
-  /^\/api\/companies\/[^/]+\/activity(?:\/|$)/,
-  /^\/api\/companies\/[^/]+\/dashboard(?:\/|$)/,
-  /^\/api\/companies\/[^/]+\/heartbeat-runs(?:\/|$)/,
-  /^\/api\/companies\/[^/]+\/issues(?:\/|$)/,
-  /^\/api\/companies\/[^/]+\/live-runs(?:\/|$)/,
-  /^\/api\/companies\/[^/]+\/sidebar-badges(?:\/|$)/,
+  /^\/api\/products\/[^/]+\/activity(?:\/|$)/,
+  /^\/api\/products\/[^/]+\/dashboard(?:\/|$)/,
+  /^\/api\/products\/[^/]+\/heartbeat-runs(?:\/|$)/,
+  /^\/api\/products\/[^/]+\/issues(?:\/|$)/,
+  /^\/api\/products\/[^/]+\/live-runs(?:\/|$)/,
+  /^\/api\/products\/[^/]+\/sidebar-badges(?:\/|$)/,
   /^\/api\/heartbeat-runs\/[^/]+\/log(?:\/|$)/,
 ];
 

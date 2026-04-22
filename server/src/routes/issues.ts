@@ -585,14 +585,14 @@ export function issueRoutes(
     }
   });
 
-  // Common malformed path when productId is empty in "/api/companies/{productId}/issues".
+  // Common malformed path when productId is empty in "/api/products/{productId}/issues".
   router.get("/issues", (_req, res) => {
     res.status(400).json({
-      error: "Missing productId in path. Use /api/companies/{productId}/issues.",
+      error: "Missing productId in path. Use /api/products/{productId}/issues.",
     });
   });
 
-  router.get("/companies/:productId/issues", async (req, res) => {
+  router.get("/products/:productId/issues", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const assigneeUserFilterRaw = req.query.assigneeUserId as string | undefined;
@@ -664,14 +664,14 @@ export function issueRoutes(
     res.json(result);
   });
 
-  router.get("/companies/:productId/labels", async (req, res) => {
+  router.get("/products/:productId/labels", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const result = await svc.listLabels(productId);
     res.json(result);
   });
 
-  router.post("/companies/:productId/labels", validate(createIssueLabelSchema), async (req, res) => {
+  router.post("/products/:productId/labels", validate(createIssueLabelSchema), async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const label = await svc.createLabel(productId, req.body);
@@ -1326,7 +1326,7 @@ export function issueRoutes(
     res.json({ ok: true });
   });
 
-  router.post("/companies/:productId/issues", validate(createIssueSchema), async (req, res) => {
+  router.post("/products/:productId/issues", validate(createIssueSchema), async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     assertNoAgentHostWorkspaceCommandMutation(req, collectIssueWorkspaceCommandPaths(req.body));
@@ -2632,7 +2632,7 @@ export function issueRoutes(
     res.json(attachments.map(withContentPath));
   });
 
-  router.post("/companies/:productId/issues/:issueId/attachments", async (req, res) => {
+  router.post("/products/:productId/issues/:issueId/attachments", async (req, res) => {
     const productId = req.params.productId as string;
     const issueId = req.params.issueId as string;
     assertCompanyAccess(req, productId);

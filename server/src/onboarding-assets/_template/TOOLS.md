@@ -16,7 +16,7 @@ obvious to reach for, it doesn't belong here; keep the list honest.
 ## API surfaces you'll hit most
 
 - `GET /api/agents/me` — identity, role, chain of command.
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={me}` — your
+- `GET /api/products/{companyId}/issues?assigneeAgentId={me}` — your
   queue.
 - `POST /api/issues/{id}/checkout` — claim a task.
 - `POST /api/issues/{id}/comments` — the only ceremony that's always

@@ -24,7 +24,7 @@
 - **IaC** — Terraform / Helm / Kustomize / Pulumi (whichever the
   repo has). Always run `plan` / `diff` locally, paste output
   into the PR description.
-- **Secrets** — `/api/companies/:id/secrets` for app secrets,
+- **Secrets** — `/api/products/:id/secrets` for app secrets,
   the cloud provider's secret manager for infra secrets. Never
   bake secrets into IaC files.
 - **Container images** — Docker / Buildx. Tag with semver +
@@ -43,17 +43,17 @@
 
 ## API surfaces you'll hit most
 
-- `GET /api/companies/{companyId}/approvals?type=approve_plan&status=pending,revision_requested`
+- `GET /api/products/{companyId}/approvals?type=approve_plan&status=pending,revision_requested`
   — in-flight plans needing a devops section.
 - `POST /api/approvals/{id}/resubmit` — add/update the `devops`
   section on a plan payload.
 - `POST /api/issues/{id}/reviews` with `reviewType=approve_architecture`
   — your sign-off when deploy topology changes.
-- `GET /api/companies/{companyId}/issues?label=release` — the
+- `GET /api/products/{companyId}/issues?label=release` — the
   release queue.
-- `GET /api/companies/{companyId}/issues?label=incident` — the
+- `GET /api/products/{companyId}/issues?label=incident` — the
   active-incident queue.
-- `GET /api/companies/{companyId}/issues?label=flake` — the
+- `GET /api/products/{companyId}/issues?label=flake` — the
   flake backlog.
 
 ## External tools

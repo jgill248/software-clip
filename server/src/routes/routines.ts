@@ -51,14 +51,14 @@ export function routineRoutes(db: Db) {
     return routine;
   }
 
-  router.get("/companies/:productId/routines", async (req, res) => {
+  router.get("/products/:productId/routines", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const result = await svc.list(productId);
     res.json(result);
   });
 
-  router.post("/companies/:productId/routines", validate(createRoutineSchema), async (req, res) => {
+  router.post("/products/:productId/routines", validate(createRoutineSchema), async (req, res) => {
     const productId = req.params.productId as string;
     await assertBoardCanAssignTasks(req, productId);
     assertCanManageCompanyRoutine(req, productId, req.body.assigneeAgentId);

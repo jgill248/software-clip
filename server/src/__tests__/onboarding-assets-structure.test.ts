@@ -9,8 +9,10 @@ const ASSETS_DIR = path.resolve(HERE, "..", "onboarding-assets");
 /**
  * Default roles that ship with Softclip. Each must have the full five-file
  * bundle. The "_template" directory is a stub scaffolding source and must
- * also be complete. The "ceo" directory is a legacy bundle retained during
- * the Softclip pivot; it is allowed to exist but is not validated here.
+ * also be complete. The "ceo" directory is the legacy root-agent bundle: it
+ * is still wired into server auth (first-agent creation seeds role=ceo), so
+ * it is allowed to exist but is not validated here — the CEO → product-owner
+ * role migration is a separate, coordinated piece of work.
  */
 const DEFAULT_ROLE_DIRS = [
   "_template",

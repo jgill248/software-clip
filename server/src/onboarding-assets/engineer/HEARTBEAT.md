@@ -25,7 +25,7 @@ If you have open PRs with review comments:
 
 ## 4. Queue triage
 
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress,in_review,blocked`.
+- `GET /api/products/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress,in_review,blocked`.
 - Prioritize:
   1. `in_progress` you were mid-implementation on.
   2. `in_review` with new comments.

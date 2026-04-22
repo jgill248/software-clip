@@ -1,5 +1,5 @@
 import { PERMISSION_KEYS } from "@softclipai/shared";
-import type { HumanCompanyMembershipRole } from "@softclipai/shared";
+import type { HumanProductMembershipRole } from "@softclipai/shared";
 import { grantsForHumanRole } from "./company-member-roles.js";
 
 export function grantsFromDefaults(
@@ -58,7 +58,7 @@ export function agentJoinGrantsFromDefaults(
 
 export function humanJoinGrantsFromDefaults(
   defaultsPayload: Record<string, unknown> | null | undefined,
-  membershipRole: HumanCompanyMembershipRole
+  membershipRole: HumanProductMembershipRole
 ): Array<{
   permissionKey: (typeof PERMISSION_KEYS)[number];
   scope: Record<string, unknown> | null;

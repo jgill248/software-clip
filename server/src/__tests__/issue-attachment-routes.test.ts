@@ -164,7 +164,7 @@ describe("issue attachment routes", () => {
 
     const app = await createApp(storage);
     const res = await request(app)
-      .post("/api/companies/company-1/issues/11111111-1111-4111-8111-111111111111/attachments")
+      .post("/api/products/company-1/issues/11111111-1111-4111-8111-111111111111/attachments")
       .attach("file", Buffer.from("zip"), { filename: "bundle.zip", contentType: "application/zip" });
 
     expect([200, 201]).toContain(res.status);

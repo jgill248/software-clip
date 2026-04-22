@@ -18,7 +18,7 @@ starting design work.
 
 ## 3. Queue triage
 
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress,in_review,blocked`.
+- `GET /api/products/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress,in_review,blocked`.
 - Prioritize:
   1. Active design docs you're drafting (`in_progress`).
   2. Open architecture reviews (`in_review`).

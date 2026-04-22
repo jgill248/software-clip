@@ -192,7 +192,7 @@ describe("agent routes adapter validation", () => {
 
     const app = await createApp();
     const res = await request(app)
-      .post("/api/companies/company-1/agents")
+      .post("/api/products/company-1/agents")
       .send({
         name: "External Agent",
         adapterType: "external_test",
@@ -205,7 +205,7 @@ describe("agent routes adapter validation", () => {
   it("rejects unknown adapter types even when schema accepts arbitrary strings", async () => {
     const app = await createApp();
     const res = await request(app)
-      .post("/api/companies/company-1/agents")
+      .post("/api/products/company-1/agents")
       .send({
         name: "Missing Adapter",
         adapterType: missingAdapterType,

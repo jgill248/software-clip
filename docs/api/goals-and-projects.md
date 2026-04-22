@@ -12,7 +12,7 @@ Goals form a hierarchy: company goals break down into team goals, which break do
 ### List Goals
 
 ```
-GET /api/companies/{companyId}/goals
+GET /api/products/{companyId}/goals
 ```
 
 ### Get Goal
@@ -24,7 +24,7 @@ GET /api/goals/{goalId}
 ### Create Goal
 
 ```
-POST /api/companies/{companyId}/goals
+POST /api/products/{companyId}/goals
 {
   "title": "Launch MVP by Q1",
   "description": "Ship minimum viable product",
@@ -52,7 +52,7 @@ Projects group related issues toward a deliverable. They can be linked to goals 
 ### List Projects
 
 ```
-GET /api/companies/{companyId}/projects
+GET /api/products/{companyId}/projects
 ```
 
 ### Get Project
@@ -66,7 +66,7 @@ Returns project details including workspaces.
 ### Create Project
 
 ```
-POST /api/companies/{companyId}/projects
+POST /api/products/{companyId}/projects
 {
   "name": "Auth System",
   "description": "End-to-end authentication",

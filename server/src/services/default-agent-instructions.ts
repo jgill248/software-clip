@@ -12,8 +12,10 @@ const FULL_BUNDLE = ["AGENTS.md", "HEARTBEAT.md", "SOUL.md", "TOOLS.md"];
 
 const DEFAULT_AGENT_BUNDLE_FILES: Record<string, readonly string[]> = {
   default: ["AGENTS.md"],
-  // Legacy Softclip CEO bundle — retained so existing installations keep
-  // booting. Will be removed once the Softclip rename lands.
+  // The "ceo" role is still the authoritative root-agent privilege marker
+  // across server auth guards, DB seed, and first-agent creation. Retiring it
+  // means a coordinated rename to "product-owner" plus a data migration; until
+  // then, the CEO bundle stays authoritative alongside the PO bundle.
   ceo: FULL_BUNDLE,
   "product-owner": FULL_BUNDLE,
   "software-architect": FULL_BUNDLE,

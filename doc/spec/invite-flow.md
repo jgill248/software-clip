@@ -179,7 +179,7 @@ sequenceDiagram
   participant Join as join_requests table
 
   Board->>Settings: Choose role and click Create invite
-  Settings->>API: POST /api/companies/:companyId/invites
+  Settings->>API: POST /api/products/:companyId/invites
   API->>Invites: Insert active invite
   API-->>Settings: inviteUrl + metadata
 
@@ -257,7 +257,7 @@ sequenceDiagram
   participant Keys as agent_api_keys table
 
   Board->>Settings: Generate OpenClaw invite prompt
-  Settings->>API: POST /api/companies/:companyId/openclaw-invite-prompt
+  Settings->>API: POST /api/products/:companyId/openclaw-invite-prompt
   API->>Invites: Insert active agent invite
   API-->>Settings: Prompt text + invite token
 

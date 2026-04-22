@@ -23,7 +23,7 @@ export function registerDashboardCommands(program: Command): void {
       .action(async (opts: DashboardGetOptions) => {
         try {
           const ctx = resolveCommandContext(opts, { requireCompany: true });
-          const row = await ctx.api.get<DashboardSummary>(`/api/companies/${ctx.productId}/dashboard`);
+          const row = await ctx.api.get<DashboardSummary>(`/api/products/${ctx.productId}/dashboard`);
           printOutput(row, { json: ctx.json });
         } catch (err) {
           handleCommandError(err);

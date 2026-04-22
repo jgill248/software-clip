@@ -837,7 +837,7 @@ export function agentRoutes(db: Db) {
     }
   });
 
-  router.get("/companies/:productId/adapters/:type/models", async (req, res) => {
+  router.get("/products/:productId/adapters/:type/models", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const type = assertKnownAdapterType(req.params.type as string);
@@ -845,7 +845,7 @@ export function agentRoutes(db: Db) {
     res.json(models);
   });
 
-  router.get("/companies/:productId/adapters/:type/detect-model", async (req, res) => {
+  router.get("/products/:productId/adapters/:type/detect-model", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const type = assertKnownAdapterType(req.params.type as string);
@@ -855,7 +855,7 @@ export function agentRoutes(db: Db) {
   });
 
   router.post(
-    "/companies/:productId/adapters/:type/test-environment",
+    "/products/:productId/adapters/:type/test-environment",
     validate(testAdapterEnvironmentSchema),
     async (req, res) => {
       const productId = req.params.productId as string;
@@ -1021,7 +1021,7 @@ export function agentRoutes(db: Db) {
     },
   );
 
-  router.get("/companies/:productId/agents", async (req, res) => {
+  router.get("/products/:productId/agents", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const unsupportedQueryParams = Object.keys(req.query).sort();
@@ -1103,7 +1103,7 @@ export function agentRoutes(db: Db) {
     res.json(items);
   });
 
-  router.get("/companies/:productId/org", async (req, res) => {
+  router.get("/products/:productId/org", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const tree = await svc.orgForCompany(productId);
@@ -1111,7 +1111,7 @@ export function agentRoutes(db: Db) {
     res.json(leanTree);
   });
 
-  router.get("/companies/:productId/org.svg", async (req, res) => {
+  router.get("/products/:productId/org.svg", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const style = (ORG_CHART_STYLES.includes(req.query.style as OrgChartStyle) ? req.query.style : "warmth") as OrgChartStyle;
@@ -1123,7 +1123,7 @@ export function agentRoutes(db: Db) {
     res.send(svg);
   });
 
-  router.get("/companies/:productId/org.png", async (req, res) => {
+  router.get("/products/:productId/org.png", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const style = (ORG_CHART_STYLES.includes(req.query.style as OrgChartStyle) ? req.query.style : "warmth") as OrgChartStyle;
@@ -1135,7 +1135,7 @@ export function agentRoutes(db: Db) {
     res.send(png);
   });
 
-  router.get("/companies/:productId/agent-configurations", async (req, res) => {
+  router.get("/products/:productId/agent-configurations", async (req, res) => {
     const productId = req.params.productId as string;
     await assertCanReadConfigurations(req, productId);
     const rows = await svc.list(productId);
@@ -1360,7 +1360,7 @@ export function agentRoutes(db: Db) {
     res.json(state);
   });
 
-  router.post("/companies/:productId/agent-hires", validate(createAgentHireSchema), async (req, res) => {
+  router.post("/products/:productId/agent-hires", validate(createAgentHireSchema), async (req, res) => {
     const productId = req.params.productId as string;
     await assertCanCreateAgentsForCompany(req, productId);
     const sourceIssueIds = parseSourceIssueIds(req.body);
@@ -1468,7 +1468,7 @@ export function agentRoutes(db: Db) {
     res.status(201).json({ agent, approval: null });
   });
 
-  router.post("/companies/:productId/agents", validate(createAgentSchema), async (req, res) => {
+  router.post("/products/:productId/agents", validate(createAgentSchema), async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
 
@@ -2280,7 +2280,7 @@ export function agentRoutes(db: Db) {
     res.json(result);
   });
 
-  router.get("/companies/:productId/heartbeat-runs", async (req, res) => {
+  router.get("/products/:productId/heartbeat-runs", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const agentId = req.query.agentId as string | undefined;
@@ -2290,7 +2290,7 @@ export function agentRoutes(db: Db) {
     res.json(runs);
   });
 
-  router.get("/companies/:productId/live-runs", async (req, res) => {
+  router.get("/products/:productId/live-runs", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
 

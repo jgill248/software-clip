@@ -15,7 +15,7 @@ export const assetsApi = {
       form.append("namespace", namespace.trim());
     }
     form.append("file", safeFile);
-    return api.postForm<AssetImage>(`/companies/${productId}/assets/images`, form);
+    return api.postForm<AssetImage>(`/products/${productId}/assets/images`, form);
   },
 
   uploadCompanyLogo: async (productId: string, file: File) => {
@@ -24,6 +24,6 @@ export const assetsApi = {
 
     const form = new FormData();
     form.append("file", safeFile);
-    return api.postForm<AssetImage>(`/companies/${productId}/logo`, form);
+    return api.postForm<AssetImage>(`/products/${productId}/logo`, form);
   },
 };

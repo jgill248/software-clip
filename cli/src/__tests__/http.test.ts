@@ -65,19 +65,19 @@ describe("SoftclipApiClient", () => {
 
     const client = new SoftclipApiClient({ apiBase: "http://localhost:3100" });
 
-    await expect(client.post("/api/companies/import/preview", {})).rejects.toBeInstanceOf(ApiConnectionError);
-    await expect(client.post("/api/companies/import/preview", {})).rejects.toMatchObject({
-      url: "http://localhost:3100/api/companies/import/preview",
+    await expect(client.post("/api/products/import/preview", {})).rejects.toBeInstanceOf(ApiConnectionError);
+    await expect(client.post("/api/products/import/preview", {})).rejects.toMatchObject({
+      url: "http://localhost:3100/api/products/import/preview",
       method: "POST",
       causeMessage: "fetch failed",
     } satisfies Partial<ApiConnectionError>);
-    await expect(client.post("/api/companies/import/preview", {})).rejects.toThrow(
+    await expect(client.post("/api/products/import/preview", {})).rejects.toThrow(
       /Could not reach the Softclip API\./,
     );
-    await expect(client.post("/api/companies/import/preview", {})).rejects.toThrow(
+    await expect(client.post("/api/products/import/preview", {})).rejects.toThrow(
       /curl http:\/\/localhost:3100\/api\/health/,
     );
-    await expect(client.post("/api/companies/import/preview", {})).rejects.toThrow(
+    await expect(client.post("/api/products/import/preview", {})).rejects.toThrow(
       /pnpm dev|pnpm softclip run/,
     );
   });

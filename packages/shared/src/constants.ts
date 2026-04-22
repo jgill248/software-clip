@@ -1,5 +1,5 @@
-export const COMPANY_STATUSES = ["active", "paused", "archived"] as const;
-export type CompanyStatus = (typeof COMPANY_STATUSES)[number];
+export const PRODUCT_STATUSES = ["active", "paused", "archived"] as const;
+export type ProductStatus = (typeof PRODUCT_STATUSES)[number];
 
 export const DEPLOYMENT_MODES = ["local_trusted", "authenticated"] as const;
 export type DeploymentMode = (typeof DEPLOYMENT_MODES)[number];
@@ -414,24 +414,24 @@ export type PrincipalType = (typeof PRINCIPAL_TYPES)[number];
 export const MEMBERSHIP_STATUSES = ["pending", "active", "suspended"] as const;
 export type MembershipStatus = (typeof MEMBERSHIP_STATUSES)[number];
 
-export const COMPANY_MEMBERSHIP_ROLES = [
+export const PRODUCT_MEMBERSHIP_ROLES = [
   "owner",
   "admin",
   "operator",
   "viewer",
   "member",
 ] as const;
-export type CompanyMembershipRole = (typeof COMPANY_MEMBERSHIP_ROLES)[number];
+export type ProductMembershipRole = (typeof PRODUCT_MEMBERSHIP_ROLES)[number];
 
-export const HUMAN_COMPANY_MEMBERSHIP_ROLES = [
+export const HUMAN_PRODUCT_MEMBERSHIP_ROLES = [
   "owner",
   "admin",
   "operator",
   "viewer",
 ] as const;
-export type HumanCompanyMembershipRole = (typeof HUMAN_COMPANY_MEMBERSHIP_ROLES)[number];
+export type HumanProductMembershipRole = (typeof HUMAN_PRODUCT_MEMBERSHIP_ROLES)[number];
 
-export const HUMAN_COMPANY_MEMBERSHIP_ROLE_LABELS: Record<HumanCompanyMembershipRole, string> = {
+export const HUMAN_PRODUCT_MEMBERSHIP_ROLE_LABELS: Record<HumanProductMembershipRole, string> = {
   owner: "Owner",
   admin: "Admin",
   operator: "Operator",

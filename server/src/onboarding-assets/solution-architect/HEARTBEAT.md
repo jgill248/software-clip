@@ -28,7 +28,7 @@ If something is degraded, file an issue with label
 
 ## 4. Queue triage
 
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress,in_review,blocked`.
+- `GET /api/products/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress,in_review,blocked`.
 - Prioritize: active integration design (`in_progress`) → review
   queue (`in_review`) → new asks (`todo`).
 

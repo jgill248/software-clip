@@ -45,12 +45,12 @@ export interface UpdateSprintInput {
 export const sprintsApi = {
   list: (productId: string, filters: { state?: SprintState } = {}) => {
     const params = filters.state ? `?state=${encodeURIComponent(filters.state)}` : "";
-    return api.get<Sprint[]>(`/companies/${productId}/sprints${params}`);
+    return api.get<Sprint[]>(`/products/${productId}/sprints${params}`);
   },
   getActive: (productId: string) =>
-    api.get<Sprint>(`/companies/${productId}/sprints/active`),
+    api.get<Sprint>(`/products/${productId}/sprints/active`),
   create: (productId: string, input: CreateSprintInput) =>
-    api.post<Sprint>(`/companies/${productId}/sprints`, input),
+    api.post<Sprint>(`/products/${productId}/sprints`, input),
   get: (id: string) => api.get<Sprint>(`/sprints/${id}`),
   update: (id: string, patch: UpdateSprintInput) =>
     api.patch<Sprint>(`/sprints/${id}`, patch),

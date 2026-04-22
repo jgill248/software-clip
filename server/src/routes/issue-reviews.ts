@@ -25,7 +25,7 @@ import { badRequest, notFound } from "../errors.js";
  * Under the hood this wraps the generic approvals API: creates an approval
  * with the matching type, validates the payload against a per-type schema,
  * links the approval to the issue, logs the activity. Equivalent to calling
- * POST /api/companies/:productId/approvals with the right type + issueIds,
+ * POST /api/products/:productId/approvals with the right type + issueIds,
  * but saves the caller from having to know the full approval contract.
  */
 export function issueReviewRoutes(db: Db) {

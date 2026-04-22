@@ -22,7 +22,7 @@ export function sidebarBadgeRoutes(db: Db) {
   const access = accessService(db);
   const dashboard = dashboardService(db);
 
-  router.get("/companies/:productId/sidebar-badges", async (req, res) => {
+  router.get("/products/:productId/sidebar-badges", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     let canApproveJoins = false;

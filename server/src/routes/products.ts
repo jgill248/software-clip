@@ -75,10 +75,10 @@ export function productRoutes(db: Db, _storage?: StorageService) {
     res.json(filtered);
   });
 
-  // Common malformed path when productId is empty in "/api/companies/{productId}/issues".
+  // Common malformed path when productId is empty in "/api/products/{productId}/issues".
   router.get("/issues", (_req, res) => {
     res.status(400).json({
-      error: "Missing productId in path. Use /api/companies/{productId}/issues.",
+      error: "Missing productId in path. Use /api/products/{productId}/issues.",
     });
   });
 

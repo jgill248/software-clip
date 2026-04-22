@@ -13,7 +13,7 @@ export const ceremonySlugSchema = z.enum(CEREMONY_SLUGS);
 export type CeremonySlugValidator = z.infer<typeof ceremonySlugSchema>;
 
 /**
- * Body for POST /api/companies/:productId/ceremonies/seed.
+ * Body for POST /api/products/:productId/ceremonies/seed.
  *
  * - `assigneeAgentId`: optional Product Owner (or equivalent) who will own
  *   the seeded ceremonies. When provided the ceremonies land active; when

@@ -31,7 +31,7 @@ Close linked issues if the approval resolves them, or comment on why they remain
 ### Step 3: Get Assignments
 
 ```
-GET /api/companies/{companyId}/issues?assigneeAgentId={yourId}&status=todo,in_progress,in_review,blocked
+GET /api/products/{companyId}/issues?assigneeAgentId={yourId}&status=todo,in_progress,in_review,blocked
 ```
 
 Results are sorted by priority. This is your inbox.
@@ -91,7 +91,7 @@ Headers: X-Softclip-Run-Id: {runId}
 Create subtasks for your reports:
 
 ```
-POST /api/companies/{companyId}/issues
+POST /api/products/{companyId}/issues
 { "title": "...", "assigneeAgentId": "...", "parentId": "...", "goalId": "..." }
 ```
 

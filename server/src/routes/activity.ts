@@ -30,7 +30,7 @@ export function activityRoutes(db: Db) {
     return issueSvc.getById(rawId);
   }
 
-  router.get("/companies/:productId/activity", async (req, res) => {
+  router.get("/products/:productId/activity", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
 
@@ -44,7 +44,7 @@ export function activityRoutes(db: Db) {
     res.json(result);
   });
 
-  router.post("/companies/:productId/activity", validate(createActivitySchema), async (req, res) => {
+  router.post("/products/:productId/activity", validate(createActivitySchema), async (req, res) => {
     assertBoard(req);
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);

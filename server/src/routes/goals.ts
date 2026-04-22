@@ -11,7 +11,7 @@ export function goalRoutes(db: Db) {
   const router = Router();
   const svc = goalService(db);
 
-  router.get("/companies/:productId/goals", async (req, res) => {
+  router.get("/products/:productId/goals", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const result = await svc.list(productId);
@@ -29,7 +29,7 @@ export function goalRoutes(db: Db) {
     res.json(goal);
   });
 
-  router.post("/companies/:productId/goals", validate(createGoalSchema), async (req, res) => {
+  router.post("/products/:productId/goals", validate(createGoalSchema), async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const goal = await svc.create(productId, req.body);

@@ -21,14 +21,14 @@ export function secretRoutes(db: Db) {
       : "local_encrypted"
   ) as SecretProvider;
 
-  router.get("/companies/:productId/secret-providers", (req, res) => {
+  router.get("/products/:productId/secret-providers", (req, res) => {
     assertBoard(req);
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     res.json(svc.listProviders());
   });
 
-  router.get("/companies/:productId/secrets", async (req, res) => {
+  router.get("/products/:productId/secrets", async (req, res) => {
     assertBoard(req);
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
@@ -36,7 +36,7 @@ export function secretRoutes(db: Db) {
     res.json(secrets);
   });
 
-  router.post("/companies/:productId/secrets", validate(createSecretSchema), async (req, res) => {
+  router.post("/products/:productId/secrets", validate(createSecretSchema), async (req, res) => {
     assertBoard(req);
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);

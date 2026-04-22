@@ -73,10 +73,10 @@ function agentPath(id: string, productId?: string, suffix = "") {
 }
 
 export const agentsApi = {
-  list: (productId: string) => api.get<Agent[]>(`/companies/${productId}/agents`),
-  org: (productId: string) => api.get<OrgNode[]>(`/companies/${productId}/org`),
+  list: (productId: string) => api.get<Agent[]>(`/products/${productId}/agents`),
+  org: (productId: string) => api.get<OrgNode[]>(`/products/${productId}/org`),
   listConfigurations: (productId: string) =>
-    api.get<Record<string, unknown>[]>(`/companies/${productId}/agent-configurations`),
+    api.get<Record<string, unknown>[]>(`/products/${productId}/agent-configurations`),
   get: async (id: string, productId?: string) => {
     try {
       return await api.get<AgentDetail>(agentPath(id, productId));
@@ -95,7 +95,7 @@ export const agentsApi = {
       const urlKey = normalizeAgentUrlKey(id);
       if (!urlKey) throw error;
 
-      const agents = await api.get<Agent[]>(`/companies/${productId}/agents`);
+      const agents = await api.get<Agent[]>(`/products/${productId}/agents`);
       const matches = agents.filter(
         (agent) => agent.status !== "terminated" && normalizeAgentUrlKey(agent.urlKey) === urlKey,
       );
@@ -112,9 +112,9 @@ export const agentsApi = {
   rollbackConfigRevision: (id: string, revisionId: string, productId?: string) =>
     api.post<Agent>(agentPath(id, productId, `/config-revisions/${revisionId}/rollback`), {}),
   create: (productId: string, data: Record<string, unknown>) =>
-    api.post<Agent>(`/companies/${productId}/agents`, data),
+    api.post<Agent>(`/products/${productId}/agents`, data),
   hire: (productId: string, data: Record<string, unknown>) =>
-    api.post<AgentHireResponse>(`/companies/${productId}/agent-hires`, data),
+    api.post<AgentHireResponse>(`/products/${productId}/agent-hires`, data),
   update: (id: string, data: Record<string, unknown>, productId?: string) =>
     api.patch<Agent>(agentPath(id, productId), data),
   updatePermissions: (id: string, data: AgentPermissionUpdate, productId?: string) =>
@@ -165,11 +165,11 @@ export const agentsApi = {
     api.post<void>(agentPath(id, productId, "/runtime-state/reset-session"), { taskKey: taskKey ?? null }),
   adapterModels: (productId: string, type: string) =>
     api.get<AdapterModel[]>(
-      `/companies/${encodeURIComponent(productId)}/adapters/${encodeURIComponent(type)}/models`,
+      `/products/${encodeURIComponent(productId)}/adapters/${encodeURIComponent(type)}/models`,
     ),
   detectModel: (productId: string, type: string) =>
     api.get<DetectedAdapterModel | null>(
-      `/companies/${encodeURIComponent(productId)}/adapters/${encodeURIComponent(type)}/detect-model`,
+      `/products/${encodeURIComponent(productId)}/adapters/${encodeURIComponent(type)}/detect-model`,
     ),
   testEnvironment: (
     productId: string,
@@ -177,7 +177,7 @@ export const agentsApi = {
     data: { adapterConfig: Record<string, unknown> },
   ) =>
     api.post<AdapterEnvironmentTestResult>(
-      `/companies/${productId}/adapters/${type}/test-environment`,
+      `/products/${productId}/adapters/${type}/test-environment`,
       data,
     ),
   invoke: (id: string, productId?: string) => api.post<HeartbeatRun>(agentPath(id, productId, "/heartbeat/invoke"), {}),

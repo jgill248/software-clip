@@ -52,13 +52,13 @@ describe("company routes malformed issue path guard", () => {
       };
       next();
     });
-    app.use("/api/companies", productRoutes({} as any));
+    app.use("/api/products", productRoutes({} as any));
 
-    const res = await request(app).get("/api/companies/issues");
+    const res = await request(app).get("/api/products/issues");
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual({
-      error: "Missing productId in path. Use /api/companies/{productId}/issues.",
+      error: "Missing productId in path. Use /api/products/{productId}/issues.",
     });
   });
 });

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { HUMAN_COMPANY_MEMBERSHIP_ROLE_LABELS, PERMISSION_KEYS, type PermissionKey } from "@softclipai/shared";
+import { HUMAN_PRODUCT_MEMBERSHIP_ROLE_LABELS, PERMISSION_KEYS, type PermissionKey } from "@softclipai/shared";
 import { ShieldCheck, Users } from "lucide-react";
 import { accessApi, type CompanyMember } from "@/api/access";
 import { ApiError } from "@/api/client";
@@ -277,7 +277,7 @@ export function CompanyAccess() {
                 </div>
                 <div className="text-sm">
                   {member.membershipRole
-                    ? HUMAN_COMPANY_MEMBERSHIP_ROLE_LABELS[member.membershipRole]
+                    ? HUMAN_PRODUCT_MEMBERSHIP_ROLE_LABELS[member.membershipRole]
                     : "Unset"}
                 </div>
                 <div>
@@ -318,7 +318,7 @@ export function CompanyAccess() {
                     }
                   >
                     <option value="">Unset</option>
-                    {Object.entries(HUMAN_COMPANY_MEMBERSHIP_ROLE_LABELS).map(([value, label]) => (
+                    {Object.entries(HUMAN_PRODUCT_MEMBERSHIP_ROLE_LABELS).map(([value, label]) => (
                       <option key={value} value={value}>
                         {label}
                       </option>
@@ -352,7 +352,7 @@ export function CompanyAccess() {
                   <div className="text-sm font-medium">Implicit grants from role</div>
                   <p className="mt-1 text-sm text-muted-foreground">
                     {draftRole
-                      ? `${HUMAN_COMPANY_MEMBERSHIP_ROLE_LABELS[draftRole]} currently includes these permissions automatically.`
+                      ? `${HUMAN_PRODUCT_MEMBERSHIP_ROLE_LABELS[draftRole]} currently includes these permissions automatically.`
                       : "No role is selected, so this member has no implicit grants right now."}
                   </p>
                   {implicitGrantKeys.length > 0 ? (
@@ -387,7 +387,7 @@ export function CompanyAccess() {
                         <span className="block text-xs text-muted-foreground">{permissionKey}</span>
                         {implicitGrantSet.has(permissionKey) ? (
                           <span className="block text-xs text-muted-foreground">
-                            Included implicitly by the {draftRole ? HUMAN_COMPANY_MEMBERSHIP_ROLE_LABELS[draftRole] : "selected"} role. Add an explicit grant only if it should stay after the role changes.
+                            Included implicitly by the {draftRole ? HUMAN_PRODUCT_MEMBERSHIP_ROLE_LABELS[draftRole] : "selected"} role. Add an explicit grant only if it should stay after the role changes.
                           </span>
                         ) : null}
                         {draftGrants.has(permissionKey) ? (

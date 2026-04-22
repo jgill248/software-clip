@@ -14,9 +14,9 @@ import { badRequest, notFound } from "../errors.js";
 /**
  * Sprint routes:
  *
- * - GET    /companies/:productId/sprints?state=active|planned|closed
- * - GET    /companies/:productId/sprints/active   (active or 404)
- * - POST   /companies/:productId/sprints
+ * - GET    /products/:productId/sprints?state=active|planned|closed
+ * - GET    /products/:productId/sprints/active   (active or 404)
+ * - POST   /products/:productId/sprints
  * - GET    /sprints/:id
  * - PATCH  /sprints/:id
  * - DELETE /sprints/:id                    (only while planned)
@@ -44,7 +44,7 @@ export function sprintRoutes(db: Db) {
     return sprint;
   }
 
-  router.get("/companies/:productId/sprints", async (req, res) => {
+  router.get("/products/:productId/sprints", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const rawState = req.query.state;
@@ -61,7 +61,7 @@ export function sprintRoutes(db: Db) {
   });
 
   router.get(
-    "/companies/:productId/sprints/active",
+    "/products/:productId/sprints/active",
     async (req, res) => {
       const productId = req.params.productId as string;
       assertCompanyAccess(req, productId);
@@ -75,7 +75,7 @@ export function sprintRoutes(db: Db) {
   );
 
   router.post(
-    "/companies/:productId/sprints",
+    "/products/:productId/sprints",
     validate(createSprintSchema),
     async (req, res) => {
       const productId = req.params.productId as string;

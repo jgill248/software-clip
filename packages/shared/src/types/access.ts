@@ -1,7 +1,7 @@
 import type {
   AgentAdapterType,
-  CompanyStatus,
-  HumanCompanyMembershipRole,
+  ProductStatus,
+  HumanProductMembershipRole,
   InstanceUserRole,
   InviteJoinType,
   InviteType,
@@ -44,7 +44,7 @@ export interface AccessUserProfile {
 
 export interface CompanyMemberRecord extends CompanyMembership {
   principalType: "user";
-  membershipRole: HumanCompanyMembershipRole | null;
+  membershipRole: HumanProductMembershipRole | null;
   user: AccessUserProfile | null;
   grants: PrincipalPermissionGrant[];
 }
@@ -52,7 +52,7 @@ export interface CompanyMemberRecord extends CompanyMembership {
 export interface CompanyMembersResponse {
   members: CompanyMemberRecord[];
   access: {
-    currentUserRole: HumanCompanyMembershipRole | null;
+    currentUserRole: HumanProductMembershipRole | null;
     canManageMembers: boolean;
     canInviteUsers: boolean;
     canApproveJoinRequests: boolean;
@@ -78,7 +78,7 @@ export type InviteState = "active" | "revoked" | "accepted" | "expired";
 
 export interface CompanyInviteRecord extends Invite {
   companyName: string | null;
-  humanRole: HumanCompanyMembershipRole | null;
+  humanRole: HumanProductMembershipRole | null;
   inviteMessage: string | null;
   state: InviteState;
   invitedByUser: AccessUserProfile | null;
@@ -118,7 +118,7 @@ export interface JoinRequestInviteSummary {
   id: string;
   inviteType: InviteType;
   allowedJoinTypes: InviteJoinType;
-  humanRole: HumanCompanyMembershipRole | null;
+  humanRole: HumanProductMembershipRole | null;
   inviteMessage: string | null;
   createdAt: Date;
   expiresAt: Date;
@@ -150,7 +150,7 @@ export interface AdminUserDirectoryEntry extends AccessUserProfile {
 export interface UserCompanyAccessEntry extends CompanyMembership {
   principalType: "user";
   companyName: string | null;
-  companyStatus: CompanyStatus | null;
+  companyStatus: ProductStatus | null;
 }
 
 export interface UserCompanyAccessResponse {

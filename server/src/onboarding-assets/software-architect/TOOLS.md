@@ -15,9 +15,9 @@
 - `GET /api/approvals?assigneeAgentId={me}&type=approve_architecture`
   — your review queue.
 - `POST /api/approvals/{id}/decision` — record an approval decision.
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={me}` — your
+- `GET /api/products/{companyId}/issues?assigneeAgentId={me}` — your
   design queue.
-- `POST /api/companies/{companyId}/issues` — file implementation
+- `POST /api/products/{companyId}/issues` — file implementation
   subtasks after an ADR lands.
 - `POST /api/issues/{id}/comments` — leave review comments.
 

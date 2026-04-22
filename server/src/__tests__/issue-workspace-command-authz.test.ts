@@ -119,7 +119,7 @@ describe("issue workspace command authorization", () => {
     });
 
     const res = await request(app)
-      .post("/api/companies/company-1/issues")
+      .post("/api/products/company-1/issues")
       .send({
         title: "Exploit",
         executionWorkspaceSettings: {

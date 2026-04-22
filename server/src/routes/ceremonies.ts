@@ -15,8 +15,8 @@ import { assertCompanyAccess, getActorInfo } from "./authz.js";
  * the ceremony service. These endpoints wrap that service:
  *
  * - GET  /ceremony-templates                         (static template list)
- * - GET  /companies/:productId/ceremonies            (ceremonies present in product)
- * - POST /companies/:productId/ceremonies/seed       (idempotent seed)
+ * - GET  /products/:productId/ceremonies            (ceremonies present in product)
+ * - POST /products/:productId/ceremonies/seed       (idempotent seed)
  */
 export function ceremonyRoutes(db: Db) {
   const router = Router();
@@ -41,7 +41,7 @@ export function ceremonyRoutes(db: Db) {
     );
   });
 
-  router.get("/companies/:productId/ceremonies", async (req, res) => {
+  router.get("/products/:productId/ceremonies", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const rows = await svc.listSeeded(productId);
@@ -49,7 +49,7 @@ export function ceremonyRoutes(db: Db) {
   });
 
   router.post(
-    "/companies/:productId/ceremonies/seed",
+    "/products/:productId/ceremonies/seed",
     validate(seedCeremoniesSchema),
     async (req, res) => {
       const productId = req.params.productId as string;

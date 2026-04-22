@@ -34,7 +34,7 @@ export function executionWorkspaceRoutes(db: Db) {
   const svc = executionWorkspaceService(db);
   const workspaceOperationsSvc = workspaceOperationService(db);
 
-  router.get("/companies/:productId/execution-workspaces", async (req, res) => {
+  router.get("/products/:productId/execution-workspaces", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const filters = {

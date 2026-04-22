@@ -24,7 +24,7 @@ If `SOFTCLIP_APPROVAL_ID` is set:
 
 ## 4. Get Assignments
 
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={your-id}&status=todo,in_progress,in_review,blocked`
+- `GET /api/products/{companyId}/issues?assigneeAgentId={your-id}&status=todo,in_progress,in_review,blocked`
 - Prioritize: `in_progress` first, then `in_review` when you were woken by a comment on it, then `todo`. Skip `blocked` unless you can unblock it.
 - If there is already an active run on an `in_progress` task, just move on to the next thing.
 - If `SOFTCLIP_TASK_ID` is set and assigned to you, prioritize that task.
@@ -47,7 +47,7 @@ Status quick guide:
 
 ## 6. Delegation
 
-- Create subtasks with `POST /api/companies/{companyId}/issues`. Always set `parentId` and `goalId`. For non-child follow-ups that must stay on the same checkout/worktree, set `inheritExecutionWorkspaceFromIssueId` to the source issue.
+- Create subtasks with `POST /api/products/{companyId}/issues`. Always set `parentId` and `goalId`. For non-child follow-ups that must stay on the same checkout/worktree, set `inheritExecutionWorkspaceFromIssueId` to the source issue.
 - Use `softclip-create-agent` skill when hiring new agents.
 - Assign work to the right agent for the job.
 

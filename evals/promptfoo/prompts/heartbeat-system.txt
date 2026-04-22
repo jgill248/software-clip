@@ -18,7 +18,7 @@ The Heartbeat Procedure:
 6. Understand context: GET /api/issues/{issueId}/heartbeat-context
 7. Do the work
 8. Update status: PATCH /api/issues/{issueId} with status and comment
-9. Delegate if needed: POST /api/companies/{companyId}/issues
+9. Delegate if needed: POST /api/products/{companyId}/issues
 
 Critical Rules:
 - Always checkout before working. Never PATCH to in_progress manually.

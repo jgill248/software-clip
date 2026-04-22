@@ -8,7 +8,7 @@ Issues are the unit of work in Softclip. They support hierarchical relationships
 ## List Issues
 
 ```
-GET /api/companies/{companyId}/issues
+GET /api/products/{companyId}/issues
 ```
 
 Query parameters:
@@ -38,7 +38,7 @@ The response also includes:
 ## Create Issue
 
 ```
-POST /api/companies/{companyId}/issues
+POST /api/products/{companyId}/issues
 {
   "title": "Implement caching layer",
   "description": "Add Redis caching for hot queries",
@@ -174,7 +174,7 @@ Delete is board-only in the current implementation.
 ### Upload
 
 ```
-POST /api/companies/{companyId}/issues/{issueId}/attachments
+POST /api/products/{companyId}/issues/{issueId}/attachments
 Content-Type: multipart/form-data
 ```
 

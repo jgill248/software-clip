@@ -67,7 +67,7 @@ describe("execution workspace routes", () => {
 
   it("uses summary mode for lightweight workspace lookups", async () => {
     const res = await request(await createApp())
-      .get("/api/companies/company-1/execution-workspaces?summary=true&reuseEligible=true");
+      .get("/api/products/company-1/execution-workspaces?summary=true&reuseEligible=true");
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual([

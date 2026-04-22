@@ -4,21 +4,23 @@ Guidance for human and AI contributors working in this repository.
 
 ## 1. Purpose
 
-Softclip is a control plane for AI-agent companies.
-The current implementation target is V1 and is defined in `doc/SPEC-implementation.md`.
+Softclip is a control plane for autonomous AI software-development teams.
+The current product description is `doc/PRODUCT.md`; the original
+pre-pivot Paperclip specs are archived under `doc/archive/` for
+historical context only.
 
 ## 2. Read This First
 
 Before making changes, read in this order:
 
-1. `doc/GOAL.md`
-2. `doc/PRODUCT.md`
-3. `doc/SPEC-implementation.md`
-4. `doc/DEVELOPING.md`
-5. `doc/DATABASE.md`
+1. `doc/GOAL.md` — what Softclip is and why
+2. `doc/PRODUCT.md` — product model, sprints, reviews, ceremonies, DoD
+3. `doc/DEVELOPING.md` — local dev setup
+4. `doc/DATABASE.md` — schema + migration workflow
 
-`doc/SPEC.md` is long-horizon product context.
-`doc/SPEC-implementation.md` is the concrete V1 build contract.
+The pre-pivot Paperclip V1 contract at `doc/archive/paperclip-SPEC-implementation.md`
+is **archived** and no longer authoritative. Treat it as history, not
+current behaviour.
 
 ## 3. Repo Map
 
@@ -49,7 +51,7 @@ Quick checks:
 
 ```sh
 curl http://localhost:3100/api/health
-curl http://localhost:3100/api/companies
+curl http://localhost:3100/api/products
 ```
 
 Reset local dev DB:
@@ -61,8 +63,8 @@ pnpm dev
 
 ## 5. Core Engineering Rules
 
-1. Keep changes company-scoped.
-Every domain entity should be scoped to a company and company boundaries must be enforced in routes/services.
+1. Keep changes product-scoped.
+Every domain entity should be scoped to a product and product boundaries must be enforced in routes/services. (The legacy term was "company"; some DB columns and string enums still carry that name during the incremental rename.)
 
 2. Keep contracts synchronized.
 If you change schema/API behavior, update all impacted layers:
@@ -79,7 +81,7 @@ If you change schema/API behavior, update all impacted layers:
 - Activity logging for mutating actions
 
 4. Do not replace strategic docs wholesale unless asked.
-Prefer additive updates. Keep `doc/SPEC.md` and `doc/SPEC-implementation.md` aligned.
+Prefer additive updates. When product behaviour changes, keep `doc/PRODUCT.md` in sync and update `doc/plans/` with any implementation plan.
 
 5. Keep repo plan docs dated and centralized.
 When you are creating a plan file in the repository itself, new plan documents belong in `doc/plans/` and should use `YYYY-MM-DD-slug.md` filenames. This does not replace Softclip issue planning: if a Softclip issue asks for a plan, update the issue `plan` document per the `softclip` skill instead of creating a repo markdown file.
@@ -138,11 +140,11 @@ If anything cannot be run, explicitly report what was not run and why.
 - Base path: `/api`
 - Board access is treated as full-control operator context
 - Agent access uses bearer API keys (`agent_api_keys`), hashed at rest
-- Agent keys must not access other companies
+- Agent keys must not access other products
 
 When adding endpoints:
 
-- apply company access checks
+- apply product access checks
 - enforce actor permissions (board vs agent)
 - write activity log entries for mutations
 - return consistent HTTP errors (`400/401/403/404/409/422/500`)
@@ -150,7 +152,7 @@ When adding endpoints:
 ## 9. UI Expectations
 
 - Keep routes and nav aligned with available API surface
-- Use company selection context for company-scoped pages
+- Use product selection context for product-scoped pages
 - Surface failures clearly; do not silently ignore API errors
 
 ## 10. Pull Request Requirements
@@ -168,7 +170,7 @@ When creating a pull request (via `gh pr create` or any other method), you **mus
 
 A change is done when all are true:
 
-1. Behavior matches `doc/SPEC-implementation.md`
+1. Behavior matches `doc/PRODUCT.md` (and any relevant `doc/plans/` entry)
 2. Typecheck, tests, and build pass
 3. Contracts are synced across db/shared/server/ui
 4. Docs updated when behavior or commands change

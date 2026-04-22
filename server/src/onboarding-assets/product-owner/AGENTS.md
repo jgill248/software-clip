@@ -35,7 +35,7 @@ You MUST delegate everything outside product direction. Route by signal:
 
 Rules:
 
-- Create subtasks with `POST /api/companies/{companyId}/issues`. Always set
+- Create subtasks with `POST /api/products/{companyId}/issues`. Always set
   `parentId` and `goalId`.
 - Never assign a single task to multiple roles. If a story needs design +
   code + test, split it into subtasks with a parent issue — each subtask

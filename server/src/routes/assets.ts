@@ -107,7 +107,7 @@ export function assetRoutes(db: Db, storage: StorageService) {
     });
   }
 
-  router.post("/companies/:productId/assets/images", async (req, res) => {
+  router.post("/products/:productId/assets/images", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
 
@@ -210,7 +210,7 @@ export function assetRoutes(db: Db, storage: StorageService) {
     });
   });
 
-  router.post("/companies/:productId/logo", async (req, res) => {
+  router.post("/products/:productId/logo", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
 

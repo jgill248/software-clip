@@ -35,7 +35,7 @@ export const heartbeatsApi = {
     if (agentId) searchParams.set("agentId", agentId);
     if (limit) searchParams.set("limit", String(limit));
     const qs = searchParams.toString();
-    return api.get<HeartbeatRun[]>(`/companies/${productId}/heartbeat-runs${qs ? `?${qs}` : ""}`);
+    return api.get<HeartbeatRun[]>(`/products/${productId}/heartbeat-runs${qs ? `?${qs}` : ""}`);
   },
   get: (runId: string) => api.get<HeartbeatRun>(`/heartbeat-runs/${runId}`),
   events: (runId: string, afterSeq = 0, limit = 200) =>
@@ -58,7 +58,7 @@ export const heartbeatsApi = {
   activeRunForIssue: (issueId: string) =>
     api.get<ActiveRunForIssue | null>(`/issues/${issueId}/active-run`),
   liveRunsForCompany: (productId: string, minCount?: number) =>
-    api.get<LiveRunForIssue[]>(`/companies/${productId}/live-runs${minCount ? `?minCount=${minCount}` : ""}`),
+    api.get<LiveRunForIssue[]>(`/products/${productId}/live-runs${minCount ? `?minCount=${minCount}` : ""}`),
   listInstanceSchedulerAgents: () =>
     api.get<InstanceSchedulerHeartbeatAgent[]>("/instance/scheduler-heartbeats"),
 };

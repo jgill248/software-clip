@@ -22,9 +22,9 @@ export interface RotateRoutineTriggerResponse {
 }
 
 export const ceremoniesApi = {
-  list: (productId: string) => api.get<RoutineListItem[]>(`/companies/${productId}/routines`),
+  list: (productId: string) => api.get<RoutineListItem[]>(`/products/${productId}/routines`),
   create: (productId: string, data: Record<string, unknown>) =>
-    api.post<Routine>(`/companies/${productId}/routines`, data),
+    api.post<Routine>(`/products/${productId}/routines`, data),
   get: (id: string) => api.get<RoutineDetail>(`/routines/${id}`),
   update: (id: string, data: Record<string, unknown>) => api.patch<Routine>(`/routines/${id}`, data),
   listRuns: (id: string, limit: number = 50) => api.get<RoutineRunSummary[]>(`/routines/${id}/runs?limit=${limit}`),

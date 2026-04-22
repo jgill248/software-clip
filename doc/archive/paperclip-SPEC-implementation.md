@@ -1,8 +1,17 @@
-# Softclip V1 Implementation Spec
+# Paperclip V1 Implementation Spec (archived pre-pivot)
 
-Status: Implementation contract for first release (V1)
+> **Archived.** This is the original Paperclip AI V1 implementation
+> contract, preserved for historical context. The product has since
+> pivoted to Softclip; the current product description lives at
+> [`doc/PRODUCT.md`](../PRODUCT.md) and the current spec lives across
+> `doc/spec/` and `doc/SPEC-implementation` (if re-introduced). Expect
+> concepts like "Company", budgets, "Board approval", and CEO-centric
+> flows below to be superseded in the post-pivot product. Do not treat
+> this document as authoritative for current behaviour.
+
+Status: Implementation contract for first release (V1) — _superseded_
 Date: 2026-02-17
-Audience: Product, engineering, and agent-integration authors
+Audience: Historical reference only
 Source inputs: `GOAL.md`, `PRODUCT.md`, `SPEC.md`, `DATABASE.md`, current monorepo code
 
 ## 1. Document Role

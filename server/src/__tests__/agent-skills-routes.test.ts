@@ -348,7 +348,7 @@ describe("agent skill routes", () => {
 
   it("persists canonical desired skills when creating an agent directly", async () => {
     const res = await request(await createApp())
-      .post("/api/companies/company-1/agents")
+      .post("/api/products/company-1/agents")
       .send({
         name: "QA Agent",
         role: "engineer",
@@ -379,7 +379,7 @@ describe("agent skill routes", () => {
 
   it("materializes a managed AGENTS.md for directly created local agents", async () => {
     const res = await request(await createApp())
-      .post("/api/companies/company-1/agents")
+      .post("/api/products/company-1/agents")
       .send({
         name: "QA Agent",
         role: "engineer",
@@ -409,7 +409,7 @@ describe("agent skill routes", () => {
 
   it("materializes the bundled CEO instruction set for default CEO agents", async () => {
     const res = await request(await createApp())
-      .post("/api/companies/company-1/agents")
+      .post("/api/products/company-1/agents")
       .send({
         name: "CEO",
         role: "ceo",
@@ -436,7 +436,7 @@ describe("agent skill routes", () => {
 
   it("materializes the role-specific instruction set for non-CEO agents with no prompt template", async () => {
     const res = await request(await createApp())
-      .post("/api/companies/company-1/agents")
+      .post("/api/products/company-1/agents")
       .send({
         name: "Engineer",
         role: "engineer",

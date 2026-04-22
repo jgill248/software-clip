@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { COMPANY_STATUSES } from "../constants.js";
+import { PRODUCT_STATUSES } from "../constants.js";
 
 const feedbackDataSharingTermsVersionSchema = z.string().min(1).nullable().optional();
 
@@ -14,7 +14,7 @@ export type CreateCompany = z.infer<typeof createCompanySchema>;
 export const updateCompanySchema = createCompanySchema
   .partial()
   .extend({
-    status: z.enum(COMPANY_STATUSES).optional(),
+    status: z.enum(PRODUCT_STATUSES).optional(),
     spentMonthlyCents: z.number().int().nonnegative().optional(),
     // Softclip pivot §6: requireBoardApprovalForNewAgents,
     // brandColor, logoAssetId removed.

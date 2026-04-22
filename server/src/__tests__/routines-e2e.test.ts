@@ -225,7 +225,7 @@ describeEmbeddedPostgres("routine routes end-to-end", () => {
     });
 
     const createRes = await request(app)
-      .post(`/api/companies/${productId}/routines`)
+      .post(`/api/products/${productId}/routines`)
       .send({
         projectId,
         title: "Daily standup prep",
@@ -266,7 +266,7 @@ describeEmbeddedPostgres("routine routes end-to-end", () => {
     expect(runRes.body.source).toBe("manual");
     expect(runRes.body.linkedIssueId).toBeTruthy();
 
-    const listRes = await request(app).get(`/api/companies/${productId}/routines`);
+    const listRes = await request(app).get(`/api/products/${productId}/routines`);
     expect(listRes.status).toBe(200);
     const listed = listRes.body.find((r: { id: string }) => r.id === routineId);
     expect(listed).toBeDefined();
@@ -334,7 +334,7 @@ describeEmbeddedPostgres("routine routes end-to-end", () => {
     });
 
     const createRes = await request(app)
-      .post(`/api/companies/${productId}/routines`)
+      .post(`/api/products/${productId}/routines`)
       .send({
         projectId,
         title: "Repository triage",
@@ -380,7 +380,7 @@ describeEmbeddedPostgres("routine routes end-to-end", () => {
     });
 
     const createRes = await request(app)
-      .post(`/api/companies/${productId}/routines`)
+      .post(`/api/products/${productId}/routines`)
       .send({
         title: "Draft routine",
         description: "No saved defaults",
@@ -460,7 +460,7 @@ describeEmbeddedPostgres("routine routes end-to-end", () => {
     });
 
     const createRes = await request(app)
-      .post(`/api/companies/${productId}/routines`)
+      .post(`/api/products/${productId}/routines`)
       .send({
         projectId,
         title: "Workspace-aware routine",

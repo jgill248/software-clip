@@ -287,7 +287,7 @@ describe("workspace runtime service route authorization", () => {
     });
 
     const res = await request(app)
-      .post("/api/companies/company-1/projects")
+      .post("/api/products/company-1/projects")
       .send({
         name: "Exploit",
         executionWorkspacePolicy: {

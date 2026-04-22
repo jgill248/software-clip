@@ -37,7 +37,7 @@ Red main blocks the entire team. Clear this before anything else.
 
 ## 4. Plan contribution
 
-- `GET /api/companies/{companyId}/approvals?type=approve_plan&status=pending,revision_requested`
+- `GET /api/products/{companyId}/approvals?type=approve_plan&status=pending,revision_requested`
   — plans the architects are drafting.
 - For each plan whose stories touch deploy topology, new
   dependencies, new runtime concerns, or new observability
@@ -55,7 +55,7 @@ Red main blocks the entire team. Clear this before anything else.
 
 If a release is in flight:
 
-- `GET /api/companies/{companyId}/issues?label=release&status=in_progress`.
+- `GET /api/products/{companyId}/issues?label=release&status=in_progress`.
 - Walk the release checklist in `AGENTS.md`. Gate on each step
   explicitly — don't ship past an unchecked box.
 - Post a status comment on the release issue with: candidate
@@ -64,7 +64,7 @@ If a release is in flight:
 
 ## 6. Pipeline & infra work
 
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress,in_review,blocked`
+- `GET /api/products/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress,in_review,blocked`
   — your queue.
 - For each CI / infra issue:
   1. Draft the change in IaC (Terraform plan / Helm diff /

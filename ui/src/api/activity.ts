@@ -30,7 +30,7 @@ export const activityApi = {
     if (filters?.entityId) params.set("entityId", filters.entityId);
     if (filters?.agentId) params.set("agentId", filters.agentId);
     const qs = params.toString();
-    return api.get<ActivityEvent[]>(`/companies/${productId}/activity${qs ? `?${qs}` : ""}`);
+    return api.get<ActivityEvent[]>(`/products/${productId}/activity${qs ? `?${qs}` : ""}`);
   },
   forIssue: (issueId: string) => api.get<ActivityEvent[]>(`/issues/${issueId}/activity`),
   runsForIssue: (issueId: string) => api.get<RunForIssue[]>(`/issues/${issueId}/runs`),

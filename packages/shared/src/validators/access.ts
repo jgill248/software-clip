@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
   AGENT_ADAPTER_TYPES,
-  HUMAN_COMPANY_MEMBERSHIP_ROLES,
+  HUMAN_PRODUCT_MEMBERSHIP_ROLES,
   INVITE_JOIN_TYPES,
   JOIN_REQUEST_STATUSES,
   JOIN_REQUEST_TYPES,
@@ -12,7 +12,7 @@ import { optionalAgentAdapterTypeSchema } from "../adapter-type.js";
 
 export const createCompanyInviteSchema = z.object({
   allowedJoinTypes: z.enum(INVITE_JOIN_TYPES).default("both"),
-  humanRole: z.enum(HUMAN_COMPANY_MEMBERSHIP_ROLES).optional().nullable(),
+  humanRole: z.enum(HUMAN_PRODUCT_MEMBERSHIP_ROLES).optional().nullable(),
   defaultsPayload: z.record(z.string(), z.unknown()).optional().nullable(),
   agentMessage: z.string().max(4000).optional().nullable(),
 });
@@ -98,7 +98,7 @@ export const updateMemberPermissionsSchema = z.object({
 export type UpdateMemberPermissions = z.infer<typeof updateMemberPermissionsSchema>;
 
 export const updateCompanyMemberSchema = z.object({
-  membershipRole: z.enum(HUMAN_COMPANY_MEMBERSHIP_ROLES).optional().nullable(),
+  membershipRole: z.enum(HUMAN_PRODUCT_MEMBERSHIP_ROLES).optional().nullable(),
   status: z.enum(MEMBERSHIP_STATUSES).optional(),
 }).refine((value) => value.membershipRole !== undefined || value.status !== undefined, {
   message: "membershipRole or status is required",
@@ -107,7 +107,7 @@ export const updateCompanyMemberSchema = z.object({
 export type UpdateCompanyMember = z.infer<typeof updateCompanyMemberSchema>;
 
 export const updateCompanyMemberWithPermissionsSchema = z.object({
-  membershipRole: z.enum(HUMAN_COMPANY_MEMBERSHIP_ROLES).optional().nullable(),
+  membershipRole: z.enum(HUMAN_PRODUCT_MEMBERSHIP_ROLES).optional().nullable(),
   status: z.enum(MEMBERSHIP_STATUSES).optional(),
   grants: updateMemberPermissionsSchema.shape.grants.default([]),
 }).refine((value) => value.membershipRole !== undefined || value.status !== undefined, {

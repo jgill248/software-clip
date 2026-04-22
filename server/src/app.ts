@@ -139,6 +139,19 @@ export async function createApp(
     },
   }));
   app.use(httpLogger);
+
+  // Softclip pivot back-compat: the wire contract pre-pivot was
+  // `/api/companies/...`. The canonical post-pivot path is `/api/products/...`;
+  // this middleware rewrites the legacy prefix so existing agents, skills,
+  // CLI clients, and external integrations keep working without changes.
+  // Remove once all external callers have migrated.
+  app.use((req, _res, next) => {
+    if (req.url.startsWith("/api/companies")) {
+      req.url = "/api/products" + req.url.slice("/api/companies".length);
+    }
+    next();
+  });
+
   const privateHostnameGateEnabled = shouldEnablePrivateHostnameGuard({
     deploymentMode: opts.deploymentMode,
     deploymentExposure: opts.deploymentExposure,
@@ -178,7 +191,7 @@ export async function createApp(
       companyDeletionEnabled: opts.companyDeletionEnabled,
     }),
   );
-  api.use("/companies", productRoutes(db, opts.storageService));
+  api.use("/products", productRoutes(db, opts.storageService));
   api.use(companySkillRoutes(db));
   api.use(agentRoutes(db));
   api.use(assetRoutes(db, opts.storageService));

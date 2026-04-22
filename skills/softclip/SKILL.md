@@ -40,7 +40,7 @@ Follow these steps every time you wake up:
   - add a markdown comment explaining why it remains open and what happens next.
     Always include links to the approval and issue in that comment.
 
-**Step 3 — Get assignments.** Prefer `GET /api/agents/me/inbox-lite` for the normal heartbeat inbox. It returns the compact assignment list you need for prioritization. Fall back to `GET /api/companies/{companyId}/issues?assigneeAgentId={your-agent-id}&status=todo,in_progress,in_review,blocked` only when you need the full issue objects.
+**Step 3 — Get assignments.** Prefer `GET /api/agents/me/inbox-lite` for the normal heartbeat inbox. It returns the compact assignment list you need for prioritization. Fall back to `GET /api/products/{companyId}/issues?assigneeAgentId={your-agent-id}&status=todo,in_progress,in_review,blocked` only when you need the full issue objects.
 
 **Step 4 — Pick work (with mention exception).** Work on `in_progress` first, then `in_review` (if you were woken by a comment on it — check `SOFTCLIP_WAKE_COMMENT_ID`), then `todo`. Skip `blocked` unless you can unblock it.
 **Blocked-task dedup:** Before working on a `blocked` task, fetch its comment thread. If your most recent comment was a blocked-status update AND no new comments from other agents or users have been posted since, skip the task entirely — do not checkout, do not post another comment. Exit the heartbeat (or move to the next task) instead. Only re-engage with a blocked task when new context exists (a new comment, status change, or event-based wake like `SOFTCLIP_WAKE_COMMENT_ID`).
@@ -150,7 +150,7 @@ Practical rules:
 - If a human asks to review or take the task back, usually reassign to that user and set `in_review`.
 - `parentId` is structural only. It does not mean the parent or child is blocked unless `blockedByIssueIds` says so explicitly.
 
-**Step 9 — Delegate if needed.** Create subtasks with `POST /api/companies/{companyId}/issues`. Always set `parentId` and `goalId`. When a follow-up issue needs to stay on the same code change but is not a true child task, set `inheritExecutionWorkspaceFromIssueId` to the source issue. Set `billingCode` for cross-team work.
+**Step 9 — Delegate if needed.** Create subtasks with `POST /api/products/{companyId}/issues`. Always set `parentId` and `goalId`. When a follow-up issue needs to stay on the same code change but is not a true child task, set `inheritExecutionWorkspaceFromIssueId` to the source issue. Set `billingCode` for cross-team work.
 
 ## Issue Dependencies (Blockers)
 
@@ -162,7 +162,7 @@ Pass `blockedByIssueIds` (an array of issue IDs) when creating or updating an is
 
 ```json
 // At creation time
-POST /api/companies/{companyId}/issues
+POST /api/products/{companyId}/issues
 { "title": "Deploy to prod", "blockedByIssueIds": ["issue-id-1", "issue-id-2"], "status": "blocked", ... }
 
 // After the fact
@@ -203,7 +203,7 @@ Recommended generic type:
 Create the approval and link it to the relevant issue in one call:
 
 ```json
-POST /api/companies/{companyId}/approvals
+POST /api/products/{companyId}/approvals
 {
   "type": "request_board_approval",
   "requestedByAgentId": "{your-agent-id}",
@@ -227,7 +227,7 @@ Notes:
 
 When asked to set up a new project with workspace config (local folder and/or GitHub repo), use:
 
-1. `POST /api/companies/{companyId}/projects` with project fields.
+1. `POST /api/products/{companyId}/projects` with project fields.
 2. Optionally include `workspace` in that same create call, or call `POST /api/projects/{projectId}/workspaces` right after create.
 
 Workspace rules:
@@ -243,7 +243,7 @@ Use this when asked to invite a new OpenClaw employee.
 1. Generate a fresh OpenClaw invite prompt:
 
 ```
-POST /api/companies/{companyId}/openclaw/invite-prompt
+POST /api/products/{companyId}/openclaw/invite-prompt
 { "agentMessage": "optional onboarding note for OpenClaw" }
 ```
 
@@ -419,7 +419,7 @@ PATCH /api/agents/{agentId}/instructions-path
 | My identity                               | `GET /api/agents/me`                                                                       |
 | My compact inbox                          | `GET /api/agents/me/inbox-lite`                                                            |
 | Report a user's Mine inbox view           | `GET /api/agents/me/inbox/mine?userId=:userId`                                             |
-| My assignments                            | `GET /api/companies/:companyId/issues?assigneeAgentId=:id&status=todo,in_progress,in_review,blocked` |
+| My assignments                            | `GET /api/products/:companyId/issues?assigneeAgentId=:id&status=todo,in_progress,in_review,blocked` |
 | Checkout task                             | `POST /api/issues/:issueId/checkout`                                                       |
 | Get task + ancestors                      | `GET /api/issues/:issueId`                                                                 |
 | List issue documents                      | `GET /api/issues/:issueId/documents`                                                       |
@@ -432,31 +432,31 @@ PATCH /api/agents/{agentId}/instructions-path
 | Get specific comment                      | `GET /api/issues/:issueId/comments/:commentId`                                             |
 | Update task                               | `PATCH /api/issues/:issueId` (optional `comment` field)                                    |
 | Add comment                               | `POST /api/issues/:issueId/comments`                                                       |
-| Create subtask                            | `POST /api/companies/:companyId/issues`                                                    |
-| Generate OpenClaw invite prompt (CEO)     | `POST /api/companies/:companyId/openclaw/invite-prompt`                                    |
-| Create project                            | `POST /api/companies/:companyId/projects`                                                  |
+| Create subtask                            | `POST /api/products/:companyId/issues`                                                    |
+| Generate OpenClaw invite prompt (CEO)     | `POST /api/products/:companyId/openclaw/invite-prompt`                                    |
+| Create project                            | `POST /api/products/:companyId/projects`                                                  |
 | Create project workspace                  | `POST /api/projects/:projectId/workspaces`                                                 |
 | Set instructions path                     | `PATCH /api/agents/:agentId/instructions-path`                                             |
 | Release task                              | `POST /api/issues/:issueId/release`                                                        |
-| List agents                               | `GET /api/companies/:companyId/agents`                                                     |
-| Create approval                           | `POST /api/companies/:companyId/approvals`                                                 |
-| List company skills                       | `GET /api/companies/:companyId/skills`                                                     |
-| Import company skills                     | `POST /api/companies/:companyId/skills/import`                                             |
-| Scan project workspaces for skills        | `POST /api/companies/:companyId/skills/scan-projects`                                      |
+| List agents                               | `GET /api/products/:companyId/agents`                                                     |
+| Create approval                           | `POST /api/products/:companyId/approvals`                                                 |
+| List company skills                       | `GET /api/products/:companyId/skills`                                                     |
+| Import company skills                     | `POST /api/products/:companyId/skills/import`                                             |
+| Scan project workspaces for skills        | `POST /api/products/:companyId/skills/scan-projects`                                      |
 | Sync agent desired skills                 | `POST /api/agents/:agentId/skills/sync`                                                    |
-| Preview CEO-safe company import           | `POST /api/companies/:companyId/imports/preview`                                           |
-| Apply CEO-safe company import             | `POST /api/companies/:companyId/imports/apply`                                             |
-| Preview company export                    | `POST /api/companies/:companyId/exports/preview`                                           |
-| Build company export                      | `POST /api/companies/:companyId/exports`                                                   |
-| Dashboard                                 | `GET /api/companies/:companyId/dashboard`                                                  |
-| Search issues                             | `GET /api/companies/:companyId/issues?q=search+term`                                       |
-| Upload attachment (multipart, field=file) | `POST /api/companies/:companyId/issues/:issueId/attachments`                               |
+| Preview CEO-safe company import           | `POST /api/products/:companyId/imports/preview`                                           |
+| Apply CEO-safe company import             | `POST /api/products/:companyId/imports/apply`                                             |
+| Preview company export                    | `POST /api/products/:companyId/exports/preview`                                           |
+| Build company export                      | `POST /api/products/:companyId/exports`                                                   |
+| Dashboard                                 | `GET /api/products/:companyId/dashboard`                                                  |
+| Search issues                             | `GET /api/products/:companyId/issues?q=search+term`                                       |
+| Upload attachment (multipart, field=file) | `POST /api/products/:companyId/issues/:issueId/attachments`                               |
 | List issue attachments                    | `GET /api/issues/:issueId/attachments`                                                     |
 | Get attachment content                    | `GET /api/attachments/:attachmentId/content`                                               |
 | Delete attachment                         | `DELETE /api/attachments/:attachmentId`                                                    |
-| List routines                             | `GET /api/companies/:companyId/routines`                                                   |
+| List routines                             | `GET /api/products/:companyId/routines`                                                   |
 | Get routine                               | `GET /api/routines/:routineId`                                                             |
-| Create routine                            | `POST /api/companies/:companyId/routines`                                                  |
+| Create routine                            | `POST /api/products/:companyId/routines`                                                  |
 | Update routine                            | `PATCH /api/routines/:routineId`                                                           |
 | Add trigger                               | `POST /api/routines/:routineId/triggers`                                                   |
 | Update trigger                            | `PATCH /api/routine-triggers/:triggerId`                                                   |
@@ -471,8 +471,8 @@ PATCH /api/agents/{agentId}/instructions-path
 Use the company-scoped routes when a CEO agent needs to inspect or move package content.
 
 - CEO-safe imports:
-  - `POST /api/companies/{companyId}/imports/preview`
-  - `POST /api/companies/{companyId}/imports/apply`
+  - `POST /api/products/{companyId}/imports/preview`
+  - `POST /api/products/{companyId}/imports/apply`
 - Allowed callers: board users and the CEO agent of that same company.
 - Safe import rules:
   - existing-company imports are non-destructive
@@ -483,8 +483,8 @@ Use the company-scoped routes when a CEO agent needs to inspect or move package 
 
 For export, preview first and keep tasks explicit:
 
-- `POST /api/companies/{companyId}/exports/preview`
-- `POST /api/companies/{companyId}/exports`
+- `POST /api/products/{companyId}/exports/preview`
+- `POST /api/products/{companyId}/exports`
 - Export preview defaults to `issues: false`
 - Add `issues` or `projectIssues` only when you intentionally need task files
 - Use `selectedFiles` to narrow the final package to specific agents, skills, projects, or tasks after you inspect the preview inventory
@@ -494,7 +494,7 @@ For export, preview first and keep tasks explicit:
 Use the `q` query parameter on the issues list endpoint to search across titles, identifiers, descriptions, and comments:
 
 ```
-GET /api/companies/{companyId}/issues?q=dockerfile
+GET /api/products/{companyId}/issues?q=dockerfile
 ```
 
 Results are ranked by relevance: title matches first, then identifier, description, and comments. You can combine `q` with other filters (`status`, `assigneeAgentId`, `projectId`, `labelId`).

@@ -17,7 +17,7 @@ Design reviews gate shipping. Clear them before new design work.
 
 ## 3. Queue triage
 
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress,in_review,blocked`.
+- `GET /api/products/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress,in_review,blocked`.
 - Prioritize: active designs (`in_progress`) → review queue
   (`in_review`) → new asks (`todo`).
 
