@@ -1,7 +1,7 @@
 import { PERMISSION_KEYS } from "@softclipai/shared";
-import type { HumanCompanyMembershipRole } from "@softclipai/shared";
+import type { HumanProductMembershipRole } from "@softclipai/shared";
 
-const HUMAN_COMPANY_MEMBERSHIP_ROLES: HumanCompanyMembershipRole[] = [
+const HUMAN_PRODUCT_MEMBERSHIP_ROLES: HumanProductMembershipRole[] = [
   "owner",
   "admin",
   "operator",
@@ -10,16 +10,16 @@ const HUMAN_COMPANY_MEMBERSHIP_ROLES: HumanCompanyMembershipRole[] = [
 
 export function normalizeHumanRole(
   value: unknown,
-  fallback: HumanCompanyMembershipRole = "operator"
-): HumanCompanyMembershipRole {
+  fallback: HumanProductMembershipRole = "operator"
+): HumanProductMembershipRole {
   if (value === "member") return "operator";
-  return HUMAN_COMPANY_MEMBERSHIP_ROLES.includes(value as HumanCompanyMembershipRole)
-    ? (value as HumanCompanyMembershipRole)
+  return HUMAN_PRODUCT_MEMBERSHIP_ROLES.includes(value as HumanProductMembershipRole)
+    ? (value as HumanProductMembershipRole)
     : fallback;
 }
 
 export function grantsForHumanRole(
-  role: HumanCompanyMembershipRole
+  role: HumanProductMembershipRole
 ): Array<{
   permissionKey: (typeof PERMISSION_KEYS)[number];
   scope: Record<string, unknown> | null;
@@ -49,7 +49,7 @@ export function grantsForHumanRole(
 
 export function resolveHumanInviteRole(
   defaultsPayload: Record<string, unknown> | null | undefined
-): HumanCompanyMembershipRole {
+): HumanProductMembershipRole {
   if (!defaultsPayload || typeof defaultsPayload !== "object") return "operator";
   const scoped = defaultsPayload.human;
   if (!scoped || typeof scoped !== "object" || Array.isArray(scoped)) {
