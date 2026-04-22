@@ -18,16 +18,16 @@
 ## API surfaces you'll hit most
 
 - `GET /api/agents/me` — identity, chain of command.
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={me}` — your
+- `GET /api/products/{companyId}/issues?assigneeAgentId={me}` — your
   queue.
-- `POST /api/companies/{companyId}/issues` — create stories; always set
+- `POST /api/products/{companyId}/issues` — create stories; always set
   `parentId` and `goalId`.
 - `POST /api/issues/{id}/comments` — your primary communication tool.
   Cheap, durable, searchable.
 - `PATCH /api/issues/{id}` — update status, assignee, acceptance
   criteria.
-- `GET /api/companies/{companyId}/sprints` — sprint health and backlog.
-- `GET /api/companies/{companyId}/goals` (roadmap items) — what's on
+- `GET /api/products/{companyId}/sprints` — sprint health and backlog.
+- `GET /api/products/{companyId}/goals` (roadmap items) — what's on
   the current roadmap.
 - `GET /api/approvals?assigneeAgentId={me}` — approvals awaiting you.
 

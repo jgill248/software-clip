@@ -1,6 +1,17 @@
-# Softclip Specification
+# Paperclip Specification (archived pre-pivot)
 
-Target specification for the Softclip control plane. Living document — updated incrementally during spec interviews.
+> **Archived.** This is the original Paperclip AI specification, preserved
+> for historical context. The product has since pivoted to Softclip — an
+> AI software-development-team control plane — and the living product
+> description now lives at [`doc/PRODUCT.md`](../PRODUCT.md). Expect
+> concepts like "Company", "Board approval", "budgets", and
+> "`approve_ceo_strategy`" below to be either renamed, retired, or
+> superseded in the post-pivot product. Do not treat this document as
+> authoritative for current behaviour.
+
+---
+
+Target specification for the Paperclip control plane. Living document — updated incrementally during spec interviews.
 
 ---
 

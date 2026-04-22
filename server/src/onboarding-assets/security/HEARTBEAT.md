@@ -33,7 +33,7 @@ CVEs and security advisories age badly. Triage before anything else.
 
 ## 4. Plan contribution
 
-- `GET /api/companies/{companyId}/approvals?type=approve_plan&status=pending,revision_requested`
+- `GET /api/products/{companyId}/approvals?type=approve_plan&status=pending,revision_requested`
   — plans the architects are drafting.
 - For each plan whose stories introduce a new trust boundary
   (new endpoint, new integration, new agent tool, new inbound

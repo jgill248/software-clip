@@ -22,15 +22,15 @@ The canonical model is:
 
 ## Core Endpoints
 
-- `GET /api/companies/:companyId/skills`
-- `GET /api/companies/:companyId/skills/:skillId`
-- `POST /api/companies/:companyId/skills/import`
-- `POST /api/companies/:companyId/skills/scan-projects`
-- `POST /api/companies/:companyId/skills/:skillId/install-update`
+- `GET /api/products/:companyId/skills`
+- `GET /api/products/:companyId/skills/:skillId`
+- `POST /api/products/:companyId/skills/import`
+- `POST /api/products/:companyId/skills/scan-projects`
+- `POST /api/products/:companyId/skills/:skillId/install-update`
 - `GET /api/agents/:agentId/skills`
 - `POST /api/agents/:agentId/skills/sync`
-- `POST /api/companies/:companyId/agent-hires`
-- `POST /api/companies/:companyId/agents`
+- `POST /api/products/:companyId/agent-hires`
+- `POST /api/products/:companyId/agents`
 
 ## Install A Skill Into The Company
 
@@ -50,7 +50,7 @@ Import using a **skills.sh URL**, a key-style source string, a GitHub URL, or a 
 ### Example: skills.sh import (preferred)
 
 ```sh
-curl -sS -X POST "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/skills/import" \
+curl -sS -X POST "$SOFTCLIP_API_URL/api/products/$SOFTCLIP_COMPANY_ID/skills/import" \
   -H "Authorization: Bearer $SOFTCLIP_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -61,7 +61,7 @@ curl -sS -X POST "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/skills/im
 Or equivalently using the key-style string:
 
 ```sh
-curl -sS -X POST "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/skills/import" \
+curl -sS -X POST "$SOFTCLIP_API_URL/api/products/$SOFTCLIP_COMPANY_ID/skills/import" \
   -H "Authorization: Bearer $SOFTCLIP_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -72,7 +72,7 @@ curl -sS -X POST "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/skills/im
 ### Example: GitHub import
 
 ```sh
-curl -sS -X POST "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/skills/import" \
+curl -sS -X POST "$SOFTCLIP_API_URL/api/products/$SOFTCLIP_COMPANY_ID/skills/import" \
   -H "Authorization: Bearer $SOFTCLIP_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -89,7 +89,7 @@ You can also use source strings such as:
 If the task is to discover skills from the company project workspaces first:
 
 ```sh
-curl -sS -X POST "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/skills/scan-projects" \
+curl -sS -X POST "$SOFTCLIP_API_URL/api/products/$SOFTCLIP_COMPANY_ID/skills/scan-projects" \
   -H "Authorization: Bearer $SOFTCLIP_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{}'
@@ -98,17 +98,17 @@ curl -sS -X POST "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/skills/sc
 ## Inspect What Was Installed
 
 ```sh
-curl -sS "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/skills" \
+curl -sS "$SOFTCLIP_API_URL/api/products/$SOFTCLIP_COMPANY_ID/skills" \
   -H "Authorization: Bearer $SOFTCLIP_API_KEY"
 ```
 
 Read the skill entry and its `SKILL.md`:
 
 ```sh
-curl -sS "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/skills/<skill-id>" \
+curl -sS "$SOFTCLIP_API_URL/api/products/$SOFTCLIP_COMPANY_ID/skills/<skill-id>" \
   -H "Authorization: Bearer $SOFTCLIP_API_KEY"
 
-curl -sS "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/skills/<skill-id>/files?path=SKILL.md" \
+curl -sS "$SOFTCLIP_API_URL/api/products/$SOFTCLIP_COMPANY_ID/skills/<skill-id>/files?path=SKILL.md" \
   -H "Authorization: Bearer $SOFTCLIP_API_KEY"
 ```
 
@@ -145,7 +145,7 @@ curl -sS "$SOFTCLIP_API_URL/api/agents/<agent-id>/skills" \
 Use the same company skill keys or references in `desiredSkills` when hiring or creating an agent:
 
 ```sh
-curl -sS -X POST "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/agent-hires" \
+curl -sS -X POST "$SOFTCLIP_API_URL/api/products/$SOFTCLIP_COMPANY_ID/agent-hires" \
   -H "Authorization: Bearer $SOFTCLIP_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -164,7 +164,7 @@ curl -sS -X POST "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/agent-hir
 For direct create without approval:
 
 ```sh
-curl -sS -X POST "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/agents" \
+curl -sS -X POST "$SOFTCLIP_API_URL/api/products/$SOFTCLIP_COMPANY_ID/agents" \
   -H "Authorization: Bearer $SOFTCLIP_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -186,8 +186,8 @@ curl -sS -X POST "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/agents" \
 - If a reference is missing or ambiguous, the API returns `422`.
 - Prefer linking back to the relevant issue, approval, and agent when you comment about skill changes.
 - Use company portability routes when you need whole-package import/export, not just a skill:
-  - `POST /api/companies/:companyId/imports/preview`
-  - `POST /api/companies/:companyId/imports/apply`
-  - `POST /api/companies/:companyId/exports/preview`
-  - `POST /api/companies/:companyId/exports`
+  - `POST /api/products/:companyId/imports/preview`
+  - `POST /api/products/:companyId/imports/apply`
+  - `POST /api/products/:companyId/exports/preview`
+  - `POST /api/products/:companyId/exports`
 - Use skill-only import when the task is specifically to add a skill to the company library without importing the surrounding company/team/package structure.

@@ -92,7 +92,7 @@ finding.
 - **Scan everything.** Pre-commit hook + PR scan + periodic git
   history scan. Pick one as source of truth; don't let the other
   two rot.
-- **Secrets live in the secrets service** (`/api/companies/:id/secrets`).
+- **Secrets live in the secrets service** (`/api/products/:id/secrets`).
   Anything else is a bug.
 - **Tokens in logs** are a secret leak. Flag any PR that logs an
   `Authorization` header or agent key material.

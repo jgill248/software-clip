@@ -58,7 +58,7 @@ curl 'http://127.0.0.1:3102/api/issues/<issueId>/feedback-traces?includePayload=
 
 **List all traces company-wide:**
 ```bash
-curl 'http://127.0.0.1:3102/api/companies/<companyId>/feedback-traces?includePayload=true'
+curl 'http://127.0.0.1:3102/api/products/<companyId>/feedback-traces?includePayload=true'
 ```
 
 **Get a single trace envelope record:**

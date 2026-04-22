@@ -167,7 +167,7 @@ export function registerAgentCommands(program: Command): void {
       .action(async (opts: AgentListOptions) => {
         try {
           const ctx = resolveCommandContext(opts, { requireCompany: true });
-          const rows = (await ctx.api.get<Agent[]>(`/api/companies/${ctx.productId}/agents`)) ?? [];
+          const rows = (await ctx.api.get<Agent[]>(`/api/products/${ctx.productId}/agents`)) ?? [];
 
           if (ctx.json) {
             printOutput(rows, { json: true });

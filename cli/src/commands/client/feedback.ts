@@ -220,7 +220,7 @@ export async function fetchCompanyFeedbackTraces(
 ): Promise<FeedbackTrace[]> {
   return (
     (await ctx.api.get<FeedbackTrace[]>(
-      `/api/companies/${productId}/feedback-traces${buildFeedbackTraceQuery(opts, true)}`,
+      `/api/products/${productId}/feedback-traces${buildFeedbackTraceQuery(opts, true)}`,
     )) ?? []
   );
 }

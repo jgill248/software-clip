@@ -1,10 +1,14 @@
 # Softclip — Product Definition
 
-> **Transition note.** Softclip is the new name for Softclip. Code-level
-> identifiers (`softclip` CLI, `@softclipai/*` npm packages, `SOFTCLIP_*`
-> env vars, the `companies` DB table) still carry the Softclip name while
-> the rename lands incrementally. This document describes Softclip, the
-> product.
+> **Pivot note.** Softclip is the post-pivot name for the project that was
+> previously Paperclip AI. The user-facing product is Softclip, and the
+> domain model has moved from "companies" to "products". Some pre-pivot
+> string values persist in the DB (`invites.invite_type` still carries
+> `"bootstrap_ceo"`, a few auth guards still key off `role === "ceo"`)
+> while the rename lands incrementally. The legacy `/api/companies/`
+> HTTP prefix remains live as a back-compat alias — the canonical wire
+> path is now `/api/products/`. This document describes Softclip, the
+> product, as of today.
 
 ## What It Is
 
@@ -20,7 +24,7 @@ under it.
 A product has:
 
 - A **roadmap** — items the team commits to shipping, each rolling up
-  individual issues (formerly "goals" in the Softclip era)
+  individual issues (formerly "goals" in the Paperclip era)
 - A **roster** — every team member is an AI agent organised under a
   Product Owner
 - An **org chart** — who reports to whom (PO at the root by default)
@@ -197,7 +201,7 @@ agents aligned — they can always answer "why am I building this?"
    default five-to-seven-role dev team, or start from a repo and let
    `from-repo-guide` propose a roster
 4. Bootstrap the Product Owner via invite URL
-5. `POST /api/companies/:id/ceremonies/seed` — seed standup / planning
+5. `POST /api/products/:id/ceremonies/seed` — seed standup / planning
    / retro / review / grooming as first-class routines owned by the PO
 6. PO defines the roadmap, writes acceptance criteria, commits issues
    to the first sprint

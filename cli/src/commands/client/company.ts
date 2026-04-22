@@ -175,7 +175,7 @@ export function registerCompanyCommands(program: Command): void {
       .action(async (productId: string, opts: CompanyCommandOptions) => {
         try {
           const ctx = resolveCommandContext(opts);
-          const row = await ctx.api.get<Company>(`/api/companies/${productId}`);
+          const row = await ctx.api.get<Company>(`/api/products/${productId}`);
           printOutput(row, { json: ctx.json });
         } catch (err) {
           handleCommandError(err);
@@ -201,7 +201,7 @@ export function registerCompanyCommands(program: Command): void {
         try {
           const ctx = resolveCommandContext(opts, { requireCompany: true });
           const traces = (await ctx.api.get<FeedbackTrace[]>(
-            `/api/companies/${ctx.productId}/feedback-traces${buildFeedbackTraceQuery(opts)}`,
+            `/api/products/${ctx.productId}/feedback-traces${buildFeedbackTraceQuery(opts)}`,
           )) ?? [];
           if (ctx.json) {
             printOutput(traces, { json: true });
@@ -245,7 +245,7 @@ export function registerCompanyCommands(program: Command): void {
         try {
           const ctx = resolveCommandContext(opts, { requireCompany: true });
           const traces = (await ctx.api.get<FeedbackTrace[]>(
-            `/api/companies/${ctx.productId}/feedback-traces${buildFeedbackTraceQuery(opts, opts.includePayload ?? true)}`,
+            `/api/products/${ctx.productId}/feedback-traces${buildFeedbackTraceQuery(opts, opts.includePayload ?? true)}`,
           )) ?? [];
           const serialized = serializeFeedbackTraces(traces, opts.format);
           if (opts.out?.trim()) {
@@ -298,7 +298,7 @@ export function registerCompanyCommands(program: Command): void {
           let target: Company | null = null;
           const shouldTryIdLookup = by === "id" || (by === "auto" && isUuidLike(normalizedSelector));
           if (shouldTryIdLookup) {
-            const byId = await ctx.api.get<Company>(`/api/companies/${normalizedSelector}`, { ignoreNotFound: true });
+            const byId = await ctx.api.get<Company>(`/api/products/${normalizedSelector}`, { ignoreNotFound: true });
             if (byId) {
               target = byId;
             } else if (by === "id") {
@@ -307,7 +307,7 @@ export function registerCompanyCommands(program: Command): void {
           }
 
           if (!target && ctx.productId) {
-            const scoped = await ctx.api.get<Company>(`/api/companies/${ctx.productId}`, { ignoreNotFound: true });
+            const scoped = await ctx.api.get<Company>(`/api/products/${ctx.productId}`, { ignoreNotFound: true });
             if (scoped) {
               try {
                 target = resolveCompanyForDeletion([scoped], normalizedSelector, by);
@@ -337,7 +337,7 @@ export function registerCompanyCommands(program: Command): void {
 
           assertDeleteConfirmation(target, opts);
 
-          await ctx.api.delete<{ ok: true }>(`/api/companies/${target.id}`);
+          await ctx.api.delete<{ ok: true }>(`/api/products/${target.id}`);
 
           printOutput(
             {

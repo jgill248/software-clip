@@ -11,7 +11,7 @@ numbered role-specific steps are the ones you customize per bundle.
 
 ## 2. Review your queue
 
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress,in_review,blocked`.
+- `GET /api/products/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress,in_review,blocked`.
 - Prioritize: `in_progress` → `in_review` (on wake) → `todo`. Skip `blocked`
   unless you can unblock it yourself.
 - If `SOFTCLIP_TASK_ID` is set and assigned to you, start there.

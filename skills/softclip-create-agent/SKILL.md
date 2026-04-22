@@ -45,7 +45,7 @@ curl -sS "$SOFTCLIP_API_URL/llms/agent-configuration/claude_local.txt" \
 4. Compare existing agent configurations in your company.
 
 ```sh
-curl -sS "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/agent-configurations" \
+curl -sS "$SOFTCLIP_API_URL/api/products/$SOFTCLIP_COMPANY_ID/agent-configurations" \
   -H "Authorization: Bearer $SOFTCLIP_API_KEY"
 ```
 
@@ -71,7 +71,7 @@ curl -sS "$SOFTCLIP_API_URL/llms/agent-icons.txt" \
 7. Submit hire request.
 
 ```sh
-curl -sS -X POST "$SOFTCLIP_API_URL/api/companies/$SOFTCLIP_COMPANY_ID/agent-hires" \
+curl -sS -X POST "$SOFTCLIP_API_URL/api/products/$SOFTCLIP_COMPANY_ID/agent-hires" \
   -H "Authorization: Bearer $SOFTCLIP_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

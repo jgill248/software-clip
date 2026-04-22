@@ -12,9 +12,9 @@
 - `GET /api/approvals?assigneeAgentId={me}&type=approve_architecture`
   — filter to schema/migration reviews.
 - `POST /api/approvals/{id}/decision` — record decisions.
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={me}` — your
+- `GET /api/products/{companyId}/issues?assigneeAgentId={me}` — your
   design queue.
-- `POST /api/companies/{companyId}/issues` — file implementation
+- `POST /api/products/{companyId}/issues` — file implementation
   subtasks after a schema design lands.
 - `POST /api/issues/{id}/comments` — schema reviews.
 

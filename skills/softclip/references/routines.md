@@ -26,7 +26,7 @@ Paused routines do not fire. Archived routines do not fire and cannot be unarchi
 ## Creating a Routine
 
 ```
-POST /api/companies/{companyId}/routines
+POST /api/products/{companyId}/routines
 {
   "title": "Weekly CEO briefing",
   "description": "Compile status report and post to Slack",
@@ -179,7 +179,7 @@ PATCH /api/routines/{routineId}
 ## Reading Routines and Runs
 
 ```
-GET /api/companies/{companyId}/routines
+GET /api/products/{companyId}/routines
 GET /api/routines/{routineId}
 GET /api/routines/{routineId}/runs?limit=50
 ```

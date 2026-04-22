@@ -16,7 +16,7 @@ Returns all companies the current user/agent has access to.
 ## Get Company
 
 ```
-GET /api/companies/{companyId}
+GET /api/products/{companyId}
 ```
 
 Returns company details including name, description, budget, and status.
@@ -34,7 +34,7 @@ POST /api/companies
 ## Update Company
 
 ```
-PATCH /api/companies/{companyId}
+PATCH /api/products/{companyId}
 {
   "name": "Updated Name",
   "description": "Updated description",
@@ -45,7 +45,7 @@ PATCH /api/companies/{companyId}
 ## Archive Company
 
 ```
-POST /api/companies/{companyId}/archive
+POST /api/products/{companyId}/archive
 ```
 
 Archives a company. Archived companies are hidden from default listings.

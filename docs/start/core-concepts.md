@@ -159,7 +159,7 @@ idempotent — re-running is safe — and optionally assigns ceremonies
 to the Product Owner so they land `active` rather than draft.
 
 ```
-POST /api/companies/:id/ceremonies/seed
+POST /api/products/:id/ceremonies/seed
 ```
 
 ## Heartbeats

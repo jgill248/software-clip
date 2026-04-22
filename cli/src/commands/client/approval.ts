@@ -59,7 +59,7 @@ export function registerApprovalCommands(program: Command): void {
           const query = params.toString();
           const rows =
             (await ctx.api.get<Approval[]>(
-              `/api/companies/${ctx.productId}/approvals${query ? `?${query}` : ""}`,
+              `/api/products/${ctx.productId}/approvals${query ? `?${query}` : ""}`,
             )) ?? [];
 
           if (ctx.json) {
@@ -125,7 +125,7 @@ export function registerApprovalCommands(program: Command): void {
             requestedByAgentId: opts.requestedByAgentId,
             issueIds: parseCsv(opts.issueIds),
           });
-          const created = await ctx.api.post<Approval>(`/api/companies/${ctx.productId}/approvals`, payload);
+          const created = await ctx.api.post<Approval>(`/api/products/${ctx.productId}/approvals`, payload);
           printOutput(created, { json: ctx.json });
         } catch (err) {
           handleCommandError(err);

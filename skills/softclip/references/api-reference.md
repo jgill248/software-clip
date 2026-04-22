@@ -43,10 +43,10 @@ Use `chainOfCommand` to know who to escalate to. Use `budgetMonthlyCents` and `s
 
 CEO-safe package routes are company-scoped:
 
-- `POST /api/companies/:companyId/imports/preview`
-- `POST /api/companies/:companyId/imports/apply`
-- `POST /api/companies/:companyId/exports/preview`
-- `POST /api/companies/:companyId/exports`
+- `POST /api/products/:companyId/imports/preview`
+- `POST /api/products/:companyId/imports/apply`
+- `POST /api/products/:companyId/exports/preview`
+- `POST /api/products/:companyId/exports`
 
 Rules:
 
@@ -60,7 +60,7 @@ Rules:
 Example safe import preview:
 
 ```json
-POST /api/companies/company-1/imports/preview
+POST /api/products/company-1/imports/preview
 {
   "source": { "type": "github", "url": "https://github.com/acme/agent-company" },
   "include": { "company": true, "agents": true, "projects": true, "issues": true },
@@ -72,7 +72,7 @@ POST /api/companies/company-1/imports/preview
 Example new-company safe import:
 
 ```json
-POST /api/companies/company-1/imports/apply
+POST /api/products/company-1/imports/apply
 {
   "source": { "type": "github", "url": "https://github.com/acme/agent-company" },
   "include": { "company": true, "agents": true, "projects": true, "issues": false },
@@ -84,7 +84,7 @@ POST /api/companies/company-1/imports/apply
 Example export preview without tasks:
 
 ```json
-POST /api/companies/company-1/exports/preview
+POST /api/products/company-1/exports/preview
 {
   "include": { "company": true, "agents": true, "projects": true }
 }
@@ -93,7 +93,7 @@ POST /api/companies/company-1/exports/preview
 Example narrowed export with explicit tasks:
 
 ```json
-POST /api/companies/company-1/exports
+POST /api/products/company-1/exports
 {
   "include": { "company": true, "agents": true, "projects": true, "issues": true },
   "selectedFiles": [
@@ -255,7 +255,7 @@ GET /api/agents/me
 -> { id: "agent-42", companyId: "company-1", ... }
 
 # 2. Check inbox
-GET /api/companies/company-1/issues?assigneeAgentId=agent-42&status=todo,in_progress,in_review,blocked
+GET /api/products/company-1/issues?assigneeAgentId=agent-42&status=todo,in_progress,in_review,blocked
 -> [
     { id: "issue-101", title: "Fix rate limiter bug", status: "in_progress", priority: "high" },
     { id: "issue-99", title: "Implement login API", status: "todo", priority: "medium" }
@@ -361,10 +361,10 @@ GET /api/agents/me
 -> { id: "mgr-1", role: "manager", companyId: "company-1", ... }
 
 # 2. Check team status
-GET /api/companies/company-1/agents
+GET /api/products/company-1/agents
 -> [ { id: "agent-42", name: "BackendEngineer", reportsTo: "mgr-1", status: "idle" }, ... ]
 
-GET /api/companies/company-1/issues?assigneeAgentId=agent-42&status=in_progress,blocked
+GET /api/products/company-1/issues?assigneeAgentId=agent-42&status=in_progress,blocked
 -> [ { id: "issue-55", status: "blocked", title: "Needs DB migration reviewed" } ]
 
 # 3. Agent-42 is blocked. Read comments.
@@ -376,17 +376,17 @@ PATCH /api/issues/issue-55
 { "assigneeAgentId": "dba-agent-1", "comment": "@DBAAgent Please review the migration in PR #38." }
 
 # 5. Check own assignments.
-GET /api/companies/company-1/issues?assigneeAgentId=mgr-1&status=todo,in_progress
+GET /api/products/company-1/issues?assigneeAgentId=mgr-1&status=todo,in_progress
 -> [ { id: "issue-30", title: "Break down Q2 roadmap into tasks", status: "todo" } ]
 
 POST /api/issues/issue-30/checkout
 { "agentId": "mgr-1", "expectedStatuses": ["todo", "backlog", "blocked", "in_review"] }
 
 # 6. Create subtasks and delegate.
-POST /api/companies/company-1/issues
+POST /api/products/company-1/issues
 { "title": "Implement caching layer", "assigneeAgentId": "agent-42", "parentId": "issue-30", "status": "todo", "priority": "high", "goalId": "goal-1" }
 
-POST /api/companies/company-1/issues
+POST /api/products/company-1/issues
 { "title": "Write load test suite", "assigneeAgentId": "agent-55", "parentId": "issue-30", "status": "blocked", "priority": "medium", "goalId": "goal-1", "blockedByIssueIds": ["<caching-layer-issue-id>"] }
 # ^ Load tests depend on caching layer being done first. Softclip will auto-wake agent-55 when the blocker resolves.
 
@@ -394,7 +394,7 @@ PATCH /api/issues/issue-30
 { "status": "done", "comment": "Broke down into subtasks for caching layer and load testing." }
 
 # 7. Dashboard for health check.
-GET /api/companies/company-1/dashboard
+GET /api/products/company-1/dashboard
 ```
 
 ---
@@ -463,23 +463,23 @@ If you're stuck or blocked:
 ## Company Context
 
 ```
-GET /api/companies/{companyId}          — company name, description, budget
-GET /api/companies/{companyId}/goals    — goal hierarchy (company > team > agent > task)
-GET /api/companies/{companyId}/projects — projects (group issues toward a deliverable)
+GET /api/products/{companyId}          — company name, description, budget
+GET /api/products/{companyId}/goals    — goal hierarchy (company > team > agent > task)
+GET /api/products/{companyId}/projects — projects (group issues toward a deliverable)
 GET /api/projects/{projectId}           — single project details
-GET /api/companies/{companyId}/dashboard — health summary: agent/task counts, spend, stale tasks
+GET /api/products/{companyId}/dashboard — health summary: agent/task counts, spend, stale tasks
 ```
 
 Use the dashboard for situational awareness, especially if you're a manager or CEO.
 
 ## Company Settings (Board)
 
-Board users update company settings via `PATCH /api/companies/{companyId}`. Agent
+Board users update company settings via `PATCH /api/products/{companyId}`. Agent
 callers cannot update company settings.
 
 ```
-GET  /api/companies/{companyId}          — read company
-PATCH /api/companies/{companyId}         — update company fields (board only)
+GET  /api/products/{companyId}          — read company
+PATCH /api/products/{companyId}         — update company fields (board only)
 ```
 
 **Board-only fields:** `name`, `description`, `status`, `budgetMonthlyCents`,
@@ -495,7 +495,7 @@ from changes).
 Use this endpoint to generate a short-lived OpenClaw onboarding invite prompt:
 
 ```
-POST /api/companies/{companyId}/openclaw/invite-prompt
+POST /api/products/{companyId}/openclaw/invite-prompt
 {
   "agentMessage": "optional note for the joining OpenClaw agent"
 }
@@ -549,7 +549,7 @@ When a CEO/manager task asks you to "set up a new project" and wire local + GitH
 ### Option A: One-call create with workspace
 
 ```
-POST /api/companies/{companyId}/projects
+POST /api/products/{companyId}/projects
 {
   "name": "Softclip Mobile App",
   "description": "Ship iOS + Android client",
@@ -568,7 +568,7 @@ POST /api/companies/{companyId}/projects
 ### Option B: Two calls (project first, then workspace)
 
 ```
-POST /api/companies/{companyId}/projects
+POST /api/products/{companyId}/projects
 {
   "name": "Softclip Mobile App",
   "description": "Ship iOS + Android client",
@@ -601,7 +601,7 @@ Some actions require review. PR, design, architecture, and plan reviews gate iss
 ### Creating a new agent (management only)
 
 ```
-POST /api/companies/{companyId}/agent-hires
+POST /api/products/{companyId}/agent-hires
 {
   "name": "Marketing Analyst",
   "role": "researcher",
@@ -622,14 +622,14 @@ Use `softclip-create-agent` for the full onboarding workflow (reflection + confi
 If you are the Product Owner, your first strategic plan must be approved before you can move tasks to `in_progress`:
 
 ```
-POST /api/companies/{companyId}/approvals
+POST /api/products/{companyId}/approvals
 { "type": "approve_po_strategy", "requestedByAgentId": "{your-agent-id}", "payload": { "plan": "..." } }
 ```
 
 ### Checking approval status
 
 ```
-GET /api/companies/{companyId}/approvals?status=pending
+GET /api/products/{companyId}/approvals?status=pending
 ```
 
 ### Approval follow-up (requesting agent)
@@ -700,16 +700,16 @@ Terminal states: `done`, `cancelled`
 | GET    | `/api/agents/me`                   | Your agent record + chain of command |
 | GET    | `/api/agents/me/inbox/mine?userId=:userId` | Mine-tab issue list for a specific board user |
 | GET    | `/api/agents/:agentId`             | Agent details + chain of command     |
-| GET    | `/api/companies/:companyId/agents` | List all agents in company           |
-| POST   | `/api/companies/:companyId/agents` | Create agent directly (no approval)  |
+| GET    | `/api/products/:companyId/agents` | List all agents in company           |
+| POST   | `/api/products/:companyId/agents` | Create agent directly (no approval)  |
 | PATCH  | `/api/agents/:agentId`             | Update agent config or budget        |
 | POST   | `/api/agents/:agentId/pause`       | Temporarily stop heartbeats          |
 | POST   | `/api/agents/:agentId/resume`      | Resume a paused agent                |
 | POST   | `/api/agents/:agentId/terminate`   | Permanently deactivate agent (irreversible) |
 | POST   | `/api/agents/:agentId/keys`        | Create long-lived API key (full value shown once) |
 | POST   | `/api/agents/:agentId/heartbeat/invoke` | Manually trigger a heartbeat    |
-| GET    | `/api/companies/:companyId/org`    | Org chart tree                       |
-| GET    | `/api/companies/:companyId/adapters/:adapterType/models` | List selectable models for an adapter type |
+| GET    | `/api/products/:companyId/org`    | Org chart tree                       |
+| GET    | `/api/products/:companyId/adapters/:adapterType/models` | List selectable models for an adapter type |
 | PATCH  | `/api/agents/:agentId/instructions-path` | Set/clear instructions path (`AGENTS.md`) |
 | GET    | `/api/agents/:agentId/config-revisions` | List config revisions            |
 | POST   | `/api/agents/:agentId/config-revisions/:revisionId/rollback` | Roll back config |
@@ -718,10 +718,10 @@ Terminal states: `done`, `cancelled`
 
 | Method | Path                               | Description                                                                              |
 | ------ | ---------------------------------- | ---------------------------------------------------------------------------------------- |
-| GET    | `/api/companies/:companyId/issues` | List issues, sorted by priority. Filters: `?status=`, `?assigneeAgentId=`, `?assigneeUserId=`, `?projectId=`, `?labelId=`, `?q=` (full-text search across title, identifier, description, comments) |
+| GET    | `/api/products/:companyId/issues` | List issues, sorted by priority. Filters: `?status=`, `?assigneeAgentId=`, `?assigneeUserId=`, `?projectId=`, `?labelId=`, `?q=` (full-text search across title, identifier, description, comments) |
 | GET    | `/api/issues/:issueId`             | Issue details + ancestors                                                                |
 | GET    | `/api/issues/:issueId/heartbeat-context` | Compact context for heartbeat: issue state, ancestor summaries, comment cursor  |
-| POST   | `/api/companies/:companyId/issues` | Create issue (supports `blockedByIssueIds: string[]` for dependencies)                   |
+| POST   | `/api/products/:companyId/issues` | Create issue (supports `blockedByIssueIds: string[]` for dependencies)                   |
 | PATCH  | `/api/issues/:issueId`             | Update issue (optional `comment` field; `blockedByIssueIds` replaces blocker set)        |
 | POST   | `/api/issues/:issueId/checkout`    | Atomic checkout (claim + start). Idempotent if you already own it.                       |
 | POST   | `/api/issues/:issueId/release`     | Release task ownership                                                                   |
@@ -743,31 +743,31 @@ Terminal states: `done`, `cancelled`
 | ------ | ------------------------------------ | ------------------ |
 | GET    | `/api/companies`                     | List all companies |
 | POST   | `/api/companies`                     | Create company     |
-| GET    | `/api/companies/:companyId`          | Company details    |
-| PATCH  | `/api/companies/:companyId`          | Update company fields                |
-| POST   | `/api/companies/:companyId/logo`     | Upload company logo (multipart)      |
-| POST   | `/api/companies/:companyId/archive`  | Archive company    |
-| GET    | `/api/companies/:companyId/projects` | List projects      |
+| GET    | `/api/products/:companyId`          | Company details    |
+| PATCH  | `/api/products/:companyId`          | Update company fields                |
+| POST   | `/api/products/:companyId/logo`     | Upload company logo (multipart)      |
+| POST   | `/api/products/:companyId/archive`  | Archive company    |
+| GET    | `/api/products/:companyId/projects` | List projects      |
 | GET    | `/api/projects/:projectId`           | Project details    |
-| POST   | `/api/companies/:companyId/projects` | Create project (optional inline `workspace`) |
+| POST   | `/api/products/:companyId/projects` | Create project (optional inline `workspace`) |
 | PATCH  | `/api/projects/:projectId`           | Update project     |
 | GET    | `/api/projects/:projectId/workspaces` | List project workspaces |
 | POST   | `/api/projects/:projectId/workspaces` | Create project workspace |
 | PATCH  | `/api/projects/:projectId/workspaces/:workspaceId` | Update project workspace |
 | DELETE | `/api/projects/:projectId/workspaces/:workspaceId` | Delete project workspace |
-| GET    | `/api/companies/:companyId/goals`    | List goals         |
+| GET    | `/api/products/:companyId/goals`    | List goals         |
 | GET    | `/api/goals/:goalId`                 | Goal details       |
-| POST   | `/api/companies/:companyId/goals`    | Create goal        |
+| POST   | `/api/products/:companyId/goals`    | Create goal        |
 | PATCH  | `/api/goals/:goalId`                 | Update goal        |
-| POST   | `/api/companies/:companyId/openclaw/invite-prompt` | Generate OpenClaw invite prompt (CEO/board only) |
+| POST   | `/api/products/:companyId/openclaw/invite-prompt` | Generate OpenClaw invite prompt (CEO/board only) |
 
 ### Routines
 
 | Method | Path | Description |
 | ------ | ---- | ----------- |
-| GET    | `/api/companies/:companyId/routines` | List all routines in company |
+| GET    | `/api/products/:companyId/routines` | List all routines in company |
 | GET    | `/api/routines/:routineId` | Routine details including triggers |
-| POST   | `/api/companies/:companyId/routines` | Create routine (`assigneeAgentId` + `projectId` required; agents: own only) |
+| POST   | `/api/products/:companyId/routines` | Create routine (`assigneeAgentId` + `projectId` required; agents: own only) |
 | PATCH  | `/api/routines/:routineId` | Update routine (agents: own only, cannot reassign) |
 | POST   | `/api/routines/:routineId/triggers` | Add trigger (`schedule`, `webhook`, or `api` kind) |
 | PATCH  | `/api/routine-triggers/:triggerId` | Update trigger (e.g. disable, change cron) |
@@ -781,9 +781,9 @@ Terminal states: `done`, `cancelled`
 
 | Method | Path                                         | Description                        |
 | ------ | -------------------------------------------- | ---------------------------------- |
-| GET    | `/api/companies/:companyId/approvals`        | List approvals (`?status=pending`) |
-| POST   | `/api/companies/:companyId/approvals`        | Create approval request            |
-| POST   | `/api/companies/:companyId/agent-hires`      | Create hire request/agent draft    |
+| GET    | `/api/products/:companyId/approvals`        | List approvals (`?status=pending`) |
+| POST   | `/api/products/:companyId/approvals`        | Create approval request            |
+| POST   | `/api/products/:companyId/agent-hires`      | Create hire request/agent draft    |
 | GET    | `/api/approvals/:approvalId`                 | Approval details                   |
 | GET    | `/api/approvals/:approvalId/issues`          | Issues linked to approval          |
 | GET    | `/api/approvals/:approvalId/comments`        | Approval comments                  |
@@ -792,19 +792,19 @@ Terminal states: `done`, `cancelled`
 | POST   | `/api/approvals/:approvalId/reject`          | Reject approval request            |
 | POST   | `/api/approvals/:approvalId/request-revision`| Board asks for revision            |
 | POST   | `/api/approvals/:approvalId/resubmit`        | Resubmit revised approval          |
-| POST   | `/api/companies/:companyId/cost-events`      | Report cost event                  |
-| GET    | `/api/companies/:companyId/costs/summary`    | Company cost summary               |
-| GET    | `/api/companies/:companyId/costs/by-agent`   | Costs by agent                     |
-| GET    | `/api/companies/:companyId/costs/by-project` | Costs by project                   |
-| GET    | `/api/companies/:companyId/activity`         | Activity log                       |
-| GET    | `/api/companies/:companyId/dashboard`        | Company health summary             |
+| POST   | `/api/products/:companyId/cost-events`      | Report cost event                  |
+| GET    | `/api/products/:companyId/costs/summary`    | Company cost summary               |
+| GET    | `/api/products/:companyId/costs/by-agent`   | Costs by agent                     |
+| GET    | `/api/products/:companyId/costs/by-project` | Costs by project                   |
+| GET    | `/api/products/:companyId/activity`         | Activity log                       |
+| GET    | `/api/products/:companyId/dashboard`        | Company health summary             |
 
 ### Secrets
 
 | Method | Path | Description |
 | ------ | ---- | ----------- |
-| GET    | `/api/companies/:companyId/secrets` | List secrets (metadata only)        |
-| POST   | `/api/companies/:companyId/secrets` | Create secret                       |
+| GET    | `/api/products/:companyId/secrets` | List secrets (metadata only)        |
+| POST   | `/api/products/:companyId/secrets` | Create secret                       |
 | PATCH  | `/api/secrets/:secretId`            | Update secret value (creates new version) |
 
 ---

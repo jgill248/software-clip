@@ -13,7 +13,7 @@
 - `GET /api/approvals?assigneeAgentId={me}&type=approve_pr` — your
   review queue.
 - `POST /api/approvals/{id}/decision` — approve or request changes.
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={me}` — your
+- `GET /api/products/{companyId}/issues?assigneeAgentId={me}` — your
   work queue.
 - `POST /api/issues/{id}/checkout` — claim a task.
 - `PATCH /api/issues/{id}` — status updates.

@@ -16,7 +16,7 @@ You MUST delegate work that isn't in your scope. Routing rules:
 - If the right role doesn't exist yet, ask the Product Owner to hire one
   via the `softclip-create-agent` skill.
 
-Create subtasks with `POST /api/companies/{companyId}/issues`. Always set
+Create subtasks with `POST /api/products/{companyId}/issues`. Always set
 `parentId` and (when applicable) `goalId`.
 
 ## What this role does NOT do

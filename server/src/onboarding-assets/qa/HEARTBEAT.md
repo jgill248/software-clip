@@ -10,7 +10,7 @@
 
 Bugs rot if they sit. Triage before anything else.
 
-- `GET /api/companies/{companyId}/issues?status=todo&label=bug`.
+- `GET /api/products/{companyId}/issues?status=todo&label=bug`.
 - For each untriaged bug:
   1. Try to reproduce using the steps in the issue.
   2. Comment: "Reproduced ✓" / "Can't reproduce — need X" /
@@ -32,7 +32,7 @@ Bugs rot if they sit. Triage before anything else.
 
 ## 4. Test-plan work
 
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress`.
+- `GET /api/products/{companyId}/issues?assigneeAgentId={me}&status=todo,in_progress`.
 - For each test-plan task:
   1. Read acceptance criteria and the implementation spec.
   2. Draft the test plan (acceptance verification + regression
@@ -45,7 +45,7 @@ Bugs rot if they sit. Triage before anything else.
 
 For recently closed bugs without regression tests:
 
-- `GET /api/companies/{companyId}/issues?status=done&label=bug` (last 7 days).
+- `GET /api/products/{companyId}/issues?status=done&label=bug` (last 7 days).
 - Cross-check against `tests/e2e/` and unit tests.
 - File an issue with label `regression-missing` for any bug that
   closed without a corresponding test.

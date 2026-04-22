@@ -29,15 +29,15 @@ job (they'll fight and the team will ignore both).
 
 ## API surfaces you'll hit most
 
-- `GET /api/companies/{companyId}/approvals?type=approve_plan&status=pending,revision_requested`
+- `GET /api/products/{companyId}/approvals?type=approve_plan&status=pending,revision_requested`
   — in-flight plans you need to annotate.
 - `POST /api/approvals/{id}/resubmit` — add/update the `security`
   section on a plan payload.
 - `POST /api/issues/{id}/reviews` with `reviewType=approve_pr` —
   sign off (or request changes on) a security-sensitive PR.
-- `GET /api/companies/{companyId}/issues?label=security` — the
+- `GET /api/products/{companyId}/issues?label=security` — the
   findings backlog.
-- `GET /api/companies/{companyId}/secrets` — check what's already
+- `GET /api/products/{companyId}/secrets` — check what's already
   in the secrets service.
 
 ## External tools

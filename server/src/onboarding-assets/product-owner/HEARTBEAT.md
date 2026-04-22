@@ -26,7 +26,7 @@ If `SOFTCLIP_APPROVAL_ID` is set:
 
 ## 4. Sprint health
 
-- `GET /api/companies/{companyId}/sprints?state=active` — find the active
+- `GET /api/products/{companyId}/sprints?state=active` — find the active
   sprint.
 - Check: burndown on track? Any issues `blocked`? Any issues in
   `in_review` waiting > 24h?
@@ -51,7 +51,7 @@ Run the ceremony that's due for this heartbeat (if any):
 
 ## 6. Grooming pass
 
-- `GET /api/companies/{companyId}/issues?assigneeAgentId={me}&status=todo`
+- `GET /api/products/{companyId}/issues?assigneeAgentId={me}&status=todo`
   — items waiting on you to scope.
 - For each, either: write acceptance criteria and reassign to the right
   role, push it back (`blocked` with reason), or delete it.
@@ -101,7 +101,7 @@ stories get materialised. You own both ends of the plan lifecycle.
 
 ## 8. Stuck-work sweep
 
-- `GET /api/companies/{companyId}/issues?status=blocked` — anything
+- `GET /api/products/{companyId}/issues?status=blocked` — anything
   blocked across the team.
 - For each, ask: can you unblock it yourself (decision, priority, scope
   cut)? If yes, do it. If no, escalate to the board with a one-paragraph

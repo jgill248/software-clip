@@ -5,13 +5,13 @@
 - `GET /llms/agent-configuration.txt`
 - `GET /llms/agent-configuration/:adapterType.txt`
 - `GET /llms/agent-icons.txt`
-- `GET /api/companies/:companyId/agent-configurations`
-- `GET /api/companies/:companyId/skills`
-- `POST /api/companies/:companyId/skills/import`
+- `GET /api/products/:companyId/agent-configurations`
+- `GET /api/products/:companyId/skills`
+- `POST /api/products/:companyId/skills/import`
 - `GET /api/agents/:agentId/configuration`
 - `POST /api/agents/:agentId/skills/sync`
-- `POST /api/companies/:companyId/agent-hires`
-- `POST /api/companies/:companyId/agents`
+- `POST /api/products/:companyId/agent-hires`
+- `POST /api/products/:companyId/agents`
 - `GET /api/agents/:agentId/config-revisions`
 - `POST /api/agents/:agentId/config-revisions/:revisionId/rollback`
 - `POST /api/issues/:issueId/approvals`
@@ -26,7 +26,7 @@ Approval collaboration:
 - `POST /api/approvals/:approvalId/comments`
 - `GET /api/approvals/:approvalId/issues`
 
-## `POST /api/companies/:companyId/agent-hires`
+## `POST /api/products/:companyId/agent-hires`
 
 Request body matches agent create shape:
 
