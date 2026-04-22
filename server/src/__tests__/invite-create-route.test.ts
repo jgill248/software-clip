@@ -108,7 +108,7 @@ describe("POST /companies/:productId/invites", () => {
     const app = createApp();
 
     const res = await request(app)
-      .post("/api/companies/company-1/invites")
+      .post("/api/products/company-1/invites")
       .set("host", "softclip.example")
       .set("x-forwarded-proto", "https")
       .send({

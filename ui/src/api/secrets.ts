@@ -2,9 +2,9 @@ import type { CompanySecret, SecretProviderDescriptor, SecretProvider } from "@s
 import { api } from "./client";
 
 export const secretsApi = {
-  list: (productId: string) => api.get<CompanySecret[]>(`/companies/${productId}/secrets`),
+  list: (productId: string) => api.get<CompanySecret[]>(`/products/${productId}/secrets`),
   providers: (productId: string) =>
-    api.get<SecretProviderDescriptor[]>(`/companies/${productId}/secret-providers`),
+    api.get<SecretProviderDescriptor[]>(`/products/${productId}/secret-providers`),
   create: (
     productId: string,
     data: {
@@ -14,7 +14,7 @@ export const secretsApi = {
       description?: string | null;
       externalRef?: string | null;
     },
-  ) => api.post<CompanySecret>(`/companies/${productId}/secrets`, data),
+  ) => api.post<CompanySecret>(`/products/${productId}/secrets`, data),
   rotate: (id: string, data: { value: string; externalRef?: string | null }) =>
     api.post<CompanySecret>(`/secrets/${id}/rotate`, data),
   update: (

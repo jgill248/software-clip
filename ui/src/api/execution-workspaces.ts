@@ -28,7 +28,7 @@ export const executionWorkspacesApi = {
     params.set("summary", "true");
     const qs = params.toString();
     return api.get<ExecutionWorkspaceSummary[]>(
-      `/companies/${productId}/execution-workspaces${qs ? `?${qs}` : ""}`,
+      `/products/${productId}/execution-workspaces${qs ? `?${qs}` : ""}`,
     );
   },
   list: (
@@ -48,7 +48,7 @@ export const executionWorkspacesApi = {
     if (filters?.status) params.set("status", filters.status);
     if (filters?.reuseEligible) params.set("reuseEligible", "true");
     const qs = params.toString();
-    return api.get<ExecutionWorkspace[]>(`/companies/${productId}/execution-workspaces${qs ? `?${qs}` : ""}`);
+    return api.get<ExecutionWorkspace[]>(`/products/${productId}/execution-workspaces${qs ? `?${qs}` : ""}`);
   },
   get: (id: string) => api.get<ExecutionWorkspace>(`/execution-workspaces/${id}`),
   getCloseReadiness: (id: string) =>

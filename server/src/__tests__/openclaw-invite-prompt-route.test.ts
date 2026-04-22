@@ -175,7 +175,7 @@ describe("POST /companies/:productId/openclaw/invite-prompt", () => {
     );
 
     const res = await request(app)
-      .post("/api/companies/company-1/openclaw/invite-prompt")
+      .post("/api/products/company-1/openclaw/invite-prompt")
       .send({});
 
     expect(res.status).toBe(403);
@@ -200,7 +200,7 @@ describe("POST /companies/:productId/openclaw/invite-prompt", () => {
     );
 
     const res = await request(app)
-      .post("/api/companies/company-1/openclaw/invite-prompt")
+      .post("/api/products/company-1/openclaw/invite-prompt")
       .send({ agentMessage: "Join and configure OpenClaw gateway." });
 
     expect([200, 201]).toContain(res.status);
@@ -251,7 +251,7 @@ describe("POST /companies/:productId/openclaw/invite-prompt", () => {
     );
 
     const res = await request(app)
-      .post("/api/companies/company-1/openclaw/invite-prompt")
+      .post("/api/products/company-1/openclaw/invite-prompt")
       .send({});
 
     expect(res.status).toBe(201);
@@ -279,7 +279,7 @@ describe("POST /companies/:productId/openclaw/invite-prompt", () => {
     );
 
     const res = await request(app)
-      .post("/api/companies/company-1/openclaw/invite-prompt")
+      .post("/api/products/company-1/openclaw/invite-prompt")
       .send({});
 
     expect(res.status).toBe(403);

@@ -30,7 +30,7 @@ export function sidebarPreferenceRoutes(db: Db) {
     res.json(await svc.upsertCompanyOrder(userId, req.body.orderedIds));
   });
 
-  router.get("/companies/:productId/sidebar-preferences/me", async (req, res) => {
+  router.get("/products/:productId/sidebar-preferences/me", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const userId = requireBoardUserId(req, res);
@@ -39,7 +39,7 @@ export function sidebarPreferenceRoutes(db: Db) {
   });
 
   router.put(
-    "/companies/:productId/sidebar-preferences/me",
+    "/products/:productId/sidebar-preferences/me",
     validate(upsertSidebarOrderPreferenceSchema),
     async (req, res) => {
       const productId = req.params.productId as string;

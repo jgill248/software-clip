@@ -58,11 +58,11 @@ export const issuesApi = {
     if (filters?.q) params.set("q", filters.q);
     if (filters?.limit) params.set("limit", String(filters.limit));
     const qs = params.toString();
-    return api.get<Issue[]>(`/companies/${productId}/issues${qs ? `?${qs}` : ""}`);
+    return api.get<Issue[]>(`/products/${productId}/issues${qs ? `?${qs}` : ""}`);
   },
-  listLabels: (productId: string) => api.get<IssueLabel[]>(`/companies/${productId}/labels`),
+  listLabels: (productId: string) => api.get<IssueLabel[]>(`/products/${productId}/labels`),
   createLabel: (productId: string, data: { name: string; color: string }) =>
-    api.post<IssueLabel>(`/companies/${productId}/labels`, data),
+    api.post<IssueLabel>(`/products/${productId}/labels`, data),
   deleteLabel: (id: string) => api.delete<IssueLabel>(`/labels/${id}`),
   get: (id: string) => api.get<Issue>(`/issues/${id}`),
   markRead: (id: string) => api.post<{ id: string; lastReadAt: Date }>(`/issues/${id}/read`, {}),
@@ -72,7 +72,7 @@ export const issuesApi = {
   unarchiveFromInbox: (id: string) =>
     api.delete<{ id: string; archivedAt: Date } | { ok: true }>(`/issues/${id}/inbox-archive`),
   create: (productId: string, data: Record<string, unknown>) =>
-    api.post<Issue>(`/companies/${productId}/issues`, data),
+    api.post<Issue>(`/products/${productId}/issues`, data),
   update: (id: string, data: Record<string, unknown>) =>
     api.patch<IssueUpdateResponse>(`/issues/${id}`, data),
   remove: (id: string) => api.delete<Issue>(`/issues/${id}`),
@@ -152,7 +152,7 @@ export const issuesApi = {
     if (issueCommentId) {
       form.append("issueCommentId", issueCommentId);
     }
-    return api.postForm<IssueAttachment>(`/companies/${productId}/issues/${issueId}/attachments`, form);
+    return api.postForm<IssueAttachment>(`/products/${productId}/issues/${issueId}/attachments`, form);
   },
   deleteAttachment: (id: string) => api.delete<{ ok: true }>(`/attachments/${id}`),
   listApprovals: (id: string) => api.get<Approval[]>(`/issues/${id}/approvals`),

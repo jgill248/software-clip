@@ -23,7 +23,7 @@ describe("executionWorkspacesApi.listSummaries", () => {
     });
 
     expect(mockApi.get).toHaveBeenCalledWith(
-      "/companies/company-1/execution-workspaces?projectId=project-1&reuseEligible=true&summary=true",
+      "/products/company-1/execution-workspaces?projectId=project-1&reuseEligible=true&summary=true",
     );
   });
 });

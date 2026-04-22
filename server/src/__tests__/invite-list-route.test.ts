@@ -145,7 +145,7 @@ describeEmbeddedPostgres("GET /companies/:productId/invites", () => {
 
     const app = createApp(productId);
 
-    const firstPage = await request(app).get(`/api/companies/${productId}/invites?limit=2`);
+    const firstPage = await request(app).get(`/api/products/${productId}/invites?limit=2`);
 
     expect(firstPage.status).toBe(200);
     expect(firstPage.body.invites).toHaveLength(2);
@@ -153,7 +153,7 @@ describeEmbeddedPostgres("GET /companies/:productId/invites", () => {
     expect(firstPage.body.invites[0].relatedJoinRequestId).toBeTruthy();
     expect(firstPage.body.nextOffset).toBe(2);
 
-    const secondPage = await request(app).get(`/api/companies/${productId}/invites?limit=2&offset=2`);
+    const secondPage = await request(app).get(`/api/products/${productId}/invites?limit=2&offset=2`);
 
     expect(secondPage.status).toBe(200);
     expect(secondPage.body.invites).toHaveLength(1);

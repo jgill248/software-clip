@@ -53,12 +53,12 @@ async function createApp(actor: Record<string, unknown>) {
     (req as { actor: unknown }).actor = actor;
     next();
   });
-  app.use("/api/companies", productRoutes({} as never));
+  app.use("/api/products", productRoutes({} as never));
   app.use(errorHandler);
   return app;
 }
 
-describe("POST /api/companies bootstraps a Product Owner + ceremonies (§10)", () => {
+describe("POST /api/products bootstraps a Product Owner + ceremonies (§10)", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mockCompanyService.create.mockResolvedValue({
@@ -106,7 +106,7 @@ describe("POST /api/companies bootstraps a Product Owner + ceremonies (§10)", (
     });
 
     const res = await request(app)
-      .post("/api/companies")
+      .post("/api/products")
       .send({ name: "Example Product" });
 
     expect(res.status).toBe(201);
@@ -147,7 +147,7 @@ describe("POST /api/companies bootstraps a Product Owner + ceremonies (§10)", (
     });
 
     const res = await request(app)
-      .post("/api/companies")
+      .post("/api/products")
       .send({ name: "Example Product" });
 
     expect(res.status).toBe(201);
@@ -173,7 +173,7 @@ describe("POST /api/companies bootstraps a Product Owner + ceremonies (§10)", (
     });
 
     const res = await request(app)
-      .post("/api/companies")
+      .post("/api/products")
       .send({ name: "Example Product" });
 
     expect(res.status).toBe(201);

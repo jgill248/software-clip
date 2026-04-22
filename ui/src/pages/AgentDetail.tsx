@@ -3581,7 +3581,7 @@ function LogViewer({ run, adapterType }: { run: HeartbeatRun; adapterType: strin
     const connect = () => {
       if (closed) return;
       const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-      const url = `${protocol}://${window.location.host}/api/companies/${encodeURIComponent(run.productId)}/events/ws`;
+      const url = `${protocol}://${window.location.host}/api/products/${encodeURIComponent(run.productId)}/events/ws`;
       socket = new WebSocket(url);
 
       socket.onopen = () => {

@@ -73,7 +73,7 @@ export function projectRoutes(db: Db) {
     }
   });
 
-  router.get("/companies/:productId/projects", async (req, res) => {
+  router.get("/products/:productId/projects", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const result = await svc.list(productId);
@@ -91,7 +91,7 @@ export function projectRoutes(db: Db) {
     res.json(project);
   });
 
-  router.post("/companies/:productId/projects", validate(createProjectSchema), async (req, res) => {
+  router.post("/products/:productId/projects", validate(createProjectSchema), async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     type CreateProjectPayload = Parameters<typeof svc.create>[1] & {

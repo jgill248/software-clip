@@ -60,8 +60,12 @@ function rejectUpgrade(socket: Duplex, statusLine: string, message: string) {
   socket.destroy();
 }
 
-function parseCompanyId(pathname: string) {
-  const match = pathname.match(/^\/api\/companies\/([^/]+)\/events\/ws$/);
+function parseProductId(pathname: string) {
+  // Canonical post-pivot path is `/api/products/:productId/events/ws`. The
+  // legacy `/api/companies/...` prefix is accepted as a back-compat alias so
+  // existing agents and CLI clients keep connecting — see the URL-rewrite
+  // middleware in `app.ts`, which handles the same aliasing for HTTP routes.
+  const match = pathname.match(/^\/api\/(?:products|companies)\/([^/]+)\/events\/ws$/);
   if (!match) return null;
 
   try {
@@ -240,7 +244,7 @@ export function setupLiveEventsWebSocketServer(
     }
 
     const url = new URL(req.url, "http://localhost");
-    const productId = parseCompanyId(url.pathname);
+    const productId = parseProductId(url.pathname);
     if (!productId) {
       socket.destroy();
       return;

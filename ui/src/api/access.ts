@@ -254,7 +254,7 @@ export const accessApi = {
       agentMessage?: string | null;
     } = {},
   ) =>
-    api.post<CompanyInviteCreated>(`/companies/${productId}/invites`, input),
+    api.post<CompanyInviteCreated>(`/products/${productId}/invites`, input),
 
   createOpenClawInvitePrompt: (
     productId: string,
@@ -263,7 +263,7 @@ export const accessApi = {
     } = {},
   ) =>
     api.post<CompanyInviteCreated>(
-      `/companies/${productId}/openclaw/invite-prompt`,
+      `/products/${productId}/openclaw/invite-prompt`,
       input,
     ),
 
@@ -286,7 +286,7 @@ export const accessApi = {
     } = {},
   ) =>
     api.get<CompanyInviteListResponse>(
-      `/companies/${productId}/invites${buildInviteListQuery(options)}`,
+      `/products/${productId}/invites${buildInviteListQuery(options)}`,
     ),
 
   revokeInvite: (inviteId: string) => api.post(`/invites/${inviteId}/revoke`, {}),
@@ -297,14 +297,14 @@ export const accessApi = {
     requestType?: "human" | "agent",
   ) =>
     api.get<CompanyJoinRequest[]>(
-      `/companies/${productId}/join-requests?status=${status}${requestType ? `&requestType=${requestType}` : ""}`,
+      `/products/${productId}/join-requests?status=${status}${requestType ? `&requestType=${requestType}` : ""}`,
     ),
 
   listMembers: (productId: string) =>
-    api.get<CompanyMembersResponse>(`/companies/${productId}/members`),
+    api.get<CompanyMembersResponse>(`/products/${productId}/members`),
 
   listUserDirectory: (productId: string) =>
-    api.get<CompanyUserDirectoryResponse>(`/companies/${productId}/user-directory`),
+    api.get<CompanyUserDirectoryResponse>(`/products/${productId}/user-directory`),
 
   updateMember: (
     productId: string,
@@ -313,7 +313,7 @@ export const accessApi = {
       membershipRole?: HumanCompanyRole | null;
       status?: "pending" | "active" | "suspended";
     },
-  ) => api.patch<CompanyMember>(`/companies/${productId}/members/${memberId}`, input),
+  ) => api.patch<CompanyMember>(`/products/${productId}/members/${memberId}`, input),
 
   updateMemberPermissions: (
     productId: string,
@@ -324,7 +324,7 @@ export const accessApi = {
         scope?: Record<string, unknown> | null;
       }>;
     },
-  ) => api.patch<CompanyMember>(`/companies/${productId}/members/${memberId}/permissions`, input),
+  ) => api.patch<CompanyMember>(`/products/${productId}/members/${memberId}/permissions`, input),
 
   updateMemberAccess: (
     productId: string,
@@ -337,13 +337,13 @@ export const accessApi = {
         scope?: Record<string, unknown> | null;
       }>;
     },
-  ) => api.patch<CompanyMember>(`/companies/${productId}/members/${memberId}/role-and-grants`, input),
+  ) => api.patch<CompanyMember>(`/products/${productId}/members/${memberId}/role-and-grants`, input),
 
   approveJoinRequest: (productId: string, requestId: string) =>
-    api.post<JoinRequest>(`/companies/${productId}/join-requests/${requestId}/approve`, {}),
+    api.post<JoinRequest>(`/products/${productId}/join-requests/${requestId}/approve`, {}),
 
   rejectJoinRequest: (productId: string, requestId: string) =>
-    api.post<JoinRequest>(`/companies/${productId}/join-requests/${requestId}/reject`, {}),
+    api.post<JoinRequest>(`/products/${productId}/join-requests/${requestId}/reject`, {}),
 
   claimJoinRequestApiKey: (requestId: string, claimSecret: string) =>
     api.post<{ keyId: string; token: string; agentId: string; createdAt: string }>(

@@ -4,10 +4,10 @@ import { api } from "./client";
 export const reviewsApi = {
   list: (productId: string, status?: string) =>
     api.get<Approval[]>(
-      `/companies/${productId}/approvals${status ? `?status=${encodeURIComponent(status)}` : ""}`,
+      `/products/${productId}/approvals${status ? `?status=${encodeURIComponent(status)}` : ""}`,
     ),
   create: (productId: string, data: Record<string, unknown>) =>
-    api.post<Approval>(`/companies/${productId}/approvals`, data),
+    api.post<Approval>(`/products/${productId}/approvals`, data),
   get: (id: string) => api.get<Approval>(`/approvals/${id}`),
   approve: (id: string, decisionNote?: string) =>
     api.post<Approval>(`/approvals/${id}/approve`, { decisionNote }),

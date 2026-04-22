@@ -241,7 +241,7 @@ export function useLiveRunTranscripts({
     const connect = () => {
       if (closed) return;
       const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-      const url = `${protocol}://${window.location.host}/api/companies/${encodeURIComponent(productId)}/events/ws`;
+      const url = `${protocol}://${window.location.host}/api/products/${encodeURIComponent(productId)}/events/ws`;
       socket = new WebSocket(url);
 
       socket.onmessage = (message) => {

@@ -81,14 +81,14 @@ export function companySkillRoutes(db: Db) {
     throw forbidden("Missing permission: can create agents");
   }
 
-  router.get("/companies/:productId/skills", async (req, res) => {
+  router.get("/products/:productId/skills", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const result = await svc.list(productId);
     res.json(result);
   });
 
-  router.get("/companies/:productId/skills/:skillId", async (req, res) => {
+  router.get("/products/:productId/skills/:skillId", async (req, res) => {
     const productId = req.params.productId as string;
     const skillId = req.params.skillId as string;
     assertCompanyAccess(req, productId);
@@ -100,7 +100,7 @@ export function companySkillRoutes(db: Db) {
     res.json(result);
   });
 
-  router.get("/companies/:productId/skills/:skillId/update-status", async (req, res) => {
+  router.get("/products/:productId/skills/:skillId/update-status", async (req, res) => {
     const productId = req.params.productId as string;
     const skillId = req.params.skillId as string;
     assertCompanyAccess(req, productId);
@@ -112,7 +112,7 @@ export function companySkillRoutes(db: Db) {
     res.json(result);
   });
 
-  router.get("/companies/:productId/skills/:skillId/files", async (req, res) => {
+  router.get("/products/:productId/skills/:skillId/files", async (req, res) => {
     const productId = req.params.productId as string;
     const skillId = req.params.skillId as string;
     const relativePath = String(req.query.path ?? "SKILL.md");
@@ -126,7 +126,7 @@ export function companySkillRoutes(db: Db) {
   });
 
   router.post(
-    "/companies/:productId/skills",
+    "/products/:productId/skills",
     validate(companySkillCreateSchema),
     async (req, res) => {
       const productId = req.params.productId as string;
@@ -154,7 +154,7 @@ export function companySkillRoutes(db: Db) {
   );
 
   router.patch(
-    "/companies/:productId/skills/:skillId/files",
+    "/products/:productId/skills/:skillId/files",
     validate(companySkillFileUpdateSchema),
     async (req, res) => {
       const productId = req.params.productId as string;
@@ -188,7 +188,7 @@ export function companySkillRoutes(db: Db) {
   );
 
   router.post(
-    "/companies/:productId/skills/import",
+    "/products/:productId/skills/import",
     validate(companySkillImportSchema),
     async (req, res) => {
       const productId = req.params.productId as string;
@@ -228,7 +228,7 @@ export function companySkillRoutes(db: Db) {
   );
 
   router.post(
-    "/companies/:productId/skills/scan-projects",
+    "/products/:productId/skills/scan-projects",
     validate(companySkillProjectScanRequestSchema),
     async (req, res) => {
       const productId = req.params.productId as string;
@@ -260,7 +260,7 @@ export function companySkillRoutes(db: Db) {
     },
   );
 
-  router.delete("/companies/:productId/skills/:skillId", async (req, res) => {
+  router.delete("/products/:productId/skills/:skillId", async (req, res) => {
     const productId = req.params.productId as string;
     const skillId = req.params.skillId as string;
     await assertCanMutateCompanySkills(req, productId);
@@ -289,7 +289,7 @@ export function companySkillRoutes(db: Db) {
     res.json(result);
   });
 
-  router.post("/companies/:productId/skills/:skillId/install-update", async (req, res) => {
+  router.post("/products/:productId/skills/:skillId/install-update", async (req, res) => {
     const productId = req.params.productId as string;
     const skillId = req.params.skillId as string;
     await assertCanMutateCompanySkills(req, productId);

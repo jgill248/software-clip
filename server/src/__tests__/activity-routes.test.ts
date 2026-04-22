@@ -83,7 +83,7 @@ describe("activity routes", () => {
   it("requires company access before creating activity events", async () => {
     const app = await createApp();
     const res = await request(app)
-      .post("/api/companies/company-2/activity")
+      .post("/api/products/company-2/activity")
       .send({
         actorId: "user-1",
         action: "test.event",

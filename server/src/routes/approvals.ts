@@ -40,7 +40,7 @@ export function approvalRoutes(db: Db) {
     return approval;
   }
 
-  router.get("/companies/:productId/approvals", async (req, res) => {
+  router.get("/products/:productId/approvals", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const status = req.query.status as string | undefined;
@@ -59,7 +59,7 @@ export function approvalRoutes(db: Db) {
     res.json(redactApprovalPayload(approval));
   });
 
-  router.post("/companies/:productId/approvals", validate(createApprovalSchema), async (req, res) => {
+  router.post("/products/:productId/approvals", validate(createApprovalSchema), async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const rawIssueIds = req.body.issueIds;

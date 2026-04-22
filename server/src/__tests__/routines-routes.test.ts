@@ -151,7 +151,7 @@ describe("routine routes", () => {
     });
 
     const res = await request(app)
-      .post(`/api/companies/${productId}/routines`)
+      .post(`/api/products/${productId}/routines`)
       .send({
         projectId,
         title: "Daily routine",
@@ -275,7 +275,7 @@ describe("routine routes", () => {
     });
 
     const res = await request(app)
-      .post(`/api/companies/${productId}/routines`)
+      .post(`/api/products/${productId}/routines`)
       .send({
         projectId,
         title: "Daily routine",

@@ -111,7 +111,7 @@ describe("GET /companies/:productId/user-directory", () => {
       memberships: [{ productId: "company-1", membershipRole: "operator", status: "active" }],
     });
 
-    const res = await request(app).get("/api/companies/company-1/user-directory");
+    const res = await request(app).get("/api/products/company-1/user-directory");
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({

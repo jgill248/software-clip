@@ -2427,7 +2427,7 @@ export function accessRoutes(
   });
 
   router.post(
-    "/companies/:productId/invites",
+    "/products/:productId/invites",
     validate(createCompanyInviteSchema),
     async (req, res) => {
       const productId = req.params.productId as string;
@@ -2482,7 +2482,7 @@ export function accessRoutes(
   );
 
   router.post(
-    "/companies/:productId/openclaw/invite-prompt",
+    "/products/:productId/openclaw/invite-prompt",
     validate(createOpenClawInvitePromptSchema),
     async (req, res) => {
       const productId = req.params.productId as string;
@@ -3171,7 +3171,7 @@ export function accessRoutes(
     res.json(revoked);
   });
 
-  router.get("/companies/:productId/invites", async (req, res) => {
+  router.get("/products/:productId/invites", async (req, res) => {
     const productId = req.params.productId as string;
     await assertCompanyPermission(req, productId, "users:invite");
     const query = listCompanyInvitesQuerySchema.parse(req.query);
@@ -3179,7 +3179,7 @@ export function accessRoutes(
     res.json(invitesForCompany);
   });
 
-  router.get("/companies/:productId/join-requests", async (req, res) => {
+  router.get("/products/:productId/join-requests", async (req, res) => {
     const productId = req.params.productId as string;
     await assertCompanyPermission(req, productId, "joins:approve");
     const query = listJoinRequestsQuerySchema.parse(req.query);
@@ -3194,7 +3194,7 @@ export function accessRoutes(
   });
 
   router.post(
-    "/companies/:productId/join-requests/:requestId/approve",
+    "/products/:productId/join-requests/:requestId/approve",
     async (req, res) => {
       const productId = req.params.productId as string;
       const requestId = req.params.requestId as string;
@@ -3343,7 +3343,7 @@ export function accessRoutes(
   );
 
   router.post(
-    "/companies/:productId/join-requests/:requestId/reject",
+    "/products/:productId/join-requests/:requestId/reject",
     async (req, res) => {
       const productId = req.params.productId as string;
       const requestId = req.params.requestId as string;
@@ -3471,7 +3471,7 @@ export function accessRoutes(
     }
   );
 
-  router.get("/companies/:productId/members", async (req, res) => {
+  router.get("/products/:productId/members", async (req, res) => {
     const productId = req.params.productId as string;
     await assertCompanyPermission(req, productId, "users:manage_permissions");
     const [members, currentAccess] = await Promise.all([
@@ -3484,7 +3484,7 @@ export function accessRoutes(
     });
   });
 
-  router.get("/companies/:productId/user-directory", async (req, res) => {
+  router.get("/products/:productId/user-directory", async (req, res) => {
     const productId = req.params.productId as string;
     assertCompanyAccess(req, productId);
     const users = await loadCompanyUserDirectory(db, productId);
@@ -3492,7 +3492,7 @@ export function accessRoutes(
   });
 
   router.patch(
-    "/companies/:productId/members/:memberId",
+    "/products/:productId/members/:memberId",
     validate(updateCompanyMemberSchema),
     async (req, res) => {
       const productId = req.params.productId as string;
@@ -3586,7 +3586,7 @@ export function accessRoutes(
   );
 
   router.patch(
-    "/companies/:productId/members/:memberId/role-and-grants",
+    "/products/:productId/members/:memberId/role-and-grants",
     validate(updateCompanyMemberWithPermissionsSchema),
     async (req, res) => {
       const productId = req.params.productId as string;
@@ -3710,7 +3710,7 @@ export function accessRoutes(
   );
 
   router.patch(
-    "/companies/:productId/members/:memberId/permissions",
+    "/products/:productId/members/:memberId/permissions",
     validate(updateMemberPermissionsSchema),
     async (req, res) => {
       const productId = req.params.productId as string;

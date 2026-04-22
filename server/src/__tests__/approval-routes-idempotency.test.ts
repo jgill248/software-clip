@@ -297,7 +297,7 @@ describe("approval routes idempotent retries", () => {
     });
 
     const res = await request(await createAgentApp())
-      .post("/api/companies/company-1/approvals")
+      .post("/api/products/company-1/approvals")
       .send({
         type: "request_board_approval",
         issueIds: ["00000000-0000-0000-0000-000000000001"],

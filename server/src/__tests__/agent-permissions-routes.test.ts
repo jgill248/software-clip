@@ -229,7 +229,7 @@ describe("agent permission routes", () => {
       productIds: [productId],
     });
 
-    const res = await request(app).get(`/api/companies/${productId}/agents`);
+    const res = await request(app).get(`/api/products/${productId}/agents`);
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual([
@@ -373,7 +373,7 @@ describe("agent permission routes", () => {
     });
 
     const res = await request(app)
-      .post(`/api/companies/${productId}/agent-hires`)
+      .post(`/api/products/${productId}/agent-hires`)
       .send({
         name: "Injected",
         role: "engineer",
@@ -400,7 +400,7 @@ describe("agent permission routes", () => {
     });
 
     const res = await request(app)
-      .post(`/api/companies/${productId}/agents`)
+      .post(`/api/products/${productId}/agents`)
       .send({
         name: "Builder",
         role: "engineer",
@@ -436,7 +436,7 @@ describe("agent permission routes", () => {
     });
 
     const res = await request(app)
-      .get(`/api/companies/${productId}/agents`)
+      .get(`/api/products/${productId}/agents`)
       .query({ urlKey: "builder" });
 
     expect(res.status).toBe(400);
@@ -454,7 +454,7 @@ describe("agent permission routes", () => {
     });
 
     const res = await request(app)
-      .post(`/api/companies/${productId}/agents`)
+      .post(`/api/products/${productId}/agents`)
       .send({
         name: "Builder",
         role: "engineer",
@@ -491,7 +491,7 @@ describe("agent permission routes", () => {
     });
 
     const res = await request(app)
-      .post(`/api/companies/${productId}/agent-hires`)
+      .post(`/api/products/${productId}/agent-hires`)
       .send({
         name: "Builder",
         role: "engineer",
